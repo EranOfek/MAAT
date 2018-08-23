@@ -25,6 +25,7 @@ function Output=file2str(File,ReadType)
 % Example: S=Util.files.file2str('mextractor.m','cellremove3dots');
 % Reliable: 1
 %------------------------------------------------------------------------------
+
 DefReadType   = 'str';
 if (nargin==1)
    ReadType   = DefReadType;
