@@ -13,5 +13,6 @@ function SimOut=var(Sim,varargin)
 % Example: var(S)
 % Reliable: 2
 %--------------------------------------------------------------------------
+% guy's test. 
 
 SimOut=ufun2scalar(Sim,@var,varargin{:});
