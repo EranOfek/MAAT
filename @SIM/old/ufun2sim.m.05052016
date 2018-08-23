@@ -1,0 +1,139 @@
+function [Sim,Sim2]=ufun2sim(Sim,Fun,varargin)
+%--------------------------------------------------------------------------
+% ufun2sim function                                             class/@SIM
+% Description: Run a uni-parameter function (e.g., fft) on a SIM object,
+%              and return the output in a SIM object.
+%              This function support 1 or 2 SIM output arguments.
+% Input  : - A SIM object
+%          - A function handle (e.g., @fft, @gradient).
+%          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+%            where keyword are one of the followings:
+%            'FunAddPar'  - A cell array of additional parameters to pass
+%                           to the function. Default is {}.
+%            'ExecField'  - A cell array (or a single string) of field
+%                           names on which to execute the function.
+%                           Default is {'Im'}.
+%            'CCDSEC'     - CCD section on which to execute the function.
+%                           This is either a string indicating the header
+%                           keyword containing the CCDSEC or a vector of
+%                           [Xmin, Xmax, Ymin, Ymax].
+%                           Note that this option do not trim the image.
+%                           Use SIM/trim_image.m for trimming.
+%            'ReplaceKey' - A three column cell array of {key,val,comment},
+%                           or an HEAD object which keywords to replace
+%                           or add to the SIM header.
+%            'AddKey'     - Like 'ReplaceKey', but adding keywords,
+%                           without replacment.
+%            'MaskFun'    - Function that sets the bit mask:
+%                           Fun(Sim1,MaskFunPar{:}).
+%                           Default is empty.
+%            'MaskFunPar' - Additional parameters to pass to MaskFun.
+%                           Default is {}.
+% Output : - A SIM object, with the function results (first output
+%            argument).
+%          - A SIM object, with the results from the function second output
+%            argument.
+% License: GNU general public license version 3
+% Tested : Matlab R2015b
+%     By : Eran O. Ofek                    Apr 2016
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: S1=ufun2sim(Sim,@fft);
+%          [Fx,Fy]=ufun2sim(S,@gradient);
+% Reliable: 2
+%--------------------------------------------------------------------------
+
+ImageField      = 'Im';
+
+DefV.FunAddPar1           = {};
+DefV.FunAddPar            = {};
+DefV.ExecField            = {ImageField};
+DefV.CCDSEC               = [];
+DefV.ReplaceKey           = {};
+DefV.AddKey               = {};
+DefV.MaskFun              = [];   % should work on SIM! and return a SIM
+DefV.MaskFunPar           = {};   % e.g., MaskFun=@eq, MaskFunPar={0}
+%DefV.MaskDic              = @def_bitmask_pipeline;
+%DefV.MaskBit              = [];    % bit index or bit name - single or many
+if (isempty(varargin)),
+    InPar = DefV;
+else
+    InPar = set_varargin_keyval(DefV,'n','use',varargin{:});
+end
+
+if (~iscell(InPar.ExecField)),
+    InPar.ExecField = {InPar.ExecField};
+end
+
+Nout = nargout;
+if (Nout>1),
+    Sim2=Sim;
+end
+
+Nfn  = numel(InPar.ExecField);
+Nsim = numel(Sim);
+for Isim=1:1:Nsim,
+    % for each SIM element
+    %--- ccdsec ---
+    if (isempty(InPar.CCDSEC)),
+        % need to expedite run time
+        CCDSEC = [];
+    else
+        CCDSEC = ccdsec(Sim(Isim),InPar.CCDSEC);
+    end
+    
+    %--- Uni-parameter function ---
+    for Ifn=1:1:Nfn,
+        % for each field 
+        if (isempty(CCDSEC)),
+            if (Nout<2),
+                Sim(Isim).(InPar.ExecField{Ifn}) = Fun(Sim(Isim).(InPar.ExecField{Ifn}),InPar.FunAddPar{:});
+            else
+                [Sim(Isim).(InPar.ExecField{Ifn}), Sim2(Isim).(InPar.ExecField{Ifn})] = Fun(Sim(Isim).(InPar.ExecField{Ifn}),InPar.FunAddPar{:});
+            end
+            
+        else
+            if (Nout<2),
+                Sim(Isim).(InPar.ExecField{Ifn})(CCDSEC(3):CCDSEC(4),CCDSEC(1):CCDSEC(2)) = Fun(Sim(Isim).(InPar.ExecField{Ifn})(CCDSEC(3):CCDSEC(4),CCDSEC(1):CCDSEC(2)),InPar.FunAddPar{:});
+            else
+                [Sim(Isim).(InPar.ExecField{Ifn})(CCDSEC(3):CCDSEC(4),CCDSEC(1):CCDSEC(2)), Sim2(Isim).(InPar.ExecField{Ifn})(CCDSEC(3):CCDSEC(4),CCDSEC(1):CCDSEC(2))] = Fun(Sim(Isim).(InPar.ExecField{Ifn})(CCDSEC(3):CCDSEC(4),CCDSEC(1):CCDSEC(2)),InPar.FunAddPar{:});
+            end
+        end
+        
+    end
+    
+%     %--- Updtae WCS ---  NO NEED as image size doesn't change!
+%     if (~isempty(CCDSEC) && InPar.UpdateWCS),
+%         ValCRPIX  = mgetkey(Sim(Isim),{'CRPIX1','CRPIX2'});
+%         Sim(Isim) = update_key(Sim(Isim),{'CRPIX1',ValCRPIX{1}-Shift(Isim,1);...
+%                                           'CRPIX2',ValCRPIX{2}-Shift(Isim,2)});
+%         if (~isempty_wcs(Sim(Isim))),
+%             Sim(Isim) = populate_wcs(Sim(Isim));
+%         end
+%     end
+    
+    %--- Update mask ---
+    if (~isempty(InPar.MaskFun)),
+        Sim(Isim) = InPar.MaskFun(Sim(Isim),InPar.MaskFunPar{:});
+        if (Nout>1),
+            Sim2(Isim) = InPar.MaskFun(Sim2(Isim),InPar.MaskFunPar{:});
+        end
+    end
+    
+    %--- Update header ---
+    % replace
+    if (~isempty(InPar.ReplaceKey)),
+        Sim(Isim) = replace_key(Sim(Isim),InPar.ReplaceKey);
+        if (Nout>1),
+            Sim2(Isim) = replace_key(Sim2(Isim),InPar.ReplaceKey);
+        end
+    end
+    % add
+    if (~isempty(InPar.AddKey)),
+        Sim(Isim) = add_key(Sim(Isim),InPar.AddKey);
+        if (Nout>1),
+            Sim2(Isim) = add_key(Sim2(Isim),InPar.AddKey);
+        end
+    end
+    
+    
+end

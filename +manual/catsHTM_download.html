@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="generator" content="MATLAB R2016a"><meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,chrome=1"><title>The HDF5/HTM large catalog format - catalogs download</title><style type="text/css">
+* {margin: 0; padding: 0;}
+body {text-align: start; line-height: 17.234001159668px; min-height: 0px; white-space: normal; color: rgb(0, 0, 0); font-family: Consolas, Inconsolata, Menlo, monospace; font-style: normal; font-size: 14px; font-weight: normal; text-decoration: none; white-space: normal; }
+h1, h2 {font-weight: normal;}
+.content { padding: 30px; }
+
+.S0 { margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S1 { line-height: 26.3999996185303px; min-height: 24px; white-space: pre-wrap; color: rgb(213, 80, 0); font-family: Helvetica, Arial, sans-serif; font-size: 22px; white-space: pre-wrap; margin-left: 4px; margin-top: 3px; margin-bottom: 15px; margin-right: 10px;  }
+.S2 { min-height: 0px; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S3 { line-height: 20.576000213623px; min-height: 20px; white-space: pre-wrap; color: rgb(60, 60, 60); font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: bold; white-space: pre-wrap; margin-left: 4px; margin-top: 15px; margin-bottom: 9px; margin-right: 10px;  }
+.S4 { line-height: 21px; min-height: 17px; white-space: pre-wrap; font-family: Helvetica, Arial, sans-serif; white-space: pre-wrap; margin-left: 4px; margin-top: 2px; margin-bottom: 9px; margin-right: 10px;  }
+.S5 { min-height: 0px; color: rgb(0, 95, 206); margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S6 { font-family: Helvetica, Arial, sans-serif; margin-left: 0px; margin-top: 10px; margin-bottom: 20px; margin-right: 0px;  }
+.S7 { text-align: left; line-height: 21px; white-space: pre-wrap; white-space: pre-wrap; margin-left: 56px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S8 { color: rgb(0, 95, 206); margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S9 { text-decoration: underline; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+
+.LineNodeBlock {margin: 10px 0 10px 0;}
+.LineNodeBlock+.paragraphNode {margin-top: 10px;}
+.lineNode {padding-left: 10px; background-color: #F7F7F7; border-left: 1px solid #E9E9E9; border-right: 1px solid #E9E9E9;}
+.inlineWrapper:first-child .lineNode,.inlineWrapper.outputs+.inlineWrapper .lineNode {padding-top: 5px; border-top: 1px solid #E9E9E9;}
+.inlineWrapper:last-child .lineNode,.inlineWrapper.outputs .lineNode {padding-bottom: 5px; border-bottom: 1px solid #E9E9E9;}
+.lineNode .textBox {white-space: pre;}
+</style></head><body><div class = "content"><div class = 'SectionBlock containment active'><h1 class = "S1"><span class = "S2">The HDF5/HTM large catalog format - catalogs download</span></h1><h2 class = "S3"><span class = "S2">Description</span></h2><p class = "S4"><span class = "S2">The HDF5/HTM format designed to store and provide fast access for large astronomical catalogs with &gt;10^6 rows (</span><a href = 'http://adsabs.harvard.edu/abs/2018PASP..130g5002S'><span class = "S0">Soumagnac &amp; Ofek 2018</span></a><span class = "S2">). The format is based on the HDF5 file format and HDF5 file access utilities which are available on many platforms. The catalog format is designed to allow fast access for cone searches in the range of 1 arcsec to about 1 deg. For fast access, the sources are sorted into </span><a href = 'https://arxiv.org/pdf/cs/0701164.pdf'><span class = "S0">hierarchical triangular mesh</span></a><span class = "S2"> (HTM).</span></p><p class = "S4"><span class = "S2">Access to the catalogs is possible using routines in Python (</span><a href = 'https://github.com/maayane/catsHTM'><span class = "S0">Python catsHTM download</span></a><span class = "S2">) and MATLAB (</span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/install.html'><span class = "S0">MATLAB Astronomy and Astrophysics Toolbox download</span></a><span class = "S2">). See also </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/catsHTM.html'><span class = "S0">catsHTM documentation and examples</span></a><span class = "S2">.</span></p><h2 class = "S3"><span class = "S2">Download the catalogs</span></h2><p class = "S4"><span class = "S2">To download the catalogs:</span></p><ol class = "S6"><li class = "S7"><span class = "S0">Download </span><a href = 'http://astro.weizmann.ac.il/catsHTM/list.euler.wget'><span class = "S9">http://astro.weizmann.ac.il/catsHTM/list.euler.wget</span></a><span class = "S0"> </span><span class = "S0">by right clicking on the link and choosing "Download linked file"</span></li><li class = "S7"><span class = "S0">Move the dowloaded file to a directory where you would like to have the HDF5 catalogs (e.g. /home/catsHTM/catalogs)</span></li><li class = "S7"><span class = "S0">Edit if necessary, </span><span class = "S0">according to whether you need all catalogs or just a subset </span></li><li class = "S7"><span class = "S0">execute the file from the command line</span><span class = "S0"> by running the following commands:</span></li><li class = "S7"><span class = "S0">chmod a+x list.euler.wget.txt</span></li><li class = "S7"><span class = "S0">Execute: ./list.euler.wget.txt</span></li><li class = "S7"><span class = "S0">Checksums are available from: </span><a href = 'http://astro.weizmann.ac.il/catsHTM/list.checksum'><span class = "S9">http://astro.weizmann.ac.il/catsHTM/list.checksum</span></a></li></ol><h2 class = "S3"><span class = "S2">Credit</span></h2><p class = "S4"><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/catsHTMcredit.html'><span class = "S0">See catsHTM credit page</span></a><span class = "S2">.</span></p><h2 class = "S3"><span class = "S2">License</span></h2><p class = "S4"><span class = "S2">Unless specified otherwise this code and products are released under the GNU general public license version 3.</span></p><h2 class = "S3"><span class = "S2">List of available catalogs</span></h2><p class = "S4"><span class = "S2">Currently, the following catalogs are available in this format (alphabetical order):</span></p><ol class = "S6"><li class = "S7"><span class = "S0">2MASS - 2MASS point source catalog</span></li><li class = "S7"><span class = "S0">2MASSxsc - 2MASS extended source catalog</span></li><li class = "S7"><span class = "S0">AKARI - AKARI IR catalog</span></li><li class = "S7"><span class = "S0">APASS - AAVSO All Sky Photometric Sky Survey (~5.5x10^7 sources)</span></li><li class = "S7"><span class = "S0">Cosmos - Sources in the Cosmos field</span></li><li class = "S7"><span class = "S0">DECaLS - DECaLS/DR5</span></li><li class = "S7"><span class = "S0">FIRST - (~9.5x10^5 sources)</span></li><li class = "S7"><span class = "S0">GAIA/DR1 -  (~1.1x10^9 sources).</span></li><li class = "S7"><span class = "S0">GAIA/DR2 - GAIA-DR2</span></li><li class = "S7"><span class = "S0">GALEX -  GALAEX/GR6Plus7 (~1.7x10^8 sources).</span></li><li class = "S7"><span class = "S0">HSCv2 - HST source catalog version 2</span></li><li class = "S7"><span class = "S0">IPHAS/DR2  - IPHAS (H alpha survey of the Galactic plane)</span></li><li class = "S7"><span class = "S0">NEDz - NED redshifts</span></li><li class = "S7"><span class = "S0">NVSS - (~1.8x10^6 sources)</span></li><li class = "S7"><span class = "S0">PS1 - Pan-STARRS (~2.6x10^9 sources; A cleaned version of the PS1 stack catalog; some missing tiles below declination of zero [being corrected])</span></li><li class = "S7"><span class = "S0">PTFpc - PTF photometric catalog</span></li><li class = "S7"><span class = "S0">ROSATfsc - ROSAT faint source catalog</span></li><li class = "S7"><span class = "S0">SDSSDR10 - SDSS/DR10 - Primary sources from SDSS/DR10 (last photometric release)</span></li><li class = "S7"><span class = "S0">SDSS/DR14offset - RA/Dec offsets for SDSS primary sources with z&lt;20 mag.</span></li><li class = "S7"><span class = "S0">SkyMapper/DR1 - SkyMapper</span></li><li class = "S7"><span class = "S0">SpecSDSS/DR14 - SDSS spectroscopic catalog</span></li><li class = "S7"><span class = "S0">Spitzer/IRAGgc</span></li><li class = "S7"><span class = "S0">Spitzer/SAGE</span></li><li class = "S7"><span class = "S0">SWIREz</span></li><li class = "S7"><span class = "S0">UCAC4  (~1.1x10^8 sources)</span></li><li class = "S7"><span class = "S0">UKIDSS/DR10</span></li><li class = "S7"><span class = "S0">USNOB1 (not yet available)</span></li><li class = "S7"><span class = "S0">VISTA/Viking/DR3</span></li><li class = "S7"><span class = "S0">VST/ATLAS/DR3</span></li><li class = "S7"><span class = "S0">VST/KiDS/DR3</span></li><li class = "S7"><span class = "S0">WISE (~5.6x10^8 sources)</span></li><li class = "S7"><span class = "S0">XMM - 7.3x10^5 sources) </span><a href = 'https://heasarc.gsfc.nasa.gov/W3Browse/xmm-newton/xmmssc.html'><span class = "S0">3XMM-DR7</span></a><span class = "S0"> (</span><a href = 'http://adsabs.harvard.edu/abs/2016A%26A...590A...1R'><span class = "S0">Rosen et al. 2016; A&amp;A 26, 590</span></a><span class = "S0">)</span></li></ol><p class = "S4"><span class = "S2">Note that the catalog base name used in the access program may be different than the catalog name.</span></p><h2 class = "S3"><span class = "S2"></span></h2><p class = "S4"><span class = "S2"></span></p><p class = "S4"><span class = "S2"></span></p></div></div>
+<!-- 
+##### SOURCE BEGIN #####
+%% The HDF5/HTM large catalog format - catalogs download
+%% Description
+% The HDF5/HTM format designed to store and provide fast access for large astronomical 
+% catalogs with >10^6 rows (<http://adsabs.harvard.edu/abs/2018PASP..130g5002S 
+% Soumagnac & Ofek 2018>). The format is based on the HDF5 file format and HDF5 
+% file access utilities which are available on many platforms. The catalog format 
+% is designed to allow fast access for cone searches in the range of 1 arcsec 
+% to about 1 deg. For fast access, the sources are sorted into <https://arxiv.org/pdf/cs/0701164.pdf 
+% hierarchical triangular mesh> (HTM).
+% 
+% Access to the catalogs is possible using routines in Python (<https://github.com/maayane/catsHTM 
+% Python catsHTM download>) and MATLAB (<https://webhome.weizmann.ac.il/home/eofek/matlab/doc/install.html 
+% MATLAB Astronomy and Astrophysics Toolbox download>). See also <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/catsHTM.html 
+% catsHTM documentation and examples>.
+%% Download the catalogs
+% To download the catalogs:
+% 
+% # Download <http://astro.weizmann.ac.il/catsHTM/list.euler.wget http://astro.weizmann.ac.il/catsHTM/list.euler.wget> 
+% by right clicking on the link and choosing "Download linked file"
+% # Move the dowloaded file to a directory where you would like to have the 
+% HDF5 catalogs (e.g. /home/catsHTM/catalogs)
+% # Edit if necessary, according to whether you need all catalogs or just a 
+% subset 
+% # execute the file from the command line by running the following commands:
+% # chmod a+x list.euler.wget.txt
+% # Execute: ./list.euler.wget.txt
+% # Checksums are available from: <http://astro.weizmann.ac.il/catsHTM/list.checksum 
+% http://astro.weizmann.ac.il/catsHTM/list.checksum>
+%% Credit
+% <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/catsHTMcredit.html See 
+% catsHTM credit page>.
+%% License
+% Unless specified otherwise this code and products are released under the GNU 
+% general public license version 3.
+%% List of available catalogs
+% Currently, the following catalogs are available in this format (alphabetical 
+% order):
+% 
+% # 2MASS - 2MASS point source catalog
+% # 2MASSxsc - 2MASS extended source catalog
+% # AKARI - AKARI IR catalog
+% # APASS - AAVSO All Sky Photometric Sky Survey (~5.5x10^7 sources)
+% # Cosmos - Sources in the Cosmos field
+% # DECaLS - DECaLS/DR5
+% # FIRST - (~9.5x10^5 sources)
+% # GAIA/DR1 -  (~1.1x10^9 sources).
+% # GAIA/DR2 - GAIA-DR2
+% # GALEX -  GALAEX/GR6Plus7 (~1.7x10^8 sources).
+% # HSCv2 - HST source catalog version 2
+% # IPHAS/DR2  - IPHAS (H alpha survey of the Galactic plane)
+% # NEDz - NED redshifts
+% # NVSS - (~1.8x10^6 sources)
+% # PS1 - Pan-STARRS (~2.6x10^9 sources; A cleaned version of the PS1 stack 
+% catalog; some missing tiles below declination of zero [being corrected])
+% # PTFpc - PTF photometric catalog
+% # ROSATfsc - ROSAT faint source catalog
+% # SDSSDR10 - SDSS/DR10 - Primary sources from SDSS/DR10 (last photometric 
+% release)
+% # SDSS/DR14offset - RA/Dec offsets for SDSS primary sources with z<20 mag.
+% # SkyMapper/DR1 - SkyMapper
+% # SpecSDSS/DR14 - SDSS spectroscopic catalog
+% # Spitzer/IRAGgc
+% # Spitzer/SAGE
+% # SWIREz
+% # UCAC4  (~1.1x10^8 sources)
+% # UKIDSS/DR10
+% # USNOB1 (not yet available)
+% # VISTA/Viking/DR3
+% # VST/ATLAS/DR3
+% # VST/KiDS/DR3
+% # WISE (~5.6x10^8 sources)
+% # XMM - 7.3x10^5 sources) <https://heasarc.gsfc.nasa.gov/W3Browse/xmm-newton/xmmssc.html 
+% 3XMM-DR7> (<http://adsabs.harvard.edu/abs/2016A%26A...590A...1R Rosen et al. 
+% 2016; A&A 26, 590>)
+% 
+% Note that the catalog base name used in the access program may be different 
+% than the catalog name.
+%% 
+% 
+% 
+%
+##### SOURCE END #####
+--></body></html>

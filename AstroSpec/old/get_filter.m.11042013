@@ -1,0 +1,140 @@
+function OutF=get_filter(FamilyNameStr,BandNameStr,CaseSens,Version);
+%------------------------------------------------------------------------------
+% get_filter function                                                AstroSpec
+% Description: Search and get astronomical Filter information and
+%              transmission curve.
+% Input  : - String (or cell array of strings) containing
+%            filter family name.
+%            If empty (i.e. []), donot search the family keyword.
+%            Default is [].
+%          - String (or cell array of strings) containing
+%            band name.
+%            If empty (i.e. []), donot search the band keyword.
+%            If [] and FamilyNameStr is empty, then return
+%            a list of all available families.
+%            Default is [].
+%          - Case sensitive search {'y' | 'n'}, default is 'n'.
+% Output : - Filter structure containing all the filters
+%            found in database.
+%            Output filter structure containing:
+%                      F.family      - Family name
+%                      F.band        - Band name
+%                      F.T           - [Wave[Ang], Transm]
+%                      F.nT          - [Wave[Ang], Norm. Transm]
+%                      F.min_wl      - Min wavelength [Ang]
+%                      F.max_wl      - Max wavelength [Ang]
+%                      F.eff_wl      - Effective wavelength [Ang]
+%                      F.half_width  - Filter half width [Ang]
+% Tested : Matlab 7.0
+%     By : Eran O. Ofek / Dovi Poznanski   Jan 2006
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Needed : Require Filters.mat containing the filters database.
+% Example: OutF=get_filter('2MASS',[]);  % get all 2MASS filters
+%           OutF=get_filter([],'u');      % get all u-band filters
+%           OutF=get_filter('HST-ACS','F435W');  % get ACS F435W filter.
+%           OutF=get_filter([],NaN);      % get all families
+%           OutF=get_filter;              % get all families
+% Reliable: 1
+%------------------------------------------------------------------------------
+
+if (nargin==0),
+   FamilyNameStr = [];
+   BandNameStr   = [];
+   CaseSens      = 'n';
+elseif (nargin==1),
+   BandNameStr   = [];
+   CaseSens      = 'n';
+elseif (nargin==2),
+   CaseSens      = 'n';
+elseif (nargin==3),
+   % do nothing
+else
+   error('Illegal number of input arguments');
+end
+
+
+%DefV.Case = 'n';
+%DefV.Out  = 'a';  % 'a' - for array; 'c' - for cell. 
+%InPar = set_varargin_keyval(DefV,'y','use',varargin{:});
+
+
+
+load Filters.mat;
+
+if (isempty(FamilyNameStr)==1 & isnan(BandNameStr)==1),
+   % retrieve all famalies
+   Fam = 1;
+   BandNameStr = [];
+else
+   Fam = 0;
+end
+
+if (iscell(FamilyNameStr)==0),
+   FamilyName{1} = FamilyNameStr;
+else
+   FamilyName = FamilyNameStr;
+end
+if (iscell(BandNameStr)==0),
+   BandName{1} = BandNameStr;
+else
+   BandName = BandNameStr;
+end
+
+Nf = length(FamilyName);
+Nb = length(BandName);
+
+AllI = [];
+for If=1:1:Nf,
+   for Ib=1:1:Nb,
+      % search family
+      if (isempty(FamilyName{If})==0),
+         switch CaseSens
+          case 'n'
+  	     FlagF = strcmpi(FamilyName{If},F.family);
+          case 'y'
+  	     FlagF = strcmp(FamilyName{If},F.family);
+          otherwise
+             error('Unkown caseSens Option');
+         end
+      else
+         % all are flaged
+         FlagF = ones(size(F.family));
+      end
+      % search band
+      if (isempty(BandName{If})==0),
+         switch CaseSens
+          case 'n'
+  	     FlagB = strcmpi(BandName{If},F.band);
+          case 'y'
+  	     FlagB = strcmp(BandName{If},F.band);
+          otherwise
+             error('Unkown caseSens Option');
+         end
+      else
+         % all are flaged
+         FlagB = ones(size(F.family));
+      end
+
+      FoundI = find(FlagF==1 & FlagB==1);
+
+      % indices of found filters
+      AllI = [AllI; FoundI];
+   end
+end
+
+switch Fam
+ case 0
+    OutF.family      = {F.family{AllI}};
+    OutF.band        = {F.band{AllI}};
+    OutF.T           = {F.T{AllI}};
+    OutF.nT          = {F.nT{AllI}};
+    OutF.min_wl      = {F.min_wl{AllI}};
+    OutF.max_wl      = {F.max_wl{AllI}};
+    OutF.eff_wl      = {F.eff_wl{AllI}};
+    OutF.half_width  = {F.half_width{AllI}};
+ case 1
+    [GroupStr,GroupInd]=group_cellstr(F.family,'y');
+    OutF = GroupStr;
+ otherwise
+    error('Unknown Fam Option');
+end

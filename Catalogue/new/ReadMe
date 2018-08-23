@@ -1,0 +1,203 @@
+J/AJ/127/2031       Catalog of neighboring galaxies        (Karachentsev+, 2004)
+================================================================================
+A catalog of neighboring galaxies.
+    Karachentsev I.D., Karachentseva V.E., Huchtmeier W.K., Makarov D.I.
+   <Astron. J., 127, 2031-2068 (2004)>
+   =2004AJ....127.2031K
+================================================================================
+ADC_Keywords: Galaxy catalogs ; Galaxies, nearby ; Morphology ; Magnitudes ;
+              Radial velocities
+Keywords: galaxies: distances and redshifts - galaxies: fundamental parameters -
+          galaxies: luminosity function, mass function
+
+Abstract:
+    We present an all-sky catalog of 451 nearby galaxies, each having 
+    an individual distance estimate D<~10Mpc or a radial velocity
+    V_LG_<550km/s. The catalog contains data on basic optical and H I
+    properties of the galaxies, in particular, their diameters, absolute
+    magnitudes, morphological types, circumnuclear region types, optical
+    and H I surface brightnesses, rotational velocities, and indicative
+    mass-to-luminosity and H I mass-to-luminosity ratios, as well as a
+    so-called tidal index, which quantifies the galaxy environment. We
+    expect the catalog completeness to be roughly 70%-80% within 8Mpc.
+
+File Summary:
+--------------------------------------------------------------------------------
+ FileName   Lrecl  Records   Explanations
+--------------------------------------------------------------------------------
+ReadMe         80        .   This file
+table1.dat    270      451   Catalog of LV (Local Volume) Galaxies
+table3.dat    133       61   A List of False and Questionable LV Objects
+table4.dat     81      451   Global Parameters of the Neighboring Galaxies
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: table1.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units     Label     Explanations
+--------------------------------------------------------------------------------
+   1- 15  A15   ---       Names     Galaxy name or catalog number (G1)
+  17- 18  I2    h         RAh       Hour of right ascension (J2000)
+  20- 21  I2    min       RAm       Minute of right ascension (J2000)
+  23- 26  F4.1  s         RAs       Second of right ascension (J2000)
+      28  A1    ---       DE-       Sign of the declination (J2000)
+  29- 30  I2    deg       DEd       Degree of declination (J2000)
+  32- 33  I2    arcmin    DEm       Arcminute of declination (J2000)
+  35- 36  I2    arcsec    DEs       Arcsecond of declination (J2000)
+  38- 42  F5.1  arcmin    MajDiam   ? Major angular diameter (G2)
+  44- 47  F4.2  ---       b/a       ? Apparent axial ratio
+  49- 53  F5.2  mag       Bmag      Integrated B-band magnitude (G3)
+      54  A1    ---     u_Bmag      Uncertainty flag in Bmag
+  56- 59  F4.2  mag       ABg       ? B-band Galactic extinction (G4)
+  61- 62  I2    ---       MType     RC3 morphological type
+  64- 65  A2    ---       Tn        Circumnuclear region type (1)
+  67- 70  I4    km/s      HRV       ? Heliocentric radial velocity (G5)
+      71  A1    ---     u_HRV       Uncertainty flag on HRV
+  73- 76  I4    km/s      LGVel     ? The LG centroid radial velocity (G6)
+  78- 80  I3    km/s      W50       ? H I width at 50% level from maximum (2)
+  82- 86  F5.2 [Jy.km/s]  log(FHI)  ? Log of the total H I flux (3)
+  88- 92  F5.2  Mpc       Dist      Distance
+      93  A1    ---     u_Dist      Uncertainty flag in Dist
+  95- 98  A4    ---     n_Dist      Method used to determine Dist (4)
+ 100-270  A171  ---     n_Name      Additional notes on Name (5)
+--------------------------------------------------------------------------------
+Note (1): The main sources for the classification were 2MASS images
+     (Jarrett et al., 2000AJ....119.2498J) and high-resolution images 
+     of galaxies from the HST archive (see illustrations and details 
+     in Karachentsev & Karachentseva, 2002, ASP Conf. Ser. 284, 325)
+        K = Kern, a stellar-like nucleus;
+        B = Bulge, where a stellar-like nucleus may be hidden because of
+            strong extinction or steep brightness gradient;
+        A = Absence of a distinct nucleus.
+Note (2): Taken from the Lyon Extragalactic Database (LEDA) or from
+     Huchtmeier et al. (2000, Cat. <J/A+AS/141/469>,
+     2001, Cat. <J/A+A/377/801>, 2003A&A...401..483H); 
+     for some southern
+     dwarf galaxies, their line widths were measured on the basis of 
+     the H I Parkes Sky Survey (HIPASS, <VIII/73>) data accessible at
+     www.atnf.csiro.au .
+Note (3): From LEDA, Huchtmeier et al. (2000, Cat. <J/A+AS/141/469>, 2001,
+     Cat. <J/A+A/377/801>, 2003A&A...401..483H), or HIPASS (<VIII/73>).
+Note (4): Method used to determine distance as follows:
+    cep = From the luminosity of Cepheids;
+    rgb = From the luminosity of the tip of RGB;
+    sbf = Via fluctuation of surface brightness;
+    bs  = From the luminosity of the brightest stars;
+    tf  = From Tully-Fisher relation;
+    mem = From membership in the known groups;
+    h   = From the Hubble relation LGVel=H_0_*D with the mean local
+          Hubble parameter H_0_=72km/s/Mpc (Karachentsev et al.,
+          2003A&A...398..467K), coinciding with its global value
+          (72+/-8)km/s/Mpc (Freedman et al., 2001ApJ...553...47F).
+Note (5): References to the distance estimates and to the galaxy 
+    membership in the known groups. The references to photometric 
+    data are indicated as "ph:".
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: table3.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units   Label     Explanations
+--------------------------------------------------------------------------------
+   1- 15  A15   ---     Names     Galaxy name or catalog number (G1)
+  17- 18  I2    h       RAh       Hour of right ascension (J2000)
+  20- 21  I2    min     RAm       Minute of right ascension (J2000)
+  23- 26  F4.1  s       RAs       Second of right ascension (J2000)
+      28  A1    ---     DE-       Sign of the declination (J2000)
+  29- 30  I2    deg     DEd       Degree of declination (J2000)
+  32- 33  I2    arcmin  DEm       Arcminute of declination (J2000)
+  35- 36  I2    arcsec  DEs       Arcsecond of declination (J2000)
+  38- 40  F3.1  arcmin  MajDiam   ? Major angular diameter (G2)
+  42- 46  F5.2  mag     Bmag      Integrated B-band magnitude (G3)
+  48- 52  F5.2  mag     ABg       B-band Galactic extinction (G4)
+  54- 58  A5    ---     MType     RC3 morphological type
+  60- 63  I4    km/s    HRV       ? Heliocentric radial velocity (G5)
+  65- 68  I4    km/s    LGVel     ? The LG centroid radial velocity (G6)
+  70-136  A67   ---     Note      Additional notes
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: table4.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units         Label     Explanations
+--------------------------------------------------------------------------------
+   1- 15  A15   ---           Name      Galaxy name or catalog number (G1)
+  17- 21  F5.2  kpc           A25       ? Major linear diameter (2)
+  23- 24  I2    deg           i         ? Inclination from face-on (3)
+  26- 28  I3    km/s          RotVel    ? H I rotational velocity (4)
+  30- 33  F4.2  mag           ABi       Internal B-band absorption in galaxy (5)
+  35- 40  F6.2  mag           BMAG      Absolute B-band magnitude (6)
+  42- 45  F4.1 mag/arcsec2    <SuBr>    ? Mean surface brightness (7)
+  47- 51  F5.2  Sun           MHI/L     ? H I mass-to-luminosity ratio  (8)
+  53- 55  F3.1 [solMass/kpc2] logSDHI   ? Log of H I surface density (9)
+  57- 61  F5.2 [solMass]      logM25    ? Log of "indicative" galaxy mass (10)
+  63- 67  F5.2  ---           M25/L     ? Indicative mass-to-luminosity ratio
+  69- 72  F4.1  ---           Theta     Tidal index (11)
+  74- 81  A8    ---           MD        Neighboring galaxy name (12)
+--------------------------------------------------------------------------------
+Note (2): Corrected for galaxy inclination and the Galactic extinction 
+     in the manner adopted in the RC2 (de Vaucouleurs et al., Cat. VII/112
+        log(A25) = log(A_kpc_) - 0.20*log(a/b) + 0.09*Ag
+Note (3): sin^2^(i) = [1-(b/a)^2^]/[1-(b/a)^2^_0_], where (b/a)_0_ = 0.07
+        if MType = 6 or 7, (b/a)_0_ = 0.12 if MType = 5 or 8,
+     (b/a)_0_ = 0.18 if MType = 4 or 9, and (b/a)_0_ = 0.20 otherwise.
+Note (4): RotVel = W50/2*sin(i), corrected for inclination and turbulent
+    motions according to Tully & Fouque (1985ApJS...58...67T) with
+    isotropic noncircular motion parameter {sigma}_z_=8km/s; (the
+    correction for turbulent motions for some dwarf galaxies with
+    W50<=20km/s leads to negative values of RotVel, and we adopt for 
+    them a formal value RotVel=5km/s).
+Note (5): According to Giovanelli et al. (1994AJ....107.2036G) and 
+    Tully et al. (1998AJ....115.2264T), the internal absorption depends
+    not only on inclination, but also on galaxy luminosity; Basing on the
+    data by Verheijen (2001ApJ...563..694V) and Karachentsev et al. (1999,
+    Cat. <J/A+AS/139/97>), we determined the internal absorption as
+    ABi=[1.6+2.8(log(RotVel)-2.2)]*log(a/b) if RotVel>42.7km/s, otherwise,
+    ABi=0 (so, we considered dwarf galaxies to be fully transparent); for
+    the gas-poor E, S0, dSph galaxies without estimates of W50, the ABi
+    correction was also ignored.
+Note (6): Corrected for ABg and ABi.
+Note (7): <SuBr>=(Bmag-ABg-ABi)+5*log(a_c_)+8.63.
+Note (8): log(M_HI_/M_Sun_)=log(F)+2*log(Dist)+5.37 (Roberts & Haynes,
+          1994ARA&A..32..115R)
+Note (9): SDHI=4*M_HI_/{pi}*A25^2.
+Note (10): Within its standard diameter S25.
+       log(M_25i_/M_Sun_)=2*log(RotVel)+log(a_c_)+log(Dist)+4.25
+          (Roberts & Haynes, 1994ARA&A..32..115R).
+Note (11): Determined in section 6. Negative values correspond to 
+     isolated galaxies, and positive values are typical of group members.
+Note (12): Main disturber producing the maximum tidal action on the 
+    galaxy; in fact, a collection of galaxies with one and the same
+    main disturber, and also the positive Theta may be considered as a
+    separate group (see also notes to Table 1).
+--------------------------------------------------------------------------------
+
+Global Notes:
+Note (G1): Known catalogs: NGC (N), IC (I), UGC (U, Nilson 1973),
+     UGCA (UA, Nilson 1974), DDO (D, van den Bergh 1966), 
+     ESO/Uppsala (E, Lauberts 1982), PGC (P, Paturel et al. 1996), and
+     Karachentsev's lists (KK, KKR, KKH, KKSG, KKs), usually in
+     chronological preference.
+Note (G2): Measured at a level of ~25mag/arcsec^2^; for dwarf galaxies 
+     of low surface brightness from the KK lists, their diameters
+     correspond to the Holmberg system (~26.5mag/arcsec^2^).
+Note (G3): The NASA Extragalactic Database (NED) is the main source with
+     additions from the recent publications by Makarova (1999,
+     Cat.  <J/A+AS/139/491>), Bremnes et al. (1998A&AS..129..313B,
+     1999A&AS..137..337B, 2000A&AS..141..211B), Parodi et al. (2002, 
+     Cat.  <J/A+A/388/29>), etc.; for some dwarf LSB galaxies their 
+     magnitudes are known with an accuracy of ~0.5mag only.
+Note (G4): From Schlegel et al. (1998ApJ...500..525S); estimates of Ag 
+     for some galaxies situated in the zone of avoidance (for instance, 
+     Maffei I) were made from their individual color.
+Note (G5): From the NASA Extragalactic Database (NED) or from recent 
+     sources (Huchtmeier et al., 2000, Cat. <J/A+AS/141/469>,
+     2001, Cat. <J/A+A/377/801>, 2003A&A...401..483H;
+     Makarov et al., 2003A&A...405..951M).
+Note (G6): With the apex parameters according to Karachentsev & Makarov
+     (1996AJ....111..794K).
+--------------------------------------------------------------------------------
+
+History:
+  * 06-Jul-2004: From electronic version of the journal
+  * 10-Feb-2006: table3, record#30:
+       Name corrected from MCG5-29-3 into MCG5-29-9.
+================================================================================
+(End)                  Greg Schwarz [AAS], Patricia Vannier [CDS]    06-Jul-2004

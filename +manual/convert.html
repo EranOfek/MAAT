@@ -1,0 +1,119 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>convert</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-04-27"><meta name="DC.source" content="convert.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">[Factor,Out,String]=convert.units(<span class="string">'erg'</span>,<span class="string">'J'</span>)
+<span class="comment">% or to convert a specific value:</span>
+[Factor,Out,String]=convert.units(<span class="string">'inch'</span>,<span class="string">'pc'</span>,1e5)
+help <span class="string">convert.units</span>
+ConvVal=convert.angular(<span class="string">'arcsec'</span>,<span class="string">'rad'</span>,1)
+
+OutE=convert.energy(<span class="string">'Hz'</span>,<span class="string">'erg'</span>,1)
+OutE=convert.energy(<span class="string">'keV'</span>,<span class="string">'TNT'</span>,10)
+<span class="comment">% convert 1 mJy at 5000 A to AB mag:</span>
+Out=convert.flux(1,<span class="string">'mJy'</span>,<span class="string">'AB'</span>,5000,<span class="string">'A'</span>)
+<span class="comment">% convert 19 ST mag at 1e16 Hz tp photons per Ang per second per cm^2:</span>
+Out=convert.flux(19,<span class="string">'STmag'</span>,<span class="string">'ph/A'</span>,1e16,<span class="string">'Hz'</span>)
+<span class="comment">% convert 1e-15 erg/Ang/cm^2/s at 1 eV to photons per Hz per second per cm^2:</span>
+Out=convert.flux(1e-15,<span class="string">'cgs/A'</span>,<span class="string">'ph/Hz'</span>,1,<span class="string">'eV'</span>)
+OutTemp=convert.temp(0,<span class="string">'C'</span>,<span class="string">'K'</span>)
+Mag=convert.flux2mag(1,22)
+Sum=convert.sum_mag(rand(10,1))
+<span class="comment">% Convert Julian years to Bessilian years:</span>
+convert.time(2000,<span class="string">'J'</span>,<span class="string">'B'</span>)
+<span class="comment">% Convert Jan 1st 2015 to MJD:</span>
+convert.time(2015,<span class="string">'1'</span>,<span class="string">'MJD'</span>)
+<span class="comment">% convert string date to JD:</span>
+convert.time(<span class="string">'2015-02-02:10:10:56.112'</span>,<span class="string">'StrDate'</span>,<span class="string">'JD'</span>)
+</pre><pre class="codeoutput error">The class convert has no Constant property or Static method named 'mlx'.
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+[Factor,Out,String]=convert.units('erg','J')
+% or to convert a specific value:
+[Factor,Out,String]=convert.units('inch','pc',1e5)
+help convert.units
+ConvVal=convert.angular('arcsec','rad',1)
+
+OutE=convert.energy('Hz','erg',1)
+OutE=convert.energy('keV','TNT',10)
+% convert 1 mJy at 5000 A to AB mag:
+Out=convert.flux(1,'mJy','AB',5000,'A')
+% convert 19 ST mag at 1e16 Hz tp photons per Ang per second per cm^2:
+Out=convert.flux(19,'STmag','ph/A',1e16,'Hz')
+% convert 1e-15 erg/Ang/cm^2/s at 1 eV to photons per Hz per second per cm^2:
+Out=convert.flux(1e-15,'cgs/A','ph/Hz',1,'eV')
+OutTemp=convert.temp(0,'C','K')
+Mag=convert.flux2mag(1,22)
+Sum=convert.sum_mag(rand(10,1))
+% Convert Julian years to Bessilian years:
+convert.time(2000,'J','B')
+% Convert Jan 1st 2015 to MJD:
+convert.time(2015,'1','MJD')
+% convert string date to JD:
+convert.time('2015-02-02:10:10:56.112','StrDate','JD')
+##### SOURCE END #####
+--></body></html>

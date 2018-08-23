@@ -1,0 +1,60 @@
+
+This file will concentrate all the TODOs in our project
+When something is done, please move the description of it from above the line to below the line
+
+1) The kraar_observatory_support.m Return also the correct form of zernickes
+   for wavefront genrating functions to use in order to correctly describe
+   the wave entering the telescope. one can even scale them accordingly in
+   order to work with different colors with the same code
+
+2) Check validity of solve_speckles_bound by using it
+
+3) Update read_zyla_raw to become more reliable
+
+4) telescope_support is very similar to the kraar_observatory_support
+
+5) change zernike wavefront indiv to return Y already with zero padding.
+   this is important for working with different wavelengths
+   Consider normalizing also for the color (parameter that normalizes the 
+   Y's so that different colors will use the same C vectors and therefore
+   the code becomes clearer)
+
+
+7) Write the solver program. The input should be of the same structure as the output of the prepare zyla data function
+   1) solve the multi-color phase-retrieval problem on the image. given the solution of the previous image
+   2) if the solution is "bad" or non-existent, solve the problem without a good guess.
+   3) remove residual radial components from the estimation maps.
+
+8) make the File parameter of the output of the zip reading function at prepare_zyla_data be filled for all images!   
+
+
+
+---------------------------------------------
+
+6) write a script that works with real data - this script should:
+   get: zip file name of the relevant data.
+        zip file name of the relevant dark frames (or the master bias file name)
+        zip file name of the relevant flat frames (or the master flat file name)
+        list of contrasts and x,y positions for fake sources
+        library for temporary results.
+        Parameters to pass on.
+   output: 
+        the score map and estimation map of the observations
+   saved data:
+        all parameters acquired with effort, in a structure which is saved at the given library in real time 
+        those should include:
+            - score maps, var maps, PSF's, wavefronts, C's and reduced data
+        in addition, at the start, the bias, flat, gain, long exposure image and lucky imaging image should be saved in the same directory.
+   1) load the file (from a zip format) and select the files by a given vector of indices
+   doing that after sorting the files by the reverse order of their name.
+   2) read the zyla ini file to know how many images and of what size are in each raw zyla file
+   3) read the multiple zyla images from each file
+   4) generate or read the dark image.
+   5) generate or read the flat image.
+   6) reduce all images with the relevant dark, flat and gain.
+   7) measure the effective background expectancy and remove from all images.
+   8) measure standard deviation of the read-noise.
+   8) calculate the long exposure image, lucky imaging image, and std of the center of mass
+   9) flag the important pixels (from the long exposure image) and generate a square ROI that is a power of 2.
+   10) calculate the average number of photons arriving at each frame from the long exposure image
+   11) cut the ROI from each image.

@@ -1,0 +1,970 @@
+%--------------------------------------------------------------------------
+% AstSpec class                                                      class
+% Description: A class of structure array of astronomical spectra.
+% Input  : null
+% Output : null
+% Tested : Matlab R2014a
+%     By : Eran O. Ofek                    Feb 2016
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Reliable: 2
+%--------------------------------------------------------------------------
+
+classdef AstSpec
+    properties (SetAccess = public)
+        Wave
+        Int
+        Err
+        Mask
+        Back
+        WaveUnits
+        IntUnits
+        AddCol
+        Header
+%         Spec      = table
+%         Col
+%         ColCell
+%         ColUnits   % conside use table with constant cols...
+%         Header    % need a class for header
+        comments
+        source
+        FileName
+        UserData
+    end
+    
+    methods
+
+
+        function Ans=isastspec(AstS)
+            Ans = true;
+        end
+        
+        
+        %--------------------
+        %--- Read spectra ---
+        %--------------------
+        
+        function AstS=mat2spec(AstS,Mat,Columns,Units,Header)
+            % Description:
+            
+            Ncol = size(Mat,2);
+           
+            Def.Columns = {'Wave','Int','Err'};
+            Def.Units   = {'Ang','erg*cm^-2*s^-1*Ang^-1','erg*cm^-2*s^-1*Ang^-1'};
+            Def.Header  = {};
+            if (nargin==2),
+                Columns   = Def.Columns;
+                Units     = Def.Units;
+                Header    = Def.Header;
+            elseif (nargin==3),
+                Units     = Def.Units;
+                Header    = Def.Header;
+            elseif (nargin==4),
+                Header    = Def.Header;
+            elseif (nargin==5),
+                % do nothing
+            else
+                error('Illegal number of input arguments');
+            end
+            % make sure that Units and columns have the correct num of
+            % elements
+            Units   = Units(1:Ncol);
+            Columns = Columns(1:Ncol);
+            
+            Iwave    = find(strcmp(Columns,'Wave'));
+            Iint     = find(strcmp(Columns,'Int'));
+            Ierr     = find(strcmp(Columns,'Err'));
+            Iback    = find(strcmp(Columns,'Back'));
+            Imask    = find(strcmp(Columns,'Mask'));
+            
+            Nunits = numel(Units);
+            if (isempty(Iwave)),
+                error('Must supply wavelength');
+            else
+                AstS(1).Wave      = Mat(:,Iwave);
+                if (Iwave>Nunits),
+                    AstS(1).WaveUnits = '';
+                else
+                    AstS(1).WaveUnits = Units{Iwave};
+                end
+            end
+            if (isempty(Iint)),
+                error('Must supply intensity');
+            else
+                AstS(1).Int    = Mat(:,Iint);
+                if (Iint>Nunits),
+                    AstS(1).IntUnits = '';
+                else
+                    AstS(1).IntUnits = Units{Iint};
+                end
+            end
+            if (~isempty(Ierr)),
+                AstS(1).IntErr = Mat(:,Ierr);
+            end
+            if (~isempty(Iback)),
+                AstS(1).Back   = Mat(:,Iback);
+            end
+            if (~isempty(Imask)),
+                AstS(1).Mask   = Mat(:,Imask);
+            end
+            
+            AstS(1).Units  = Units;
+            AstS(1).Header = Header;
+            
+            
+            
+        end
+        
+        
+        function AstS=mat2spec_old(AstS,Mat,Columns,Units)
+            % Description: Populate the content of a matrix in an
+            %              AstSpec object.
+            % Input  : - AstS class object.
+            %          - Matrix, with at least two columns.
+            %          - Optional cell array of column names.
+            %            Default is {'Wave','Int','IntErr'}.
+            %          - Optional cell array of column units
+            %            Default is {'','',''}.
+            
+            DefColumns = {'Wave','Int','IntErr'};  % default columns
+            DefUnits   = {'','',''};               % default units
+            %Ndefcol    = numel(DefColumns);
+            Ncol = size(Mat,2);
+            if (Ncol<2),
+                error('Spectrum must have at least 2 columns');
+            end
+            
+            if (numel(AstS)>1),
+                warning('AstSpec has multiple entries, read matrix into first entry');
+            end
+            
+            % set spectrum
+            AstS(1).Spec = array2table(Mat);
+            
+            if (nargin<3),
+                Columns = [];
+                Units   = [];
+                source  = [];
+            elseif (nargin<4),
+                Units   = [];
+                source  = [];
+            elseif (nargin<5),
+                source  = [];
+            else
+               
+                % do nothing
+            end
+            
+            if (isempty(Columns)),
+                Columns = DefColumns;
+            end
+            if (isempty(Units)),
+                Units = DefUnits;
+            end
+            
+            
+            Nstr = numel(Units);
+            for Istr=1:1:min(Nstr,Ncol),
+                AstS(1).Spec.Properties.VariableUnits{Istr} = Units{Istr};
+            end
+            AstS(1).ColUnits = AstS(1).Spec.Properties.VariableUnits;
+
+        end
+        
+        % mayfreq2spec
+        % matenergy2spec
+        
+       
+        %----------------
+        %--- Add data ---
+        %----------------
+        
+        
+        %function AstS=add_freq
+        
+        % add_energy
+        
+        
+        
+        %-----------------
+        %--- Get units ---
+        %-----------------
+        
+        function WaveUnits=get_wave_units(AstS)
+            % Description: Get wavelength units of AstSpec class
+            % Input  : - AstSpec class.
+            % Output : - A cell array of string containing the AstSpec
+            %            wavelength units.
+            
+            Ns = numel(AstS);
+            Col.Wave = 1;
+            WaveUnits = cell(Ns,1);
+            for Is=1:1:Ns,
+                if (isempty(AstS(Is).ColUnits)),
+                    WaveUnits{Is} = '';
+                else
+                    WaveUnits{Is} = AstS(Is).ColUnits{Col.Wave};
+                end
+            end
+            
+        end
+
+        function IntUnits=get_int_units(AstS)
+            % Description: Get intensity units of AstSpec class
+            % Input  : - AstSpec class.
+            % Output : - A cell array of string containing the AstSpec
+            %            intensity units.
+            
+            Ns = numel(AstS);
+            Col.Int = 2;
+            IntUnits = cell(Ns,1);
+            for Is=1:1:Ns,
+                if (isempty(AstS(Is).ColUnits)),
+                    IntUnits{Is} = '';
+                else
+                    IntUnits{Is} = AstS(Is).ColUnits{Col.Int};
+                end
+            end
+            
+        end
+        
+        
+                
+        
+        %-------------
+        %--- Plots ---
+        %-------------
+        
+        function H=plot(AstS,varargin)
+            % Description: Given an AstSpec class, plot all the spectra.
+            % Input  : - AstFilter class.
+            %          * Additional arguments to pass to plot.m
+            
+            Ns = numel(AstS);
+            for Is=1:1:Ns,
+                H = plot(AstS(If).Spec(:,1),AstS(If).Spec(:,2),varargin{:});
+            end
+            
+            WaveUnits = get_wave_units(AstS);
+            if (numel(unique(WaveUnits))==1),
+                WaveUnitsStr = WaveUnits{1};
+            else
+                warning('AstS class contains spectra with different wavelength units');
+                WaveUnitsStr = '';
+            end
+            
+            IntUnits = get_int_units(AstS);
+            if (numel(unique(IntUnits))==1),
+                IntUnitsStr = IntUnits{1};
+            else
+                warning('AstS class contains spectra with different intensity units');
+                IntUnitsStr = '';
+            end
+            
+            H = xlabel(sprintf('Wavelength %s',WaveUnitsStr));
+            H.Interpreter = 'latex';
+            H.FontSize    = 16;
+            H = ylabel(sprintf('Intensity %s',IntUnitsStr));
+            H.Interpreter = 'latex';
+            H.FontSize    = 16;
+        end
+            
+        %-----------------------------
+        %--- Statistics of spectra ---
+        %-----------------------------
+        
+        function [Int]=integral(AstS)
+            % Description: Calculate the integral of spectra in AstSpec
+            %              class.
+            % Input  : - AstSpec class.
+            % Output : - A vector of integrals of the .Spec field in each
+            %            of the AstSpec class elements.
+            % Example: [Int]=AstS.integral;
+            
+            Nf = numel(AstS);
+            SizeS = size(AstS);
+            Col.Wave = 1;
+            Col.Int  = 2;
+            Int  = zeros(SizeS);
+            for If=1:1:Nf,
+                if (isempty(AstS(If).Spec)),
+                    Int(If)  = NaN;
+                else
+                    % ignore NaN's
+                    Fnn      = ~isnan(AstS(If).Spec(:,Col.Int));
+                    Int(If)  = trapz(AstS(If).Spec(Fnn,Col.Wave), AstS(If).Spec(Fnn,Col.Int));
+                    
+                end
+            end
+            
+        end
+        
+        function [MaxVal,MaxWave,MaxInd]=max(AstS)
+            % Description: Get the maximum in each spectrum in a AstSpec
+            %              class. Return NaN when spectra is empty.
+            % Input  : - AstSpec class.
+            % Output : - A vector of maximum in each AstSpec spectrum.
+            %          - A vector of the wavelength at the maximum value.
+            %          - A vector of indices of the maximum value.
+            % Example: [MaxVal,MaxWave,MaxInd]=max(AstS);
+            
+            Ns = numel(AstS);
+            SizeS = size(AstS);
+            Col.Wave = 1;
+            Col.Int  = 2;
+            MaxVal   = zeros(SizeS).*NaN;
+            MaxWave  = zeros(SizeS).*NaN;
+            MaxInd   = zeros(SizeS).*NaN;
+            for Is=1:1:Ns,
+                if (~isempty(AstS(Is).Spec)),
+                    
+                    [MaxVal(Is),MaxInd(Is)] = max(AstS(Is).Spec(:,Col.Int));
+                    if (nargout>1),
+                        MaxWave(Is) = AstS(Is).Spec(MaxInd(Is),Col.Wave);
+
+                    end
+                end
+            end
+        end
+        
+        function [MinVal,MinWave,MinInd]=min(AstS)
+            % Description: Get the minimum in each spectrum in a AstSpec
+            %              class. Return NaN when spectra is empty.
+            % Input  : - AstSpec class.
+            % Output : - A vector of minimum in each AstSpec spectrum.
+            %          - A vector of the wavelength at the minimum value.
+            %          - A vector of indices of the minimum value.
+            % Example: [MinVal,MinWave,MinInd]=min(AstS);
+            
+            Ns = numel(AstS);
+            SizeS = size(AstS);
+            Col.Wave = 1;
+            Col.Int  = 2;
+            MinVal   = zeros(SizeS).*NaN;
+            MinWave  = zeros(SizeS).*NaN;
+            MinInd   = zeros(SizeS).*NaN;
+            for Is=1:1:Ns,
+                if (~isempty(AstS(Is).Spec)),
+                    
+                    [MinVal(Is),MinInd(Is)] = min(AstS(Is).Spec(:,Col.Int));
+                    if (nargout>1),
+                        MinWave(Is) = AstS(Is).Spec(MinInd(Is),Col.Wave);
+
+                    end
+                end
+            end
+        end
+        
+        function [WaveRange,IntRange,WaveRatio,IntRatio]=range(AstS)
+            % Description: Get the rane and ratios of the maximum to 
+            %              minimum wavelength and intensity in each
+            %              spectrum in a AstSpec class.
+            %              Return NaN when spectra is empty.
+            % Input  : - AstSpec class.
+            % Output : - A vector of wavelength range for each AstSpec
+            %            spectrum.
+            %          - A vector of intensity range for each AstSpec
+            %            spectrum.
+            %          - A vector of max to min wavelength ratio for
+            %            each AstSpec spectrum.
+            %          - A vector of max to min intensity ratio for
+            %            each AstSpec spectrum.
+            % Example: [WaveRange]=range(AstS);
+            
+            Ns = numel(AstS);
+            SizeS = size(AstS);
+            Col.Wave = 1;
+            Col.Int  = 2;
+            WaveRange   = zeros(SizeS).*NaN;
+            IntRange    = zeros(SizeS).*NaN;
+            WaveRatio   = zeros(SizeS).*NaN;
+            IntRatio    = zeros(SizeS).*NaN;
+            for Is=1:1:Ns,
+                if (~isempty(AstS(Is).Spec)),
+                    WaveRange(Is) = range(AstS(Is).Spec(:,Col.Wave));
+                    if (nargout>1),
+                        IntRange(Is) = range(AstS(Is).Spec(:,Col.Int));
+                        
+                        if (nargout>2),
+                            WaveRatio(Is) = max(AstS(Is).Spec(:,Col.Wave))./min(AstS(Is).Spec(:,Col.Wave));
+                    
+                            if (nargout>3),
+                                IntRatio(Is) = max(AstS(Is).Spec(:,Col.Int))./min(AstS(Is).Spec(:,Col.Int));
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        
+        function [MeanInt,MeanWave]=mean(AstS)
+            % Description: Return the nanmean intensity and mean wavelength
+            %              for each spectrum in an AstSpec object.
+            % Input  : - An AstSpec class object.
+            % Output : - A vector of nanmean intensity in each spectrum.
+            %          - A vector of nanmean wavelength in each spectrum.
+            % Example: AstS.mean
+           
+            Col.Wave = 1;
+            Col.Int  = 2;
+            
+            Ns       = numel(AstS);
+            SizeS    = size(AstS);
+            MeanInt  = zeros(SizeS).*NaN;
+            MeanWave = zeros(SizeS).*NaN;
+            for Is=1:1:Ns,
+                if (~isempty(AstS(Is).Spec)),
+                    MeanInt(Is) = nanmean(AstS(Is).Spec(:,Col.Int));
+                    if (nargout>1),
+                        MeanWave(Is) = nanmean(AstS(Is).Spec(:,Col.Wave));
+                    end
+                end
+            end
+            
+        end
+                    
+        function [MedInt,MedWave]=median(AstS)
+            % Description: Return the nanmedian intensity and nanmedian wavelength
+            %              for each spectrum in an AstSpec object.
+            % Input  : - An AstSpec class object.
+            % Output : - A vector of nanmedian intensity in each spectrum.
+            %          - A vector of nanmedian wavelength in each spectrum.
+            % Example: AstS.median
+           
+            Col.Wave = 1;
+            Col.Int  = 2;
+            
+            Ns       = numel(AstS);
+            SizeS    = size(AstS);
+            MedInt  = zeros(SizeS).*NaN;
+            MedWave = zeros(SizeS).*NaN;
+            for Is=1:1:Ns,
+                if (~isempty(AstS(Is).Spec)),
+                    MedInt(Is) = nanmedian(AstS(Is).Spec(:,Col.Int));
+                    if (nargout>1),
+                        MedWave(Is) = nanmedian(AstS(Is).Spec(:,Col.Wave));
+                    end
+                end
+            end
+            
+        end
+               
+        function [StdInt,StdWave]=std(AstS)
+            % Description: Return the nanstd intensity and nanstd wavelength
+            %              for each spectrum in an AstSpec object.
+            % Input  : - An AstSpec class object.
+            % Output : - A vector of nanstd intensity in each spectrum.
+            %          - A vector of nanstd wavelength in each spectrum.
+            % Example: AstS.std
+           
+            Col.Wave = 1;
+            Col.Int  = 2;
+            
+            Ns       = numel(AstS);
+            SizeS    = size(AstS);
+            StdInt  = zeros(SizeS).*NaN;
+            StdWave = zeros(SizeS).*NaN;
+            for Is=1:1:Ns,
+                if (~isempty(AstS(Is).Spec)),
+                    StdInt(Is) = nanstd(AstS(Is).Spec(:,Col.Int));
+                    if (nargout>1),
+                        StdWave(Is) = nanstd(AstS(Is).Spec(:,Col.Wave));
+                    end
+                end
+            end
+            
+        end
+        
+        function [WeightedWave]=wwave(AstS)
+            % Description: Return the weighted wavelength (weighted by
+            %              intensity)
+            %              for each spectrum in an AstSpec object.
+            % Input  : - An AstSpec class object.
+            % Output : - A vector of weighted wavelength in each spectrum.
+            % Example: AstS.wwave
+           
+            Col.Wave = 1;
+            Col.Int  = 2;
+            
+            Ns       = numel(AstS);
+            SizeS    = size(AstS);
+            WeightedWave  = zeros(SizeS).*NaN;
+            for Is=1:1:Ns,
+                if (~isempty(AstS(Is).Spec)),
+                    WeightedWave(Is) = nansum(AstS(Is).Spec(:,Col.Int).*AstS(Is).Spec(:,Col.Wave))./ ...
+                                       nansum(AstS(Is).Spec(:,Col.Int));
+                    
+                    
+                end
+            end
+            
+        end
+        
+        
+        function [FunInt,FunWave]=fun(AstS,Fun,varargin)
+            % Description: Run a function on the wavelength and intensity
+            %              columns of each spectra in an AstSpect object.
+            % Input  : - An AstSpec class object.
+            %          - A function handle (e.g., @mean).
+            %            The function must return a scalar value.
+            %          * Additional arguments to apss to the function.
+            % Output : - A vector of function evaluations on the intensity
+            %            column in each spectrum.
+            %          - A vector of function evaluations on the wavelength
+            %            column in each spectrum.
+            % Example: AstS.fun(@mean)
+           
+            Col.Wave = 1;
+            Col.Int  = 2;
+            
+            Ns       = numel(AstS);
+            SizeS    = size(AstS);
+            FunInt  = zeros(SizeS).*NaN;
+            FunWave = zeros(SizeS).*NaN;
+            for Is=1:1:Ns,
+                if (~isempty(AstS(Is).Spec)),
+                    FunInt(Is) = Fun(AstS(Is).Spec(:,Col.Int),varargin{:});
+                    if (nargout>1),
+                        FunWave(Is) = Fun(AstS(Is).Spec(:,Col.Wave),varargin{:});
+                    end
+                end
+            end
+            
+        end
+        
+        %-------------------------
+        %--- Wavelength shifts ---
+        %-------------------------
+        
+        
+        
+        
+        %-----------------------------------
+        %--- Header keywords information ---
+        %-----------------------------------
+        
+        function JD=julday(AstS,varargin)
+            % Description: Get the JD from the header of an AstSpec object.
+            % Input  : - AstSpec class object.
+            %          * Additional arguments to pass to sim_julday.m.
+            % Output : - Vector of JD for each spectra.
+            % Example: AstS.julday
+           
+            JD = sim_julday(AstS,varargin{:});
+        end
+        
+        
+        function obj=getkey(Sim,Keyword)
+            % Description: get image header keyword value
+            % Input  : - AstSpec class
+            %          - Header Keyword name to get
+            % Outout : - Cell array of keyword value per each spectra.
+            % Example: getkey(AstSpec,'JULDAY')
+            
+            HeaderField = 'Header';
+            Nsim = numel(Sim);
+            obj  = cell(Nsim,1);
+            for Isim=1:1:Nsim,
+                % for each image in SIM
+                if (~isempty(Sim(Isim).(HeaderField))),
+                    Flag = strcmp(Sim(Isim).(HeaderField)(:,1),Keyword);
+                    if (any(Flag)),
+                        obj{Isim} = Sim(Isim).(HeaderField){Flag,2};
+                    else
+                        obj{Isim} = NaN;
+                    end
+                else
+                    obj{Isim} = NaN;
+                end
+            end
+            
+        end
+        
+        
+        function obj=searchkey(Sim,String)
+            % Description: Search an header keyword name that contains
+            %              a specific string.
+            % Input  : - AstSpec array
+            %          - String to search.
+            % Output : - Cell array of cell arrays of candidates header
+            %            keyword names.
+            HeaderField = 'Header';
+            Nsim = numel(Sim);
+            obj = cell(Nsim,1);
+            for Isim=1:1:Nsim,
+                % for each image in SIM
+                if (~isempty(Sim(Isim).(HeaderField))),
+                    F = regexp(Sim(Isim).(HeaderField)(:,1),String,'match');
+                    obj{Isim} = Sim(Isim).(HeaderField)(~isempty_cell(F),1);
+                    if (Nsim>1),
+                        fprintf('Header keywords in SIM %d\n',Isim);
+                    end
+                    disp(obj{Isim}')
+                else
+                    obj{Isim} = NaN;
+                end
+                
+            end
+            
+        end
+        
+        
+        
+        
+        
+        %%%% <-- got here
+        % get spectra, atc, standard stars
+        % get sdss spectra
+        % read spectra from FITS
+        % read spectra from ascii
+        
+        % search
+        % operators
+        % fit back, sub back
+        % fit ...
+        % fit line
+        % apply extinction
+        % apply atmopsheric ext.
+        % synphot
+        % calibrate using photometry...
+        % cross correlate
+        % match with temp
+        % stitch
+        % coo
+        % ebv
+        
+        
+        
+        
+        % See list of overload functions
+        % http://www.mathworks.com/help/matlab/matlab_oop/implementing-operators-for-your-class.html
+
+        function AstS=interp(AstS,W,varargin)
+            % Description: Interpolate an astronomical spectra class
+            %              into a new wavelngth frid.
+            % Input  : - AstSpec class.
+            %          - Column vector of wavelength grid, in the same
+            %            units as the wavelength in the spectra class.
+            % Output : - AstSpec class with a new wavelength grid in the
+            %            .Spec field.
+            
+            Ns = numel(AstS);
+            Col.Wave  = 1;
+            Col.Int   = 2;
+            for Is=1:1:Ns,
+                if (isempty(AstS(Is).Spec)),
+                    warning('AstSpec number %d is empty - not interpolating',Is);
+                else
+                    AstS(Is).Spec = [W, interp1(AstS(Is).Spec(:,Col.Wave),AstS(Is).Spec(:,Col.Int),W,varargin{:})];
+                end
+            end
+        end
+            
+        
+        function AstS=equalize_sampling(AstS1,AstS2)
+            % Description: Equalize the wavelength sampling of of two
+            %              astronomical spectra class objects.
+            %              Change the sampling of the first object to
+            %              be equal to that of the second object.
+            % Input  : - AstSpec class 
+            %          - AstSpec class
+            % Output : - The first AstSpec class resampled.
+                
+            Col.Wave = 1;
+            N1 = numel(AstS1);
+            N2 = numel(AstS2);
+            N  = max(N1,N2);
+            AstS = AstS1;
+            for I=1:1:N,
+                Is1 = min(I,N1);
+                Is2 = min(I,N2);
+                if (isempty(AstS1(Is1).Spec) || isempty(AstS2(Is2).Spec)),
+                    warning('AstSpec number %d is empty - not interpolating',I);
+                else
+                    AstS(I) = interp(AstS1(Is1),AstS2(Is2).Spec(:,Col.Wave));
+                end
+                
+            end
+        end
+        
+        
+        
+        
+        
+        
+        
+        %%% <- got here
+        function AstF=norm(AstF,Norm)
+            % Description: normalize the integral of the .nT field to be Norm.
+            % Input  : - AstFilter class.
+            %          - Optional normalization. Default is 1.
+            % Output : - AstFilter class in which the .nT field integral
+            %            is normalized to Norm.
+                
+            if (nargin==1),
+                Norm = 1;
+            end
+            Nf = numel(AstF);
+            for If=1:1:Nf,
+                Integral = trapz(AstF(If).nT(:,1),AstF(If).nT(:,2));
+                AstF(If).nT(:,2) = AstF(If).nT(:,2).*Norm./Integral;
+            end
+        end
+                
+        function ShiftedAstF=shift(AstF,z)
+            % Description: Shift the wavelength in AstFilter class by
+            %              a multiplicative (1+z) redshift/blueshift factor.
+            % Input  : - AstFilter class.
+            %          - A blue shift (positive) or redshift (negative).
+            % Output : - AstFilter class with shifted wavelength in the
+            %            .T and .nT fields, and updated parameters.
+            % Example: AstF.shift(0.1)
+            Nf = numel(AstF);
+            ShiftedAstF = astfilterdef(Nf,1);
+            for If=1:1:Nf,
+                ShiftedAstF(If).T  = [AstF(If).T(:,1).*(1+z),  AstF(If).T(:,2)];
+                ShiftedAstF(If).nT = [AstF(If).nT(:,1).*(1+z), AstF(If).nT(:,2)];
+            end
+            ShiftedAstF = pop_wl(ShiftedAstF);
+            
+        end
+                
+                
+        %-----------------
+        %--- Operators ---        
+        %-----------------
+                
+        function AstS=plus(AstS1,AstS2)
+            % Description: Add AstSpec arrays (+)
+            % Input   : - AstSpec array
+            %           - AstSpec array
+            % Outoput : - Sum of the Spec field of the AstSpec arrays
+            % Example : A+A
+            
+            Col.Wave   = 1;
+            Col.Int    = 2;
+            Col.IntErr = 3;
+            N1 = numel(AstS1);
+            N2 = numel(AstS2);
+            N  = max(N1,N2);
+            AstS = astspecdef(N,1);
+            for I=1:1:N,
+                Is1 = min(I,N1);
+                Is2 = min(I,N2);
+                
+                [AstS1(Is1),AstS2(Is2)] = common_sampling(AstS1(Is1),AstS2(Is2));
+                
+                % add
+                AstS(I).Spec = [AstS1(Is1).Spec(:,Col.Wave), ...
+                                AstS1(Is1).Spec(:,Col.Int) + AstS2(Is2).Spec(:,Col.Int)];
+                
+                            error here...
+                                
+                            
+                % populate other fields
+                AstF(I) = pop_wl(AstF(I));
+            end
+        end
+
+        
+        %% add Filter
+        function OldF=add_filter(NewF,OldF)
+            % Description: Given an AstFilter object with minimal fields
+            %              populated (i.e., family, band, T), populate
+            %              its additional fields and concat it to another
+            %              AstFilter object (default is the AstFilterCat).
+            % Input  : - AstFilter class with minimal fields populated.
+            %          - An AstFilter object to which to concat the first
+            %            argument (after the other fields populated).
+            %            Default is to load AstFilterCat.mat.
+            %            Note that this function does not save the results
+            %            to AstFilterCat.mat (see the save method).
+            %            If empty then will create an empty AstFilter
+            %            object.
+            % Example : AstFilterCat=add_filter(NewF);
+                            
+            if (nargin==1),
+                OldF = load_check('AstFilterCat.mat');
+            end
+            
+            Del1 = false;
+            if (~isastfilter(OldF)),
+                if (isempty(OldF)),
+                    OldF = AstFilter;
+                    Del1 = true;
+                else
+                    error('Old AstFilter to which to add is not of AstFilter class');
+                end
+            end
+            % check validity of New AstFilter
+            Nf = numel(NewF);
+            for If=1:1:Nf,
+                if (isempty(NewF(If).family)),
+                    error('New AstFilter number %d have empty family name',If);
+                end
+                if (isempty(NewF(If).band)),
+                    error('New AstFilter number %d have empty band name',If);
+                end
+                if (size(NewF(If).T,2)<2),
+                    error('New AstFilter number %d have illegal T field',If);
+                end
+                % make sure T doesn't have negative transmission
+                if any(NewF(If).T(:,2)<0),
+                    warning('New AstFilter number %d have negative transmission',If);
+                    Ans = input('Do you want to set negative transmission to zero [Y/n]?','s');
+                    switch lower(Ans)
+                        case 'n'
+                            % skip
+                        otherwise
+                            NewF(If).T(NewF(If).T(:,2)<0,2) = 0;
+                    end
+                end
+                
+                % check that T is sorted
+                if (~issorted(NewF(If).T(:,1))),
+                    error('New AstFilter number %d have unsorted transmission table');
+                end
+                
+                % look for lines with duplicated wavelength
+                DupInd = find(diff(NewF(If).T(:,1))==0);
+                if (~isempty(DupInd)),
+                    warning('Lines with duplicated wavelength deleted in AstFilter number %d',If);
+                    NewF(If).T = delete_ind(NewF(If).T,DupInd,1);
+                end
+                
+                
+                % populate the nT field
+                NewF(If).nT = NewF(If).T;
+            end
+            % noramlize the nT field
+            NewF = norm(NewF);
+            
+            % populate additional fields
+            NewF = pop_wl(NewF);
+            
+            % concat to old AstFilter
+            OldF = [OldF; NewF];
+            
+            if (Del1),
+                OldF = OldF(2:end);
+            end
+            
+        end
+           
+        
+        function AstF=save(AstF,FileName)
+            % Description: Save an AstFilter class array into a MAT file.
+            % Input  : - AstFilter class.
+            %          - Full path and file name in which to save the
+            %            AstFilter object.
+            %            Default is '~/matlab/data/Filters/AstFilterCat.mat'
+            % Outout : - AstFilter object saved.
+            
+            if (nargin<2),
+                FileName = sprintf('~%smatlab%sdata%sFilters%sAstFilterCat.mat',filesep,filesep,filesep,filesep);
+            end
+            
+            if (exist(FileName,'file')>0),
+                FileNameOld = sprintf('%s.%s',FileName,date);
+                fprintf('old file name %s exist\n',FileName);
+                fprintf('old file name will be copied into %s\n',FileNameOld);
+            end
+            AstFilterCat = AstF;
+            save(FileName,'AstFilterCat');
+            
+            
+        end
+        
+        %%% < got here
+        function obj=minus(Sim1,Sim2)
+            % Description: SUbtract SIM arrays (-)
+            % Input  : - SIM array
+            %          - SIM array
+            % Output : - Subtracted SIM arrays
+            % Example: Sim1 - Sim2
+            obj = sim_imarith('In1',Sim1,'In2',Sim2,'Op','-');            
+        end
+
+
+        function obj=times(Sim1,Sim2)
+            % Description: Scalar multiplication between SIM arrays (.*)
+            % Input  : - Fisrt SIM array
+            %          - Second SIM array
+            % Output : - Scalar multiplications of the two SIM arrays
+            % Example: Sim1.*Sim2
+            obj = sim_imarith('In1',Sim1,'In2',Sim2,'Op','.*');
+        end
+
+        function obj=rdivide(Sim1,Sim2)
+            % ./
+            obj = sim_imarith('In1',Sim1,'In2',Sim2,'Op','./');
+        end
+
+
+        function obj=lt(Sim1,Sim2)
+            % <
+            obj = sim_imarith('In1',Sim1,'In2',Sim2,'Op','<');
+        end
+
+        function obj=gt(Sim1,Sim2)
+            % >
+            obj = sim_imarith('In1',Sim1,'In2',Sim2,'Op','>');
+        end
+
+        function obj=le(Sim1,Sim2)
+            % <=
+            obj = sim_imarith('In1',Sim1,'In2',Sim2,'Op','<=');
+        end
+
+        function obj=ge(Sim1,Sim2)
+            % >=
+            obj = sim_imarith('In1',Sim1,'In2',Sim2,'Op','>=');
+        end
+
+        function obj=ne(Sim1,Sim2)
+            % ~=
+            obj = sim_imarith('In1',Sim1,'In2',Sim2,'Op','~=');
+        end
+
+        function obj=eq(Sim1,Sim2)
+            % ==
+            obj = sim_imarith('In1',Sim1,'In2',Sim2,'Op','==');
+        end
+
+        function obj=and(Sim1,Sim2)
+            % &
+            obj = sim_imarith('In1',Sim1,'In2',Sim2,'Op','&');
+        end
+
+
+        function obj=prctile(Sim,P)
+            % prctile (ignoring NaN)
+            obj = sim_ufunv(Sim,'Op',@prctile,'NaN',true,'Par',P);
+        end
+
+        function obj=quantile(Sim,P)
+            % quantile (ignoring NaN)
+            obj = sim_ufunv(Sim,'Op',@quantile,'NaN',true,'Par',P);
+        end
+
+        function obj=iqr(Sim)
+            % iqr (ignoring NaN)
+            obj = sim_ufunv(Sim,'Op',@iqr,'NaN',true);
+        end
+
+        
+
+        %--- Structre functions ---
+        function obj=isfield(Sim,Field)
+            % isfield 
+            obj = any(strcmp(fieldnames(Sim),Field));
+        end
+
+        function obj=isstruct(Sim)
+            obj = true;  %isstruct(Sim) || isa(Sim,'SIM');
+        end
+
+    end
+        
+end
+
+            

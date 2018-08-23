@@ -1,0 +1,41 @@
+function [Dist]=plane_dist(AstC,X0,Y0,ColNames)
+%--------------------------------------------------------------------------
+% plane_dist function                                        class/@AstCat
+% Description: Calculate the planar distance between a point and the
+%              position of all sources in an AstCat object.
+% Input  : - AstCat object.
+%          - X position of point.
+%          - Y position of point.
+%          - Cell array of column names containing the X and Y position
+%            in the AstCat object. Default is {'XWIN_IMAGE','YWIN_IMAGE'}.
+% Output : - A structure array (element per AstCat element) containing
+%            .Dist - the distance.
+%            .PA   - The position angle [radians].
+% License: GNU general public license version 3
+% Tested : Matlab R2015b
+%     By : Eran O. Ofek                    Mar 2016
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: Dist = plane_dist(AstC,100,100);
+% Reliable: 2
+%--------------------------------------------------------------------------
+
+CatField = 'Cat';
+
+if (nargin<4),
+    ColNames = {'XWIN_IMAGE','YWIN_IMAGE'};
+end
+
+Nc = numel(AstC);
+Dist = struct('Dist',cell(size(AstC)),'PA',cell(size(AstC)));
+for Ic=1:1:Nc,
+    % for each catalog
+    ColInd = colname2ind(AstC(Ic),ColNames);
+    
+    XY = AstC(Ic).(CatField)(:,ColInd);
+    if (istable(XY)),
+        XY = table2array(XY);
+    end
+    
+    [Dist(Ic).Dist,Dist(Ic).PA] = plane_dist(X0,Y0,XY(:,1),XY(:,2));
+    
+end

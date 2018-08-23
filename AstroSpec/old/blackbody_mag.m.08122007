@@ -1,0 +1,55 @@
+function [MagTemp]=blackbody_mag(Temp,Filter,System,Radius,Dist);
+%-------------------------------------------------------------------------
+% blackbody_mag function                                        AstroSpec
+% Description: Calculate the magnitude, in a given bad, of a black body
+%              given its temperature, radius and distance.
+%              Work only in the range 100-10^6 K, for other temperatures
+%              and additional filters use: blackbody_mag_c.m
+% Input  : - Vector of blackbody temperature.
+%          - Filter name: FNUBVRIugriz
+%          - Magnitude system: 'V' for Vega, 'A' for 'AB'.
+%          - blackbody sphere radius [cm].
+%          - blackbody distance from observer [pc]. 
+% Output : - Vector of magnitude in each temperature.
+% Tested : Matlab 7.0
+%     By : Eran O. Ofek           June 2005
+%    URL : http://wise-ftp.tau.ac.il/~eran/matlab.html
+% Notes  : The program uses a mat file named: data_blackbody_mag.mat 
+% See Also: blackbody_mag_c.m
+%-------------------------------------------------------------------------
+Pc           = get_constant('pc','cgs');
+
+InterpMethod = 'linear';
+FilterList   = 'FNUBVRIJHKugriz';   % F - FUV ; N - NUV
+
+FilterColInd = findstr(FilterList,Filter);
+
+% Read: A_AB A_V T
+load('data_blackbody_mag.mat');
+
+switch lower(System)
+ case {'a','ab'}
+    % AB magnitude
+    MagList = A_AB;
+    clear A_AB;
+ case {'v','vega'}
+    MagList = A_V;
+    clear A_V;
+ otherwise
+    error('Unknown System Option');
+end
+
+% magnitude in filter as function of T
+MagInFilterT = MagList(:,FilterColInd);
+
+MagTemp = interp1(T,MagInFilterT,Temp,InterpMethod);
+
+%MagTemp = MagTemp - 2.5.*log10(4.*pi);   % convert to bb with radius of 1cm
+MagTemp = MagTemp - 5.0.*log10(Radius);  % convert to radius
+MagTemp = MagTemp + 5.0.*log10(Dist.*Pc);
+MagTemp = MagTemp + 20;    % 20 = 2.5.*log10(1e8)  Ang to cm
+
+
+
+
+

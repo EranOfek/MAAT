@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="generator" content="MATLAB R2016a"><meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,chrome=1"><title>The astronomy & astrophysics toolbox for MATLAB - Documentation</title><style type="text/css">
+* {margin: 0; padding: 0;}
+body {text-align: start; line-height: 17.234001159668px; min-height: 0px; white-space: normal; color: rgb(0, 0, 0); font-family: Consolas, Inconsolata, Menlo, monospace; font-style: normal; font-size: 14px; font-weight: normal; text-decoration: none; white-space: normal; }
+h1, h2 {font-weight: normal;}
+.content { padding: 30px; }
+
+.S0 { margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S1 { line-height: 26.3999996185303px; min-height: 24px; white-space: pre-wrap; color: rgb(213, 80, 0); font-family: Helvetica, Arial, sans-serif; font-size: 22px; white-space: pre-wrap; margin-left: 4px; margin-top: 3px; margin-bottom: 15px; margin-right: 10px;  }
+.S2 { min-height: 0px; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S3 { line-height: 20.576000213623px; min-height: 20px; white-space: pre-wrap; color: rgb(60, 60, 60); font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: bold; white-space: pre-wrap; margin-left: 4px; margin-top: 15px; margin-bottom: 9px; margin-right: 10px;  }
+.S4 { line-height: 21px; min-height: 17px; white-space: pre-wrap; font-family: Helvetica, Arial, sans-serif; white-space: pre-wrap; margin-left: 4px; margin-top: 2px; margin-bottom: 9px; margin-right: 10px;  }
+.S5 { min-height: 0px; color: rgb(0, 95, 206); margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S6 { min-height: 0px; font-family: monospace; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S7 { margin-left: 3px; margin-top: 10px; margin-bottom: 10px; margin-right: 3px;  }
+.S8 { line-height: 15.5926675796509px; min-height: 18px; white-space: nowrap; font-size: 12.6666669845581px; white-space: nowrap; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S9 { line-height: 15.5926685333252px; min-height: 0px; white-space: pre; font-size: 12.6666679382324px; white-space: pre; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S10 { line-height: 15.5926685333252px; min-height: 0px; white-space: pre; color: rgb(160, 32, 240); font-size: 12.6666679382324px; white-space: pre; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 45px;  }
+.S11 { line-height: 21px; min-height: 17px; white-space: pre-wrap; font-family: Helvetica, Arial, sans-serif; white-space: pre-wrap; margin-left: 4px; margin-top: 10px; margin-bottom: 9px; margin-right: 10px;  }
+.S12 { line-height: 26.3999996185303px; min-height: 24px; white-space: pre-wrap; color: rgb(213, 80, 0); font-family: Helvetica, Arial, sans-serif; font-size: 22px; white-space: pre-wrap; margin-left: 4px; margin-top: 10px; margin-bottom: 15px; margin-right: 10px;  }
+.S13 { font-family: Helvetica, Arial, sans-serif; margin-left: 0px; margin-top: 10px; margin-bottom: 20px; margin-right: 0px;  }
+.S14 { text-align: left; line-height: 21px; white-space: pre-wrap; white-space: pre-wrap; margin-left: 56px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S15 { color: rgb(0, 95, 206); margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S16 { font-family: monospace; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+
+.LineNodeBlock {margin: 10px 0 10px 0;}
+.LineNodeBlock+.paragraphNode {margin-top: 10px;}
+.lineNode {padding-left: 10px; background-color: #F7F7F7; border-left: 1px solid #E9E9E9; border-right: 1px solid #E9E9E9;}
+.inlineWrapper:first-child .lineNode,.inlineWrapper.outputs+.inlineWrapper .lineNode {padding-top: 5px; border-top: 1px solid #E9E9E9;}
+.inlineWrapper:last-child .lineNode,.inlineWrapper.outputs .lineNode {padding-bottom: 5px; border-bottom: 1px solid #E9E9E9;}
+.lineNode .textBox {white-space: pre;}
+</style></head><body><div class = "content"><div class = 'SectionBlock containment active'><h1 class = "S1"><span class = "S2">The astronomy &amp; astrophysics toolbox for MATLAB - Documentation</span></h1><h2 class = "S3"><span class = "S2">Description</span></h2><p class = "S4"><span class = "S2">After </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/install.html'><span class = "S0">installation</span></a><span class = "S2">, all the documents listed below are available in the manual package. To see the content of this package, from the MATLAB prompt, type: "</span><span class = "S6">manual.</span><span class = "S2">" followed by &lt;tab&gt;. To open, for example, this document:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S8 lineNode"><span class = "S9">open </span><span class = "S10">manual.documentation</span></p></div></div><p class = "S11"><span class = "S2">All the functions have their own documentation (accessible using the help or doc command). However, high level documentation (see below) is available for some topics. We expect that missing documents will be added in the future.</span></p><h2 class = "S3"><span class = "S2">Credit</span></h2><p class = "S4"><span class = "S2">If you are using this code or products in your scientific publication please give a reference to </span><a href = 'http://adsabs.harvard.edu/abs/2014ascl.soft07005O'><span class = "S0">Ofek (2014; ascl.soft 07005)</span></a><span class = "S2">.</span></p><h2 class = "S3"><span class = "S2">License</span></h2><p class = "S4"><span class = "S2">Unless specified otherwise this code and products are released under the GNU general public license version 3.</span></p><h1 class = "S12"><span class = "S2">List of documents by topic</span></h1><h2 class = "S3"><span class = "S2">Documentation</span></h2><ul class = "S13"><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/manual.html'><span class = "S0">manual package</span></a><span class = "S0"> - A package containing documentation in MATLAB live script format.</span></li></ul><h2 class = "S3"><span class = "S2">Installation</span></h2><ul class = "S13"><li class = "S14"><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/install.html'><span class = "S0">Installation document</span></a><span class = "S0"> - Installation instructions.</span></li></ul><h2 class = "S3"><span class = "S2">Astronomical Image Processing</span></h2><p class = "S4"><span class = "S2">Main tools for image processing:</span></p><ul class = "S13"><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/SIM.html'><span class = "S0">SIM class</span></a><span class = "S0"> - An astronomical image and metadata container class with advanced image processing capabilities.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/HEAD.html'><span class = "S0">HEAD class</span></a><span class = "S0"> - An astronomical header container class.</span></li><li class = "S14"><span class = "S0">The WorldCooSys class - Container for WCS information, and WCS utilities.</span></li><li class = "S14"><span class = "S0">The ClassPSF class - Container for Point Spread Function (PSF) and utilities.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/MASK.html'><span class = "S0">MASK class</span></a><span class = "S0"> - Container for bit mask images and utilities.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/AstCat.html'><span class = "S0">AstCat class</span></a><span class = "S0"> - An astronomical catalogs container class.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/FITS.html'><span class = "S0">FITS static class</span></a><span class = "S0"> - Reading, writing, header access and manipulation of FITS images and tables.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/ds9.html'><span class = "S0">ds9 static class</span></a><span class = "S0"> - ds9 control, including: display, catalog overlay, manipulate, access, and interactive examination of images in ds9.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/TranClass.html'><span class = "S0">TranClass class</span></a><span class = "S0"> - A class for astrometric image coordinates transformation.</span></li><li class = "S14"><span class = "S0">The ImUtil.Im package - Low level image processing and utility functions.</span></li><li class = "S14"><span class = "S0">The ImUtil.X package - Low level X-ray image processing and utility functions (see also: </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/Poisson_Matched_Filter.html'><span class = "S0">Poisson-noise matched filter</span></a><span class = "S0">).</span></li></ul><p class = "S4"><span class = "S2">Documentation for selected image processing steps:</span></p><ul class = "S13"><li class = "S14"><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/BiasFlat.html'><span class = "S0">Bias &amp; Flat fielding</span></a><span class = "S0"> - Introduction to bias and flat fielding.</span></li><li class = "S14"><span class = "S0">Mask images and the </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/MASK.html'><span class = "S0">MASK class</span></a><span class = "S0"> - Populate and use bit mask images.</span></li><li class = "S14"><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/mextractor.html'><span class = "S0">mextractor</span></a><span class = "S0"> - Source extraction and measurements, including aperture and PSF photometry.</span></li><li class = "S14"><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/astrometry.html'><span class = "S0">astrometry</span></a><span class = "S0"> - Astrometric solution of astronomical images.</span></li><li class = "S14"><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/Poisson_Matched_Filter.html'><span class = "S0">Poisson-noise matched filter</span></a><span class = "S0"> - How to apply Poisson-noise matched filter.</span></li><li class = "S14"><span class = "S0">Cosmic rays detection - Detection and flagging of cosmic rays.</span></li><li class = "S14"><span class = "S0">Absolute Astrometry - Astrometric calibration against a reference catalog.</span></li><li class = "S14"><span class = "S0">Relative Astrometry - Image to image astrometry.</span></li><li class = "S14"><span class = "S0">Registration - Image alignment.</span></li><li class = "S14"><span class = "S0">Image coaddition, proper image coaddition and de-speckling (diffraction limited imaging)- </span></li><li class = "S14"><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/subtract_proper.html'><span class = "S0">Proper image subtraction</span></a><span class = "S0"> - </span></li><li class = "S14"><span class = "S0">Absolute photometry - Photometric calibration against a reference catalog.</span></li><li class = "S14"><span class = "S0">Relative photometry - Relative photometry and light curves.</span></li></ul><h2 class = "S3"><span class = "S2">Astronomical spectra and processing </span></h2><ul class = "S13"><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/AstSpec.html'><span class = "S0">AstSpec class</span></a><span class = "S0"> - An astronomical spectra container class.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/AstFilter.html'><span class = "S0">AstFilter class</span></a><span class = "S0"> - An astronomical filters (bands) container and database.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/AstroUtil.html'><span class = "S0">AstroUtil.spec package</span></a><span class = "S0"> - Utilities for astrophysics, including: binary stars, cosmology, galaxies, GRBs, lensing, microlensing, occultations, spectroscopy, stars, supernova.</span></li><li class = "S14"><span class = "S0">The ImUtil.Spec pacakge - Utilities for spectral image analysis.</span></li></ul><h2 class = "S3"><span class = "S2">Astronomical catalogs, telescopes and virtual observatory</span></h2><ul class = "S13"><li class = "S14"><span class = "S0">The AstCat class - A container and functions for astronomical calatlogs.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/VO.html'><span class = "S0">VO package</span></a><span class = "S0"> - Virual observatory. Catlogs, images and data access, search and cross matching.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/telescope.html'><span class = "S0">telescope package</span></a><span class = "S0"> - Telescope related utilities, including telescope control, S/N calculations, optics and diffraction, and observatories.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/cats.html'><span class = "S0">cats package / database</span></a><span class = "S0"> - Local repository of small astronomical catalogs.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/catsHTM.html'><span class = "S0">catsHTM static class</span></a><span class = "S0"> - Local repository of very large astronomical catalogs (e.g., SDSS, PS1, GAIA).</span></li><li class = "S14"><span class = "S0">Catalog searching and matching - </span></li></ul><h2 class = "S3"><span class = "S2">Celestial coordinates, ephemeris and time</span></h2><ul class = "S13"><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/celestial.html'><span class = "S0">celestial package</span></a><span class = "S0"> - A package for coordinates and time related calculations. This package includes sub packages for coordinates manipulation (</span><span class = "S16">coo</span><span class = "S0">), Earth related (e.g., gravity field) functions (</span><span class = "S16">Earth</span><span class = "S0">), Hierarchical Triangular Mesh (</span><span class = "S16">htm</span><span class = "S0">), the two-body problem (</span><span class = "S16">Kepler</span><span class = "S0">), map plotting (</span><span class = "S16">map</span><span class = "S0">), meteors related calculations and database (</span><span class = "S16">meteors</span><span class = "S0">), map projections (</span><span class = "S16">proj</span><span class = "S0">), Solar System ephemeris (</span><span class = "S16">SolarSys</span><span class = "S0">), stars and constellations (</span><span class = "S16">stars</span><span class = "S0">), time conversion (</span><span class = "S16">time</span><span class = "S0">).</span></li><li class = "S14"><span class = "S0">The OrbitalEl class - A container and functions for orbital elements.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/convert.html'><span class = "S0">convert static class</span></a><span class = "S0"> - Units conversion.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/AstTime.html'><span class = "S0">AstTime class</span></a><span class = "S0"> - A container and functions for time.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/telescope.html'><span class = "S0">telescope package</span></a><span class = "S0"> - Telescope related utilities, including telescope control, S/N calculations, optics and diffraction, and observatories.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/plot_monthly_smap.html'><span class = "S0">plot_monthly_smap function</span></a><span class = "S0"> - A function for plotting a star chart of the visible sky from a given location and time.</span></li></ul><h2 class = "S3"><span class = "S2">Time series analysis</span></h2><ul class = "S13"><li class = "S14"><span class = "S0">The timeseries package - Functions for time series analysis.</span></li></ul><h2 class = "S3"><span class = "S2">Fitting and statistics</span></h2><ul class = "S13"><li class = "S14"><span class = "S0">The Util.stat package - Functions for statistics.</span></li><li class = "S14"><span class = "S0">The Util.fit package - Fitting utilities.</span></li><li class = "S14"><span class = "S0">The Util.interp package - Interpolation utilties.</span></li><li class = "S14"><span class = "S0">The Util.xcorr package - cross correlation functions.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/TranClass.html'><span class = "S0">TranClass class</span></a><span class = "S0"> - A class for astronometric image coordinates transformation.</span></li></ul><h2 class = "S3"><span class = "S2">Astrophysics utilities</span></h2><ul class = "S13"><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/constant.html'><span class = "S0">constant static class</span></a><span class = "S0"> - Physical and astrophysical constants.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/convert.html'><span class = "S0">convert static class</span></a><span class = "S0"> - Units conversion.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/AstroUtil.html'><span class = "S0">AstroUtil package</span></a><span class = "S0"> - Utilities for astrophysics, including: binary stars, cosmology, galaxies, GRBs, lensing, microlensing, occultations, spectroscopy, stars, supernova.</span></li><li class = "S14"><span class = "S0">The AstroUtil.binary package - Binary stars utilities.</span></li><li class = "S14"><span class = "S0">The AstroUtil.cosmo package - Functions for cosmology.</span></li><li class = "S14"><span class = "S0">The AstroUtil.galaxy package </span></li><li class = "S14"><span class = "S0">The AstroUtil.GRB package</span></li><li class = "S14"><span class = "S0">The AstroUtil.lensing package</span></li><li class = "S14"><span class = "S0">The AstroUtil.microlensing package</span></li><li class = "S14"><span class = "S0">The AStroUtil.Occultation package</span></li><li class = "S14"><span class = "S0">The AstroUtil.spec package</span></li><li class = "S14"><span class = "S0">The AstroUtil.stars package</span></li><li class = "S14"><span class = "S0">The AstroUtil.supernova package</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/telescope.html'><span class = "S0">telescope package</span></a><span class = "S0"> - </span></li></ul><h2 class = "S3"><span class = "S2">General utilities</span></h2><ul class = "S13"><li class = "S14"><span class = "S0">The Util package - a pacakge containing matlab related functions, including the following sub packages: array, cell, code, files, filter, find, fit, fun, Geom, git, integral, interp, IO, LaTex, math, movie, OS, sql, stat, string, struct, symbolic, xcorr.</span></li><li class = "S14"><span class = "S0">The Kernel2 static class - 2-dimensional kernels and PSFs (e.g., Gaussian, Sersic).</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/www.html'><span class = "S0">www package</span></a><span class = "S0"> - For WWW access and retrival.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/constant.html'><span class = "S0">constatnt static class</span></a><span class = "S0"> - Physical and astrophysical constants.</span></li><li class = "S14"><span class = "S0">The </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/convert.html'><span class = "S0">convert static class</span></a><span class = "S0"> - Units conversion.</span></li><li class = "S14"><span class = "S0">The InArg static class - Control functions input arguments.</span></li></ul><h2 class = "S3"><span class = "S2">Old directories</span></h2><p class = "S4"><span class = "S2">The new version includes some old directories that were not yet integrated as packages. These include the Catalogue, External, ImSpec, plotting, and Swift directories. In addition, a package named obsolete contains additional old de-comissioned functions.</span></p><p class = "S4"><span class = "S2"></span></p><p class = "S4"><span class = "S2"></span></p><p class = "S4"><span class = "S2"></span></p></div></div>
+<!-- 
+##### SOURCE BEGIN #####
+%% The astronomy & astrophysics toolbox for MATLAB - Documentation
+%% Description
+% After <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/install.html installation>, 
+% all the documents listed below are available in the manual package. To see the 
+% content of this package, from the MATLAB prompt, type: "|manual.|" followed 
+% by <tab>. To open, for example, this document:
+
+open manual.documentation
+%% 
+% All the functions have their own documentation (accessible using the help 
+% or doc command). However, high level documentation (see below) is available 
+% for some topics. We expect that missing documents will be added in the future.
+%% Credit
+% If you are using this code or products in your scientific publication please 
+% give a reference to <http://adsabs.harvard.edu/abs/2014ascl.soft07005O Ofek 
+% (2014; ascl.soft 07005)>.
+%% License
+% Unless specified otherwise this code and products are released under the GNU 
+% general public license version 3.
+%% List of documents by topic
+%% Documentation
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/manual.html manual 
+% package> - A package containing documentation in MATLAB live script format.
+%% Installation
+% * <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/install.html Installation 
+% document> - Installation instructions.
+%% Astronomical Image Processing
+% Main tools for image processing:
+% 
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/SIM.html SIM class> 
+% - An astronomical image and metadata container class with advanced image processing 
+% capabilities.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/HEAD.html HEAD 
+% class> - An astronomical header container class.
+% * The WorldCooSys class - Container for WCS information, and WCS utilities.
+% * The ClassPSF class - Container for Point Spread Function (PSF) and utilities.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/MASK.html MASK 
+% class> - Container for bit mask images and utilities.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/AstCat.html AstCat 
+% class> - An astronomical catalogs container class.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/FITS.html FITS 
+% static class> - Reading, writing, header access and manipulation of FITS images 
+% and tables.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/ds9.html ds9 static 
+% class> - ds9 control, including: display, catalog overlay, manipulate, access, 
+% and interactive examination of images in ds9.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/TranClass.html 
+% TranClass class> - A class for astrometric image coordinates transformation.
+% * The ImUtil.Im package - Low level image processing and utility functions.
+% * The ImUtil.X package - Low level X-ray image processing and utility functions 
+% (see also: <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/Poisson_Matched_Filter.html 
+% Poisson-noise matched filter>).
+% 
+% Documentation for selected image processing steps:
+% 
+% * <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/BiasFlat.html Bias 
+% & Flat fielding> - Introduction to bias and flat fielding.
+% * Mask images and the <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/MASK.html 
+% MASK class> - Populate and use bit mask images.
+% * <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/mextractor.html mextractor> 
+% - Source extraction and measurements, including aperture and PSF photometry.
+% * <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/astrometry.html astrometry> 
+% - Astrometric solution of astronomical images.
+% * <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/Poisson_Matched_Filter.html 
+% Poisson-noise matched filter> - How to apply Poisson-noise matched filter.
+% * Cosmic rays detection - Detection and flagging of cosmic rays.
+% * Absolute Astrometry - Astrometric calibration against a reference catalog.
+% * Relative Astrometry - Image to image astrometry.
+% * Registration - Image alignment.
+% * Image coaddition, proper image coaddition and de-speckling (diffraction 
+% limited imaging)- 
+% * <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/subtract_proper.html 
+% Proper image subtraction> - 
+% * Absolute photometry - Photometric calibration against a reference catalog.
+% * Relative photometry - Relative photometry and light curves.
+%% Astronomical spectra and processing 
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/AstSpec.html AstSpec 
+% class> - An astronomical spectra container class.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/AstFilter.html 
+% AstFilter class> - An astronomical filters (bands) container and database.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/AstroUtil.html 
+% AstroUtil.spec package> - Utilities for astrophysics, including: binary stars, 
+% cosmology, galaxies, GRBs, lensing, microlensing, occultations, spectroscopy, 
+% stars, supernova.
+% * The ImUtil.Spec pacakge - Utilities for spectral image analysis.
+%% Astronomical catalogs, telescopes and virtual observatory
+% * The AstCat class - A container and functions for astronomical calatlogs.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/VO.html VO package> 
+% - Virual observatory. Catlogs, images and data access, search and cross matching.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/telescope.html 
+% telescope package> - Telescope related utilities, including telescope control, 
+% S/N calculations, optics and diffraction, and observatories.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/cats.html cats 
+% package / database> - Local repository of small astronomical catalogs.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/catsHTM.html catsHTM 
+% static class> - Local repository of very large astronomical catalogs (e.g., 
+% SDSS, PS1, GAIA).
+% * Catalog searching and matching - 
+%% Celestial coordinates, ephemeris and time
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/celestial.html 
+% celestial package> - A package for coordinates and time related calculations. 
+% This package includes sub packages for coordinates manipulation (|coo|), Earth 
+% related (e.g., gravity field) functions (|Earth|), Hierarchical Triangular Mesh 
+% (|htm|), the two-body problem (|Kepler|), map plotting (|map|), meteors related 
+% calculations and database (|meteors|), map projections (|proj|), Solar System 
+% ephemeris (|SolarSys|), stars and constellations (|stars|), time conversion 
+% (|time|).
+% * The OrbitalEl class - A container and functions for orbital elements.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/convert.html convert 
+% static class> - Units conversion.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/AstTime.html AstTime 
+% class> - A container and functions for time.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/telescope.html 
+% telescope package> - Telescope related utilities, including telescope control, 
+% S/N calculations, optics and diffraction, and observatories.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/plot_monthly_smap.html 
+% plot_monthly_smap function> - A function for plotting a star chart of the visible 
+% sky from a given location and time.
+%% Time series analysis
+% * The timeseries package - Functions for time series analysis.
+%% Fitting and statistics
+% * The Util.stat package - Functions for statistics.
+% * The Util.fit package - Fitting utilities.
+% * The Util.interp package - Interpolation utilties.
+% * The Util.xcorr package - cross correlation functions.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/TranClass.html 
+% TranClass class> - A class for astronometric image coordinates transformation.
+%% Astrophysics utilities
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/constant.html 
+% constant static class> - Physical and astrophysical constants.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/convert.html convert 
+% static class> - Units conversion.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/AstroUtil.html 
+% AstroUtil package> - Utilities for astrophysics, including: binary stars, cosmology, 
+% galaxies, GRBs, lensing, microlensing, occultations, spectroscopy, stars, supernova.
+% * The AstroUtil.binary package - Binary stars utilities.
+% * The AstroUtil.cosmo package - Functions for cosmology.
+% * The AstroUtil.galaxy package 
+% * The AstroUtil.GRB package
+% * The AstroUtil.lensing package
+% * The AstroUtil.microlensing package
+% * The AStroUtil.Occultation package
+% * The AstroUtil.spec package
+% * The AstroUtil.stars package
+% * The AstroUtil.supernova package
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/telescope.html 
+% telescope package> - 
+%% General utilities
+% * The Util package - a pacakge containing matlab related functions, including 
+% the following sub packages: array, cell, code, files, filter, find, fit, fun, 
+% Geom, git, integral, interp, IO, LaTex, math, movie, OS, sql, stat, string, 
+% struct, symbolic, xcorr.
+% * The Kernel2 static class - 2-dimensional kernels and PSFs (e.g., Gaussian, 
+% Sersic).
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/www.html www package> 
+% - For WWW access and retrival.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/constant.html 
+% constatnt static class> - Physical and astrophysical constants.
+% * The <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/convert.html convert 
+% static class> - Units conversion.
+% * The InArg static class - Control functions input arguments.
+%% Old directories
+% The new version includes some old directories that were not yet integrated 
+% as packages. These include the Catalogue, External, ImSpec, plotting, and Swift 
+% directories. In addition, a package named obsolete contains additional old de-comissioned 
+% functions.
+% 
+% 
+% 
+% 
+% 
+%
+##### SOURCE END #####
+--></body></html>

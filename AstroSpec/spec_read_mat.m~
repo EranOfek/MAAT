@@ -1,0 +1,109 @@
+function AS=spec_read_mat(File,varargin)
+%--------------------------------------------------------------------------
+% spec_read_mat function                                         AstroSpec
+% Description: Read a spectrum from a mat file.
+% Input  : - File name, file name with wild cards, or a cell array of
+%            file names. Each file is a mat file in the current directory
+%            containing spectra in mtarix, cell or AstSpec formats.
+%          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+%            where keyword are one of the followings:
+%            --- Additional parameters
+%            Any additional key,val, that are recognized by one of the
+%            following programs:
+% Output : - File names to read.
+% License: GNU general public license version 3
+% Tested : Matlab R2015b
+%     By : Eran O. Ofek                    Feb 2016
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example:  AS=spec_read_mat('rg5iii.mat')
+% Reliable: 
+%--------------------------------------------------------------------------
+
+DefV.SpecOutType      = 'AstSpec';   % 'AstSpec','cell','mat'
+DefV.MaxCol           = 3;
+DefV.ColNames         = {'Wave','Int','Err','Back','Mask'};
+DefV.ColCorr          = [1     ,1    ,1    ,1     ,1     ];
+DefV.WaveUnits        = 'Ang';
+DefV.IntUnits         = 'erg*cm^{-2}*s^{-1}*Ang^{-1}';
+InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
+[~,List] = create_list(File,NaN);
+Nl       = numel(List);
+
+ColNames = InPar.ColNames(1:1:InPar.MaxCol);
+Ncol     = numel(ColNames);
+
+% initialization
+switch lower(InPar.SpecOutType)
+    case 'astspec'
+        AS = astspecdef(Nl,1);   % define AstSpec class
+    case 'cell'
+        AS = cell(Nl,1);
+    case 'mat'
+        if (Nl>1),
+            error('mat output is possible only when reading a single file');
+        end
+    otherwise
+        error('Unknown SpecOutType option');
+end
+
+
+for Il=1:1:Nl,
+    % for each file
+    
+    % read mat file
+    Mat = load2(List{Il});
+    
+    
+    % check type
+    switch lower(InPar.SpecOutType)
+        case 'astspec'
+            if (isnumeric(Mat)),
+                for Imc=1:1:min(InPar.MaxCol,size(Mat,2)),
+                    AS(Il).(ColNames{Imc}) = Mat(:,Imc);
+                end
+                Ind = Il;
+            elseif (iscell(Mat)),
+                for Imc=1:1:InPar.MaxCol,
+                    AS(Il).(ColNames{Imc}) = Mat{Il}(:,Imc);
+                end
+                Ind = Il;
+            elseif (isastspec(Mat)),
+                Ind = (numel(AS)+1:numel(AS)+numel(Mat))';
+                AS  = [AS, Mat];
+            else
+                error('Uknwon object in Mat file');
+            end
+            
+            % populate fields
+            AS(Ind).WaveUnits = InPar.WaveUnits;
+            AS(Ind).IntUnits  = InPar.IntUnits;
+            AS(Ind).FileName  = List{Il};
+            
+        case 'mat'
+            if (isnumeric(Mat)),
+                AS = Mat;
+            elseif (iscell(Mat)),
+                error('Mat file contain cell array and requested output is mat');
+            elseif (isastspec(Mat)),
+                AS = astspec2mat(Mat);
+            else
+                error('Uknwon object in Mat file');
+            end
+        case 'cell'
+            if (isnumeric(Mat)),
+                AS{Il} = Mat;
+            elseif (iscell(Mat)),
+                AS{end+1:end+numel(Mat)} = Mat;
+            elseif (isastspec(Mat)),
+                AS{Il} = astspec2mat(Mat);
+            else
+                error('Uknwon object in Mat file');
+            end
+        otherwise
+            error('Unknwon SpecOytType option');
+    end
+end
+            
+                
+        

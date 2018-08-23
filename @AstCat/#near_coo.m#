@@ -1,0 +1,166 @@
+function [AstC,Dist]=near_coo(AstC,X,Y,Radius,varargin)
+%--------------------------------------------------------------------------
+% near_coo function                                          class/@AstCat
+% Description: Given an AstCat (or SIM with catalog) object, select rows
+%              which are within a circular or rectangular region.
+%              If Input is SIM object than will also populate the catalog.
+% Input  : - AstCat object.
+%          - X position [pix] or longitude [default rad].
+%          - Y position [pix] or latitude [default rad].
+%          - Radius or box half size [pix, or for spherical default rad].
+%          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+%            where keyword are one of the followings:
+%            'RadiusUnits' - Units of search radius 
+%                            'pix' | 'rad' | 'deg' | 'arcmin' | 'arcsec'.
+%                            If CooType is 'plane' then will use 'pix'
+%                            If CooType is 'sphere' then default is 'rad'.
+%            'Shape'       - Search shape: 'circ' | 'box'.
+%                            Default is 'circ'.
+%            'ColXY'       - Column names or indices of X/Y Long/Lat
+%                            coordinates.
+%                            Default is {'XWIN_IMAGE','YWIN_IMAGE'}.
+%            'CooType'     - The coordinates type in the AstCat object:
+%                            'sphere' | 'plane' | 'cosd'.
+%                            Default is 'plane'.
+%            'CooUnits'    - Units of coordinates in AstCat object:
+%                            'deg' | 'rad' | 'pix'.
+%                            If CooType is 'plane' then use 'pix'.
+%                            If CooType is 'sphere' then default is 'deg'.
+%            'FunSourceFind' - A function handle for source extraction
+%                            on SIM object. Default is @mextractor.
+%            'ParSourceFind' - Cell array of parameters to pass to the
+%                            source extrcation program. Default is {}.
+% Output : - An AstCat object copied from the orginal object, but only with
+%            sources in requested region.
+%          - An AstCat object containing three columns [Flag, Dist, PA]
+%            for each source in the original AstCat object.
+%            Flag indicates if source is in the requested region.
+%            Dist is the distance from the requested point.
+%            PA is the position angle from the requested point.
+% License: GNU general public license version 3
+% Tested : Matlab R2015b
+%     By : Eran O. Ofek                    Mar 2016
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: [AstC,Dist]=near_coo(B,0.5,0.4,0.1,'ColXY',{'A',N'})
+% Reliable: 2
+%--------------------------------------------------------------------------
+
+if (nargin==3),
+    Radius = 1;
+end
+
+DefV.RadiusUnits       = 'rad';         % 'pix' | 'rad' | 'deg' | 'arcmin' | 'arcsec' - 'pix' if 'plane'...
+DefV.Shape             = 'circ';        % 'box' | 'circ'
+DefV.ColXY             = {'XWIN_IMAGE','YWIN_IMAGE'};
+DefV.CooType           = 'plane';       % 'sphere' | 'plane' | 'cosd'
+DefV.CooUnits          = 'deg';         % 'deg' | 'rad' | 'pix' - if CooType='plane' then 'pix'
+DefV.FunSourceFind     = @mextractor;
+DefV.ParSourceFind     = {};
+
+InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
+% 1. for sphereical/cosd cootype - convert Radius to radians
+% 2. for sphereical/cosd cootype - convert input RA/Dec to rad
+switch lower(InPar.CooType)
+    case {'sphere','cosd'}
+        % radius to radians
+        %Radius = Radius.*convert_units(InPar.RadiusUnits,'rad');
+        Radius = Radius.*convert.angular(InPar.RadiusUnits,'rad');
+        
+        % RA/Dec to radians
+        X = convertdms(X,'gH','r');
+        Y = convertdms(Y,'gD','R');
+        
+    otherwise
+        % do nothing
+end
+
+Nc    = numel(AstC);
+Dist  = AstCat(size(AstC));
+for Ic=1:1:Nc,
+    % for each catalog
+    
+    % if SIM object then populate catalog
+    if (issim(AstC) && isempty(AstC(Ic).Cat)),
+        AstC(Ic) = InPar.FunSourceFind(AstC(Ic),InPar.ParSourceFind{:});
+    end
+
+
+    
+    
+    ColInd  = colname2ind(AstC(Ic),InPar.ColXY);
+    XY      = AstC(Ic).Cat(:,ColInd);
+    if (istable(XY)),
+        XY = table2array(XY);
+    end
+    
+    switch lower(InPar.CooType)
+        case 'plane'
+            % planar coordinates
+            % allunits are assumed to be pixels
+            [Flag,D,PA] = plane_dist_thresh(XY(:,1),XY(:,2),X,Y,Radius,InPar.Shape);
+            
+            AstC(Ic).Cat = AstC(Ic).Cat(Flag,:);
+            
+            % calculate also Dist, PA
+            if (nargout>1),
+                Dist(Ic).Cat = [Flag,D,PA];
+                Dist(Ic).ColCell  = {'Flag','Dist','PA'};
+                Dist(Ic).ColUnits = {'','','rad'};
+                Dist(Ic)          = colcell2col(Dist(Ic));
+            end
+            
+        case 'sphere'
+            % spherical coordinates
+            if (isempty(InPar.CooUnits)),
+                % try to read from catalog
+                if (~isempty(AstC(Ic).ColUnits)),
+                    InPar.CooUnits = AstC(Ic).ColUnits{ColInd(1)};
+                else
+                    error('ColUnits field is empty');
+                end
+            end
+             
+            % convert AstCat coordinates to radians
+            %XY = convert_units(InPar.CooUnits,'rad').*XY;
+            XY = convert.angular(InPar.CooUnits,'rad').*XY;
+            
+            [Flag,D,PA] = plane_dist_thresh(XY(:,1),XY(:,2),X,Y,Radius,InPar.Shape);
+            
+            AstC(Ic).Cat = AstC(Ic).Cat(Flag,:);
+            
+            % calculate also Dist, PA
+            if (nargout>1),
+                Dist(Ic).Cat = [Flag,D,PA];
+                Dist(Ic).ColCell  = {'Flag','Dist','PA'};
+                Dist(Ic).ColUnits = {'','','rad'};
+                Dist(Ic)          = colcell2col(Dist(Ic));
+            end
+            
+            
+        case 'cosd'
+            % cosine direction
+            
+            % convert AstCat coordinates to radians
+            %XY = convert_units(InPar.CooUnits,'rad').*XY;
+            XY = convert.angular(InPar.CooUnits,'rad').*XY;
+            
+            [Long,Lat] = cosined2coo(XY(:,1),XY(:,2),XY(:,3));
+            Dist = sphere_dist(Long,Lat,X,Y);
+            Flag = Dist<=Radius;
+            AstC(Ic).Cat = AstC(Ic).Cat(Flag,:);
+            
+            % calculate also Dist, PA
+            if (nargout>1),
+                Dist(Ic).Cat = [Flag,D,PA];
+                Dist(Ic).ColCell  = {'Flag','Dist','PA'};
+                Dist(Ic).ColUnits = {'','','rad'};
+                Dist(Ic)          = colcell2col(Dist(Ic));
+            end
+            
+            
+        otherwise
+            error('Unknown CooType option');
+    end
+end
+            

@@ -1,0 +1,872 @@
+%--------------------------------------------------------------------------
+% AstCat class                                                       class
+% Description: A class of structure array of catalogs (AstCat).
+%              Note that this class is a subset of the SIM class.
+% Input  : null
+% Output : null
+% Tested : Matlab R2015b
+%     By : Eran O. Ofek                    Feb 2016
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Reliable: 2
+%--------------------------------------------------------------------------
+
+classdef AstCat < handle
+    properties (SetAccess = public)
+        Cat
+        Col
+        ColCell
+        ColUnits
+        SortedBy
+        SortedByCol
+        Source
+        Reference
+        Version
+        UserData
+    end
+  
+    methods
+
+        function obj=isastcat(AstC)
+            obj = true;
+        end
+
+
+        % See list of overload functions
+        % http://www.mathworks.com/help/matlab/matlab_oop/implementing-operators-for-your-class.html
+
+        
+        %----------------------
+        %--- Column indices ---
+        %----------------------
+        
+        function [varargout]=colname2ind(AstC,ColName)
+            % Description: Given AstCat object convert column name to
+            %              column index.
+            % Input  : - A single AstCat object.
+            %          - Colum name, or a cell array of column names.
+            %            If numeric then return the input as is.
+            % Output : * A vector of column indices.
+            %            If multiple output argument, then each output
+            %            argument cooresponds to one column in ColName.
+            % Example: ColInd=colname2ind(AstC,'XWIN_IMAGE')
+            %          ColInd=colname2ind(AstC,{'XWIN_IMAGE','YWIN_IMAGE'})
+            
+            if (numel(AstC)>1),
+                error('colname2ind works on a single element AstCat');
+            end
+            
+            if (~isnumeric(ColName)),
+                % ColName is a string
+                if (~iscell(ColName)),
+                    ColName = {ColName};
+                end
+                Ncn = numel(ColName);
+                ColInd = zeros(Ncn,1);
+                for Icn=1:1:Ncn,
+                    ColInd(Icn) = AstC.Col.(ColName{Icn});
+                end
+            else
+                % return as is
+                ColInd = ColName;
+            end
+            
+            if (nargout>1),
+                % the user requested for the ColInd in
+                % different parameters
+                Ncn = numel(ColInd);
+                CellColInd = num2cell(ColInd);
+                [varargout{1:Ncn}] = deal(CellColInd{:});
+                
+            else
+                varargout{1} = ColInd;
+            end
+            
+        end
+        
+        function ColName=ind2colname(AstC,ColInd)
+            % Description: Given AstCat object convert column index to
+            %              column name.
+            % Input  : - A single AstCat object.
+            %          - Vector of colum indices.
+            %            If a string or a cell array of strings reten as
+            %            is.
+            % Output : - Cell array of column names.
+            % Example: ColName=colname2ind(AstC,[1 2])
+            
+            if (numel(AstC)>1),
+                error('ind2colname works on a single element AstCat');
+            end
+            
+            if (isnumeric(ColInd)),
+                Ncn = numel(ColInd);
+                ColName = cell(1,Ncn);
+                for Icn=1:1:Ncn,
+                    ColName{Icn} = AstC.ColCell{ColInd(Icn)};
+                end
+            else
+                % input is string - return as is.
+                ColName = ColInd;
+            end
+        end
+        
+        %------------
+        %--- Sort ---
+        %------------
+        
+%         function [AstC,SI]=sortrows(AstC,Col)
+%             % Description: Sort an AstCat object by a given column.
+%             % Input  : - AstCat object.
+%             %          - Column name or index to sort by.
+%             %            If negative column index than sort by descending
+%             %            order.
+%             %            Also can be a cell array of names or a vector.
+%             % Output : - Sorted AstCat object.
+%             %            Also updated the SortedBy and SortedByCol fields.
+%             %          - Indices of the original indices sorted.
+%             % Example: AstC=sortrows(AstC,[2 -3]);
+%             %          AstC=sortrows(AstC,'YWIN_IMAGE');
+%             %          AstC=sortrows(AstC,{'YWIN_IMAGE','XWIN_IMAGE'});
+%             
+%             
+%             
+%             Ns = numel(AstC);
+%             for Ic=1:1:Nc,
+%                 if (ischar(Col)),
+%                     Col = colname2ind(AstC(Ic),Col);
+%                 end
+%                 [AstC(Ic).Cat,SI]    = sortrows(AstC(Ic).Cat,Col);
+%                 AstC(Ic).SortedBy    = ind2colname(AstC(Ic),Col);
+%                 AstC(Ic).SortedByCol = colname2ind(AstC(Ic),Col);
+%             end
+%         end
+        
+%         function [Ans,AstC]=issorted(AstC,Col)
+%             % Description: Check if an AstCat object is sorted by a given
+%             %              column.
+%             % Input  : - AstCat object.
+%             %          - Column name or index to check.
+%             % Output : - Vector of logicals per each AstCat element.
+%             %            True if sorted by column, false otherwise.
+%             %          - AstCat object in which the SortedBy and
+%             %            SortedByCol fields are updated.
+%             % Example: [Ans,AstC]=issorted(AstC,'YWIN_IMAGE');
+%             %          
+%             
+%             
+%             if (ischar(Col)),
+%                 Col = colname2ind(AstC,Col);
+%             end
+%             
+%             Nc  = numel(AstC);
+%             Ans = zeros(size(AstC)); 
+%             for Ic=1:1:Nc,
+%                 Ans(Ic) = issorted(AstC(Ic).Cat,Col);
+%                 if (nargout>1),
+%                     if (Ans(Ic)),
+%                         % sorted
+%                         AstC(Ic).SortedBy    = ind2colname(AstC(Ic),Col);
+%                         AstC(Ic).SortedByCol = colname2ind(AstC(Ic),Col);
+%                     else
+%                         AstC(Ic).SortedBy    = [];
+%                         AstC(Ic).SortedByCol = [];
+%                     end
+%                 end
+%             end
+%         end
+        
+        %--------------------------------
+        %--- Populate Col and ColCell ---
+        %--------------------------------
+        
+%         function [AstC,Col]=colcell2col(AstC)
+%             % Description: Repopulate the Col field based on the
+%             %              ColCell field.
+%             % Input  : - AstCat object.
+%             % Output : - AstCat object with the Col field repopulated.
+%             %          - The Col field of the last element in the
+%             %            AstCat array.
+%             % Example: [AstC,Col]=colcell2col(AstC)
+%             
+%             
+%             
+%             Nc = numel(AstC);
+%             for Ic=1:1:Nc,
+%                 AstC(Ic).Col = cell2struct(num2cell(1:1:numel(AstC(Ic).ColCell)),AstC(Ic).ColCell,2);
+%                 Col = AstC(Ic).Col;
+%             end
+%         
+%         end
+        
+%         function [AstC,ColCell]=col2colcell(AstC)
+%             % Description: Repopulate the ColCell field based on the
+%             %              Col field.
+%             % Input  : - AstCat object.
+%             % Output : - AstCat object with the ColCell field repopulated.
+%             %          - The ColCell field of the last element in the
+%             %            AstCat array.
+%             % Example: [AstC,ColCell]=col2colcell(AstC)
+%             
+%             
+%             
+%             Nc = numel(AstC);
+%             for Ic=1:1:Nc,
+%                 Fields = fieldnames(AstC(Ic).Col);
+%                 Vals   = struct2cell(AstC(Ic).Col);
+%                 [~,SI] = sort(cell2mat(Vals));
+%                 AstC(Ic).ColCell = Fields(SI).';
+%                 ColCell = AstC(Ic).ColCell;
+%             end
+%         
+%         end
+        
+        function AstC=table2col(AstC)
+            % Description: Given an AstCat object with a table object
+            %              in the Cat field, populate the .Col and .ColCell
+            %              fields based on the content of the table column
+            %              names.
+            
+            
+            
+        end
+        
+        %------------------------------
+        %--- Coordinates projection ---
+        %------------------------------
+        
+%         function [X,Y]=pr_gnomonic(AstC,ColLongLat,Scale,CenCoo,Units)
+%             % Description: Project the long/lat coordinates in an AstCat
+%             %              class object using gnomonic projection.
+%             % Input  : - A single AstCat object.
+%             %          - Vector of indices of the Long and Lat columns.
+%             %            Alternativelly, a cell array of column names
+%             %            (e.g., {'RA','Dec'})
+%             %          - Scale radius. Default is 1.
+%             %            For example, in order to convert from input
+%             %            coordinates in radians, to ouput coordinates
+%             %            with 1 arcsec scale use RAD.*3600.
+%             %          - Projection central coordinates [Lon,Lat]
+%             %            in radians.
+%             %          - Units of input coordinates ('rad'|'deg').
+%             %            The program will first attempt to read the units
+%             %            from the ColUnits field. If not available than
+%             %            will use this argument. Default is 'rad'.
+%             %            Long and Lat should have the same units.
+%             % Output : - Projected X coordinates.
+%             %          - Projected Y coordinates.
+%             % Example: [X,Y] = pr_gnomonic(AstC,{'RA','Dec'},RAD.*3600,[0 0],'rad')
+%             
+%             if (numel(AstC)>1),
+%                 error('pr_gnomonic input should be an AstCat with a single element');
+%             end
+%             
+%             if (nargin<5),
+%                 Units = 'rad';
+%             end
+%             
+%             [ColLong, ColLat] = colname2ind(AstC,ColLongLat);
+%             
+%             % check units of input
+%             if (~isempty(AstC.ColUnits)),
+%                 Units = AstC.ColUnits{ColLong};
+%             end
+%             switch lower(Units)
+%                 case {'rad','radian'}
+%                     ConvFactor = 1;
+%                 case 'deg'
+%                     ConvFactor = pi./180;
+%                 otherwise
+%                     error('Unknown Units option');
+%             end
+%             
+%             %what is going on here????  AstC(:,ColLong) doesn't work!!
+%             if istable(AstC.Cat(:,ColLong)),
+%                 Long = table2array(AstC.Cat(:,ColLong));
+%                 Lat  = table2array(AstC.Cat(:,ColLat));
+%             else
+%                 Long = AstC.Cat(:,ColLong);
+%                 Lat  = AstC.Cat(:,ColLat);
+%             end
+%             [X,Y] = pr_gnomonic(Long.*ConvFactor,Lat.*ConvFactor,Scale,CenCoo);
+%             
+%         end
+%         
+        
+        
+        %--------------------------
+        %--- Columns operations ---
+        %--------------------------
+        
+%         function AstC=col_select(AstC,Col)
+%             % Description: Select specific columns from an AstCat
+%             %              class object.
+%             % Input  : - AstCat class object.
+%             %          - Columns indices or a cell array of column
+%             %            names to select.
+%             % Output : - AstCat class object with the selected columns.
+%             % Example: AstC=col_select(AstC,{'XWIN_IMAGE','YWIN_IMAGE'})
+%             
+%             CatField         = 'Cat';
+%             %ColField         = 'Col';
+%             ColCellField     = 'ColCell';
+%             ColUnitsField    = 'ColUnits';
+%             SortedByField    = 'SortedBy';
+%             SortedByColField = 'SortedByCol';
+%             
+%             
+%             Nc = numel(AstC);
+%             for Ic=1:1:Nc,
+%                 ColInd = colname2ind(AstC(Ic),Col);
+%                 AstC(Ic).(CatField) = AstC(Ic).(CatField)(:,ColInd);
+%                 if (~isempty(AstC(Ic).(ColCellField))),
+%                     AstC(Ic).(ColCellField) = AstC(Ic).(ColCellField)(ColInd);
+%                     AstC(Ic) = colcell2col(AstC(Ic));
+%                 end
+%                 if (~isempty(AstC(Ic).(ColUnitsField))),
+%                     AstC(Ic).(ColUnitsField) = AstC(Ic).(ColUnitsField)(ColInd);
+%                 end
+%                 AstC(Ic).(SortedByField) = [];
+%                 AstC(Ic).(SortedByColField) = [];
+%             end
+%         end
+%         
+%         function AstC=col_delete(AstC,Col)
+%             % Description: Delete specific columns from an AstCat
+%             %              class object.
+%             % Input  : - AstCat class object.
+%             %          - Columns indices or a cell array of column
+%             %            names to delete.
+%             % Output : - AstCat class object with the deleted columns.
+%             % Example: AstC=col_select(AstC,{'XWIN_IMAGE','YWIN_IMAGE'})
+%             
+%             CatField         = 'Cat';
+%             %ColField         = 'Col';
+%             ColCellField     = 'ColCell';
+%             ColUnitsField    = 'ColUnits';
+%             SortedByField    = 'SortedBy';
+%             SortedByColField = 'SortedByCol';
+%             
+%             
+%             Nc = numel(AstC);
+%             for Ic=1:1:Nc,
+%                 ColIndDel = colname2ind(AstC(Ic),Col);
+%                 Ncol      = numel(AstC(Ic).(ColCellField));
+%                 % column indices to keep
+%                 ColInd    = setdiff((1:1:Ncol),ColIndDel);
+%                 
+%                 AstC(Ic).(CatField) = AstC(Ic).(CatField)(:,ColInd);
+%                 if (~isempty(AstC(Ic).(ColCellField))),
+%                     AstC(Ic).(ColCellField) = AstC(Ic).(ColCellField)(ColInd);
+%                     AstC(Ic) = colcell2col(AstC(Ic));
+%                 end
+%                 if (~isempty(AstC(Ic).(ColUnitsField))),
+%                     AstC(Ic).(ColUnitsField) = AstC(Ic).(ColUnitsField)(ColInd);
+%                 end
+%                 AstC(Ic).(SortedByField) = [];
+%                 AstC(Ic).(SortedByColField) = [];
+%             end
+%         end
+        
+%         function AstC=col_replace(AstC,Vec,ColInd,ColName)
+%             % Description: Recplace a column in an AstCat object.
+%             % Input  : - AstCat object.
+%             %          - Vector or a matrix or a table columns
+%             %            to replace.
+%             %          - Column indices of the columns to replace.
+%             %          - Cell array of new column names., or a column name.
+%             %            If empty then use the old
+%             %            column name. Default is empty.
+%             % Output : - AstCat object with the columns replaced.
+%             % Example: A=col_replace(A,ones(10,1),2,'new')
+%             
+%             if (nargin<4),
+%                 ColName = [];
+%             end
+%             
+%             if (ischar(ColName)),
+%                 ColName = {ColName};
+%             end
+%             
+%             Nc = numel(AstC);
+%             for Ic=1:1:Nc,
+%                 % for each catalog
+%                 
+%                 ColInd = colname2ind(AstC(Ic),ColInd);
+%                 if (istable(AstC(Ic).Cat)),
+%                     % table treatment
+%                     AstC(Ic).Cat(:,ColInd) = array2table(Vec);
+%                 else
+%                     AstC(Ic).Cat(:,ColInd) = Vec;
+%                 end
+%                 
+%                 if (~isempty(ColName) && ~isempty(AstC(Ic).ColCell)), 
+%                     % replace column names
+%                     AstC(Ic).ColCell(ColInd) = ColName(:);
+%                     AstC(Ic) = colcell2col(AstC);
+%                 end
+%                 
+%             end
+%             
+%         end
+        
+%         function AstC=col_insert(AstC,Vec,ColInd,ColName)
+%             % Description: Insert a column into an AstCat object.
+%             % Input  : - AstCat object.
+%             %          - Vector or a cell vector or a table column
+%             %            to insert.
+%             %          - Column index in which to insert the new column.
+%             %          - Column name of the new column.
+%             % Output : - AstCat object with new column.
+%             % Example: AA=col_insert(A,ones(10,1).*3,4,'CAA')
+%             
+%             if (numel(ColInd)>1),
+%                 error('col_insert can insert one column at a time');
+%             end
+%             
+%             Nc = numel(AstC);
+%             for Ic=1:1:Nc,
+%                 if istable(AstC(Ic).Cat),
+%                     AstC(Ic).Cat = [AstC(Ic).Cat(:,[1:ColInd-1]), array2table(Vec), AstC(Ic).Cat(:,[ColInd:end])];
+%                 else
+%                     AstC(Ic).Cat = [AstC(Ic).Cat(:,[1:ColInd-1]),             Vec,  AstC(Ic).Cat(:,[ColInd:end])];
+%                 end
+%                 AstC(Ic).ColCell = [AstC(Ic).ColCell(1:ColInd-1), ColName, AstC(Ic).ColCell(ColInd:end)];
+%                 AstC(Ic)         = colcell2col(AstC(Ic));
+%             end
+%         end
+        
+        function AstC=col_concat(AstC1,AstC2,Col1,Col2)
+        
+        end
+        
+        function AstC=row_select(AstC,Ind)
+            
+        end
+        
+        function AstC=row_delete(AstC,Ind)
+            
+        end
+        
+        function AstC=row_insert(AstC,Vec,Ind)
+            
+        end
+        
+        function AstC=row_concat(AstC1,AstC2,Ind1,Ind2)
+        
+        end
+        
+        %function AstC=addcol(AstC,
+        
+        
+%         function Ans=subsindex(AstC)
+%             %
+%             
+%             CatField = 'Cat';
+%             Ans = subsindex(AstC.(CatField));
+%         end
+        
+%         function Ans=subsref(AstC,varargin)
+%             % Description: This function control the behavior of AstCat
+%             %              to parenthesses. A few examples:
+%             %              AstC.Cat can be either a table or a numeric
+%             %              array. AstC.Cat(:,1) - will return the first column
+%             %              of AstC.Cat with its original format.
+%             %              However AstC(:,1) will return the first column
+%             %              in a numeric vector format even if it stored
+%             %              as a table.
+%             %              This means that if AstC.Cat is a table:
+%             %              sin(AstC.Cat(:,2)) will fail, while
+%             %              sin(AstC(:,2)) will work.
+%             % Input  : - AstCat object.
+%             %          * subsref arguments
+%             % Output : - The requested data.
+%             % Example: AstC.Cat(1:end,2)
+%             %          AstC(1:5,1)
+%             %          AstC.Col
+%             
+%             
+%             CatField = 'Cat';
+%             
+%             %Ans = 5;
+%             S = varargin{1};
+%             %S.type = '()';
+%             %S.subs = varargin;
+%             switch S(1).type
+%                 case '()'
+%                     Ans = subsref(AstC.(CatField),S);
+%                     
+%                     if (istable(Ans)),
+%                         Ans = table2array(Ans);
+%                     end
+%                 case '.'
+%                     
+%                     Ans = AstC.(S(1).subs);
+%                     if (numel(S)>1),
+%                         switch S(2).type
+%                             case '.'
+%                                 % Deal with the case the user ask for a
+%                                 % column using a field name:
+%                                 % E.g., AstC.Cat.XWIN_IMAGE
+%                                 if any(strcmp(S(2).subs,AstC.ColCell)),
+%                                     ColInd = colname2ind(AstC,S(2).subs);
+%                                     Ans = Ans(:,ColInd);
+%                                 else
+%                                     Ans = subsref(Ans,S(2:end));
+%                                 end
+%                             otherwise
+%                                 Ans = subsref(Ans,S(2));
+%                         end
+%                     end
+%                     
+%                     
+%                 case '{}'
+%                     error('Can not use {} as a reference to AstCat');
+%                 otherwise
+%                     % do nothing
+%             end
+%             
+%         end
+        
+        
+        % col_arith (simcat_colarith)
+        % search (search_cat)
+        % addcol
+        % colrange simcat_colrange
+        % matchcoo simcat_matchcoo
+        % near_xy
+        % near_coo
+        
+        % footprint
+        % xcat
+        % photcalib
+        % load
+        % mat2cat
+        
+        %--------------------------------
+        %--- Statistics and functions ---
+        %--------------------------------
+        
+%         function [N,X]=hist(AstC,Col,varargin)
+%             % Description: Run the hist.m function on a column in
+%             %              an AstCat class.
+%             % Input  : - A single element AstCat object.
+%             %          - Column name or index on which to calculate the
+%             %            histogram.
+%             %          * Additional arguments to pass to the hist.m
+%             %            function.
+%             % Output : - Number of elements in each bin.
+%             %          - Bin position.
+%             
+%             
+%             if (numel(AstC)>1),
+%                 error('hist on AstCat works on a single element AstCat');
+%             end
+%             
+%             ColInd = colname2ind(AstC,Col);
+%             Val = AstC.Cat(:,ColInd);
+%             if (istable(Val)),
+%                 Val = table2array(Val);
+%             end
+%             [N,X] = hist(Val,varargin{:});
+%             
+%             
+%         end
+%         
+        %-----------------------
+        %--- Unary functions ---
+        %-----------------------
+%         function obj=plus(Sim1,Sim2)
+%             % Description: Add SIM arrays (+)
+%             % Input   : - SIM array
+%             %           - SIM array
+%             % Outoput : - Sum of SIM arrays
+%             % Example : Sim1+Sim2
+%             obj = sim_imarith('In1',Sim1,'In2',Sim2,'Op','+');
+%         end
+
+        %--- Structre functions ---
+        function obj=isfield(Sim,Field)
+            % isfield 
+            obj = any(strcmp(fieldnames(Sim),Field));
+        end
+
+        function obj=isstruct(Sim)
+            obj = true;  %isstruct(Sim) || isa(Sim,'SIM');
+        end
+
+        
+        
+        
+        
+        function Coo=xy2coo(Sim,varargin)
+            % convert X,Y to RA,Dec
+            % Input  : - SIm
+            %          * The same input parameters as xy2sky.m
+            %            i.e., X(pix), Y(pix),...
+            % Outout : - Structure array with the following fields:
+            %            .RA - J2000 R.A. [rad]
+            %            .Dec - J2000 Dec. [rad]
+   
+            Nsim = numel(Sim);
+            Coo  = struct('RA',cell(Nsim,1),'Dec',cell(Nsim,1));
+            for Isim=1:1:Nsim,
+                [Coo(Isim).RA,Coo(Isim).Dec] = xy2sky(Sim(Isim),varargin{:});
+            end
+            
+        end
+        
+        function Coo=coo2xy(Sim,varargin)
+            % convert RA,Dec to X,Y
+            % Input:  - Sim
+            %         * The same input parameters as sky2xy.m
+            %           i.e., RA(rad),Dec(rad),...
+            % Output: - Structure array with the following fields:
+            %           .X - X coordinates [pix].
+            %           .Y - Y coordinates [pix].
+            Nsim = numel(Sim);
+            Coo = struct('X',cell(Nsim,1),'Y',cell(Nsim,1));
+            for Isim=1:1:Nsim,
+                [Coo(Isim).X,Coo(Isim).Y] = sky2xy(Sim(Isim),varargin{:});
+            end
+            
+        end
+        
+        function [Sim,ThreshIm]=addcat(Sim,varargin)
+            % call mextractor and populate the Cat field
+            [Sim,ThreshIm] = mextractor(Sim,varargin{:});            
+        end
+        
+        function SubCat=near_xy(Sim,X,Y,Radius)
+            % search objects near X,Y and sort by distance to search
+            % coordinates
+            % Input  : - Sim
+            %          - X coordinate [pix]
+            %          - Y coordinate [pix]
+            %          - Search radius [pix]
+            % Output : - Structure containing sub catalog of sources
+            %            within search radius, sorted by distance to
+            %            search center.
+            CatField        = 'Cat';
+            CatColField     = 'Col';
+            CatColCellField = 'ColCell';
+            Nsim = numel(Sim);
+            SubCat = struct(CatField,cell(Nsim,1),...
+                            CatColField,cell(Nsim,1),...
+                            CatColCellField,cell(Nsim,1),...
+                            'Dist',cell(Nsim,1));
+            for Isim=1:1:Nsim,
+                % for each image
+                % check if catalog exist
+                if (isempty(Sim(Isim).(CatField))),
+                    Sim(Isim) = mextractor(Sim(Isim));
+                end
+                Dist = plane_dist(X,Y,...
+                                  Sim(Isim).(CatField)(:,Sim(Isim).(CatColField).XWIN_IMAGE),...
+                                  Sim(Isim).(CatField)(:,Sim(Isim).(CatColField).YWIN_IMAGE));
+                Ind = find(Dist<=Radius);
+                [~,SI] = sort(Dist(Ind));
+                SInd = Ind(SI);  % indices sorted by distance
+                
+                SubCat(Isim).(CatField)        = Sim(Isim).(CatField)(SInd,:);
+                SubCat(Isim).(CatColField)     = Sim(Isim).(CatColField);
+                SubCat(Isim).(CatColCellField) = Sim(Isim).(CatColCellField);
+                SubCat(Isim).Dist              = Dist(SInd);
+                
+            end
+            
+        end
+        
+        function obj=isbias(Sim,varargin)
+            % Description: Check if images in SIM array are valid bias
+            %              images (using is_bias_image.m).
+            % Input  : - SIM array
+            %          * Additional arguments to pass to is_bias_image.m
+            % Output : - Vector of false/true flags, for each image in
+            %            the SIM array, indicating if an image is a
+            %            valid bias image.
+            obj = is_bias_image(Sim,varargin{:});
+        end
+        
+        function obj=isflat(Sim,varargin)
+            obj = is_flat_image(Sim,varargin{:});
+        end
+        
+        function obj=isarc(Sim,varargin)
+            obj = is_arc_image(Sim,varargin{:});
+        end
+        
+        function obj=iskeyval(Sim,varargin)
+            % S.iskeyval('OBSTYPE','object')
+            obj = is_head_keyval(Sim,{},varargin{:});
+        end
+        
+        function obj=footprint(Sim,varargin)
+            % Description: Get images footprints using the
+            %              sim_footprint.m function.
+            % Input  : - SIM array
+            %          * Additional arguments to pass to sim_footprint.m
+            % Output : - Structure array containing the footprint for each
+            %            SIM image.
+            obj = sim_footprint(Sim,varargin{:});
+        end
+        
+        function [Gain,Sim]=gain(Sim,varargin)
+            % Description: Get CCD gain from image header and multiply
+            %              each image by its gain.
+            % Input  : - SIM array.
+            %          * Additional arguments to pass to sim_gain.m
+            % Output : - Vector of gain factors for each image in the
+            %            SIM array.
+            %          - SIM array multiplied by the gain.
+            % Example: [Gain, Sim]=Sim.gain;
+            
+            [Gain,Sim]=sim_gain(Sim,varargin{:});
+            
+        end
+        
+        function Sim=flipud(Sim,varargin)
+            % Description: flip images in SIM array up-down
+            % Input  : - SIM array.
+            %          - Additional arguments to pass to sim_flip.m
+            % Output : - SIM array in which the images are flipped up-down
+            % Example: Sim.flipud
+            Sim = sim_flip(Sim,varargin{:},'Op',@flipud);
+        end
+        
+        function Sim=rotate(Sim,Rotation,varargin)
+            % Description: Rotate SIM images
+            % Input  : - SIM array.
+            %          - Rotation angle [deg]
+            %          * Additional parameters to pass to sim_rotate.m
+            % Output : - Rotated SIM array
+            % Example: Sim.rotate(50)
+            Sim = sim_rotate(Sim,varargin{:},'Rotation',Rotation);
+            
+        end
+        
+        function Stat=stat(Sim,varargin)
+            % Description: Get image statistics
+            % Input  : - SIM array of images.
+            %          * Additional parameters to pass to sim_stat.m
+            % Output : - Structure array of images statistics
+            % Example: Sim.stat
+            Stat = sim_stat(Sim,varargin{:});
+        end
+        
+        function [BiasSubSim,BiasSim] = bias(Sim,varargin)
+            % Description: Search for bias images, construct bias
+            %              and subtract from all images.
+            % Input  : - SIM array of images.
+            %          * Additional parameters to pass to sim_bias.m
+            % Output : - Bias subtracted images.
+            %          - The bias image.
+            % Example: Sim.bias
+            [BiasSubSim,BiasSim] = sim_bias(Sim,varargin{:}); 
+        end
+        
+        function [BiasSubSim,BiasSim] = suboverscan(Sim,varargin)
+            % Description: For each SIM image, search for bias overscan
+            %              region, construct a 1-D bias image and subtract
+            %              it from the image.
+            % Input  : - SIM array of images.
+            %          * Additional arguments to pass to sim_suboverscan.m
+            % Output : - Bias overscan subtracted images.
+            %          - 1-D overscan bias images.
+            % Example: Sim.suboverscan
+            [BiasSubSim,BiasSim] = sim_suboverscan(Sim,varargin{:});
+            
+        end
+        
+        function [ImSize] = imagesize(Sim,varargin)
+            % Description: Get the size of SIM images.
+            % Input  : - SIM array of images.
+            %          * Additional arguments to pass to sim_imagesize.m
+            % Output : - Two column matrix of image sizes [X,Y].
+            % Example: Sim.imagesize
+            ImSize = sim_imagesize(Sim,varargin{:});
+        end
+        
+        function Sim = xcat(Sim,varargin)
+            % Description: Match SIM catalog to external catalog and
+            %              add information to catalog.
+            %              See sim_xcat.m for details.
+            % Input  : - SIM array of images with catalogs.
+            %          * Additional arguments to pass to sim_xcat.m
+            % Output : - SIM array with added columns to the catalog
+            %            entries.
+            % Example: sim.xcat('ExtCats',{@wget_sdss});
+            Sim = sim_xcat(Sim,varargin{:});
+        end
+        
+        function [Sim,ZP]=photcalib(Sim,varargin)
+            % Description: Calculate and apply photometric calibration
+            %              to SIM images catalog.
+            %              See sim_photcalib.m for details.
+            % Input  : - SIM array of images with catalogs.
+            %          * Additional arguments to pass to sim_photcalib.m
+            % Output : - SIM array of images with photometrically
+            %            calibrated magnitudes.
+            %          - Structure array with zero point fits.
+            % Example: [Sim,ZP]=sim.photcalib;
+            [Sim,ZP] = sim_photcalib(Sim,varargin{:});
+        end
+        
+        
+        % additional functions to add:
+        % flip ???
+        % fliplr
+        % rot90
+        % imagesize
+        % resize
+        % get_stamp
+        % crdetect
+        % saturated
+        
+        % near_coo
+        % nearest_xy
+        % nearest_coo
+        % addextcat
+        % ds9
+        % ds9_regions
+        % ds9_cat
+        % ds9_extcat
+        % back_std
+        % imshow
+        % filter/conv
+        % getpsf (need a PSF class)
+        % align
+        % matchcat
+        % relphot
+        % relastrom
+        % addastrom
+        % twflat
+        % domeflat
+        % skyflat
+        % coadd
+        % combine
+        % subtract
+        % 
+        
+        %--- get/set functions ---
+%         function Head=get.header(Obj,Keywords)
+%             HeaderField = 'Header';
+%             % get header or header keywords
+%             if (nargin==1),
+%                 Keywords = [];
+%             end
+%             Nsim = numel(Obj);
+%             for Isim=1:1:Nsim,
+%                 % for each image / get header
+%                 Obj(Isim).(HeaderField)
+%             end
+%             
+%         end
+       
+        %--- get functions ---
+        %function obj=get.mean1(Sim)
+        %    % mean
+        %    obj = sim_ufunv(Sim,'Op',@mean,'NaN',false);        
+        %end
+    end
+end
+
+            

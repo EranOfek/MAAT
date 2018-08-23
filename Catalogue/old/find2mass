@@ -1,0 +1,55 @@
+#!/bin/csh -f
+#++++++++++++++++
+#.IDENTIFICATION find2mass
+#.LANGUAGE       C-shell
+#.AUTHOR         Francois Ochsenbein [CDS]
+#.ENVIRONMENT    
+#.KEYWORDS       
+#.VERSION  1.0   02-Mar-2001
+#.VERSION  1.1   25-Jun-2003: Final 2MASS All-Sky Release
+#.PURPOSE        Find Stars in 2MASS
+#.COMMENTS       The "syscds" env. variable indicates an interactive usage (CDS)
+#----------------
+set D_BIN = `dirname $0`
+set path = ($D_BIN /usr/local/bin /usr/bin /usr/ucb /bin)
+set pgm  = `basename $0`
+set rcon = "aclient 130.79.129.166 1660"
+set r2mass = "$rcon find2m"
+if ($#argv < 1 || "$1" =~ *h*) then
+    echo "Usage: $pgm J2000-center-decimal-degrees"
+    echo "   or  $pgm -f [file_with_centers] [other_options]"
+    echo "   or  $pgm - [other_options]            (data in stdin)"
+    echo "--------------------------------------------------------------------"
+    $r2mass -help
+    exit 1
+endif
+
+set file = ""
+set vtit = "All-Sky Release"	# Version
+set f2mass = find2mf		# Query from File
+
+echo "#======== 2MASS $vtit server ================ CDS, Strasbourg ========"
+
+switch("$1")
+case "-f":
+    set file = $2 ; shift
+    if ("$file" == "-") set file = ""	# Accept -f - (identical to -)
+case "-":
+    shift
+    cat $file | $rcon putmp \; $f2mass $* \; rmtmp
+    exit $status
+case "-*"
+    echo "$r2mass $*"
+    $r2mass $*
+    exit $status
+endsw
+
+set call = ""
+set show = cat
+if ($?syscds) then
+    setenv LESS '-BeiqPLine %lb (Space=next b=back q=Quit h=Help)?e (END). '
+    set show = less
+    set call = "-s"
+endif
+$r2mass $call -c $argv:q | $show
+exit $status

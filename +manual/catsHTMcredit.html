@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="generator" content="MATLAB R2016a"><meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,chrome=1"><title>The HDF5/HTM large catalog format, data/catsHTM directory and access functions in the MATLAB and Python - credit page</title><style type="text/css">
+* {margin: 0; padding: 0;}
+body {text-align: start; line-height: 17.234001159668px; min-height: 0px; white-space: normal; color: rgb(0, 0, 0); font-family: Consolas, Inconsolata, Menlo, monospace; font-style: normal; font-size: 14px; font-weight: normal; text-decoration: none; white-space: normal; }
+h1, h2 {font-weight: normal;}
+.content { padding: 30px; }
+
+.S0 { margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S1 { line-height: 26.3999996185303px; min-height: 24px; white-space: pre-wrap; color: rgb(213, 80, 0); font-family: Helvetica, Arial, sans-serif; font-size: 22px; white-space: pre-wrap; margin-left: 4px; margin-top: 3px; margin-bottom: 15px; margin-right: 10px;  }
+.S2 { min-height: 0px; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S3 { line-height: 20.576000213623px; min-height: 20px; white-space: pre-wrap; color: rgb(60, 60, 60); font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: bold; white-space: pre-wrap; margin-left: 4px; margin-top: 15px; margin-bottom: 9px; margin-right: 10px;  }
+.S4 { line-height: 21px; min-height: 17px; white-space: pre-wrap; font-family: Helvetica, Arial, sans-serif; white-space: pre-wrap; margin-left: 4px; margin-top: 2px; margin-bottom: 9px; margin-right: 10px;  }
+.S5 { min-height: 0px; color: rgb(0, 95, 206); margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S6 { line-height: 26.3999996185303px; min-height: 24px; white-space: pre-wrap; color: rgb(213, 80, 0); font-family: Helvetica, Arial, sans-serif; font-size: 22px; white-space: pre-wrap; margin-left: 4px; margin-top: 10px; margin-bottom: 15px; margin-right: 10px;  }
+.S7 { min-height: 0px; font-weight: bold; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S8 { min-height: 0px; font-style: italic; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+
+.LineNodeBlock {margin: 10px 0 10px 0;}
+.LineNodeBlock+.paragraphNode {margin-top: 10px;}
+.lineNode {padding-left: 10px; background-color: #F7F7F7; border-left: 1px solid #E9E9E9; border-right: 1px solid #E9E9E9;}
+.inlineWrapper:first-child .lineNode,.inlineWrapper.outputs+.inlineWrapper .lineNode {padding-top: 5px; border-top: 1px solid #E9E9E9;}
+.inlineWrapper:last-child .lineNode,.inlineWrapper.outputs .lineNode {padding-bottom: 5px; border-bottom: 1px solid #E9E9E9;}
+.lineNode .textBox {white-space: pre;}
+</style></head><body><div class = "content"><div class = 'SectionBlock containment active'><h1 class = "S1"><span class = "S2">The HDF5/HTM large catalog format, data/catsHTM directory and access functions in the MATLAB and Python - credit page</span></h1><h2 class = "S3"><span class = "S2">Description</span></h2><p class = "S4"><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/catsHTM.html'><span class = "S0">See description main page</span></a><span class = "S2">.</span></p><h1 class = "S6"><span class = "S2">Credit</span></h1><p class = "S4"><span class = "S2">If you are using one of the large catalogs, please give the specific reference and acknowledgments to the catalogs you used (see list below) and add the following acknolwedgment. The XXX catalog we use was formatted into the HDF5/HTM large catalog format as described in </span><a href = 'http://adsabs.harvard.edu/abs/2018PASP..130g5002S'><span class = "S0">Soumagnac &amp; Ofek (2018)</span></a><span class = "S2"> and developed as part of the Matlab Astronomy &amp; Astrophysics Toolbox (</span><a href = 'http://adsabs.harvard.edu/abs/2014ascl.soft07005O'><span class = "S0">Ofek 2014; ascl.soft 07005</span></a><span class = "S2">).</span></p><h2 class = "S3"><span class = "S2">References and credit to individual catalogs:</span></h2><p class = "S4"><span class = "S7">2MASS and 2MASSxsc</span></p><p class = "S4"><a href = 'http://adsabs.harvard.edu/abs/2006AJ....131.1163S'><span class = "S0"></span></a><a href = 'http://adsabs.harvard.edu/abs/2006AJ....131.1163S'><span class = "S0">M.F. Skrutskie, et al., 2006, AJ, 131, 1163</span></a></p><p class = "S4"><a href = 'https://www.ipac.caltech.edu/2mass/'><span class = "S0">2MASS credit page</span></a></p><p class = "S4"><span class = "S7">AKARI</span></p><p class = "S4"><a href = 'https://ui.adsabs.harvard.edu/?#abs/2010A%26A...514A...1I'><span class = "S0">Ishihara, D. et al. 2010 A&amp;A 26, 514</span></a></p><p class = "S4"><span class = "S7">APASS</span></p><p class = "S4"><a href = 'https://ui.adsabs.harvard.edu/?#abs/2007ApJS..172...99C'><span class = "S0">Capak, P. et al. 2007 ApJS 172, 99</span></a></p><p class = "S4"><a href = 'http://cosmos.astro.caltech.edu/'><span class = "S0">The COSMOS webpage</span></a></p><p class = "S4"><span class = "S7">DECaLS</span></p><p class = "S4"><a href = 'http://legacysurvey.org/decamls/'><span class = "S0">DECaLS web page</span></a></p><p class = "S4"><span class = "S7">FIRST</span></p><p class = "S4"><a href = 'http://sundog.stsci.edu/'><span class = "S0">THE FIRST web page</span></a></p><p class = "S4"><a href = 'http://sundog.stsci.edu/first/acknowledgements.html'><span class = "S0">FIRST acknowledgemts</span></a></p><p class = "S4"><a href = 'http://adsabs.harvard.edu/abs/1995ApJ...450..559B'><span class = "S0">Becker, R.H. et al. 1995 ApJ 450, 559</span></a></p><p class = "S4"><span class = "S7">GAIA</span></p><p class = "S4"><a href = 'https://ui.adsabs.harvard.edu/?#abs/2016A%26A...595A...1G'><span class = "S0">Prusti, T. et al. 2016 A&amp;A 595, 1</span></a></p><p class = "S4"><a href = 'https://gaia.esac.esa.int/documentation/GDR1/Miscellaneous/sec_credit_and_citation_instructions.html'><span class = "S0">GAIA credit page</span></a></p><p class = "S4"><a href = 'http://sci.esa.int/gaia/'><span class = "S0">GAIA web page</span></a></p><p class = "S4"><span class = "S7">GALEX</span></p><p class = "S4"><a href = 'http://adsabs.harvard.edu/abs/2011Ap%26SS.335..161B'><span class = "S0">Bianchi, L., et al. 2011, MNRAS, 411, 2770 </span></a></p><p class = "S4"><span class = "S7">IPHAS</span></p><p class = "S4"><a href = 'https://ui.adsabs.harvard.edu/?#abs/2014MNRAS.444.3230B'><span class = "S0">Barentsen, G. et al. 2014 MNRAS 444, 3230</span></a></p><p class = "S4"><a href = 'http://www.iphas.org/'><span class = "S0">IPHAS web page</span></a></p><p class = "S4"><span class = "S7">NVSS</span></p><p class = "S4"><a href = 'http://adsabs.harvard.edu/abs/1998AJ....115.1693C'><span class = "S0">Condon, J.J. et al. 1998 AJ 115, 1693</span></a></p><p class = "S4"><span class = "S7">PS1</span></p><p class = "S4"><a href = 'http://panstarrs.stsci.edu/'><span class = "S0">Pan-STARRS credit page</span></a></p><p class = "S4"><span class = "S7">ROSAT</span></p><p class = "S4"><a href = 'http://adsabs.harvard.edu/abs/2000IAUC.7432....3V'><span class = "S0">Voges, W. et al. 2000 IAUC 7432, 3</span></a></p><p class = "S4"><span class = "S7">SDSS-DR10</span></p><p class = "S4"><a href = 'http://adsabs.harvard.edu/abs/2000AJ....120.1579Y'><span class = "S0">York et al. 2000 AJ 120, 1579</span></a></p><p class = "S4"><a href = 'http://www.sdss3.org/collaboration/boiler-plate.php'><span class = "S0">SDSS credit page</span></a></p><p class = "S4"><span class = "S7">UCAC-4</span></p><p class = "S4"><a href = 'https://ui.adsabs.harvard.edu/?#abs/2013AJ....145...44Z'><span class = "S0">Zacharias, N. et al. 2013 AJ 145, 44</span></a></p><p class = "S4"><span class = "S7">UKIDSS</span></p><p class = "S4"><a href = 'http://www.ukidss.org/'><span class = "S0">UKIDSS webpage</span></a></p><p class = "S4"><span class = "S7">USNO-B1</span></p><p class = "S4"><a href = 'http://adsabs.harvard.edu/abs/2003AJ....125..984M'><span class = "S0">Monet, D., et al. 2003 AJ 125, 984</span></a></p><p class = "S4"><span class = "S7">VISTA</span></p><p class = "S4"><a href = 'https://www.eso.org/public/teles-instr/p'><span class = "S0">The VISTA webpage</span></a></p><p class = "S4"><span class = "S2">The VISTA/VIKING survey (</span><a href = 'https://ui.adsabs.harvard.edu/?#abs/2013Msngr.154...32E'><span class = "S0">Edge, A. et al. 2013 Msngr 154, 32</span></a><span class = "S2">)</span></p><p class = "S4"><span class = "S7">VST</span></p><p class = "S4"><a href = 'https://www.eso.org/public/teles-instr/paranal-observatory/surveytelescopes/vst/surveys/'><span class = "S0">The VST surveys webpage</span></a></p><p class = "S4"><span class = "S2">The VST/ATLAS survey (</span><a href = 'https://ui.adsabs.harvard.edu/?#abs/2015MNRAS.451.4238S'><span class = "S0">Shanks, T., et al. 2015 MNRAS 451, 4238</span></a><span class = "S2">)</span></p><p class = "S4"><span class = "S2">The VST/KiDS survey (</span><a href = 'https://ui.adsabs.harvard.edu/?#abs/2017arXiv170302991D'><span class = "S0">de Jong, J.T.A., et al. 2017</span></a><span class = "S2">)</span></p><p class = "S4"><span class = "S7">WISE</span></p><p class = "S4"><a href = 'https://ui.adsabs.harvard.edu/?#abs/2010AJ....140.1868W'><span class = "S0">Wright, E.L., et al. 2010 AJ 140, 1868</span></a></p><p class = "S4"><a href = 'https://irsa.ipac.caltech.edu/Missions/wise.html'><span class = "S0">Wise page at IPAC</span></a></p><p class = "S4"><span class = "S7">XMM</span></p><p class = "S4"><span class = "S2"> </span><a href = 'https://heasarc.gsfc.nasa.gov/W3Browse/xmm-newton/xmmssc.html'><span class = "S0">3XMM-DR7</span></a><span class = "S2"> (</span><a href = 'http://adsabs.harvard.edu/abs/2016A%26A...590A...1R'><span class = "S0">Rosen et al. 2016; A&amp;A 26, 590</span></a><span class = "S2">)</span></p><p class = "S4"><span class = "S8">This research has made use of data obtained from the 3XMM XMM-Newton serendipitous source catalogue compiled by the 10 institutes of the XMM-Newton Survey Science Centre selected by ESA.</span></p><p class = "S4"><span class = "S8"></span></p><p class = "S4"><span class = "S8"></span></p><p class = "S4"><span class = "S2"></span></p></div></div>
+<!-- 
+##### SOURCE BEGIN #####
+%% The HDF5/HTM large catalog format, data/catsHTM directory and access functions in the MATLAB and Python - credit page
+%% Description
+% <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/catsHTM.html See description 
+% main page>.
+%% Credit
+% If you are using one of the large catalogs, please give the specific reference 
+% and acknowledgments to the catalogs you used (see list below) and add the following 
+% acknolwedgment. The XXX catalog we use was formatted into the HDF5/HTM large 
+% catalog format as described in <http://adsabs.harvard.edu/abs/2018PASP..130g5002S 
+% Soumagnac & Ofek (2018)> and developed as part of the Matlab Astronomy & Astrophysics 
+% Toolbox (<http://adsabs.harvard.edu/abs/2014ascl.soft07005O Ofek 2014; ascl.soft 
+% 07005>).
+%% References and credit to individual catalogs:
+% *2MASS and 2MASSxsc*
+% 
+% <http://adsabs.harvard.edu/abs/2006AJ....131.1163S ><http://adsabs.harvard.edu/abs/2006AJ....131.1163S 
+% M.F. Skrutskie, et al., 2006, AJ, 131, 1163>
+% 
+% <https://www.ipac.caltech.edu/2mass/ 2MASS credit page>
+% 
+% *AKARI*
+% 
+% <https://ui.adsabs.harvard.edu/?#abs/2010A%26A...514A...1I Ishihara, D. 
+% et al. 2010 A&A 26, 514>
+% 
+% *APASS*
+% 
+% <https://ui.adsabs.harvard.edu/?#abs/2007ApJS..172...99C Capak, P. et al. 
+% 2007 ApJS 172, 99>
+% 
+% <http://cosmos.astro.caltech.edu/ The COSMOS webpage>
+% 
+% *DECaLS*
+% 
+% <http://legacysurvey.org/decamls/ DECaLS web page>
+% 
+% *FIRST*
+% 
+% <http://sundog.stsci.edu/ THE FIRST web page>
+% 
+% <http://sundog.stsci.edu/first/acknowledgements.html FIRST acknowledgemts>
+% 
+% <http://adsabs.harvard.edu/abs/1995ApJ...450..559B Becker, R.H. et al. 
+% 1995 ApJ 450, 559>
+% 
+% *GAIA*
+% 
+% <https://ui.adsabs.harvard.edu/?#abs/2016A%26A...595A...1G Prusti, T. et 
+% al. 2016 A&A 595, 1>
+% 
+% <https://gaia.esac.esa.int/documentation/GDR1/Miscellaneous/sec_credit_and_citation_instructions.html 
+% GAIA credit page>
+% 
+% <http://sci.esa.int/gaia/ GAIA web page>
+% 
+% *GALEX*
+% 
+% <http://adsabs.harvard.edu/abs/2011Ap%26SS.335..161B Bianchi, L., et al. 
+% 2011, MNRAS, 411, 2770 >
+% 
+% *IPHAS*
+% 
+% <https://ui.adsabs.harvard.edu/?#abs/2014MNRAS.444.3230B Barentsen, G. 
+% et al. 2014 MNRAS 444, 3230>
+% 
+% <http://www.iphas.org/ IPHAS web page>
+% 
+% *NVSS*
+% 
+% <http://adsabs.harvard.edu/abs/1998AJ....115.1693C Condon, J.J. et al. 
+% 1998 AJ 115, 1693>
+% 
+% *PS1*
+% 
+% <http://panstarrs.stsci.edu/ Pan-STARRS credit page>
+% 
+% *ROSAT*
+% 
+% <http://adsabs.harvard.edu/abs/2000IAUC.7432....3V Voges, W. et al. 2000 
+% IAUC 7432, 3>
+% 
+% *SDSS-DR10*
+% 
+% <http://adsabs.harvard.edu/abs/2000AJ....120.1579Y York et al. 2000 AJ 
+% 120, 1579>
+% 
+% <http://www.sdss3.org/collaboration/boiler-plate.php SDSS credit page>
+% 
+% *UCAC-4*
+% 
+% <https://ui.adsabs.harvard.edu/?#abs/2013AJ....145...44Z Zacharias, N. 
+% et al. 2013 AJ 145, 44>
+% 
+% *UKIDSS*
+% 
+% <http://www.ukidss.org/ UKIDSS webpage>
+% 
+% *USNO-B1*
+% 
+% <http://adsabs.harvard.edu/abs/2003AJ....125..984M Monet, D., et al. 2003 
+% AJ 125, 984>
+% 
+% *VISTA*
+% 
+% <https://www.eso.org/public/teles-instr/p The VISTA webpage>
+% 
+% The VISTA/VIKING survey (<https://ui.adsabs.harvard.edu/?#abs/2013Msngr.154...32E 
+% Edge, A. et al. 2013 Msngr 154, 32>)
+% 
+% *VST*
+% 
+% <https://www.eso.org/public/teles-instr/paranal-observatory/surveytelescopes/vst/surveys/ 
+% The VST surveys webpage>
+% 
+% The VST/ATLAS survey (<https://ui.adsabs.harvard.edu/?#abs/2015MNRAS.451.4238S 
+% Shanks, T., et al. 2015 MNRAS 451, 4238>)
+% 
+% The VST/KiDS survey (<https://ui.adsabs.harvard.edu/?#abs/2017arXiv170302991D 
+% de Jong, J.T.A., et al. 2017>)
+% 
+% *WISE*
+% 
+% <https://ui.adsabs.harvard.edu/?#abs/2010AJ....140.1868W Wright, E.L., 
+% et al. 2010 AJ 140, 1868>
+% 
+% <https://irsa.ipac.caltech.edu/Missions/wise.html Wise page at IPAC>
+% 
+% *XMM*
+% 
+%  <https://heasarc.gsfc.nasa.gov/W3Browse/xmm-newton/xmmssc.html 3XMM-DR7> 
+% (<http://adsabs.harvard.edu/abs/2016A%26A...590A...1R Rosen et al. 2016; A&A 
+% 26, 590>)
+% 
+% _This research has made use of data obtained from the 3XMM XMM-Newton serendipitous 
+% source catalogue compiled by the 10 institutes of the XMM-Newton Survey Science 
+% Centre selected by ESA._
+% 
+% __
+% 
+% __
+% 
+%
+##### SOURCE END #####
+--></body></html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="generator" content="MATLAB R2016a"><meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,chrome=1"><title>The astronomy & astrophysics toolbox for MATLAB</title><style type="text/css">
+* {margin: 0; padding: 0;}
+body {text-align: start; line-height: 17.234001159668px; min-height: 0px; white-space: normal; color: rgb(0, 0, 0); font-family: Consolas, Inconsolata, Menlo, monospace; font-style: normal; font-size: 14px; font-weight: normal; text-decoration: none; white-space: normal; }
+h1, h2 {font-weight: normal;}
+.content { padding: 30px; }
+
+.S0 { margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S1 { line-height: 26.3999996185303px; min-height: 24px; white-space: pre-wrap; color: rgb(213, 80, 0); font-family: Helvetica, Arial, sans-serif; font-size: 22px; white-space: pre-wrap; margin-left: 4px; margin-top: 3px; margin-bottom: 15px; margin-right: 10px;  }
+.S2 { min-height: 0px; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S3 { line-height: 20.576000213623px; min-height: 20px; white-space: pre-wrap; color: rgb(60, 60, 60); font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: bold; white-space: pre-wrap; margin-left: 4px; margin-top: 15px; margin-bottom: 9px; margin-right: 10px;  }
+.S4 { line-height: 21px; min-height: 17px; white-space: pre-wrap; font-family: Helvetica, Arial, sans-serif; white-space: pre-wrap; margin-left: 4px; margin-top: 2px; margin-bottom: 9px; margin-right: 10px;  }
+.S5 { min-height: 0px; font-style: italic; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S6 { min-height: 0px; color: rgb(0, 95, 206); margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S7 { font-family: Helvetica, Arial, sans-serif; margin-left: 0px; margin-top: 10px; margin-bottom: 20px; margin-right: 0px;  }
+.S8 { text-align: left; line-height: 21px; white-space: pre-wrap; white-space: pre-wrap; margin-left: 56px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S9 { font-weight: bold; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S10 { color: rgb(0, 95, 206); margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+
+.LineNodeBlock {margin: 10px 0 10px 0;}
+.LineNodeBlock+.paragraphNode {margin-top: 10px;}
+.lineNode {padding-left: 10px; background-color: #F7F7F7; border-left: 1px solid #E9E9E9; border-right: 1px solid #E9E9E9;}
+.inlineWrapper:first-child .lineNode,.inlineWrapper.outputs+.inlineWrapper .lineNode {padding-top: 5px; border-top: 1px solid #E9E9E9;}
+.inlineWrapper:last-child .lineNode,.inlineWrapper.outputs .lineNode {padding-bottom: 5px; border-bottom: 1px solid #E9E9E9;}
+.lineNode .textBox {white-space: pre;}
+</style></head><body><div class = "content"><div class = 'SectionBlock containment active'><h1 class = "S1"><span class = "S2">The astronomy &amp; astrophysics toolbox for MATLAB</span></h1><h2 class = "S3"><span class = "S2">Description</span></h2><p class = "S4"><span class = "S2">The </span><span class = "S5">MATLAB Astronomy &amp; Astrophysics Toolbox </span><span class = "S2">(MAAT) is a collection of functions and classes for astronomy and astrophysics experimental and theoretical research.</span></p><p class = "S4"><span class = "S2">NOTE: This page describes a new version of MAAT with many new capabilities. However, this version is not fully backward compatible. An older version of MAAT is still available, but not supported (see </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlabn/doc/install.html'><span class = "S0">installation instructions</span></a><span class = "S2">).</span></p><p class = "S4"><span class = "S2">The toolbox is organized in several packages and sub packages that allow easy-to-navigate platform, as well as several "container" classes (e.g., image, catalog, time containers) with their own functions (methods), as well as static classes. The toolbox contains detailed documentation and examples, as well as a detailed help section for each function (see </span><a href = 'http://weizmann.ac.il/home/eofek/matlab/doc/'><span class = "S0">documentation</span></a><span class = "S2">).</span></p><p class = "S4"><span class = "S2">The MAAT toolbox has functions and classes covering the following topics:</span></p><ul class = "S7"><li class = "S8"><span class = "S9">Documentation: </span><span class = "S0">A package containing live documents (documentation with example code) covering many aspects of this toolbox with examples (see </span><a href = 'http://weizmann.ac.il/home/eofek/matlab/doc/'><span class = "S0">documentation</span></a><span class = "S0">).</span></li><li class = "S8"><span class = "S9">Astronomical image processing</span><span class = "S0">:  A complete set of functions to reduce and analyze astronomical images, from bias removal to image subtraction, source extraction and PSF photometry.</span></li><li class = "S8"><span class = "S9">Astronomical spectra processing</span><span class = "S0">: A set of functions to reduce and analyze astronomical spectral data.</span></li><li class = "S8"><span class = "S9">Astronomical catalogs and images access, search and manipulation</span><span class = "S0">:  Tools to store and manipulate astronomical catalogs as well as functions for fast access of astronomical catalogs stored locally, and access of external image databases and catalogs (e.g., VizieR, MAST, IRSA, SDSS, Chandra).                      </span></li><li class = "S8"><span class = "S9">Astronomical spectra access, fitting and manipulation</span><span class = "S0">: Manipulation, matching and fitting of astronomical spectra and astronomical filters. Including a local database of spectral templates. </span></li><li class = "S8"><span class = "S9">Time series analysis</span><span class = "S0">: Tools for time series analysis. </span></li><li class = "S8"><span class = "S9">Celestial coordinates, ephemeris and time</span><span class = "S0">: Large number of functions for celestial coordinates, time, celestial mechanics, and ephemeris.  </span></li><li class = "S8"><span class = "S9">Fitting and statistics utilities</span><span class = "S0">: Tools for statistics, data analysis and signal processing.</span></li><li class = "S8"><span class = "S9">Cosmology</span><span class = "S0">: Functions for cosmology. </span></li><li class = "S8"><span class = "S9">Binaries</span><span class = "S0">: Binary stars orbit fitting and eclipsing binary.</span></li><li class = "S8"><span class = "S9">Occultations</span><span class = "S0">: Diffractive stellar occultations.</span></li><li class = "S8"><span class = "S9">GRB</span><span class = "S0">: Gamma Ray Bursts related functions.</span></li><li class = "S8"><span class = "S9">Supernovae</span><span class = "S0">: Shock cooling, radioactive decay and tools for SN research.</span></li><li class = "S8"><span class = "S9">Stars and galaxies</span><span class = "S0">: </span></li><li class = "S8"><span class = "S9">General utilities</span><span class = "S0">: Astronomical constants, units conversions, strings manipulation, files and IO related functions, and functions for manipulating matlab objects.  </span></li><li class = "S8"><span class = "S9">ds9 control</span><span class = "S0">: Full interaction with ds9 image viewer, including easy creation and display of region files, imexam-like functionality, and interaction with the image processing tools. </span></li><li class = "S8"><span class = "S9">FITS images manipulation</span><span class = "S0">: Additional functions (to those available as part of the matlab CFITSIO library) to read, write and manipulate FITS files. </span></li><li class = "S8"><span class = "S9">Telescope optics</span><span class = "S0">: Signal-to-noise calculation, zernikie polynomials, scintillation and wavefront simulations, and telescope control.  </span></li><li class = "S8"><span class = "S9">Plotting</span><span class = "S0">: Additional functions for plotting.</span></li><li class = "S8"><span class = "S9">WWW access</span><span class = "S0">: Powerful functions for world wide web downloading and searching.        </span></li></ul><h2 class = "S3"><span class = "S2">Credit</span></h2><p class = "S4"><span class = "S2">If you are using this code or products in your scientific publication please give a reference to </span><a href = 'http://adsabs.harvard.edu/abs/2014ascl.soft07005O'><span class = "S0">Ofek (2014; ascl.soft 07005)</span></a><span class = "S2">.</span></p><h2 class = "S3"><span class = "S2">Authors</span></h2><p class = "S4"><span class = "S2">The </span><span class = "S5">MATLAB Astronomy &amp; Astrophysics Toolbox </span><span class = "S2">(MAAT) contains tools contributed by the following individuals:</span></p><p class = "S4"><a href = 'https://webhome.weizmann.ac.il/home/eofek/'><span class = "S0">Eran Ofek</span></a><span class = "S2">, Keren Sharon, Dovi Poznanski, Barak Zackay, Guy Nir, Ofer Yaron, Yifat Dzigan, Noam Ganot, Tali Engel.</span></p><h2 class = "S3"><span class = "S2">Bugs</span></h2><p class = "S4"><span class = "S2">The code may contain bugs - please report any bugs to: ofek dot eran at gmail dot com.</span></p><h2 class = "S3"><span class = "S2">License</span></h2><p class = "S4"><span class = "S2">Unless specified otherwise this code and products are released under the GNU general public license version 3.</span></p><h2 class = "S3"><span class = "S2">Installation</span></h2><p class = "S4"><span class = "S2">See </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/install.html'><span class = "S0">http://weizmann.ac.il/home/eofek/matlab/doc/install.html</span></a><span class = "S2"> for installation instructions and additional documentation.</span></p><p class = "S4"><span class = "S2"></span></p></div></div>
+<!-- 
+##### SOURCE BEGIN #####
+%% The astronomy & astrophysics toolbox for MATLAB
+%% Description
+% The _MATLAB Astronomy & Astrophysics Toolbox _(MAAT) is a collection of functions 
+% and classes for astronomy and astrophysics experimental and theoretical research.
+% 
+% NOTE: This page describes a new version of MAAT with many new capabilities. 
+% However, this version is not fully backward compatible. An older version of 
+% MAAT is still available, but not supported (see <https://webhome.weizmann.ac.il/home/eofek/matlabn/doc/install.html 
+% installation instructions>).
+% 
+% The toolbox is organized in several packages and sub packages that allow 
+% easy-to-navigate platform, as well as several "container" classes (e.g., image, 
+% catalog, time containers) with their own functions (methods), as well as static 
+% classes. The toolbox contains detailed documentation and examples, as well as 
+% a detailed help section for each function (see <http://weizmann.ac.il/home/eofek/matlab/doc/ 
+% documentation>).
+% 
+% The MAAT toolbox has functions and classes covering the following topics:
+% 
+% * *Documentation: *A package containing live documents (documentation with 
+% example code) covering many aspects of this toolbox with examples (see <http://weizmann.ac.il/home/eofek/matlab/doc/ 
+% documentation>).
+% * *Astronomical image processing*:  A complete set of functions to reduce 
+% and analyze astronomical images, from bias removal to image subtraction, source 
+% extraction and PSF photometry.
+% * *Astronomical spectra processing*: A set of functions to reduce and analyze 
+% astronomical spectral data.
+% * *Astronomical catalogs and images access, search and manipulation*:  Tools 
+% to store and manipulate astronomical catalogs as well as functions for fast 
+% access of astronomical catalogs stored locally, and access of external image 
+% databases and catalogs (e.g., VizieR, MAST, IRSA, SDSS, Chandra).                      
+% * *Astronomical spectra access, fitting and manipulation*: Manipulation, matching 
+% and fitting of astronomical spectra and astronomical filters. Including a local 
+% database of spectral templates. 
+% * *Time series analysis*: Tools for time series analysis. 
+% * *Celestial coordinates, ephemeris and time*: Large number of functions for 
+% celestial coordinates, time, celestial mechanics, and ephemeris.  
+% * *Fitting and statistics utilities*: Tools for statistics, data analysis 
+% and signal processing.
+% * *Cosmology*: Functions for cosmology. 
+% * *Binaries*: Binary stars orbit fitting and eclipsing binary.
+% * *Occultations*: Diffractive stellar occultations.
+% * *GRB*: Gamma Ray Bursts related functions.
+% * *Supernovae*: Shock cooling, radioactive decay and tools for SN research.
+% * *Stars and galaxies*: 
+% * *General utilities*: Astronomical constants, units conversions, strings 
+% manipulation, files and IO related functions, and functions for manipulating 
+% matlab objects.  
+% * *ds9 control*: Full interaction with ds9 image viewer, including easy creation 
+% and display of region files, imexam-like functionality, and interaction with 
+% the image processing tools. 
+% * *FITS images manipulation*: Additional functions (to those available as 
+% part of the matlab CFITSIO library) to read, write and manipulate FITS files. 
+% * *Telescope optics*: Signal-to-noise calculation, zernikie polynomials, scintillation 
+% and wavefront simulations, and telescope control.  
+% * *Plotting*: Additional functions for plotting.
+% * *WWW access*: Powerful functions for world wide web downloading and searching.        
+%% Credit
+% If you are using this code or products in your scientific publication please 
+% give a reference to <http://adsabs.harvard.edu/abs/2014ascl.soft07005O Ofek 
+% (2014; ascl.soft 07005)>.
+%% Authors
+% The _MATLAB Astronomy & Astrophysics Toolbox _(MAAT) contains tools contributed 
+% by the following individuals:
+% 
+% <https://webhome.weizmann.ac.il/home/eofek/ Eran Ofek>, Keren Sharon, Dovi 
+% Poznanski, Barak Zackay, Guy Nir, Ofer Yaron, Yifat Dzigan, Noam Ganot, Tali 
+% Engel.
+%% Bugs
+% The code may contain bugs - please report any bugs to: ofek dot eran at gmail 
+% dot com.
+%% License
+% Unless specified otherwise this code and products are released under the GNU 
+% general public license version 3.
+%% Installation
+% See <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/install.html http://weizmann.ac.il/home/eofek/matlab/doc/install.html> 
+% for installation instructions and additional documentation.
+% 
+%
+##### SOURCE END #####
+--></body></html>

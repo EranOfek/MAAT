@@ -1,0 +1,476 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="generator" content="MATLAB R2016a"><meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,chrome=1"><title>The SIM class (structured images)</title><style type="text/css">
+* {margin: 0; padding: 0;}
+body {text-align: start; line-height: 17.234001159668px; min-height: 0px; white-space: normal; color: rgb(0, 0, 0); font-family: Consolas, Inconsolata, Menlo, monospace; font-style: normal; font-size: 14px; font-weight: normal; text-decoration: none; white-space: normal; }
+h1, h2 {font-weight: normal;}
+.content { padding: 30px; }
+
+.S0 { margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S1 { line-height: 26.3999996185303px; min-height: 24px; white-space: pre-wrap; color: rgb(213, 80, 0); font-family: Helvetica, Arial, sans-serif; font-size: 22px; white-space: pre-wrap; margin-left: 4px; margin-top: 3px; margin-bottom: 15px; margin-right: 10px;  }
+.S2 { min-height: 0px; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S3 { line-height: 26.3999996185303px; min-height: 24px; white-space: pre-wrap; color: rgb(213, 80, 0); font-family: Helvetica, Arial, sans-serif; font-size: 22px; white-space: pre-wrap; margin-left: 4px; margin-top: 10px; margin-bottom: 15px; margin-right: 10px;  }
+.S4 { line-height: 20.576000213623px; min-height: 20px; white-space: pre-wrap; color: rgb(60, 60, 60); font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: bold; white-space: pre-wrap; margin-left: 4px; margin-top: 15px; margin-bottom: 9px; margin-right: 10px;  }
+.S5 { line-height: 21px; min-height: 17px; white-space: pre-wrap; font-family: Helvetica, Arial, sans-serif; white-space: pre-wrap; margin-left: 4px; margin-top: 2px; margin-bottom: 9px; margin-right: 10px;  }
+.S6 { min-height: 0px; font-family: monospace; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S7 { min-height: 0px; color: rgb(0, 95, 206); margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S8 { font-family: Helvetica, Arial, sans-serif; margin-left: 0px; margin-top: 10px; margin-bottom: 20px; margin-right: 0px;  }
+.S9 { text-align: left; line-height: 21px; white-space: pre-wrap; white-space: pre-wrap; margin-left: 56px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S10 { font-family: monospace; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S11 { margin-left: 3px; margin-top: 10px; margin-bottom: 4px; margin-right: 3px;  }
+.S12 { line-height: 15.5926675796509px; min-height: 18px; white-space: nowrap; font-size: 12.6666669845581px; white-space: nowrap; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S13 { line-height: 15.5926685333252px; min-height: 0px; white-space: pre; color: rgb(34, 139, 34); font-size: 12.6666679382324px; white-space: pre; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 45px;  }
+.S14 { line-height: 15.5926685333252px; min-height: 0px; white-space: pre; font-size: 12.6666679382324px; white-space: pre; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S15 { line-height: 15.5926685333252px; min-height: 0px; white-space: pre; font-size: 12.6666679382324px; white-space: pre; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 45px;  }
+.S16 { color: rgb(64, 64, 64); margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S17 { line-height: 20.576000213623px; min-height: 20px; white-space: pre-wrap; color: rgb(60, 60, 60); font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: bold; white-space: pre-wrap; margin-left: 4px; margin-top: 3px; margin-bottom: 9px; margin-right: 10px;  }
+.S18 { margin-left: 3px; margin-top: 10px; margin-bottom: 10px; margin-right: 3px;  }
+.S19 { line-height: 21px; min-height: 17px; white-space: pre-wrap; font-family: Helvetica, Arial, sans-serif; white-space: pre-wrap; margin-left: 4px; margin-top: 10px; margin-bottom: 9px; margin-right: 10px;  }
+.S20 { line-height: 15.5926685333252px; min-height: 0px; white-space: pre; color: rgb(160, 32, 240); font-size: 12.6666679382324px; white-space: pre; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S21 { min-height: 0px; text-decoration: underline; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+
+.LineNodeBlock {margin: 10px 0 10px 0;}
+.LineNodeBlock+.paragraphNode {margin-top: 10px;}
+.lineNode {padding-left: 10px; background-color: #F7F7F7; border-left: 1px solid #E9E9E9; border-right: 1px solid #E9E9E9;}
+.inlineWrapper:first-child .lineNode,.inlineWrapper.outputs+.inlineWrapper .lineNode {padding-top: 5px; border-top: 1px solid #E9E9E9;}
+.inlineWrapper:last-child .lineNode,.inlineWrapper.outputs .lineNode {padding-bottom: 5px; border-bottom: 1px solid #E9E9E9;}
+.lineNode .textBox {white-space: pre;}
+.outputGroup {margin: 2px 0 2px 0; padding: 2px 2px 2px 4px;}
+.outputRegion {}
+.outputParagraph {color: rgba(64, 64, 64, 1); padding: 10px 0 6px 17px; background: white; overflow-x: hidden;}
+.inlineWrapper:last-child .outputParagraph {border-bottom-left-radius: 4px; border-bottom-right-radius: 4px;}
+.outputParagraph:empty {margin: 0;}
+.inlineElement .symbolicElement {margin-top: 1px; margin-bottom: 1px;}
+.embeddedOutputsSymbolicElement .MathEquation {margin-top: 4px; margin-bottom: 4px;}
+.embeddedOutputsSymbolicElement .MathEquation.displaySymbolicElement {margin-left: 15px;}
+.embeddedOutputsSymbolicElement .MathEquation.inlineSymbolicElement {margin-left: 5px;}
+.embeddedOutputsSymbolicElement {overflow-x: auto; overflow-y: hidden;}
+.embeddedOutputsSymbolicElement { overflow: initial !important;}
+.embeddedOutputsTextElement,.embeddedOutputsVariableStringElement {font-family: Consolas, Inconsolata, Menlo, monospace; font-size: 12px; white-space: pre; word-wrap: initial; min-height: 18px; max-height: 250px; overflow: auto;}
+.textElement {padding-top: 3px;}
+.embeddedOutputsTextElement.inlineElement,.embeddedOutputsVariableStringElement.inlineElement {}
+.inlineElement .textElement {}
+.embeddedOutputsTextElement,.embeddedOutputsVariableStringElement { max-height: none !important; overflow: initial !important;}
+.veSpecifier {}
+.veContainer {}
+.veSpecifierBox {height: 400px; width: 500px;}
+.veSpecifier .veTable {padding-top: 3px; padding-bottom: 4px;}
+.veSpecifierBox .veSpecifier .veContainer {position: relative; width: 100%; height: 370px;}
+.veSpecifierBox .dijitDialogPaneContent {width: 97% !important; height: 88% !important;}
+.veSpecifier .veTable .rowHeadersWrapper {padding-bottom: 0;}
+.veSpecifier .veTable .scroller .variableEditorRenderers {padding-right: 3px; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;}
+.veVariableValueSummary {display: inline-block;}
+.veSpecifier .veTable .topHeaderWrapper,.veSpecifier .veTable .bottomRowHeaderWrapper {visibility: hidden; z-index: 0;}
+.veMetaSummary {font-style: italic;}
+.veSpecifier .veTable .scroller {overflow: hidden;}
+.veSpecifier .veTable:hover .scroller {overflow: auto;}
+.veSpecifier .veVariableName,.veSpecifier .veDimensionFont {font-family: Consolas, Inconsolata, Menlo, monospace; font-size: 12px;}
+.veSpecifier .veVariableName {padding-top: 2px;}
+.veSpecifier .veDimensionFont {font-style: italic; color: #9A9A9A;}
+.veSpecifier .scroller::-webkit-scrollbar-track {background-color: white;}
+.veSpecifier .scroller::-webkit-scrollbar-corner {background-color: white;}
+.veSpecifier .veTable .topRowHeaderWrapper {border: none; background-color: #F8F9FA;}
+.veSpecifier .mw_type_ListBase.showCellBorders,.veSpecifier .veTable .topHeaderWrapper,.veSpecifier .veTable .bottomRowHeaderWrapper,.veSpecifier .veTable .verticalScrollSpacer,.veSpecifier .veTable .horizontalScrollSpacer {border: none;}
+.veSpecifier .veTable .dataScrollerNode {border: 1px solid #BFBFBF;}
+.veSpecifier .veTable .columnHeaderNode,.veSpecifier .veTable .rowHeaderNode,.veSpecifier .veTable .dataBody {font-family: Arial; font-size: 13px;}
+.veSpecifier .veTable .columnHeaderNode,.veSpecifier .veTable .rowHeaderNode {color: #7F7F7F;}
+.veSpecifier .veTable .dataBody {color: #000000;}
+.veSpecifier .veTable .columnHeaderNode .cell .drag,.veSpecifier .veTable .columnHeaderNode .cell .header,.veSpecifier .veTable .topHeaderWrapper,.veSpecifier .veTable .bottomRowHeaderWrapper {background-color: #F8F9FA;}
+.veSpecifier .veTable .columnHeaderNode .cell .dragBorder {border-right: 1px solid #F8F9FA;}
+.veSpecifier .veTable .rowHeaderNode .cell {padding-top: 3px; text-align: center; border-bottom: 1px solid #F8F9FA;}
+.veSpecifier .veTable .dataBody .cell .plainText {text-align: right;}
+.veSpecifier .veTable .dataBody .row .cell {border-bottom: 1px solid #E9E9E9; border-right: 1px solid #E9E9E9;}
+.embeddedOutputsVariableElement {font-family: Consolas, Inconsolata, Menlo, monospace; font-size: 12px; white-space: pre-wrap; word-wrap: break-word; min-height: 18px; max-height: 250px; overflow: auto;}
+.variableElement {}
+.embeddedOutputsVariableElement.inlineElement {}
+.inlineElement .variableElement {}
+.variableValue { width: 100% !important; }
+.embeddedOutputsMatrixElement {min-height: 18px; box-sizing: border-box; font-family: Consolas, Inconsolata, Menlo, monospace; font-size: 12px;}
+.embeddedOutputsMatrixElement .matrixElement{position: relative;}
+.matrixElement .variableValue {white-space: pre; display: inline-block; vertical-align: top; overflow: hidden;}
+.embeddedOutputsMatrixElement.inlineElement {}
+.embeddedOutputsMatrixElement.inlineElement .topHeaderWrapper {display: none;}
+.embeddedOutputsMatrixElement.inlineElement .veTable .body {padding-top: 0 !important; max-height: 100px;}
+.embeddedOutputsMatrixElement.inlineElement .veVariableName {padding-top: 0;}
+.inlineElement .matrixElement {max-height: 300px;}
+.embeddedOutputsMatrixElement .matrixElement .valueContainer {white-space: nowrap; padding-top: 10px; margin-bottom: 3px;}
+.embeddedOutputsMatrixElement .matrixElement .valueContainer .horizontalEllipsis.hide,.embeddedOutputsMatrixElement .matrixElement .verticalEllipsis.hide {display: none;}
+.embeddedOutputsMatrixElement .matrixElement .valueContainer .horizontalEllipsis {margin-bottom: -3px;}
+.matrixElement { max-height: none !important; }
+.dijitTooltipDialog .dijitTooltipContainer .dijitTooltipContents .alertPlugin-alertMessage {min-width: 12px; max-width: 400px; max-height: 300px; overflow: auto;}
+.dijitTooltipDialog .alertPlugin-alertMessage::-webkit-scrollbar {width: 11px; height: 11px;}
+.dijitTooltipDialog .alertPlugin-alertMessage::-webkit-scrollbar-track {background-color: rgba(0, 0, 0, 0);}
+.dijitTooltipDialog .alertPlugin-alertMessage::-webkit-scrollbar-corner {background-color: rgba(0, 0, 0, 0);}
+.dijitTooltipDialog .alertPlugin-alertMessage::-webkit-scrollbar-thumb {border-radius: 7px; background-color: rgba(0, 0, 0, 0.1); border: 2px solid rgba(0, 0, 0, 0); background-clip: padding-box;}
+.dijitTooltipDialog .alertPlugin-alertMessage::-webkit-scrollbar-thumb:hover {background-color: rgba(0, 0, 0, 0.2);}
+.dijitTooltipDialog .alertPlugin-alertMessage::-webkit-scrollbar-thumb {background-color: rgba(0, 0, 0, 0);}
+.dijitTooltipDialog .alertPlugin-alertMessage:hover::-webkit-scrollbar-thumb {background-color: rgba(0, 0, 0, 0.1);}
+.dijitTooltipDialog .alertPlugin-alertMessage:hover::-webkit-scrollbar-thumb:hover {background-color: rgba(0, 0, 0, 0.2);}
+.alertPlugin-alertLine {position: absolute; display: initial; width: 40px; text-align: right; cursor: text;}
+.alertPlugin-onTextLine {visibility: hidden;}
+.alertPlugin-hasTooltip .alertPlugin-warningImg,.alertPlugin-hasTooltip .alertPlugin-errorImg {cursor: pointer;}
+.alertPlugin-alertLine .alertPlugin-warningElement,.alertPlugin-alertLine .alertPlugin-errorElement {display: inline-block; margin-right: 4px;}
+.alertPlugin-isStale {-webkit-filter: opacity(0.4) grayscale(80%); filter: opacity(0.4) grayscale(80%);}
+.diagnosticMessage-wrapper {font-family: Consolas, Inconsolata, Menlo, monospace; font-size: 12px;}
+.diagnosticMessage-wrapper.diagnosticMessage-warningType {color: rgb(255,100,0);}
+.diagnosticMessage-wrapper.diagnosticMessage-warningType a {color: rgb(255,100,0); text-decoration: underline;}
+.diagnosticMessage-wrapper.diagnosticMessage-errorType {color: rgb(230,0,0);}
+.diagnosticMessage-wrapper.diagnosticMessage-errorType a {color: rgb(230,0,0); text-decoration: underline;}
+.diagnosticMessage-wrapper .diagnosticMessage-messagePart {white-space: pre-wrap;}
+.diagnosticMessage-wrapper .diagnosticMessage-stackPart {white-space: pre;}
+.embeddedOutputsWarningElement{min-height: 18px; max-height: 250px; overflow: auto;}
+.embeddedOutputsWarningElement.inlineElement {}
+.embeddedOutputsErrorElement {min-height: 18px; max-height: 250px; overflow: auto;}
+.embeddedOutputsErrorElement.inlineElement {}
+</style></head><body><div class = "content"><div class = 'SectionBlock containment active'><h1 class = "S1"><span class = "S2">The SIM class (structured images)</span></h1><h1 class = "S3"><span class = "S2">in the astronomy &amp; astrophysics toolbox for MATLAB</span></h1><h2 class = "S4"><span class = "S2">Description:</span></h2><p class = "S5"><span class = "S2">The </span><span class = "S6">SIM</span><span class = "S2"> class is designed to store, access and manipulate images and their metadata. </span></p><p class = "S5"><span class = "S2">This class contains a large number of methods to analyze and reduce astronomical images, from the most basic operations (e.g., arithmatic, bias, flat) to high-level functions (e.g., astrometry, registration and image subtraction). </span></p><p class = "S5"><span class = "S2">The SIM class inherits from the </span><span class = "S6">WorldCooSys, </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/HEAD.html'><span class = "S0">HEAD</span></a><span class = "S6">, </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/AstCat.html'><span class = "S0">AstCat</span></a><span class = "S6">, MASK</span><span class = "S2">, and </span><span class = "S6">ClassPSF</span><span class = "S2"> classes. </span></p><p class = "S5"><span class = "S2">This file is accessible through the </span><span class = "S6">manual</span><span class = "S2"> package (i.e. </span><span class = "S6">manual.HEAD</span><span class = "S2">). </span></p><h2 class = "S4"><span class = "S2">Credit</span></h2><p class = "S5"><span class = "S2">If you are using this code or products in your scientific publication please give a reference to </span><a href = 'http://adsabs.harvard.edu/abs/2014ascl.soft07005O'><span class = "S0">Ofek (2014; ascl.soft 07005)</span></a><span class = "S2">.</span></p><h2 class = "S4"><span class = "S2">License</span></h2><p class = "S5"><span class = "S2">Unless specified otherwise this code and products are released under the GNU general public license version 3.</span></p><h2 class = "S4"><span class = "S2">Installation</span></h2><p class = "S5"><span class = "S2">See</span><a href = 'http://webhome.weizmann.ac.il/home/eofek/matlab/doc/install.html'><span class = "S0"> http://weizmann.ac.il/home/eofek/matlab/doc/install.html </span></a><span class = "S2">for installation instruction and additional documentation.</span></p><h2 class = "S4"><span class = "S2">Properties</span></h2><p class = "S5"><span class = "S2">The </span><span class = "S6">SIM</span><span class = "S2"> object is a strcture-array like object that may contain a large number of images. Each image is stored in a different element of the structure, and each element contains the properties listed below.</span></p><p class = "S5"><span class = "S2">The </span><span class = "S6">SIM</span><span class = "S2"> class inherits from the </span><span class = "S6">WorldCooSys, HEAD, AstCat, MASK</span><span class = "S2">, and </span><span class = "S6">ClassPSF</span><span class = "S2"> classes. </span></p><p class = "S5"><span class = "S2">Properties of the image class:</span></p><ul class = "S8"><li class = "S9"><span class = "S0">Im - Image container</span></li><li class = "S9"><span class = "S0">ImageFileName - Image file name container</span></li><li class = "S9"><span class = "S0">BackIm - Background image container</span></li><li class = "S9"><span class = "S0">ErrIm - Error image container</span></li><li class = "S9"><span class = "S0">WeightIm - Weight image container</span></li></ul><p class = "S5"><span class = "S2">Properties inherited from the </span><span class = "S6">AstCat</span><span class = "S2"> class:</span></p><ul class = "S8"><li class = "S9"><span class = "S10">Cat</span><span class = "S0"> - Catalog container</span></li><li class = "S9"><span class = "S10">Col</span><span class = "S0"> - Structure array of column names and their index</span></li><li class = "S9"><span class = "S10">ColCell</span><span class = "S0"> - Cell array of column names.</span></li><li class = "S9"><span class = "S10">ColUnits</span><span class = "S0"> - Cell array of column units.</span></li><li class = "S9"><span class = "S10">SortedBy</span><span class = "S0"> - Sorted by: column name.</span></li><li class = "S9"><span class = "S10">SortedByCol</span><span class = "S0"> - Sorted by: Colum index.</span></li><li class = "S9"><span class = "S10">Name</span></li><li class = "S9"><span class = "S10">Source</span></li><li class = "S9"><span class = "S10">Reference</span></li><li class = "S9"><span class = "S10">Version</span></li></ul><p class = "S5"><span class = "S2">Properties inherited from the </span><span class = "S6">HEAD</span><span class = "S2"> and </span><span class = "S6">WorldCooSys</span><span class = "S2"> classes:</span></p><ul class = "S8"><li class = "S9"><span class = "S10">Header</span><span class = "S0"> - A 3 columns cell array of Keyword, Value, Comment</span></li><li class = "S9"><span class = "S10">WCS</span><span class = "S0"> - Structure of WCS information.</span></li><li class = "S9"><span class = "S10">UserData</span><span class = "S0"> - User data container</span></li></ul><p class = "S5"><span class = "S2">Properties inherited from the </span><span class = "S6">MASK</span><span class = "S2"> class:</span></p><ul class = "S8"><li class = "S9"><span class = "S10">Mask</span><span class = "S0"> - Mask image container</span></li><li class = "S9"><span class = "S10">MaskDic</span><span class = "S0"> - Mask dictionary function handle.</span></li></ul><p class = "S5"><span class = "S2">Properties inherited from the </span><span class = "S6">ClassPSF</span><span class = "S2"> class:</span></p><ul class = "S8"><li class = "S9"><span class = "S10">PSF</span><span class = "S0"> - PSF container</span></li><li class = "S9"><span class = "S10">ErrPSF</span><span class = "S0"> - PSF error container.</span></li><li class = "S9"><span class = "S10">ParPSF</span><span class = "S0"> - PSF parameters.</span></li><li class = "S9"><span class = "S10">CooPSF</span><span class = "S0"> - PSF coordinates.</span></li></ul><h1 class = "S3"><span class = "S2">Methods and examples</span></h1><p class = "S5"><span class = "S2">To see all properties and methods of a </span><span class = "S6">SIM</span><span class = "S2"> object, type "SIM." followed by &lt;tab&gt;.</span></p><h2 class = "S4"><span class = "S2">Constractor</span></h2><p class = "S5"><span class = "S2">The </span><span class = "S6">SIM</span><span class = "S2"> constractor function can be used to generate an empty </span><span class = "S6">SIM</span><span class = "S2"> object:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% constract a single elemnt SIM object</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S14">S</span><span class = "S15">=SIM</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement scrollableOutput" uid="EB254092" data-testid="output_0" data-width="1176" style="width: 1206px; max-height: 406px;"><div class="textElement"><div>S = </div><div>&nbsp;&nbsp;SIM with properties:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Im: []<br>&nbsp;&nbsp;&nbsp;&nbsp;ImageFileName: ''<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BackIm: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ErrIm: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WeightIm: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cat: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Col: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ColCell: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ColUnits: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SortedBy: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SortedByCol: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Source: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reference: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Version: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Header: {0×3 cell}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WCS: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UserData: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mask: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MaskDic: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PSF: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ErrPSF: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ParPSF: {}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CooPSF: []<br><br></div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% constract a 2x1 SIM object</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S14">S</span><span class = "S15">=SIM(2)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement scrollableOutput" uid="E5948073" data-testid="output_1" data-width="1176" style="width: 1206px; max-height: 406px;"><div class="textElement"><div>S = </div><div>&nbsp;&nbsp;2×1 SIM array with properties:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Im<br>&nbsp;&nbsp;&nbsp;&nbsp;ImageFileName<br>&nbsp;&nbsp;&nbsp;&nbsp;BackIm<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrIm<br>&nbsp;&nbsp;&nbsp;&nbsp;WeightIm<br>&nbsp;&nbsp;&nbsp;&nbsp;Cat<br>&nbsp;&nbsp;&nbsp;&nbsp;Col<br>&nbsp;&nbsp;&nbsp;&nbsp;ColCell<br>&nbsp;&nbsp;&nbsp;&nbsp;ColUnits<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedBy<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedByCol<br>&nbsp;&nbsp;&nbsp;&nbsp;Name<br>&nbsp;&nbsp;&nbsp;&nbsp;Source<br>&nbsp;&nbsp;&nbsp;&nbsp;Reference<br>&nbsp;&nbsp;&nbsp;&nbsp;Version<br>&nbsp;&nbsp;&nbsp;&nbsp;Header<br>&nbsp;&nbsp;&nbsp;&nbsp;WCS<br>&nbsp;&nbsp;&nbsp;&nbsp;UserData<br>&nbsp;&nbsp;&nbsp;&nbsp;Mask<br>&nbsp;&nbsp;&nbsp;&nbsp;MaskDic<br>&nbsp;&nbsp;&nbsp;&nbsp;PSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ParPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;CooPSF<br><br></div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% constrct a 3x2 SIM object</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S14">S</span><span class = "S15">=SIM(3,2)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement scrollableOutput" uid="CB3402CA" data-testid="output_2" data-width="1176" style="width: 1206px; max-height: 406px;"><div class="textElement"><div>S = </div><div>&nbsp;&nbsp;3×2 SIM array with properties:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Im<br>&nbsp;&nbsp;&nbsp;&nbsp;ImageFileName<br>&nbsp;&nbsp;&nbsp;&nbsp;BackIm<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrIm<br>&nbsp;&nbsp;&nbsp;&nbsp;WeightIm<br>&nbsp;&nbsp;&nbsp;&nbsp;Cat<br>&nbsp;&nbsp;&nbsp;&nbsp;Col<br>&nbsp;&nbsp;&nbsp;&nbsp;ColCell<br>&nbsp;&nbsp;&nbsp;&nbsp;ColUnits<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedBy<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedByCol<br>&nbsp;&nbsp;&nbsp;&nbsp;Name<br>&nbsp;&nbsp;&nbsp;&nbsp;Source<br>&nbsp;&nbsp;&nbsp;&nbsp;Reference<br>&nbsp;&nbsp;&nbsp;&nbsp;Version<br>&nbsp;&nbsp;&nbsp;&nbsp;Header<br>&nbsp;&nbsp;&nbsp;&nbsp;WCS<br>&nbsp;&nbsp;&nbsp;&nbsp;UserData<br>&nbsp;&nbsp;&nbsp;&nbsp;Mask<br>&nbsp;&nbsp;&nbsp;&nbsp;MaskDic<br>&nbsp;&nbsp;&nbsp;&nbsp;PSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ParPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;CooPSF<br><br></div></div></div></div></div></div></div><p class = "S0"></p><div class = 'SectionBlock containment'><h2 class = "S17"><span class = "S2">Class managment</span></h2><p class = "S5"><span class = "S2">To check if an object belongs to the </span><span class = "S6">SIM</span><span class = "S2"> class, you can use the </span><span class = "S6">isa</span><span class = "S2"> function or the </span><span class = "S6">SIM.issim</span><span class = "S2"> statcic method:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">SIM.issim(1)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement" uid="2D833EED" data-testid="output_3" data-width="1176" style="width: 1206px;"><div class="textElement"><div>ans = </div><div>&nbsp;&nbsp; 0<br><br></div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S15">S=SIM;</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">SIM.issim(S)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement" uid="3A2469AB" data-testid="output_4" data-width="1176" style="width: 1206px;"><div class="textElement"><div>ans = </div><div>&nbsp;&nbsp; 1<br><br></div></div></div></div></div></div></div><p class = "S0"></p><div class = 'SectionBlock containment'><p class = "S5"><span class = "S2">Note also that the isfield and isstruct functions works on </span><span class = "S6">SIM</span><span class = "S2"> objects.</span></p><p class = "S5"><span class = "S2">The following static methods can be used to get the various field names (properties):</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">SIM.ImageField</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement" uid="DBC7B431" data-testid="output_5" data-width="1176" style="width: 1206px;"><div class="textElement"><div>ans = Im</div></div></div></div></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">SIM.BackField</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement" uid="4BFC747F" data-testid="output_6" data-width="1176" style="width: 1206px;"><div class="textElement"><div>ans = BackIm</div></div></div></div></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">SIM.ErrField</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement" uid="45335671" data-testid="output_7" data-width="1176" style="width: 1206px;"><div class="textElement"><div>ans = ErrIm</div></div></div></div></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">AstCat.CatField</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement" uid="99F9FA39" data-testid="output_8" data-width="1176" style="width: 1206px;"><div class="textElement"><div>ans = Cat</div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% etc.</span></p></div></div></div><p class = "S0"></p><div class = 'SectionBlock containment'><h2 class = "S17"><span class = "S2">Read images</span></h2><p class = "S5"><span class = "S2">There are several ways to populate a </span><span class = "S6">SIM</span><span class = "S2"> object with images, or read images into a </span><span class = "S6">SIM</span><span class = "S2"> array.</span></p><p class = "S5"><span class = "S2">The first is to populate the fields directly by accessing the fields:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S15">S=SIM;</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% populate the SIM object with a scalar image:</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S15">S.Im = 1;</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% alternatively:</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">S.(SIM.ImageField) = 1</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement scrollableOutput" uid="F49349ED" data-testid="output_9" data-width="1176" style="width: 1206px; max-height: 406px;"><div class="textElement"><div>S = </div><div>&nbsp;&nbsp;SIM with properties:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Im: 1<br>&nbsp;&nbsp;&nbsp;&nbsp;ImageFileName: ''<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BackIm: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ErrIm: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WeightIm: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cat: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Col: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ColCell: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ColUnits: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SortedBy: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SortedByCol: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Source: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reference: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Version: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Header: {0×3 cell}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WCS: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UserData: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mask: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MaskDic: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PSF: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ErrPSF: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ParPSF: {}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CooPSF: []<br><br></div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% populate the SIM image with some images:</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S15">S(1).Im = rand(5,5);</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">S(2).Im = ones(3,3)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement scrollableOutput" uid="236E6434" data-testid="output_10" data-width="1176" style="width: 1206px; max-height: 406px;"><div class="textElement"><div>S = </div><div>&nbsp;&nbsp;1×2 SIM array with properties:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Im<br>&nbsp;&nbsp;&nbsp;&nbsp;ImageFileName<br>&nbsp;&nbsp;&nbsp;&nbsp;BackIm<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrIm<br>&nbsp;&nbsp;&nbsp;&nbsp;WeightIm<br>&nbsp;&nbsp;&nbsp;&nbsp;Cat<br>&nbsp;&nbsp;&nbsp;&nbsp;Col<br>&nbsp;&nbsp;&nbsp;&nbsp;ColCell<br>&nbsp;&nbsp;&nbsp;&nbsp;ColUnits<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedBy<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedByCol<br>&nbsp;&nbsp;&nbsp;&nbsp;Name<br>&nbsp;&nbsp;&nbsp;&nbsp;Source<br>&nbsp;&nbsp;&nbsp;&nbsp;Reference<br>&nbsp;&nbsp;&nbsp;&nbsp;Version<br>&nbsp;&nbsp;&nbsp;&nbsp;Header<br>&nbsp;&nbsp;&nbsp;&nbsp;WCS<br>&nbsp;&nbsp;&nbsp;&nbsp;UserData<br>&nbsp;&nbsp;&nbsp;&nbsp;Mask<br>&nbsp;&nbsp;&nbsp;&nbsp;MaskDic<br>&nbsp;&nbsp;&nbsp;&nbsp;PSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ParPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;CooPSF<br><br></div></div></div></div></div></div></div><p class = "S0"></p><div class = 'SectionBlock containment'><p class = "S5"><span class = "S2">The second is to use the getters (under development).</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% place holder</span></p></div></div><p class = "S19"><span class = "S2">The third is to use special functions to pupulate a SIM object. For example, you can use the FITS static class method FITS.read2sim:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S14">S=FITS.read2sim(</span><span class = "S20">'test_PTF*.fits'</span><span class = "S15">)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement scrollableOutput" uid="7938D7B3" data-testid="output_11" data-width="1176" style="width: 1206px; max-height: 406px;"><div class="textElement"><div>S = </div><div>&nbsp;&nbsp;2×1 SIM array with properties:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Im<br>&nbsp;&nbsp;&nbsp;&nbsp;ImageFileName<br>&nbsp;&nbsp;&nbsp;&nbsp;BackIm<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrIm<br>&nbsp;&nbsp;&nbsp;&nbsp;WeightIm<br>&nbsp;&nbsp;&nbsp;&nbsp;Cat<br>&nbsp;&nbsp;&nbsp;&nbsp;Col<br>&nbsp;&nbsp;&nbsp;&nbsp;ColCell<br>&nbsp;&nbsp;&nbsp;&nbsp;ColUnits<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedBy<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedByCol<br>&nbsp;&nbsp;&nbsp;&nbsp;Name<br>&nbsp;&nbsp;&nbsp;&nbsp;Source<br>&nbsp;&nbsp;&nbsp;&nbsp;Reference<br>&nbsp;&nbsp;&nbsp;&nbsp;Version<br>&nbsp;&nbsp;&nbsp;&nbsp;Header<br>&nbsp;&nbsp;&nbsp;&nbsp;WCS<br>&nbsp;&nbsp;&nbsp;&nbsp;UserData<br>&nbsp;&nbsp;&nbsp;&nbsp;Mask<br>&nbsp;&nbsp;&nbsp;&nbsp;MaskDic<br>&nbsp;&nbsp;&nbsp;&nbsp;PSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ParPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;CooPSF<br><br></div></div></div></div></div></div><p class = "S19"><span class = "S2">This method have many options to read FITS files (see the FITS class manual for details).</span></p><p class = "S5"><span class = "S2">Note that this function, by default, also populates the </span><span class = "S6">Header</span><span class = "S2"> and </span><span class = "S6">WCS</span><span class = "S2"> fields.</span></p><h2 class = "S4"><span class = "S2">Write images</span></h2><p class = "S5"><span class = "S2">There are several ways to write SIM images into FITS or HDF5 files:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% write a SIM object field into a FITS file</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S14">FITS.write(S(1).Im,</span><span class = "S20">'FileName.fits'</span><span class = "S15">);</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% delete the file</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S14">delete(</span><span class = "S20">'FileName.fits'</span><span class = "S15">);</span></p></div></div><h2 class = "S4"><span class = "S2">The Header</span></h2><p class = "S5"><span class = "S2">Since the </span><span class = "S6">SIM</span><span class = "S2"> class inherit from the </span><span class = "S6">HEAD</span><span class = "S2"> class, all the methods available in the </span><span class = "S6">HEAD</span><span class = "S2"> class are available here. Here we provide only a few basic examples (out of the very large number of methods), but a more  comprehensive list is available in the </span><span class = "S6">manual.HEAD</span><span class = "S2"> documentation:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% get key</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S14">S(1).getkey(</span><span class = "S20">'DATE-OBS'</span><span class = "S15">)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement" uid="5D1D3C31" data-testid="output_12" data-width="1176" style="width: 1206px;"><div class="textElement"><div>ans = </div><div>&nbsp;&nbsp;&nbsp;&nbsp;'2012-05-23T07:20:01.937'<br><br></div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% check key values</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S14">IsKeyVal=iskeyval(S,</span><span class = "S20">'EXPTIME'</span><span class = "S14">,60,</span><span class = "S20">'FILTER'</span><span class = "S14">,</span><span class = "S20">'R'</span><span class = "S15">)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement" uid="8AE376FA" data-testid="output_13" data-width="1176" style="width: 1206px;"><div class="textElement"><div>IsKeyVal = </div><div>&nbsp;&nbsp; 1<br>&nbsp;&nbsp; 1<br><br></div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% coordinates conversion:</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">[RA,Dec]=S(1).xy2coo(rand(5,1),rand(5,1))</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement" uid="6390ABED" data-testid="output_14" data-width="1176" style="width: 1206px;"><div class="textElement"><div>RA = </div><div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.3296<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.3296<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.3296<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.3296<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.3296<br><br></div></div></div><div class="inlineElement embeddedOutputsVariableStringElement" uid="B15B78F6" data-testid="output_15" data-width="1176" style="width: 1206px;"><div class="textElement"><div>Dec = </div><div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.56876<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.56875<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.56875<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.56875<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.56875<br><br></div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% get the JD of the images</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">julday(S)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement" uid="7D211669" data-testid="output_16" data-width="1176" style="width: 1206px;"><div class="textElement"><div>ans = </div><div>&nbsp;&nbsp; 2.4561e+06<br>&nbsp;&nbsp; 2.4576e+06<br><br></div></div></div></div></div></div></div><p class = "S0"></p><div class = 'SectionBlock containment'><h2 class = "S17"><span class = "S2">Display images</span></h2><p class = "S5"><span class = "S2">The </span><span class = "S6">SIM</span><span class = "S2"> class interact with the </span><span class = "S6">ds9</span><span class = "S2"> static class, so </span><span class = "S6">SIM</span><span class = "S2"> images can be easily displayed into the ds9 window. For more details and example see </span><span class = "S6">manual.ds9</span><span class = "S2">.</span></p><h2 class = "S4"><span class = "S2">Basic operators</span></h2><p class = "S5"><span class = "S2">Basic binary and unary operators (e.g., +, sin, mean) are overloaded for SIM objects. The basic methods that are being used in the implementation of this overloaded functions are: </span><span class = "S6">bfun2sim</span><span class = "S2">, </span><span class = "S6">ufun2sim</span><span class = "S2">, and </span><span class = "S6">ufun2scalar</span><span class = "S2">. Using these functions it is straightforward to implement and operation on </span><span class = "S6">SIM</span><span class = "S2"> images. Note that these functions allows the user to control on which SIM fields the operators will be executed, the image sub region on which it will be executed, and how to treat the mask images.</span></p><p class = "S5"><span class = "S2">Here are some high level examples:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S14">S=FITS.read2sim(</span><span class = "S20">'test_PTF*.fits'</span><span class = "S15">)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement scrollableOutput" uid="BA96F91E" data-testid="output_17" data-width="1176" style="width: 1206px; max-height: 406px;"><div class="textElement"><div>S = </div><div>&nbsp;&nbsp;2×1 SIM array with properties:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Im<br>&nbsp;&nbsp;&nbsp;&nbsp;ImageFileName<br>&nbsp;&nbsp;&nbsp;&nbsp;BackIm<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrIm<br>&nbsp;&nbsp;&nbsp;&nbsp;WeightIm<br>&nbsp;&nbsp;&nbsp;&nbsp;Cat<br>&nbsp;&nbsp;&nbsp;&nbsp;Col<br>&nbsp;&nbsp;&nbsp;&nbsp;ColCell<br>&nbsp;&nbsp;&nbsp;&nbsp;ColUnits<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedBy<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedByCol<br>&nbsp;&nbsp;&nbsp;&nbsp;Name<br>&nbsp;&nbsp;&nbsp;&nbsp;Source<br>&nbsp;&nbsp;&nbsp;&nbsp;Reference<br>&nbsp;&nbsp;&nbsp;&nbsp;Version<br>&nbsp;&nbsp;&nbsp;&nbsp;Header<br>&nbsp;&nbsp;&nbsp;&nbsp;WCS<br>&nbsp;&nbsp;&nbsp;&nbsp;UserData<br>&nbsp;&nbsp;&nbsp;&nbsp;Mask<br>&nbsp;&nbsp;&nbsp;&nbsp;MaskDic<br>&nbsp;&nbsp;&nbsp;&nbsp;PSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ParPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;CooPSF<br><br></div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% add a scalar to each one of the images in the SIM array.</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% Note that by default this will be added only to the Im field.</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">S+1</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement scrollableOutput" uid="A8EB5FFC" data-testid="output_18" data-width="1176" style="width: 1206px; max-height: 406px;"><div class="textElement"><div>ans = </div><div>&nbsp;&nbsp;2×1 SIM array with properties:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Im<br>&nbsp;&nbsp;&nbsp;&nbsp;ImageFileName<br>&nbsp;&nbsp;&nbsp;&nbsp;BackIm<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrIm<br>&nbsp;&nbsp;&nbsp;&nbsp;WeightIm<br>&nbsp;&nbsp;&nbsp;&nbsp;Cat<br>&nbsp;&nbsp;&nbsp;&nbsp;Col<br>&nbsp;&nbsp;&nbsp;&nbsp;ColCell<br>&nbsp;&nbsp;&nbsp;&nbsp;ColUnits<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedBy<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedByCol<br>&nbsp;&nbsp;&nbsp;&nbsp;Name<br>&nbsp;&nbsp;&nbsp;&nbsp;Source<br>&nbsp;&nbsp;&nbsp;&nbsp;Reference<br>&nbsp;&nbsp;&nbsp;&nbsp;Version<br>&nbsp;&nbsp;&nbsp;&nbsp;Header<br>&nbsp;&nbsp;&nbsp;&nbsp;WCS<br>&nbsp;&nbsp;&nbsp;&nbsp;UserData<br>&nbsp;&nbsp;&nbsp;&nbsp;Mask<br>&nbsp;&nbsp;&nbsp;&nbsp;MaskDic<br>&nbsp;&nbsp;&nbsp;&nbsp;PSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ParPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;CooPSF<br><br></div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% while if you like to add 1 to the first SIM element and add 2 to the second:</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">S+[1;2]</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement scrollableOutput" uid="F89A177B" data-testid="output_19" data-width="1176" style="width: 1206px; max-height: 406px;"><div class="textElement"><div>ans = </div><div>&nbsp;&nbsp;2×1 SIM array with properties:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Im<br>&nbsp;&nbsp;&nbsp;&nbsp;ImageFileName<br>&nbsp;&nbsp;&nbsp;&nbsp;BackIm<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrIm<br>&nbsp;&nbsp;&nbsp;&nbsp;WeightIm<br>&nbsp;&nbsp;&nbsp;&nbsp;Cat<br>&nbsp;&nbsp;&nbsp;&nbsp;Col<br>&nbsp;&nbsp;&nbsp;&nbsp;ColCell<br>&nbsp;&nbsp;&nbsp;&nbsp;ColUnits<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedBy<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedByCol<br>&nbsp;&nbsp;&nbsp;&nbsp;Name<br>&nbsp;&nbsp;&nbsp;&nbsp;Source<br>&nbsp;&nbsp;&nbsp;&nbsp;Reference<br>&nbsp;&nbsp;&nbsp;&nbsp;Version<br>&nbsp;&nbsp;&nbsp;&nbsp;Header<br>&nbsp;&nbsp;&nbsp;&nbsp;WCS<br>&nbsp;&nbsp;&nbsp;&nbsp;UserData<br>&nbsp;&nbsp;&nbsp;&nbsp;Mask<br>&nbsp;&nbsp;&nbsp;&nbsp;MaskDic<br>&nbsp;&nbsp;&nbsp;&nbsp;PSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ParPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;CooPSF<br><br></div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% if you like to do so for the Im and BackIm fields:</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S14">Sn=bfun2sim(S,1,@plus,</span><span class = "S20">'ExecField'</span><span class = "S15">,{SIM.ImageField, SIM.BackField});</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% to see what happened</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">S(1).Im(1)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement" uid="E3D70945" data-testid="output_20" data-width="1176" style="width: 1206px;"><div class="textElement"><div>ans = </div><div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 704.01<br><br></div></div></div></div></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">Sn(1).Im(1)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement" uid="C7B3B6DC" data-testid="output_21" data-width="1176" style="width: 1206px;"><div class="textElement"><div>ans = </div><div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 705.01<br><br></div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% An example for a unary operator</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">sin(S(1))</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement scrollableOutput" uid="089074A8" data-testid="output_22" data-width="1176" style="width: 1206px; max-height: 406px;"><div class="textElement"><div>ans = </div><div>&nbsp;&nbsp;SIM with properties:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Im: [4096×2048 single]<br>&nbsp;&nbsp;&nbsp;&nbsp;ImageFileName: ''<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BackIm: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ErrIm: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WeightIm: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cat: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Col: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ColCell: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ColUnits: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SortedBy: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SortedByCol: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Source: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reference: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Version: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Header: {374×3 cell}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WCS: [1×1 struct]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UserData: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mask: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MaskDic: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PSF: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ErrPSF: []<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ParPSF: {}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CooPSF: []<br><br></div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% An example for an operator that returns a scalar</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">median(S)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement" uid="C21A2569" data-testid="output_23" data-width="1176" style="width: 1206px;"><div class="textElement"><div>ans = </div><div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;573.8<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 671.94<br><br></div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% other operators</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">sin(S).^2 - tan(S) + mean(S)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement scrollableOutput" uid="DF5F0BAE" data-testid="output_24" data-width="1176" style="width: 1206px; max-height: 406px;"><div class="textElement"><div>ans = </div><div>&nbsp;&nbsp;2×1 SIM array with properties:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Im<br>&nbsp;&nbsp;&nbsp;&nbsp;ImageFileName<br>&nbsp;&nbsp;&nbsp;&nbsp;BackIm<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrIm<br>&nbsp;&nbsp;&nbsp;&nbsp;WeightIm<br>&nbsp;&nbsp;&nbsp;&nbsp;Cat<br>&nbsp;&nbsp;&nbsp;&nbsp;Col<br>&nbsp;&nbsp;&nbsp;&nbsp;ColCell<br>&nbsp;&nbsp;&nbsp;&nbsp;ColUnits<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedBy<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedByCol<br>&nbsp;&nbsp;&nbsp;&nbsp;Name<br>&nbsp;&nbsp;&nbsp;&nbsp;Source<br>&nbsp;&nbsp;&nbsp;&nbsp;Reference<br>&nbsp;&nbsp;&nbsp;&nbsp;Version<br>&nbsp;&nbsp;&nbsp;&nbsp;Header<br>&nbsp;&nbsp;&nbsp;&nbsp;WCS<br>&nbsp;&nbsp;&nbsp;&nbsp;UserData<br>&nbsp;&nbsp;&nbsp;&nbsp;Mask<br>&nbsp;&nbsp;&nbsp;&nbsp;MaskDic<br>&nbsp;&nbsp;&nbsp;&nbsp;PSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ParPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;CooPSF<br><br></div></div></div></div></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% You can also execute logical operators on images</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">S&gt;3</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsVariableStringElement scrollableOutput" uid="BCA5D97D" data-testid="output_25" data-width="1176" style="width: 1206px; max-height: 406px;"><div class="textElement"><div>ans = </div><div>&nbsp;&nbsp;2×1 SIM array with properties:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Im<br>&nbsp;&nbsp;&nbsp;&nbsp;ImageFileName<br>&nbsp;&nbsp;&nbsp;&nbsp;BackIm<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrIm<br>&nbsp;&nbsp;&nbsp;&nbsp;WeightIm<br>&nbsp;&nbsp;&nbsp;&nbsp;Cat<br>&nbsp;&nbsp;&nbsp;&nbsp;Col<br>&nbsp;&nbsp;&nbsp;&nbsp;ColCell<br>&nbsp;&nbsp;&nbsp;&nbsp;ColUnits<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedBy<br>&nbsp;&nbsp;&nbsp;&nbsp;SortedByCol<br>&nbsp;&nbsp;&nbsp;&nbsp;Name<br>&nbsp;&nbsp;&nbsp;&nbsp;Source<br>&nbsp;&nbsp;&nbsp;&nbsp;Reference<br>&nbsp;&nbsp;&nbsp;&nbsp;Version<br>&nbsp;&nbsp;&nbsp;&nbsp;Header<br>&nbsp;&nbsp;&nbsp;&nbsp;WCS<br>&nbsp;&nbsp;&nbsp;&nbsp;UserData<br>&nbsp;&nbsp;&nbsp;&nbsp;Mask<br>&nbsp;&nbsp;&nbsp;&nbsp;MaskDic<br>&nbsp;&nbsp;&nbsp;&nbsp;PSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ErrPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;ParPSF<br>&nbsp;&nbsp;&nbsp;&nbsp;CooPSF<br><br></div></div></div></div></div></div><p class = "S19"><span class = "S21">The (almost) full list of supported functions:</span></p><p class = "S5"><span class = "S6">plus, minus, power ,power, mtimes, rdivide, ldivide, times, sqrt, uminus, uplus</span></p><p class = "S5"><span class = "S6">abs, fix, floor, ceil, transpose, ctranspose, round</span></p><p class = "S5"><span class = "S6">case, single, double, int8, int16, int32, uint8, uint16, uint32</span></p><p class = "S5"><span class = "S6">gradient, del2</span></p><p class = "S5"><span class = "S6">sin, cos, tan, acos, asin, atan2, atan, exp, log10, log</span></p><p class = "S5"><span class = "S6">and, eq, ge, gt, le, lt, ne, not, or</span></p><p class = "S5"><span class = "S6">angle, circshift, conj, conv2_fft, conv2, conv_fft2, fft2, fft, fftshift, filter, ifft, ifft2, ifftshift, imag, iradon,  radon, real, </span></p><p class = "S5"><span class = "S6">iqr, prctile, quantile, max, mean, median, min, mode, moment, nanmean, nanmedian, nanstd, rstdnansum, nanvar, skewness, sum, var</span></p><p class = "S5"><span class = "S2">Summation of images can be done using </span><span class = "S6">coadd</span><span class = "S2"> method which is further discussed below.</span></p><p class = "S5"><span class = "S2">Image scaling can also be done using the </span><span class = "S6">scale</span><span class = "S2"> method (see help for further details).</span></p><h2 class = "S4"><span class = "S2">Bias subtraction</span></h2><p class = "S5"><span class = "S2">The Bias subtraction process involve identificationof bias images and or overscan regions, removal of bad bias images, constraction of a bias image, identifying bad pixels (based on the bias image), and subtraction of the bias. The </span><span class = "S6">SIM/debias</span><span class = "S2"> method take care of all these steps:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% cd to a directory containing your nightly images</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S14">S=FITS.read2sim(</span><span class = "S20">'*.fits'</span><span class = "S15">)</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S15">S=debias(S,bias(S));</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% or</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S14">S</span><span class = "S15">=debias(S);</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% The following example don't trim the images from the overscan region:</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S14">S</span><span class = "S14">=debias(S2,[],</span><span class = "S20">'FinalSec'</span><span class = "S15">,[]);</span></p></div></div><p class = "S19"><span class = "S2">Another example, with which fixes a bug in the P200/LFC header keyword: </span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% debias P200 LFC images</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% cd /str1/eran/archive/P200/20111002_LFC/</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S14">S=FITS.read2sim(</span><span class = "S20">'ccd*.0.fits'</span><span class = "S15">);</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S14">S=trim_image(S,[1 1056 1 2063]); </span><span class = "S13">% fix bug in Header info</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S14">[Sbs,Bias,BiasOS,NIB,sum]=debias(S,[],</span><span class = "S20">'IsBiasPar'</span><span class = "S14">,{</span><span class = "S20">'RN'</span><span class = "S14">,[]},</span><span class = "S20">'FinalSec'</span><span class = "S15">,[1 1024 1 2063]);</span></p></div></div><p class = "S19"><span class = "S2">See </span><span class = "S6">help debias </span><span class = "S2">for options and list of output arguments.</span></p><p class = "S5"><span class = "S2">Note that the second output argument contains the bias image, its Err image and weight image, as well as the mask image.</span></p><p class = "S5"><span class = "S2">The bit mask default dictionary is defined in: </span><span class = "S6">MASK.def_bitmask_pipeline</span><span class = "S2">. The bias process generate 3 bit masks:</span></p><ol class = "S8"><li class = "S9"><span class = "S10">Bit_BiasNoise0</span><span class = "S0"> - Flag pixels with very low noise, typically indicating dead pixels. Default noise is 0.01.</span></li><li class = "S9"><span class = "S10">Bit_BiasNoisy</span><span class = "S0"> - Flag pixels with very high noise. Default is 4 times the mean of the the std in each pixel.</span></li><li class = "S9"><span class = "S10">Bit_BiasAnom</span><span class = "S0"> - Anonalous bias level. Default is below 0.7 or above 1.3 of the mean bias level.</span></li></ol><p class = "S5"><span class = "S2">Next, we provide some examples related to the lower-level methods that are sometimes useful for more compliacted analysis:</span></p><p class = "S5"><span class = "S2">The </span><span class = "S6">isbias</span><span class = "S2"> function can be used to identify bias images and check their validity using several methods. The isbias function first attempt to identify bias images either by header keywords (specifically, the TYPE, IMTYPE, OBSTYPE, IMGTYP, IMGTYPE header keywords), or the file name, or using the image statistics. Then the bias images can be (optionally) validated against a reference bias image and/or the expected readnoise of the detector:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S15">[IsBias,R]=isbias(S);</span></p></div></div><p class = "S19"><span class = "S2">All the options are documented in the internal help of the function (help SIM/isbias).</span></p><p class = "S5"><span class = "S2">The </span><span class = "S6">bias</span><span class = "S2"> method can be used to create the bias image, while the </span><span class = "S6">bias_overscan</span><span class = "S2"> can be used to calculate and remove, line by line, the overscan bias.</span></p><h2 class = "S4"><span class = "S2">Flat correction</span></h2><p class = "S5"><span class = "S2">There are several functions intended to help with flat field generation and correction. The high level function that do it all is </span><span class = "S6">SIM/deflat</span><span class = "S2">. This function, can identify flat images, check their validity, create a flat image, identification of bad pixels, and correct all the images by the flat.</span></p><p class = "S5"><span class = "S2">Additional low level functions include </span><span class = "S6">SIM/isflat</span><span class = "S2"> to look for flat images and check their validity, and </span><span class = "S6">SIM/flat</span><span class = "S2"> to correct the images by a given flat image.</span></p><p class = "S5"><span class = "S2">Example:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% Here Sbs is a SIM array containing the bias subtracted images (see last step)</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S15">[Sfc,FlatSim,IsNonFlat,SumFlat]=deflat(Sbs);</span></p></div></div></div><p class = "S0"></p><div class = 'SectionBlock containment'><p class = "S5"><span class = "S2">The flat correction step also look for bad pixels and update the mask image.</span></p><ol class = "S8"><li class = "S9"><span class = "S10">Bit_FlatNaN</span><span class = "S0"> - The pixel value is NaN (presuambly due to division by zero).</span></li><li class = "S9"><span class = "S10">Bit_FlatLowNim</span><span class = "S0"> - The flat field pixel value is based on a small number of images (default is 4).</span></li><li class = "S9"><span class = "S10">Bit_FlatHighStd</span><span class = "S0"> - The normzlied flat field scatter at this pixel have std larger than some threshold (default is 0.03).</span></li><li class = "S9"><span class = "S10">Bit_FlatLow</span><span class = "S0"> - The normalized flat field level is lower than some threshold (default is 0.4).</span></li></ol><h2 class = "S4"><span class = "S2">Background and noise image</span></h2><p class = "S5"><span class = "S2">An important operation is background level and noise estimation. The main function that implement this capability is the </span><span class = "S6">background</span><span class = "S2"> method. This function can use many algorithms. The default algorithm, which is the best based on our experience, is to fit a Gaussian to an histogram of the pixel values.</span></p><p class = "S5"><span class = "S2">Example:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S14">S=FITS.read2sim(</span><span class = "S20">'test_PTF*.fits'</span><span class = "S15">);</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% The following will populate the BackIm and ErrIm felds in the SIM object</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S15">S=double(S);</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S15">S=background(S);</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% an example for some options:</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S14">S=background(S,</span><span class = "S20">'Block'</span><span class = "S15">,[256 256]);</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% display the back and err images in ds9</span></p></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">ds9(S(1).BackIm,1)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsTextElement" uid="A63CE749" data-testid="output_26" data-width="1176" style="width: 1206px;"><div class="textElement">eran&nbsp;&nbsp;&nbsp;&nbsp; 45792&nbsp;&nbsp;0.0&nbsp;&nbsp;0.0 214948 98552 pts/39&nbsp;&nbsp; S&nbsp;&nbsp;&nbsp;&nbsp;Jan17&nbsp;&nbsp; 3:58 ds9<br>ds9 is already open</div></div></div></div><div class = 'inlineWrapper outputs'><p class = "S12 lineNode"><span class = "S15">ds9(S(1).ErrIm,2)</span></p><div class="outputParagraph"><div class="inlineElement embeddedOutputsTextElement" uid="90CDDD0E" data-testid="output_27" data-width="1176" style="width: 1206px;"><div class="textElement">eran&nbsp;&nbsp;&nbsp;&nbsp; 45792&nbsp;&nbsp;0.0&nbsp;&nbsp;0.0 214948 98556 pts/39&nbsp;&nbsp; S&nbsp;&nbsp;&nbsp;&nbsp;Jan17&nbsp;&nbsp; 3:59 ds9<br>ds9 is already open</div></div></div></div></div><p class = "S19"><span class = "S2">Note that by defa</span><span class = "S2">ult the background function does not subtract the background (only calcualte it).</span></p><p class = "S5"><span class = "S2">You can subtract the background, by either:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S14">Sb</span><span class = "S14">=background(S,</span><span class = "S20">'SubBack'</span><span class = "S15">,true);</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S13">% or</span></p></div><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S15">Sb=sub_background(S);</span></p></div></div></div><p class = "S0"></p><div class = 'SectionBlock containment'><h2 class = "S17"><span class = "S2">Source detection and photometry</span></h2><p class = "S5"><span class = "S2">You can perform source detection and photometry using the </span><span class = "S6">mextractor</span><span class = "S2"> and </span><span class = "S6">sextractor</span><span class = "S2"> methods.</span></p><p class = "S5"><span class = "S2">For details see mextractor documentation in </span><span class = "S6">manual.mextractor</span><span class = "S2">.</span></p><p class = "S5"><span class = "S2">A simple example</span><span class = "S2">:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S12 lineNode"><span class = "S15">S=mextractor(S);</span></p></div></div></div><p class = "S0"></p><div class = 'SectionBlock containment'><p class = "S5"><span class = "S2">Note that this operation will populate (if does not exist) the </span><span class = "S6">BackIm</span><span class = "S2">, </span><span class = "S6">ErrIm</span><span class = "S2">, </span><span class = "S6">MASK</span><span class = "S2">, </span><span class = "S6">PSF</span><span class = "S2"> and </span><span class = "S6">Cat</span><span class = "S2"> fields. Specifically, the </span><span class = "S6">Cat</span><span class = "S2"> field will be populated with the extracted source catalog.</span></p><h2 class = "S4"><span class = "S2">Cosmic ray identification</span></h2><p class = "S5"><span class = "S2">There are several approaches for cosmic ray identification - two methods that are supported are edge detection-like algorithms and specifically the </span><a href = 'http://adsabs.harvard.edu/abs/2001PASP..113.1420V'><span class = "S0">van Dokkum (2001)</span></a><span class = "S2"> Laplacian Edge Detection, and hypothesis testing. The hypothesis testing approach is fully supported in the mextractor code (see previou section), while the Laplacian Edge Detection is available in the </span><span class = "S6">SIM</span><span class = "S2">.</span><span class = "S6">crdetect_lacos</span><span class = "S2"> function (see also </span><span class = "S6">ImUtil.Im.crdetect_lacos).</span></p><h2 class = "S4"><span class = "S2">Astrometry</span></h2><h2 class = "S4"><span class = "S2"></span></h2><h2 class = "S4"><span class = "S2">Registration</span></h2><p class = "S5"><span class = "S2"></span></p><h2 class = "S4"><span class = "S2">Coaddition</span></h2><h2 class = "S4"><span class = "S2">Subtraction</span></h2><h2 class = "S4"><span class = "S2">Photometric calibration using local standard stars</span></h2><h2 class = "S4"><span class = "S2">Photometric calibration using global standard stars</span></h2><h2 class = "S4"><span class = "S2">Relative photometry</span></h2><h2 class = "S4"><span class = "S2">Star flat field</span></h2><p class = "S5"><span class = "S2"></span></p><h2 class = "S4"><span class = "S2"></span></h2></div></div>
+<!-- 
+##### SOURCE BEGIN #####
+%% The SIM class (structured images)
+%% in the astronomy & astrophysics toolbox for MATLAB
+%% Description:
+% The |SIM| class is designed to store, access and manipulate images and their 
+% metadata. 
+% 
+% This class contains a large number of methods to analyze and reduce astronomical 
+% images, from the most basic operations (e.g., arithmatic, bias, flat) to high-level 
+% functions (e.g., astrometry, registration and image subtraction). 
+% 
+% The SIM class inherits from the |WorldCooSys, |<https://webhome.weizmann.ac.il/home/eofek/matlab/doc/HEAD.html 
+% HEAD>|, |<https://webhome.weizmann.ac.il/home/eofek/matlab/doc/AstCat.html AstCat>|, 
+% MASK|, and |ClassPSF| classes. 
+% 
+% This file is accessible through the |manual| package (i.e. |manual.HEAD|). 
+%% Credit
+% If you are using this code or products in your scientific publication please 
+% give a reference to <http://adsabs.harvard.edu/abs/2014ascl.soft07005O Ofek 
+% (2014; ascl.soft 07005)>.
+%% License
+% Unless specified otherwise this code and products are released under the GNU 
+% general public license version 3.
+%% Installation
+% See<http://webhome.weizmann.ac.il/home/eofek/matlab/doc/install.html  http://weizmann.ac.il/home/eofek/matlab/doc/install.html 
+% >for installation instruction and additional documentation.
+%% Properties
+% The |SIM| object is a strcture-array like object that may contain a large 
+% number of images. Each image is stored in a different element of the structure, 
+% and each element contains the properties listed below.
+% 
+% The |SIM| class inherits from the |WorldCooSys, HEAD, AstCat, MASK|, and 
+% |ClassPSF| classes. 
+% 
+% Properties of the image class:
+% 
+% * Im - Image container
+% * ImageFileName - Image file name container
+% * BackIm - Background image container
+% * ErrIm - Error image container
+% * WeightIm - Weight image container
+% 
+% Properties inherited from the |AstCat| class:
+% 
+% * |Cat| - Catalog container
+% * |Col| - Structure array of column names and their index
+% * |ColCell| - Cell array of column names.
+% * |ColUnits| - Cell array of column units.
+% * |SortedBy| - Sorted by: column name.
+% * |SortedByCol| - Sorted by: Colum index.
+% * |Name|
+% * |Source|
+% * |Reference|
+% * |Version|
+% 
+% Properties inherited from the |HEAD| and |WorldCooSys| classes:
+% 
+% * |Header| - A 3 columns cell array of Keyword, Value, Comment
+% * |WCS| - Structure of WCS information.
+% * |UserData| - User data container
+% 
+% Properties inherited from the |MASK| class:
+% 
+% * |Mask| - Mask image container
+% * |MaskDic| - Mask dictionary function handle.
+% 
+% Properties inherited from the |ClassPSF| class:
+% 
+% * |PSF| - PSF container
+% * |ErrPSF| - PSF error container.
+% * |ParPSF| - PSF parameters.
+% * |CooPSF| - PSF coordinates.
+%% Methods and examples
+% To see all properties and methods of a |SIM| object, type "SIM." followed 
+% by <tab>.
+%% Constractor
+% The |SIM| constractor function can be used to generate an empty |SIM| object:
+
+% constract a single elemnt SIM object
+S=SIM
+% constract a 2x1 SIM object
+S=SIM(2)
+% constrct a 3x2 SIM object
+S=SIM(3,2)
+%% Class managment
+% To check if an object belongs to the |SIM| class, you can use the |isa| function 
+% or the |SIM.issim| statcic method:
+
+SIM.issim(1)
+S=SIM;
+SIM.issim(S)
+%% 
+% Note also that the isfield and isstruct functions works on |SIM| objects.
+% 
+% The following static methods can be used to get the various field names 
+% (properties):
+
+SIM.ImageField
+SIM.BackField
+SIM.ErrField
+AstCat.CatField
+% etc.
+%% Read images
+% There are several ways to populate a |SIM| object with images, or read images 
+% into a |SIM| array.
+% 
+% The first is to populate the fields directly by accessing the fields:
+
+S=SIM;
+% populate the SIM object with a scalar image:
+S.Im = 1;
+% alternatively:
+S.(SIM.ImageField) = 1
+% populate the SIM image with some images:
+S(1).Im = rand(5,5);
+S(2).Im = ones(3,3)
+%% 
+% The second is to use the getters (under development).
+
+% place holder
+%% 
+% The third is to use special functions to pupulate a SIM object. For example, 
+% you can use the FITS static class method FITS.read2sim:
+
+S=FITS.read2sim('test_PTF*.fits')
+%% 
+% This method have many options to read FITS files (see the FITS class manual 
+% for details).
+% 
+% Note that this function, by default, also populates the |Header| and |WCS| 
+% fields.
+%% Write images
+% There are several ways to write SIM images into FITS or HDF5 files:
+
+% write a SIM object field into a FITS file
+FITS.write(S(1).Im,'FileName.fits');
+% delete the file
+delete('FileName.fits');
+%% The Header
+% Since the |SIM| class inherit from the |HEAD| class, all the methods available 
+% in the |HEAD| class are available here. Here we provide only a few basic examples 
+% (out of the very large number of methods), but a more  comprehensive list is 
+% available in the |manual.HEAD| documentation:
+
+% get key
+S(1).getkey('DATE-OBS')
+% check key values
+IsKeyVal=iskeyval(S,'EXPTIME',60,'FILTER','R')
+% coordinates conversion:
+[RA,Dec]=S(1).xy2coo(rand(5,1),rand(5,1))
+% get the JD of the images
+julday(S)
+%% Display images
+% The |SIM| class interact with the |ds9| static class, so |SIM| images can 
+% be easily displayed into the ds9 window. For more details and example see |manual.ds9|.
+%% Basic operators
+% Basic binary and unary operators (e.g., +, sin, mean) are overloaded for SIM 
+% objects. The basic methods that are being used in the implementation of this 
+% overloaded functions are: |bfun2sim|, |ufun2sim|, and |ufun2scalar|. Using these 
+% functions it is straightforward to implement and operation on |SIM| images. 
+% Note that these functions allows the user to control on which SIM fields the 
+% operators will be executed, the image sub region on which it will be executed, 
+% and how to treat the mask images.
+% 
+% Here are some high level examples:
+
+S=FITS.read2sim('test_PTF*.fits')
+% add a scalar to each one of the images in the SIM array.
+% Note that by default this will be added only to the Im field.
+S+1
+% while if you like to add 1 to the first SIM element and add 2 to the second:
+S+[1;2]
+% if you like to do so for the Im and BackIm fields:
+Sn=bfun2sim(S,1,@plus,'ExecField',{SIM.ImageField, SIM.BackField});
+% to see what happened
+S(1).Im(1)
+Sn(1).Im(1)
+% An example for a unary operator
+sin(S(1))
+% An example for an operator that returns a scalar
+median(S)
+% other operators
+sin(S).^2 - tan(S) + mean(S)
+% You can also execute logical operators on images
+S>3
+%% 
+% The (almost) full list of supported functions:
+% 
+% |plus, minus, power ,power, mtimes, rdivide, ldivide, times, sqrt, uminus, 
+% uplus|
+% 
+% |abs, fix, floor, ceil, transpose, ctranspose, round|
+% 
+% |case, single, double, int8, int16, int32, uint8, uint16, uint32|
+% 
+% |gradient, del2|
+% 
+% |sin, cos, tan, acos, asin, atan2, atan, exp, log10, log|
+% 
+% |and, eq, ge, gt, le, lt, ne, not, or|
+% 
+% |angle, circshift, conj, conv2_fft, conv2, conv_fft2, fft2, fft, fftshift, 
+% filter, ifft, ifft2, ifftshift, imag, iradon,  radon, real, |
+% 
+% |iqr, prctile, quantile, max, mean, median, min, mode, moment, nanmean, 
+% nanmedian, nanstd, rstdnansum, nanvar, skewness, sum, var|
+% 
+% Summation of images can be done using |coadd| method which is further discussed 
+% below.
+% 
+% Image scaling can also be done using the |scale| method (see help for further 
+% details).
+%% Bias subtraction
+% The Bias subtraction process involve identificationof bias images and or overscan 
+% regions, removal of bad bias images, constraction of a bias image, identifying 
+% bad pixels (based on the bias image), and subtraction of the bias. The |SIM/debias| 
+% method take care of all these steps:
+
+% cd to a directory containing your nightly images
+S=FITS.read2sim('*.fits')
+S=debias(S,bias(S));
+% or
+S=debias(S);
+% The following example don't trim the images from the overscan region:
+S=debias(S2,[],'FinalSec',[]);
+%% 
+% Another example, with which fixes a bug in the P200/LFC header keyword: 
+
+% debias P200 LFC images
+% cd /str1/eran/archive/P200/20111002_LFC/
+S=FITS.read2sim('ccd*.0.fits');
+S=trim_image(S,[1 1056 1 2063]); % fix bug in Header info
+[Sbs,Bias,BiasOS,NIB,sum]=debias(S,[],'IsBiasPar',{'RN',[]},'FinalSec',[1 1024 1 2063]);
+%% 
+% See |help debias |for options and list of output arguments.
+% 
+% Note that the second output argument contains the bias image, its Err image 
+% and weight image, as well as the mask image.
+% 
+% The bit mask default dictionary is defined in: |MASK.def_bitmask_pipeline|. 
+% The bias process generate 3 bit masks:
+% 
+% # |Bit_BiasNoise0| - Flag pixels with very low noise, typically indicating 
+% dead pixels. Default noise is 0.01.
+% # |Bit_BiasNoisy| - Flag pixels with very high noise. Default is 4 times the 
+% mean of the the std in each pixel.
+% # |Bit_BiasAnom| - Anonalous bias level. Default is below 0.7 or above 1.3 
+% of the mean bias level.
+% 
+% Next, we provide some examples related to the lower-level methods that 
+% are sometimes useful for more compliacted analysis:
+% 
+% The |isbias| function can be used to identify bias images and check their 
+% validity using several methods. The isbias function first attempt to identify 
+% bias images either by header keywords (specifically, the TYPE, IMTYPE, OBSTYPE, 
+% IMGTYP, IMGTYPE header keywords), or the file name, or using the image statistics. 
+% Then the bias images can be (optionally) validated against a reference bias 
+% image and/or the expected readnoise of the detector:
+
+[IsBias,R]=isbias(S);
+%% 
+% All the options are documented in the internal help of the function (help 
+% SIM/isbias).
+% 
+% The |bias| method can be used to create the bias image, while the |bias_overscan| 
+% can be used to calculate and remove, line by line, the overscan bias.
+%% Flat correction
+% There are several functions intended to help with flat field generation and 
+% correction. The high level function that do it all is |SIM/deflat|. This function, 
+% can identify flat images, check their validity, create a flat image, identification 
+% of bad pixels, and correct all the images by the flat.
+% 
+% Additional low level functions include |SIM/isflat| to look for flat images 
+% and check their validity, and |SIM/flat| to correct the images by a given flat 
+% image.
+% 
+% Example:
+
+% Here Sbs is a SIM array containing the bias subtracted images (see last step)
+[Sfc,FlatSim,IsNonFlat,SumFlat]=deflat(Sbs);
+%% 
+% The flat correction step also look for bad pixels and update the mask 
+% image.
+% 
+% # |Bit_FlatNaN| - The pixel value is NaN (presuambly due to division by zero).
+% # |Bit_FlatLowNim| - The flat field pixel value is based on a small number 
+% of images (default is 4).
+% # |Bit_FlatHighStd| - The normzlied flat field scatter at this pixel have 
+% std larger than some threshold (default is 0.03).
+% # |Bit_FlatLow| - The normalized flat field level is lower than some threshold 
+% (default is 0.4).
+%% Background and noise image
+% An important operation is background level and noise estimation. The main 
+% function that implement this capability is the |background| method. This function 
+% can use many algorithms. The default algorithm, which is the best based on our 
+% experience, is to fit a Gaussian to an histogram of the pixel values.
+% 
+% Example:
+
+S=FITS.read2sim('test_PTF*.fits');
+% The following will populate the BackIm and ErrIm felds in the SIM object
+S=double(S);
+S=background(S);
+% an example for some options:
+S=background(S,'Block',[256 256]);
+% display the back and err images in ds9
+ds9(S(1).BackIm,1)
+ds9(S(1).ErrIm,2)
+%% 
+% Note that by default the background function does not subtract the background 
+% (only calcualte it).
+% 
+% You can subtract the background, by either:
+
+Sb=background(S,'SubBack',true);
+% or
+Sb=sub_background(S);
+%% Source detection and photometry
+% You can perform source detection and photometry using the |mextractor| and 
+% |sextractor| methods.
+% 
+% For details see mextractor documentation in |manual.mextractor|.
+% 
+% A simple example:
+
+S=mextractor(S);
+%% 
+% Note that this operation will populate (if does not exist) the |BackIm|, 
+% |ErrIm|, |MASK|, |PSF| and |Cat| fields. Specifically, the |Cat| field will 
+% be populated with the extracted source catalog.
+%% Cosmic ray identification
+% There are several approaches for cosmic ray identification - two methods that 
+% are supported are edge detection-like algorithms and specifically the <http://adsabs.harvard.edu/abs/2001PASP..113.1420V 
+% van Dokkum (2001)> Laplacian Edge Detection, and hypothesis testing. The hypothesis 
+% testing approach is fully supported in the mextractor code (see previou section), 
+% while the Laplacian Edge Detection is available in the |SIM|.|crdetect_lacos| 
+% function (see also |ImUtil.Im.crdetect_lacos).|
+%% Astrometry
+%% 
+%% Registration
+% 
+%% Coaddition
+%% Subtraction
+%% Photometric calibration using local standard stars
+%% Photometric calibration using global standard stars
+%% Relative photometry
+%% Star flat field
+% 
+%%
+##### SOURCE END #####
+--></body></html>

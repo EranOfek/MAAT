@@ -1,0 +1,185 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>AstTime</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-04-27"><meta name="DC.source" content="AstTime.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">T(1)=AstTime;
+T(2)=AstTime(2451545+(0:1:10)')
+[Cell,Desc,Units]=AstTime.timetype
+[Cell,Desc]=AstTime.timesystem
+<span class="comment">% An AstTime object with the current time in JD and UTC</span>
+T=AstTime
+<span class="comment">% An AstTime object in iso string and TAI</span>
+T=AstTime(<span class="string">'2000-01-01T00:00:00.000'</span>,<span class="string">'iso'</span>,<span class="string">'TAI'</span>)
+<span class="comment">% A vector of AstTime objects in Julian years</span>
+T=AstTime((0:1:10),<span class="string">'jy'</span>)
+T=AstTime(2451545);
+<span class="comment">% convert to ISO format in the UT1 system</span>
+AstT=convert(T,<span class="string">'iso'</span>,<span class="string">'UT1'</span>)
+<span class="comment">% Convert to Julian years in the UTC system</span>
+AstT=convert(T,<span class="string">'JY'</span>)
+<span class="comment">% convert to ISO format in the UT1 system. Output is an array</span>
+AstT=convert2array(T,<span class="string">'iso'</span>,<span class="string">'UT1'</span>)
+T=AstTime(2451545);
+<span class="comment">% Binary operation on two AstTime objects and store the result as AstTime</span>
+bfun2asttime(T,T,@plus)
+T=convert(T,<span class="string">'jy'</span>);
+<span class="comment">% Adding an AstTime object with a scalar.</span>
+<span class="comment">% Note that regardless the AstTime type, the scalar is always in days</span>
+bfun2asttime(T,365,@plus)
+T = AstTime(2451545+(0:1:10)');
+AstTV=ufun2asttime(T,@mean)
+AstTV=ufun2asttime(T,@sin)
+T(1) = AstTime(2451545+(1:1:10)');
+T(2) = AstTime((1:1:10)',<span class="string">'jy'</span>);
+<span class="comment">% Note that the answer is in days (regardless of the input type!)</span>
+A = ufun2scalar(T,@std)
+T(1) = AstTime(2451545+(1:1:10)');
+T(2) = AstTime((1:1:10)',<span class="string">'jy'</span>);
+<span class="comment">% add 1 day to all times - output is always in JD/UTC:</span>
+Tn=T+1
+Tn=T(1)+T(1)
+Tn=T(2)-10  <span class="comment">% subtract 10 days</span>
+<span class="comment">% calculate the mean of all times in each element.</span>
+<span class="comment">% Units are identical to input units:</span>
+MeanT=mean(T)
+<span class="comment">% calculate the mean of all times in each element in JD (regardless of the input type):</span>
+mean2array(T)
+median2array(T)
+std2array(T)
+range2array(T)
+<span class="comment">% calculate the histogram of times in a single element AstTime object:</span>
+T=AstTime(2451545+(1:1:100));
+[N,E]=histcounts(T);
+T=AstTime(2451545);
+[LST,JD_UT1]=lst(T)
+julday(T)
+<span class="comment">% The length of the synodic month at 3000 AD</span>
+T=AstTime(1000,<span class="string">'jy'</span>);
+SM=synodic_month(T)
+<span class="comment">% The obliquity of the ecliptic in radians now:</span>
+obliquity(AstTime)
+</pre><pre class="codeoutput error">The class AstTime has no Constant property or Static method named 'mlx'.
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+T(1)=AstTime;
+T(2)=AstTime(2451545+(0:1:10)')
+[Cell,Desc,Units]=AstTime.timetype
+[Cell,Desc]=AstTime.timesystem
+% An AstTime object with the current time in JD and UTC
+T=AstTime
+% An AstTime object in iso string and TAI
+T=AstTime('2000-01-01T00:00:00.000','iso','TAI')
+% A vector of AstTime objects in Julian years
+T=AstTime((0:1:10),'jy')
+T=AstTime(2451545);
+% convert to ISO format in the UT1 system
+AstT=convert(T,'iso','UT1')
+% Convert to Julian years in the UTC system
+AstT=convert(T,'JY')
+% convert to ISO format in the UT1 system. Output is an array
+AstT=convert2array(T,'iso','UT1')
+T=AstTime(2451545);
+% Binary operation on two AstTime objects and store the result as AstTime
+bfun2asttime(T,T,@plus)
+T=convert(T,'jy');
+% Adding an AstTime object with a scalar.
+% Note that regardless the AstTime type, the scalar is always in days
+bfun2asttime(T,365,@plus)
+T = AstTime(2451545+(0:1:10)');
+AstTV=ufun2asttime(T,@mean)
+AstTV=ufun2asttime(T,@sin)
+T(1) = AstTime(2451545+(1:1:10)');
+T(2) = AstTime((1:1:10)','jy');
+% Note that the answer is in days (regardless of the input type!)
+A = ufun2scalar(T,@std)
+T(1) = AstTime(2451545+(1:1:10)');
+T(2) = AstTime((1:1:10)','jy');
+% add 1 day to all times - output is always in JD/UTC:
+Tn=T+1
+Tn=T(1)+T(1)
+Tn=T(2)-10  % subtract 10 days
+% calculate the mean of all times in each element.
+% Units are identical to input units:
+MeanT=mean(T)
+% calculate the mean of all times in each element in JD (regardless of the input type):
+mean2array(T)
+median2array(T)
+std2array(T)
+range2array(T)
+% calculate the histogram of times in a single element AstTime object:
+T=AstTime(2451545+(1:1:100));
+[N,E]=histcounts(T);
+T=AstTime(2451545);
+[LST,JD_UT1]=lst(T)
+julday(T)
+% The length of the synodic month at 3000 AD
+T=AstTime(1000,'jy');
+SM=synodic_month(T)
+% The obliquity of the ecliptic in radians now:
+obliquity(AstTime)
+##### SOURCE END #####
+--></body></html>

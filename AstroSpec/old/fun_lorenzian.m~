@@ -1,0 +1,9 @@
+function Il = fun_lorenzian(Wave,Il_cont,Wave0,W,D);
+%------------------------------------------------------------------------------
+% fun_lorenzian function                                             AstroSpec
+% Description: Calculate a Lornzian profile spectral line.
+% Input  : - 
+
+c = get_consatnt('c').*1e8;  % [A]
+
+Il_cont.*(1 - D./( 4.*((c./Wave - c./Wave0)./W).^2 + 1));

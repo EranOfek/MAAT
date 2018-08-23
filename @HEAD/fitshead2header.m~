@@ -1,0 +1,29 @@
+function Head=fitshead2header(Fits,HDUnum)
+%--------------------------------------------------------------------------
+% fitshead2header function                                   class/@Header
+% Description: 
+% Input  : - A single FITS file.
+%          - The index of the HDU which header to read.
+%            If 'all' then will attempt to read all headers.
+%            
+%          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+%            where keyword are one of the followings:
+%            --- Additional parameters
+%            Any additional key,val, that are recognized by one of the
+%            following programs:
+% Output : - 
+% License: GNU general public license version 3
+% Tested : Matlab R2015b
+%     By : Eran O. Ofek                    Mar 2016
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: 
+% Reliable: 
+%--------------------------------------------------------------------------
+
+
+DefV. = 
+InPar = set_varargin_keyval(DefV,'n','use',varargin{:});
+
+
+
+[HeadCell,Nhdu]=fits_get_head(Image,HDUnum)

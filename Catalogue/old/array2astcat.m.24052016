@@ -1,0 +1,42 @@
+function [AstC]=array2astcat(Array,ColCell,varargin)
+%--------------------------------------------------------------------------
+% array2astcat function                                          Catalogue
+% Description: Convert an array or table into an AstCat object.
+% Input  : - Matrix or table, or a cell array of matrix or tables.
+%            If cell array, then each element will populate an Astcat
+%            element.
+%          - Cell array of column names.
+%            If empty will attempt to read from table. Default is empty.
+%          * Arbitrary number of pairs of arguments: ...,field,value,...
+%            where field is any AstCat field. E.g.,
+%            ...'ColUnits',{'rad','rad'},...
+% Output : - An AstCat object.
+% License: GNU general public license version 3
+% Tested : Matlab R2015b
+%     By : Eran O. Ofek                    Mar 2016
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: [AstC]=array2astcat(rand(100,3),{'A','B','C'},'Source','This source')
+% Reliable: 2
+%--------------------------------------------------------------------------
+
+if (nargin<2),
+    ColCell = {};
+end
+
+AstC = AstCat;
+
+AstC.Cat = Array;
+if (isempty(ColCell)),
+    if (istable(Array)),
+        AstC.ColCell = Array.Properties.VariableNames;
+    end
+else
+    AstC.ColCell = ColCell;
+end
+
+AstC = colcell2col(AstC);
+Nvar = numel(varargin);
+
+for I=1:2:Nvar-1,
+    AstC.(varargin{I}) = varargin{I+1};
+end

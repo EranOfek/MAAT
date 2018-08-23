@@ -1,0 +1,325 @@
+%--------------------------------------------------------------------------
+% AstCat class                                                       class
+% Description: A class of structure array of catalogs (AstCat).
+%              Note that this class is a subset of the SIM class.
+% Input  : null
+% Output : null
+% Tested : Matlab R2015b
+%     By : Eran O. Ofek                    Feb 2016
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Reliable: 2
+%--------------------------------------------------------------------------
+
+classdef AstCat < HEAD
+    properties (SetAccess = public)
+        Cat
+        Col
+        ColCell
+        ColUnits
+        SortedBy
+        SortedByCol
+        Name
+        Source
+        Reference
+        Version
+        %UserData
+    end
+  
+    methods
+
+        function obj=isastcat(AstC)
+            obj = true;
+        end
+
+
+        % See list of overload functions
+        % http://www.mathworks.com/help/matlab/matlab_oop/implementing-operators-for-your-class.html
+
+   
+        
+        function AstC=row_insert(AstC,Vec,Ind)
+            
+        end
+        
+        function AstC=row_concat(AstC1,AstC2,Ind1,Ind2)
+        
+        end
+        
+        %function AstC=addcol(AstC,
+        
+        
+%         function Ans=subsindex(AstC)
+%             %
+%             
+%             CatField = 'Cat';
+%             Ans = subsindex(AstC.(CatField));
+%         end
+        
+%         function Ans=subsref(AstC,varargin)
+%             % Description: This function control the behavior of AstCat
+%             %              to parenthesses. A few examples:
+%             %              AstC.Cat can be either a table or a numeric
+%             %              array. AstC.Cat(:,1) - will return the first column
+%             %              of AstC.Cat with its original format.
+%             %              However AstC(:,1) will return the first column
+%             %              in a numeric vector format even if it stored
+%             %              as a table.
+%             %              This means that if AstC.Cat is a table:
+%             %              sin(AstC.Cat(:,2)) will fail, while
+%             %              sin(AstC(:,2)) will work.
+%             % Input  : - AstCat object.
+%             %          * subsref arguments
+%             % Output : - The requested data.
+%             % Example: AstC.Cat(1:end,2)
+%             %          AstC(1:5,1)
+%             %          AstC.Col
+%             
+%             
+%             CatField = 'Cat';
+%             
+%             %Ans = 5;
+%             S = varargin{1};
+%             %S.type = '()';
+%             %S.subs = varargin;
+%             switch S(1).type
+%                 case '()'
+%                     Ans = subsref(AstC.(CatField),S);
+%                     
+%                     if (istable(Ans)),
+%                         Ans = table2array(Ans);
+%                     end
+%                 case '.'
+%                     
+%                     Ans = AstC.(S(1).subs);
+%                     if (numel(S)>1),
+%                         switch S(2).type
+%                             case '.'
+%                                 % Deal with the case the user ask for a
+%                                 % column using a field name:
+%                                 % E.g., AstC.Cat.XWIN_IMAGE
+%                                 if any(strcmp(S(2).subs,AstC.ColCell)),
+%                                     ColInd = colname2ind(AstC,S(2).subs);
+%                                     Ans = Ans(:,ColInd);
+%                                 else
+%                                     Ans = subsref(Ans,S(2:end));
+%                                 end
+%                             otherwise
+%                                 Ans = subsref(Ans,S(2));
+%                         end
+%                     end
+%                     
+%                     
+%                 case '{}'
+%                     error('Can not use {} as a reference to AstCat');
+%                 otherwise
+%                     % do nothing
+%             end
+%             
+%         end
+        
+        
+        % col_arith (simcat_colarith)
+        % search (search_cat)
+        % addcol
+        % colrange simcat_colrange
+        % matchcoo simcat_matchcoo
+        % near_xy
+        % near_coo
+        
+        % footprint
+        % xcat
+        % photcalib
+        % load
+        % mat2cat
+        
+        %--------------------------------
+        %--- Statistics and functions ---
+        %--------------------------------
+        
+         
+        %-----------------------
+        %--- Unary functions ---
+        %-----------------------
+%         function obj=plus(Sim1,Sim2)
+%             % Description: Add SIM arrays (+)
+%             % Input   : - SIM array
+%             %           - SIM array
+%             % Outoput : - Sum of SIM arrays
+%             % Example : Sim1+Sim2
+%             obj = sim_imarith('In1',Sim1,'In2',Sim2,'Op','+');
+%         end
+
+        %--- Structre functions ---
+        function obj=isfield(Sim,Field)
+            % isfield 
+            obj = any(strcmp(fieldnames(Sim),Field));
+        end
+
+        function obj=isstruct(Sim)
+            obj = true;  %isstruct(Sim) || isa(Sim,'SIM');
+        end
+
+        
+        
+        
+   
+        
+%         function [Sim,ThreshIm]=addcat(Sim,varargin)
+%             % call mextractor and populate the Cat field
+%             [Sim,ThreshIm] = mextractor(Sim,varargin{:});            
+%         end
+        
+%         function SubCat=near_xy(Sim,X,Y,Radius)
+%             % search objects near X,Y and sort by distance to search
+%             % coordinates
+%             % Input  : - Sim
+%             %          - X coordinate [pix]
+%             %          - Y coordinate [pix]
+%             %          - Search radius [pix]
+%             % Output : - Structure containing sub catalog of sources
+%             %            within search radius, sorted by distance to
+%             %            search center.
+%             CatField        = 'Cat';
+%             CatColField     = 'Col';
+%             CatColCellField = 'ColCell';
+%             Nsim = numel(Sim);
+%             SubCat = struct(CatField,cell(Nsim,1),...
+%                             CatColField,cell(Nsim,1),...
+%                             CatColCellField,cell(Nsim,1),...
+%                             'Dist',cell(Nsim,1));
+%             for Isim=1:1:Nsim,
+%                 % for each image
+%                 % check if catalog exist
+%                 if (isempty(Sim(Isim).(CatField)) && issim(Sim(Isim))),
+%                     Sim(Isim) = mextractor(Sim(Isim));
+%                 end
+%                 Dist = plane_dist(X,Y,...
+%                                   Sim(Isim).(CatField)(:,Sim(Isim).(CatColField).XWIN_IMAGE),...
+%                                   Sim(Isim).(CatField)(:,Sim(Isim).(CatColField).YWIN_IMAGE));
+%                 Ind = find(Dist<=Radius);
+%                 [~,SI] = sort(Dist(Ind));
+%                 SInd = Ind(SI);  % indices sorted by distance
+%                 
+%                 SubCat(Isim).(CatField)        = Sim(Isim).(CatField)(SInd,:);
+%                 SubCat(Isim).(CatColField)     = Sim(Isim).(CatColField);
+%                 SubCat(Isim).(CatColCellField) = Sim(Isim).(CatColCellField);
+%                 SubCat(Isim).Dist              = Dist(SInd);
+%                 
+%             end
+%             
+        end
+        
+%         function obj=footprint(Sim,varargin)
+%             % Description: Get images footprints using the
+%             %              sim_footprint.m function.
+%             % Input  : - SIM array
+%             %          * Additional arguments to pass to sim_footprint.m
+%             % Output : - Structure array containing the footprint for each
+%             %            SIM image.
+%             obj = sim_footprint(Sim,varargin{:});
+%         end
+        
+        
+        
+%         function Sim=flipud(Sim,varargin)
+%             % Description: flip images in SIM array up-down
+%             % Input  : - SIM array.
+%             %          - Additional arguments to pass to sim_flip.m
+%             % Output : - SIM array in which the images are flipped up-down
+%             % Example: Sim.flipud
+%             Sim = sim_flip(Sim,varargin{:},'Op',@flipud);
+%         end
+        
+      
+        
+      
+        
+     
+        
+   
+        
+%         function Sim = xcat(Sim,varargin)
+%             % Description: Match SIM catalog to external catalog and
+%             %              add information to catalog.
+%             %              See sim_xcat.m for details.
+%             % Input  : - SIM array of images with catalogs.
+%             %          * Additional arguments to pass to sim_xcat.m
+%             % Output : - SIM array with added columns to the catalog
+%             %            entries.
+%             % Example: sim.xcat('ExtCats',{@wget_sdss});
+%             Sim = sim_xcat(Sim,varargin{:});
+%         end
+        
+        function [Sim,ZP]=photcalib(Sim,varargin)
+            % Description: Calculate and apply photometric calibration
+            %              to SIM images catalog.
+            %              See sim_photcalib.m for details.
+            % Input  : - SIM array of images with catalogs.
+            %          * Additional arguments to pass to sim_photcalib.m
+            % Output : - SIM array of images with photometrically
+            %            calibrated magnitudes.
+            %          - Structure array with zero point fits.
+            % Example: [Sim,ZP]=sim.photcalib;
+            [Sim,ZP] = sim_photcalib(Sim,varargin{:});
+        end
+        
+        
+        % additional functions to add:
+        % flip ???
+        % fliplr
+        % rot90
+        % imagesize
+        % resize
+        % get_stamp
+        % crdetect
+        % saturated
+        
+        % near_coo
+        % nearest_xy
+        % nearest_coo
+        % addextcat
+        % ds9
+        % ds9_regions
+        % ds9_cat
+        % ds9_extcat
+        % back_std
+        % imshow
+        % filter/conv
+        % getpsf (need a PSF class)
+        % align
+        % matchcat
+        % relphot
+        % relastrom
+        % addastrom
+        % twflat
+        % domeflat
+        % skyflat
+        % coadd
+        % combine
+        % subtract
+        % 
+        
+        %--- get/set functions ---
+%         function Head=get.header(Obj,Keywords)
+%             HeaderField = 'Header';
+%             % get header or header keywords
+%             if (nargin==1),
+%                 Keywords = [];
+%             end
+%             Nsim = numel(Obj);
+%             for Isim=1:1:Nsim,
+%                 % for each image / get header
+%                 Obj(Isim).(HeaderField)
+%             end
+%             
+%         end
+       
+        %--- get functions ---
+        %function obj=get.mean1(Sim)
+        %    % mean
+        %    obj = sim_ufunv(Sim,'Op',@mean,'NaN',false);        
+        %end
+    end
+end
+
+            

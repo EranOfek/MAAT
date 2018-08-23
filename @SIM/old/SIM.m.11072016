@@ -1,0 +1,494 @@
+%--------------------------------------------------------------------------
+% SIM class                                                          class
+% Description: A class of structure array of images (SIM).
+%              This is an in-memory image container and calculator.
+%              Note that this class is a superset of the AstCat class.
+%              Fields are:
+%              .Im 
+%              .Header
+%              .ImageFileName
+%              .PSF
+%              .Mask
+%              .BackIm
+%              .ErrIm
+%              .WeightIm
+%              + the fields of AstCat
+% Input  : null
+% Output : null
+% Tested : Matlab R2014a
+%     By : Eran O. Ofek                    Nov 2014
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Reliable: 2
+%--------------------------------------------------------------------------
+
+classdef SIM < AstCat & MASK & ClassPSF % & IM
+    properties (SetAccess = public)
+        Im            
+        ImageFileName = '';
+        BackIm        
+        ErrIm
+        WeightIm
+
+    end
+
+    %-----------------------
+    %--- SIM constructor ---
+    %-----------------------
+    methods
+        
+        function Sim=SIM(N,M)
+            % Description: SIM constructor method
+            
+            ImageField = 'Im';
+            
+            if (nargin==0),
+                N = 1;
+                M = 1;
+            elseif (nargin==1),
+                if (numel(N)>1),
+                    M = N(2);
+                else
+                    M = 1;
+                end
+            else
+                % do nothing
+            end
+
+            for I=1:1:N,
+                for J=1:1:M,
+                    Sim(I,J).(ImageField) = [];
+                end
+            end
+        end
+
+        function Sim=clear_back(Sim)
+            % Description: clear background image in SIM
+            % Input  : - A SIM object
+            % Output : - A SIM object
+            
+            BackField = SIM.BackField;
+            Nsim = numel(Sim);
+            for Isim=1:1:Nsim,
+                Sim(Isim).(BackField) = [];
+            end
+
+        end
+
+        function Sim=clear_err(Sim)
+            % Description: clear background image in SIM
+            % Input  : - A SIM object
+            % Output : - A SIM object
+            
+            ErrField = SIM.ErrField;
+            Nsim = numel(Sim);
+            for Isim=1:1:Nsim,
+                Sim(Isim).(ErrField) = [];
+            end
+
+        end
+    end
+    
+    %----------------------------------------
+    %--- Static methods for the Class SIM ---
+    %----------------------------------------
+    methods (Static)
+ 
+        function Name=ImageField
+            % Description: Return the image field name in the SIM class.
+            % Input  : null
+            % Output : Image field name.
+            Name = 'Im';
+        end
+        
+        function Name=BackField
+            % Description: Return the image background field name in the SIM class.
+            % Input  : null
+            % Output : Image background field name.
+            Name = 'BackIm';
+        end
+        
+        function Name=ErrField
+            % Description: Return the image error field name in the SIM class.
+            % Input  : null
+            % Output : Image error field name.
+            Name = 'ErrIm';
+        end
+       
+        function Name=WeightField
+            % Description: Return the image weight field name in the SIM class.
+            % Input  : null
+            % Output : Image weight field name.
+            Name = 'WeightIm';
+        end
+        
+        function Name=FileNameField
+            % Description: Return the image file name field name in the SIM class.
+            % Input  : null
+            % Output : Image file name field name.
+            Name = 'ImageFileName';
+        end
+    end
+    
+    
+    methods
+        function [N,X]=hist(Sim,varargin)
+            % hist 
+            if (numel(Sim)>1),
+                error('hist is defined for a single SIM class image');
+            end
+            [N,X] = hist(Sim.Im(:),varargin);
+        end
+        
+        function [N,X]=histc(Sim,varargin)
+            % histc
+            if (numel(Sim)>1),
+                error('histc is defined for a single SIM class image');
+            end
+            [N,X] = histc(Sim.Im(:),varargin);
+        end
+        
+        
+    
+        
+
+        %--- Structre functions ---
+        function obj=isfield(Sim,Field)
+            % isfield 
+            obj = any(strcmp(fieldnames(Sim),Field));
+        end
+
+        function obj=isstruct(Sim)
+            obj = true;  %isstruct(Sim) || isa(Sim,'SIM');
+        end
+
+        
+%         function obj=getkey(Sim,Keyword)
+%             % get image header keyword value
+%             HeaderField = 'Header';
+%             Nsim = numel(Sim);
+%             obj  = cell(Nsim,1);
+%             for Isim=1:1:Nsim,
+%                 % for each image in SIM
+%                 if (~isempty(Sim(Isim).(HeaderField))),
+%                     Flag = strcmp(Sim(Isim).(HeaderField)(:,1),Keyword);
+%                     if (any(Flag)),
+%                         obj{Isim} = Sim(Isim).(HeaderField){Flag,2};
+%                     else
+%                         obj{Isim} = NaN;
+%                     end
+%                 else
+%                     obj{Isim} = NaN;
+%                 end
+%             end
+%             
+%         end
+        
+%         function [obj,val,com]=searchkey(Sim,String)
+%             % Description: Search an header keyword name that contains
+%             %              a specific string.
+%             % Input  : - SIM array
+%             %          - String to search.
+%             % Output : - Cell array of cell arrays of candidates header
+%             %            keyword names.
+%             %          - Cell array of values.
+%             %          - Cell array of comments.
+%             HeaderField = 'Header';
+%             Nsim = numel(Sim);
+%             obj = cell(Nsim,1);
+%             for Isim=1:1:Nsim,
+%                 % for each image in SIM
+%                 if (~isempty(Sim(Isim).(HeaderField))),
+%                     F = regexp(Sim(Isim).(HeaderField)(:,1),String,'match');
+%                     obj{Isim} = Sim(Isim).(HeaderField)(~isempty_cell(F),1);
+%                     val{Isim} = Sim(Isim).(HeaderField)(~isempty_cell(F),2);
+%                     com{Isim} = Sim(Isim).(HeaderField)(~isempty_cell(F),3);
+%                     if (Nsim>1),
+%                         fprintf('Header keywords in SIM %d\n',Isim);
+%                     end
+%                     disp(obj{Isim}')
+%                 else
+%                     obj{Isim} = NaN;
+%                 end
+%                 
+%             end
+%             
+%         end
+        
+%         function [Sim,Back,Std]=mode_fit(Sim,varargin)
+%             % run mode fit on image and populate
+%             % BackIm and ErrIm fields
+%             ImageField  = 'Im';
+%             BackImField = 'BackIm';
+%             ErrImField  = 'ErrIm';
+%             
+%             Nsim = numel(Sim);
+%             Back = zeros(Nsim,1);
+%             Std  = zeros(Nsim,1);
+%             for Isim=1:1:Nsim,
+%                 
+%                 [Back(Isim),Std(Isim)] = mode_fit(Sim(Isim).(ImageField),varargin{:});
+%                 Sim(Isim).(BackImField) = Back(Isim);
+%                 Sim(Isim).(ErrImField)  = Std(Isim);
+%             end
+%             
+%             
+%         end
+        
+%         function Coo=xy2coo(Sim,varargin)
+%             % convert X,Y to RA,Dec
+%             % Input  : - SIm
+%             %          * The same input parameters as xy2sky.m
+%             %            i.e., X(pix), Y(pix),...
+%             % Outout : - Structure array with the following fields:
+%             %            .RA - J2000 R.A. [rad]
+%             %            .Dec - J2000 Dec. [rad]
+%    
+%             Nsim = numel(Sim);
+%             Coo  = struct('RA',cell(Nsim,1),'Dec',cell(Nsim,1));
+%             for Isim=1:1:Nsim,
+%                 [Coo(Isim).RA,Coo(Isim).Dec] = xy2sky(Sim(Isim),varargin{:});
+%             end
+%             
+%         end
+        
+%         function Coo=coo2xy(Sim,varargin)
+%             % convert RA,Dec to X,Y
+%             % Input:  - Sim
+%             %         * The same input parameters as sky2xy.m
+%             %           i.e., RA(rad),Dec(rad),...
+%             % Output: - Structure array with the following fields:
+%             %           .X - X coordinates [pix].
+%             %           .Y - Y coordinates [pix].
+%             Nsim = numel(Sim);
+%             Coo = struct('X',cell(Nsim,1),'Y',cell(Nsim,1));
+%             for Isim=1:1:Nsim,
+%                 [Coo(Isim).X,Coo(Isim).Y] = sky2xy(Sim(Isim),varargin{:});
+%             end
+%             
+%         end
+        
+%         function [Sim,ThreshIm]=addcat(Sim,varargin)
+%             % call mextractor and populate the Cat field
+%             [Sim,ThreshIm] = mextractor(Sim,varargin{:});            
+%         end
+        
+%         function SubCat=near_xy(Sim,X,Y,Radius)
+%             % search objects near X,Y and sort by distance to search
+%             % coordinates
+%             % Input  : - Sim
+%             %          - X coordinate [pix]
+%             %          - Y coordinate [pix]
+%             %          - Search radius [pix]
+%             % Output : - Structure containing sub catalog of sources
+%             %            within search radius, sorted by distance to
+%             %            search center.
+%             CatField        = 'Cat';
+%             CatColField     = 'Col';
+%             CatColCellField = 'ColCell';
+%             Nsim = numel(Sim);
+%             SubCat = struct(CatField,cell(Nsim,1),...
+%                             CatColField,cell(Nsim,1),...
+%                             CatColCellField,cell(Nsim,1),...
+%                             'Dist',cell(Nsim,1));
+%             for Isim=1:1:Nsim,
+%                 % for each image
+%                 % check if catalog exist
+%                 if (isempty(Sim(Isim).(CatField))),
+%                     Sim(Isim) = mextractor(Sim(Isim));
+%                 end
+%                 Dist = plane_dist(X,Y,...
+%                                   Sim(Isim).(CatField)(:,Sim(Isim).(CatColField).XWIN_IMAGE),...
+%                                   Sim(Isim).(CatField)(:,Sim(Isim).(CatColField).YWIN_IMAGE));
+%                 Ind = find(Dist<=Radius);
+%                 [~,SI] = sort(Dist(Ind));
+%                 SInd = Ind(SI);  % indices sorted by distance
+%                 
+%                 SubCat(Isim).(CatField)        = Sim(Isim).(CatField)(SInd,:);
+%                 SubCat(Isim).(CatColField)     = Sim(Isim).(CatColField);
+%                 SubCat(Isim).(CatColCellField) = Sim(Isim).(CatColCellField);
+%                 SubCat(Isim).Dist              = Dist(SInd);
+%                 
+%             end
+%             
+%         end
+        
+%         function obj=isbias(Sim,varargin)
+%             % Description: Check if images in SIM array are valid bias
+%             %              images (using is_bias_image.m).
+%             % Input  : - SIM array
+%             %          * Additional arguments to pass to is_bias_image.m
+%             % Output : - Vector of false/true flags, for each image in
+%             %            the SIM array, indicating if an image is a
+%             %            valid bias image.
+%             obj = is_bias_image(Sim,varargin{:});
+%         end
+        
+%         function obj=isflat(Sim,varargin)
+%             obj = is_flat_image(Sim,varargin{:});
+%         end
+%         
+%         function obj=isarc(Sim,varargin)
+%             obj = is_arc_image(Sim,varargin{:});
+%         end
+        
+%         function obj=iskeyval(Sim,varargin)
+%             % S.iskeyval('OBSTYPE','object')
+%             obj = is_head_keyval(Sim,{},varargin{:});
+%         end
+        
+       
+        
+%         function [Gain,Sim]=gain(Sim,varargin)
+%             % Description: Get CCD gain from image header and multiply
+%             %              each image by its gain.
+%             % Input  : - SIM array.
+%             %          * Additional arguments to pass to sim_gain.m
+%             % Output : - Vector of gain factors for each image in the
+%             %            SIM array.
+%             %          - SIM array multiplied by the gain.
+%             % Example: [Gain, Sim]=Sim.gain;
+%             
+%             [Gain,Sim]=sim_gain(Sim,varargin{:});
+%             
+%         end
+        
+%         function Sim=flipud(Sim,varargin)
+%             % Description: flip images in SIM array up-down
+%             % Input  : - SIM array.
+%             %          - Additional arguments to pass to sim_flip.m
+%             % Output : - SIM array in which the images are flipped up-down
+%             % Example: Sim.flipud
+%             Sim = sim_flip(Sim,varargin{:},'Op',@flipud);
+%         end
+        
+%         function Sim=rotate(Sim,Rotation,varargin)
+%             % Description: Rotate SIM images
+%             % Input  : - SIM array.
+%             %          - Rotation angle [deg]
+%             %          * Additional parameters to pass to sim_rotate.m
+%             % Output : - Rotated SIM array
+%             % Example: Sim.rotate(50)
+%             Sim = sim_rotate(Sim,varargin{:},'Rotation',Rotation);
+%             
+%         end
+        
+%         function Stat=stat(Sim,varargin)
+%             % Description: Get image statistics
+%             % Input  : - SIM array of images.
+%             %          * Additional parameters to pass to sim_stat.m
+%             % Output : - Structure array of images statistics
+%             % Example: Sim.stat
+%             Stat = sim_stat(Sim,varargin{:});
+%         end
+        
+%         function [BiasSubSim,BiasSim] = bias(Sim,varargin)
+%             % Description: Search for bias images, construct bias
+%             %              and subtract from all images.
+%             % Input  : - SIM array of images.
+%             %          * Additional parameters to pass to sim_bias.m
+%             % Output : - Bias subtracted images.
+%             %          - The bias image.
+%             % Example: Sim.bias
+%             [BiasSubSim,BiasSim] = sim_bias(Sim,varargin{:}); 
+%         end
+%         
+%         function [BiasSubSim,BiasSim] = suboverscan(Sim,varargin)
+%             % Description: For each SIM image, search for bias overscan
+%             %              region, construct a 1-D bias image and subtract
+%             %              it from the image.
+%             % Input  : - SIM array of images.
+%             %          * Additional arguments to pass to sim_suboverscan.m
+%             % Output : - Bias overscan subtracted images.
+%             %          - 1-D overscan bias images.
+%             % Example: Sim.suboverscan
+%             [BiasSubSim,BiasSim] = sim_suboverscan(Sim,varargin{:});
+%             
+%         end
+%         
+
+        
+%         function Sim = xcat(Sim,varargin)
+%             % Description: Match SIM catalog to external catalog and
+%             %              add information to catalog.
+%             %              See sim_xcat.m for details.
+%             % Input  : - SIM array of images with catalogs.
+%             %          * Additional arguments to pass to sim_xcat.m
+%             % Output : - SIM array with added columns to the catalog
+%             %            entries.
+%             % Example: sim.xcat('ExtCats',{@wget_sdss});
+%             Sim = sim_xcat(Sim,varargin{:});
+%         end
+        
+%         function [Sim,ZP]=photcalib(Sim,varargin)
+%             % Description: Calculate and apply photometric calibration
+%             %              to SIM images catalog.
+%             %              See sim_photcalib.m for details.
+%             % Input  : - SIM array of images with catalogs.
+%             %          * Additional arguments to pass to sim_photcalib.m
+%             % Output : - SIM array of images with photometrically
+%             %            calibrated magnitudes.
+%             %          - Structure array with zero point fits.
+%             % Example: [Sim,ZP]=sim.photcalib;
+%             [Sim,ZP] = sim_photcalib(Sim,varargin{:});
+%         end
+        
+        
+        % additional functions to add:
+        % flip ???
+        % fliplr
+        % rot90
+        % imagesize
+        % resize
+        % get_stamp
+        % crdetect
+        % saturated
+        
+        % near_coo
+        % nearest_xy
+        % nearest_coo
+        % addextcat
+        % ds9
+        % ds9_regions
+        % ds9_cat
+        % ds9_extcat
+        % back_std
+        % imshow
+        % filter/conv
+        % getpsf (need a PSF class)
+        % align
+        % matchcat
+        % relphot
+        % relastrom
+        % addastrom
+        % twflat
+        % domeflat
+        % skyflat
+        % coadd
+        % combine
+        % subtract
+        % 
+        
+        %--- get/set functions ---
+%         function Head=get.header(Obj,Keywords)
+%             HeaderField = 'Header';
+%             % get header or header keywords
+%             if (nargin==1),
+%                 Keywords = [];
+%             end
+%             Nsim = numel(Obj);
+%             for Isim=1:1:Nsim,
+%                 % for each image / get header
+%                 Obj(Isim).(HeaderField)
+%             end
+%             
+%         end
+       
+        %--- get functions ---
+        %function obj=get.mean1(Sim)
+        %    % mean
+        %    obj = sim_ufunv(Sim,'Op',@mean,'NaN',false);        
+        %end
+    end
+end
+
+            

@@ -1,0 +1,27 @@
+function []=stoch_time_delay(varargin)
+% SHORT DESCRIPTION HERE
+% Package: AstroUtil.microlensing
+% Description: 
+% Input  : - 
+%          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+%            where keyword are one of the followings:
+% Output : - 
+% License: GNU general public license version 3
+%     By : Eran O. Ofek                    May 2018
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: 
+% Reliable: 
+%--------------------------------------------------------------------------
+
+
+
+DefV. = 
+InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
+Nsim = 100;
+XY = rand(Nsim,2).*2 - 1;
+PM = randn(Nsim,2);
+dt
+
+Beta = XY + PM.*dt;
+2.*G.*M./(c.^3) .* log(1 - Beta);

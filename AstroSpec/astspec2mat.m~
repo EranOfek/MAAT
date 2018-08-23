@@ -1,0 +1,56 @@
+function Spec=astspec2mat(AS,Type)
+%--------------------------------------------------------------------------
+% astspec2mat function                                           AstroSpec
+% Description: Convert an AstSpec class object to a matrix or a cell
+%              array of matrices.
+% Input  : - AstSpec class object.
+%          - Output type {'cell','mat'}. Default is 'mat'.
+% Output : - 
+% License: GNU general public license version 3
+% Tested : Matlab R2015b
+%     By : Eran O. Ofek                    Feb 2016
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: 
+% Reliable: 
+%--------------------------------------------------------------------------
+
+if (nargin==1),
+    Type = 'mat';
+end
+
+Ns    = numel(AS);
+
+switch lower(Type)
+    case 'mat'
+        if (Ns>1),
+            warning('More than one output spectrum - Changing Type to cell');
+            Type = 'cell';
+        end
+      
+    otherwise
+        % do nothing
+end
+for Is=1:1:Ns,
+    % for each spectrum
+    
+    Mat = [AS(Is).wave, AS(Is).Int];
+    if (~isempty(AS(Is).Err)),
+        Mat = [Mat, AS(Is).Err];
+    end
+    if (~isempty(AS(Is).Back)),
+        Mat = [Mat, AS(Is).Back];
+    end
+    if (~isempty(AS(Is).Mask)),
+        Mat = [Mat, AS(Is).Mask];
+    end
+    
+    switch lower(Type)
+        case 'mat'
+            Spec = Mat;
+        case 'cell'
+            Spec{Is} = Mat;
+        otherwise
+            error('Unknown Type option');
+    end
+end
+            

@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="generator" content="MATLAB R2016a"><meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,chrome=1"><title>The data/+cats package</title><style type="text/css">
+* {margin: 0; padding: 0;}
+body {text-align: start; line-height: 17.234001159668px; min-height: 0px; white-space: normal; color: rgb(0, 0, 0); font-family: Consolas, Inconsolata, Menlo, monospace; font-style: normal; font-size: 14px; font-weight: normal; text-decoration: none; white-space: normal; }
+h1, h2 {font-weight: normal;}
+.content { padding: 30px; }
+
+.S0 { margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S1 { line-height: 26.3999996185303px; min-height: 24px; white-space: pre-wrap; color: rgb(213, 80, 0); font-family: Helvetica, Arial, sans-serif; font-size: 22px; white-space: pre-wrap; margin-left: 4px; margin-top: 3px; margin-bottom: 15px; margin-right: 10px;  }
+.S2 { min-height: 0px; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S3 { line-height: 26.3999996185303px; min-height: 24px; white-space: pre-wrap; color: rgb(213, 80, 0); font-family: Helvetica, Arial, sans-serif; font-size: 22px; white-space: pre-wrap; margin-left: 4px; margin-top: 10px; margin-bottom: 15px; margin-right: 10px;  }
+.S4 { line-height: 20.576000213623px; min-height: 20px; white-space: pre-wrap; color: rgb(60, 60, 60); font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: bold; white-space: pre-wrap; margin-left: 4px; margin-top: 15px; margin-bottom: 9px; margin-right: 10px;  }
+.S5 { line-height: 21px; min-height: 17px; white-space: pre-wrap; font-family: Helvetica, Arial, sans-serif; white-space: pre-wrap; margin-left: 4px; margin-top: 2px; margin-bottom: 9px; margin-right: 10px;  }
+.S6 { min-height: 0px; font-family: monospace; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S7 { min-height: 0px; color: rgb(0, 95, 206); margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S8 { font-family: Helvetica, Arial, sans-serif; margin-left: 0px; margin-top: 10px; margin-bottom: 20px; margin-right: 0px;  }
+.S9 { text-align: left; line-height: 21px; white-space: pre-wrap; white-space: pre-wrap; margin-left: 56px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S10 { margin-left: 3px; margin-top: 10px; margin-bottom: 10px; margin-right: 3px;  }
+.S11 { line-height: 15.5926675796509px; min-height: 18px; white-space: nowrap; font-size: 12.6666669845581px; white-space: nowrap; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S12 { line-height: 15.5926685333252px; min-height: 0px; white-space: pre; font-size: 12.6666679382324px; white-space: pre; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 45px;  }
+.S13 { line-height: 15.5926685333252px; min-height: 0px; white-space: pre; color: rgb(34, 139, 34); font-size: 12.6666679382324px; white-space: pre; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 45px;  }
+.S14 { line-height: 15.5926685333252px; min-height: 0px; white-space: pre; font-size: 12.6666679382324px; white-space: pre; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S15 { line-height: 15.5926685333252px; min-height: 0px; white-space: pre; color: rgb(160, 32, 240); font-size: 12.6666679382324px; white-space: pre; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;  }
+.S16 { margin-left: 3px; margin-top: 10px; margin-bottom: 4px; margin-right: 3px;  }
+.S17 { line-height: 21px; min-height: 17px; white-space: pre-wrap; font-family: Helvetica, Arial, sans-serif; white-space: pre-wrap; margin-left: 4px; margin-top: 10px; margin-bottom: 9px; margin-right: 10px;  }
+
+.LineNodeBlock {margin: 10px 0 10px 0;}
+.LineNodeBlock+.paragraphNode {margin-top: 10px;}
+.lineNode {padding-left: 10px; background-color: #F7F7F7; border-left: 1px solid #E9E9E9; border-right: 1px solid #E9E9E9;}
+.inlineWrapper:first-child .lineNode,.inlineWrapper.outputs+.inlineWrapper .lineNode {padding-top: 5px; border-top: 1px solid #E9E9E9;}
+.inlineWrapper:last-child .lineNode,.inlineWrapper.outputs .lineNode {padding-bottom: 5px; border-bottom: 1px solid #E9E9E9;}
+.lineNode .textBox {white-space: pre;}
+</style></head><body><div class = "content"><div class = 'SectionBlock containment active'><h1 class = "S1"><span class = "S2">The data/+cats package</span></h1><h1 class = "S3"><span class = "S2">in the MATLAB Astronomy &amp; Astrophysics Toolbox</span></h1><h2 class = "S4"><span class = "S2">Description</span></h2><p class = "S5"><span class = "S2">The </span><span class = "S6">+cats</span><span class = "S2"> package contains astronomical catalogs, maps, spectra, and auxiliary files. Its main function is to allow easy access, search and cross-match of astronomical catalogs. This package is optimize for catalogs which size (number of rows) is smaller than about 10^5-10^6. For larger catalogs see catsHTM.</span></p><h2 class = "S4"><span class = "S2">Credit</span></h2><p class = "S5"><span class = "S2">If you are using this code or products in your scientific publication please give a reference to </span><a href = 'http://adsabs.harvard.edu/abs/2014ascl.soft07005O'><span class = "S0">Ofek (2014; ascl.soft 07005)</span></a><span class = "S2">.</span></p><h2 class = "S4"><span class = "S2">License</span></h2><p class = "S5"><span class = "S2">Unless specified otherwise this code and products are released under the GNU general public license version 3.</span></p><h2 class = "S4"><span class = "S2">Installation</span></h2><p class = "S5"><span class = "S2">See</span><a href = 'http://webhome.weizmann.ac.il/home/eofek/matlab/doc/install.html'><span class = "S0"> http://weizmann.ac.il/home/eofek/matlab/doc/install.html </span></a><span class = "S2">for installation instruction and additional documentation.</span></p><p class = "S5"><span class = "S2">The instellation of the +cats package requires running the command: </span><span class = "S6">VO.search_prep_data_dir</span><span class = "S2">.</span></p><p class = "S5"><span class = "S2">You have to run this command once after you instaled the MATLAB Astronomy &amp; Astrophysics Toolbox.</span></p><h1 class = "S3"><span class = "S2">Structure and methodlogy</span></h1><p class = "S5"><span class = "S2">The package contains subpacakes of catalogs. The catalosg are saved in either mat files, hdf5 files, or FITS files. When a new catalof is added, it is important to execute the </span><span class = "S6">VO.search.prep_data_dir</span><span class = "S2"> command (see also </span><a href = 'https://webhome.weizmann.ac.il/home/eofek/matlab/doc/VO.html'><span class = "S0">VO documentation</span></a><span class = "S2">). </span></p><p class = "S5"><span class = "S2">Most catalogs are stored as AstCat object (a catalog container). However, other formats are supported too.</span></p><p class = "S5"><span class = "S2">The interface function to the catalogs is called </span><span class = "S6">VO.search.catalog_interface.</span></p><h1 class = "S3"><span class = "S2">Content and subpacakges</span></h1><p class = "S5"><span class = "S2">To view the contents of the cats directory, type from the matlab command prompt "cats." followed by &lt;tab&gt;.</span></p><h2 class = "S4"><span class = "S2">Content</span></h2><p class = "S5"><span class = "S2">Currently the following subpackages are available:</span></p><ul class = "S8"><li class = "S9"><span class = "S0">binaries - Binary stars catalogs.</span></li><li class = "S9"><span class = "S0">bright - Bright stars and object catalogs.</span></li><li class = "S9"><span class = "S0">compact - Compact objects - White Dwarfs, Neutron Stars, and Black Holes.</span></li><li class = "S9"><span class = "S0">galaxies - Galaxy and galaxy cluster catalogs.</span></li><li class = "S9"><span class = "S0">gamma - gamma-rays catalogs.</span></li><li class = "S9"><span class = "S0">maps - Maps (e.g., FIRST coverage map, SFD Galactic extinction).</span></li><li class = "S9"><span class = "S0">radio - Radio catalogs.</span></li><li class = "S9"><span class = "S0">SDSS - SDSS related catalogs.</span></li><li class = "S9"><span class = "S0">SN - Supernovae related catalogs.</span></li><li class = "S9"><span class = "S0">sources - UV/Visible/IR catalogs.</span></li><li class = "S9"><span class = "S0">spec - Spectroscopy related catalogs (e.g., Astronomical filters - see AstFilter; spectral lines).</span></li><li class = "S9"><span class = "S0">stars - Stellar evolutionary tracks.</span></li><li class = "S9"><span class = "S0">X - X-Ray catalogs.</span></li></ul><h2 class = "S4"><span class = "S2">Instellation</span></h2><p class = "S5"><span class = "S2">Before using the cats package, you need to generate the interface functions. This is done using the </span><span class = "S6">VO.search.prep_data_dir</span><span class = "S2"> command. This command will generate an interface function for each catalog.</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S11 lineNode"><span class = "S12">VO.search.prep_data_dir</span></p></div><div class = 'inlineWrapper'><p class = "S11 lineNode"><span class = "S13">% or if you want to install in a different location:</span></p></div><div class = 'inlineWrapper'><p class = "S11 lineNode"><span class = "S14">VO.search.prep_data_dir(</span><span class = "S15">'Dir'</span><span class = "S14">,</span><span class = "S15">'/home/myname/matlab/data/+cats'</span><span class = "S12">);</span></p></div></div><h2 class = "S4"><span class = "S2">Examples</span></h2><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S11 lineNode"><span class = "S13">% load the FIRST catalog</span></p></div><div class = 'inlineWrapper'><p class = "S11 lineNode"><span class = "S14">F</span><span class = "S12"> = cats.radio.FIRST</span></p></div></div></div><p class = "S0"></p><div class = 'SectionBlock containment'><p class = "S5"><span class = "S2">Important: when you load a catalog, it is uploaded to your output variable (F in the example) and also is being uploaded to the MATLAB session under the catalog name (FIRST in the example). In the next time you run this command, the function will identify the file in the matlab session and will not re-upload the file (saves times). If from some reason you need to delete the file or upload it again you have to clear the variable name (e.g., "clear FIRST").</span></p><p class = "S5"><span class = "S2">You can search the catalogs directly using the upload command. For example, search the FIRST catalog around RA=180 deg, Dec=10 deg with search radius of 1800 arcsec:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S11 lineNode"><span class = "S12">F=cats.radio.FIRST(180,10,3600)</span></p></div></div></div><p class = "S0"></p><div class = 'SectionBlock containment'><p class = "S5"><span class = "S2">Note this command returns an AstCat object with the objects found in the search radius. However, in addition, the full catalog is uploaded into a session variable named in this example FIRST.</span></p><p class = "S5"><span class = "S2">In order to view the help for additional options:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S11 lineNode"><span class = "S14">cats.radio.FIRST(</span><span class = "S15">'h'</span><span class = "S12">)</span></p></div></div></div><p class = "S0"></p><div class = 'SectionBlock containment'><p class = "S5"><span class = "S2">To see the catalog available colums and units:</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S11 lineNode"><span class = "S14">cats.radio.FIRST(</span><span class = "S15">'c'</span><span class = "S12">);</span></p></div></div></div><p class = "S0"></p><div class = 'SectionBlock containment'><p class = "S5"><span class = "S2">You can also execute a query on the catalog columns</span></p><div class = 'LineNodeBlock contiguous'><div class = 'inlineWrapper'><p class = "S11 lineNode"><span class = "S14">cats.radio.FIRST(</span><span class = "S15">'q'</span><span class = "S14">,</span><span class = "S15">'RA&gt;pi &amp; Dec&lt;1 &amp; Fpeak&gt;Fint &amp; Fpeak&gt;100'</span><span class = "S12">)</span></p></div></div><p class = "S17"><span class = "S2"></span></p></div></div>
+<!-- 
+##### SOURCE BEGIN #####
+%% The data/+cats package
+%% in the MATLAB Astronomy & Astrophysics Toolbox
+%% Description
+% The |+cats| package contains astronomical catalogs, maps, spectra, and auxiliary 
+% files. Its main function is to allow easy access, search and cross-match of 
+% astronomical catalogs. This package is optimize for catalogs which size (number 
+% of rows) is smaller than about 10^5-10^6. For larger catalogs see catsHTM.
+%% Credit
+% If you are using this code or products in your scientific publication please 
+% give a reference to <http://adsabs.harvard.edu/abs/2014ascl.soft07005O Ofek 
+% (2014; ascl.soft 07005)>.
+%% License
+% Unless specified otherwise this code and products are released under the GNU 
+% general public license version 3.
+%% Installation
+% See<http://webhome.weizmann.ac.il/home/eofek/matlab/doc/install.html  http://weizmann.ac.il/home/eofek/matlab/doc/install.html 
+% >for installation instruction and additional documentation.
+% 
+% The instellation of the +cats package requires running the command: |VO.search_prep_data_dir|.
+% 
+% You have to run this command once after you instaled the MATLAB Astronomy 
+% & Astrophysics Toolbox.
+%% Structure and methodlogy
+% The package contains subpacakes of catalogs. The catalosg are saved in either 
+% mat files, hdf5 files, or FITS files. When a new catalof is added, it is important 
+% to execute the |VO.search.prep_data_dir| command (see also <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/VO.html 
+% VO documentation>). 
+% 
+% Most catalogs are stored as AstCat object (a catalog container). However, 
+% other formats are supported too.
+% 
+% The interface function to the catalogs is called |VO.search.catalog_interface.|
+%% Content and subpacakges
+% To view the contents of the cats directory, type from the matlab command prompt 
+% "cats." followed by <tab>.
+%% Content
+% Currently the following subpackages are available:
+% 
+% * binaries - Binary stars catalogs.
+% * bright - Bright stars and object catalogs.
+% * compact - Compact objects - White Dwarfs, Neutron Stars, and Black Holes.
+% * galaxies - Galaxy and galaxy cluster catalogs.
+% * gamma - gamma-rays catalogs.
+% * maps - Maps (e.g., FIRST coverage map, SFD Galactic extinction).
+% * radio - Radio catalogs.
+% * SDSS - SDSS related catalogs.
+% * SN - Supernovae related catalogs.
+% * sources - UV/Visible/IR catalogs.
+% * spec - Spectroscopy related catalogs (e.g., Astronomical filters - see AstFilter; 
+% spectral lines).
+% * stars - Stellar evolutionary tracks.
+% * X - X-Ray catalogs.
+%% Instellation
+% Before using the cats package, you need to generate the interface functions. 
+% This is done using the |VO.search.prep_data_dir| command. This command will 
+% generate an interface function for each catalog.
+
+VO.search.prep_data_dir
+% or if you want to install in a different location:
+VO.search.prep_data_dir('Dir','/home/myname/matlab/data/+cats');
+%% Examples
+
+% load the FIRST catalog
+F = cats.radio.FIRST
+%% 
+% Important: when you load a catalog, it is uploaded to your output variable 
+% (F in the example) and also is being uploaded to the MATLAB session under the 
+% catalog name (FIRST in the example). In the next time you run this command, 
+% the function will identify the file in the matlab session and will not re-upload 
+% the file (saves times). If from some reason you need to delete the file or upload 
+% it again you have to clear the variable name (e.g., "clear FIRST").
+% 
+% You can search the catalogs directly using the upload command. For example, 
+% search the FIRST catalog around RA=180 deg, Dec=10 deg with search radius of 
+% 1800 arcsec:
+
+F=cats.radio.FIRST(180,10,3600)
+%% 
+% Note this command returns an AstCat object with the objects found in the 
+% search radius. However, in addition, the full catalog is uploaded into a session 
+% variable named in this example FIRST.
+% 
+% In order to view the help for additional options:
+
+cats.radio.FIRST('h')
+%% 
+% To see the catalog available colums and units:
+
+cats.radio.FIRST('c');
+%% 
+% You can also execute a query on the catalog columns
+
+cats.radio.FIRST('q','RA>pi & Dec<1 & Fpeak>Fint & Fpeak>100')
+%% 
+%
+##### SOURCE END #####
+--></body></html>

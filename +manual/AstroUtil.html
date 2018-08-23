@@ -1,0 +1,249 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>AstroUtil</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-04-27"><meta name="DC.source" content="AstroUtil.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">import <span class="string">AstroUtil.*</span>
+help <span class="string">cosmo.ad_dist</span>
+[LC,Period]=AstroUtil.binary.eb_light_curve([100 20],[1 0.6],[0.01 0.01],[0 0.3 0.2 0 0 pi./2],<span class="string">'AstroUtil.binary.limb_darkening'</span>);
+plot(LC(:,1),LC(:,2),<span class="string">'k-'</span>); invy
+
+AstroUtil.binary.plot_eb_lc_ph([100 20],[1 0.6],[0.01 0.01],[0 0.3 0.2 0 0 pi./2],<span class="string">'AstroUtil.binary.limb_darkening'</span>);
+t=[0:1:365].';
+e=0.3;
+a=1;
+RAD = 180./pi;
+RV=AstroUtil.binary.binary_rv(t,365,0,a./(1-e),e,85./RAD,100);
+plot(t,RV)
+Time = (1:1:700)';
+<span class="comment">% define the orbital elements</span>
+P    = 365;
+T    = 0;
+q    = 1;
+e    = 0.6;
+i    = 1;
+omega = 3.9;
+Nt = numel(Time);
+<span class="comment">% generate RV curve</span>
+[RV,K2] = AstroUtil.binary.binary_rv(Time,P,T,q,e,i,omega);
+RV = RV./1e5;
+RV = RV + randn(Nt,1);
+<span class="comment">% calculate the periogogram</span>
+VecP = (100:1:500)';
+[Res,FreqVec]=AstroUtil.binary.fit_rv_ellipse(Time,RV,VecP);
+<span class="comment">% plot the rms vs. the period</span>
+plot(VecP,[Res.RMS]',<span class="string">'k-'</span>);
+[x,y,q]=AstroUtil.binary.equipot(1,0.7,0.7.*1e9,3,50);
+mesh(x,y,q);
+import <span class="string">AstroUtil.cosmo.*</span>
+z=(0:0.1:5)';
+<span class="comment">% calculate angular diameter distance</span>
+D=ad_dist(z);
+plot(z,D)
+<span class="comment">% calculate lookback time</span>
+T = lookback_time(z);
+<span class="comment">% plot angular diameter distance as a function of lookback time [s]</span>
+plot(T,D)
+<span class="comment">% calculate angular diameter distance [pc] between z1 and z2</span>
+z1=1;
+z2=2;
+ad_dist([z1 z2])
+<span class="comment">% note this is not the same as:</span>
+ad_dist(z2)-ad_dist(z1)
+<span class="comment">% The last calculation is incorrect and should not be used!</span>
+
+
+[Par,ErrPar]=AstroUtil.cosmo.cosmo_pars(<span class="string">'planck'</span>)
+z=(0:0.1:1)';
+D=AstroUtil.cosmo.ad_dist(z,<span class="string">'wmap9'</span>);
+<span class="comment">% or you can provide the parameters directly:</span>
+H0=100;
+OmegaM = 0.3;
+OmegaL = 0.7;
+D=AstroUtil.cosmo.ad_dist(z,[H0,OmegaM,OmegaL]);
+
+OmegaM=[0:0.01:3]';  <span class="comment">% define a vector of Omega matter</span>
+[OmL_EF,OmL_NS]=AstroUtil.cosmo.omega_m_lambda_lines(OmegaM);
+plot(OmegaM,OmL_EF); hold <span class="string">on</span>; plot(OmegaM,OmL_NS,<span class="string">'r'</span>);
+xlabel(<span class="string">'\Omega_{m}'</span>); ylabel(<span class="string">'\Omega_{\Lambda}'</span>);
+axis([0 3 -1 4.5]);
+text(1.5,-0.2,<span class="string">'Expand forever'</span>); text(0.5,3.5,<span class="string">'No singularity'</span>);
+RAD = 180./pi;
+[ER,T1,T2,Mu1,Mu2,TD1,TD2,Tcm]=AstroUtil.microlensing.pointsource_lens(1,5000,10000,5000,1./(1000.*RAD.*3600))
+<span class="comment">% microlensing parameters</span>
+Pars.T0   = 0;  <span class="comment">% time of min. impact parameter</span>
+Pars.Beta = 0.01;  <span class="comment">% impact parameters in units of the Einstein radsius</span>
+Pars.V    = 0.1;   <span class="comment">% velocity [Einstein rdaius per day]</span>
+Pars.Alpha = 1;    <span class="comment">% blensing parameter</span>
+Pars.BaseMag = 19; <span class="comment">% Source base magnitude</span>
+Time = (-30:0.1:30).';
+[Mag,Res]=AstroUtil.microlensing.microlens_ps(Pars,Time);
+plot(Res.T,Mag); invy;
+<span class="comment">% or similarly with finate source effect</span>
+Pars.FS = 0.1;  <span class="comment">% source size in units of the Einstein radius</span>
+[Mag,Res]=AstroUtil.microlensing.microlens_psfs(Pars,Time);
+plot(Res.T,Mag); invy;
+Dist = (0:0.01:20)';
+[I_rho,A_rho]=AstroUtil.Occultation.fresnel_occultation_ps(0.9,Dist);
+plot(Dist,I_rho)
+[C,E]=AstroUtil.stars.star_sptype_color(<span class="string">'A3'</span>,<span class="string">'IV'</span>,<span class="string">'SDSS'</span>,<span class="string">'g'</span>,<span class="string">'AB'</span>,<span class="string">'SDSS'</span>,<span class="string">'r'</span>,<span class="string">'AB'</span>)
+[Ev,UBV]=AstroUtil.stars.stellar_tracks(1,0.04,<span class="string">'c'</span>);
+Time = (1:1:100)';
+[E,E_Ni,E_Co]=AstroUtil.supernova.nickel56_decay(Time);
+loglog(Time,E)
+</pre><pre class="codeoutput error">Undefined variable "AstroUtil" or class "AstroUtil.mlx".
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+import AstroUtil.*
+help cosmo.ad_dist
+[LC,Period]=AstroUtil.binary.eb_light_curve([100 20],[1 0.6],[0.01 0.01],[0 0.3 0.2 0 0 pi./2],'AstroUtil.binary.limb_darkening');
+plot(LC(:,1),LC(:,2),'k-'); invy
+
+AstroUtil.binary.plot_eb_lc_ph([100 20],[1 0.6],[0.01 0.01],[0 0.3 0.2 0 0 pi./2],'AstroUtil.binary.limb_darkening');
+t=[0:1:365].';
+e=0.3;
+a=1;
+RAD = 180./pi;
+RV=AstroUtil.binary.binary_rv(t,365,0,a./(1-e),e,85./RAD,100);
+plot(t,RV)
+Time = (1:1:700)';
+% define the orbital elements
+P    = 365;
+T    = 0;
+q    = 1;
+e    = 0.6;
+i    = 1;
+omega = 3.9;
+Nt = numel(Time);
+% generate RV curve
+[RV,K2] = AstroUtil.binary.binary_rv(Time,P,T,q,e,i,omega);
+RV = RV./1e5;
+RV = RV + randn(Nt,1);
+% calculate the periogogram
+VecP = (100:1:500)';
+[Res,FreqVec]=AstroUtil.binary.fit_rv_ellipse(Time,RV,VecP);
+% plot the rms vs. the period
+plot(VecP,[Res.RMS]','k-');
+[x,y,q]=AstroUtil.binary.equipot(1,0.7,0.7.*1e9,3,50);
+mesh(x,y,q);
+import AstroUtil.cosmo.*
+z=(0:0.1:5)';
+% calculate angular diameter distance
+D=ad_dist(z);
+plot(z,D)
+% calculate lookback time
+T = lookback_time(z);
+% plot angular diameter distance as a function of lookback time [s]
+plot(T,D)
+% calculate angular diameter distance [pc] between z1 and z2
+z1=1;
+z2=2;
+ad_dist([z1 z2])
+% note this is not the same as:
+ad_dist(z2)-ad_dist(z1) 
+% The last calculation is incorrect and should not be used!
+
+
+[Par,ErrPar]=AstroUtil.cosmo.cosmo_pars('planck')
+z=(0:0.1:1)';
+D=AstroUtil.cosmo.ad_dist(z,'wmap9');
+% or you can provide the parameters directly:
+H0=100;
+OmegaM = 0.3;
+OmegaL = 0.7;
+D=AstroUtil.cosmo.ad_dist(z,[H0,OmegaM,OmegaL]);
+
+OmegaM=[0:0.01:3]';  % define a vector of Omega matter
+[OmL_EF,OmL_NS]=AstroUtil.cosmo.omega_m_lambda_lines(OmegaM);
+plot(OmegaM,OmL_EF); hold on; plot(OmegaM,OmL_NS,'r');
+xlabel('\Omega_{m}'); ylabel('\Omega_{\Lambda}');
+axis([0 3 -1 4.5]);
+text(1.5,-0.2,'Expand forever'); text(0.5,3.5,'No singularity');
+RAD = 180./pi;
+[ER,T1,T2,Mu1,Mu2,TD1,TD2,Tcm]=AstroUtil.microlensing.pointsource_lens(1,5000,10000,5000,1./(1000.*RAD.*3600))
+% microlensing parameters
+Pars.T0   = 0;  % time of min. impact parameter
+Pars.Beta = 0.01;  % impact parameters in units of the Einstein radsius
+Pars.V    = 0.1;   % velocity [Einstein rdaius per day]
+Pars.Alpha = 1;    % blensing parameter
+Pars.BaseMag = 19; % Source base magnitude
+Time = (-30:0.1:30).';
+[Mag,Res]=AstroUtil.microlensing.microlens_ps(Pars,Time);
+plot(Res.T,Mag); invy;
+% or similarly with finate source effect
+Pars.FS = 0.1;  % source size in units of the Einstein radius
+[Mag,Res]=AstroUtil.microlensing.microlens_psfs(Pars,Time);
+plot(Res.T,Mag); invy;
+Dist = (0:0.01:20)';
+[I_rho,A_rho]=AstroUtil.Occultation.fresnel_occultation_ps(0.9,Dist);
+plot(Dist,I_rho)
+[C,E]=AstroUtil.stars.star_sptype_color('A3','IV','SDSS','g','AB','SDSS','r','AB')
+[Ev,UBV]=AstroUtil.stars.stellar_tracks(1,0.04,'c');
+Time = (1:1:100)';
+[E,E_Ni,E_Co]=AstroUtil.supernova.nickel56_decay(Time);
+loglog(Time,E)
+##### SOURCE END #####
+--></body></html>

@@ -1,0 +1,35 @@
+function [Mag,Flag]=synphot(Spec,FiltFam,FiltName,MagSys);
+%------------------------------------------------------------------------------
+% synphot function                                                   AstroSpec
+% Description: Calculate synthetic photometry of a spectrum.
+%              This is a caller function to basic_synthetic_photometry.m
+%              (by: Dovi Poznanski).
+% Input  : - Spectrum [wavelength(Ang), Flux(F_{\lambda})].
+%          - Filter normalized transmission curve,
+%            or a string containing filter familiy name,
+%            see get_filter.m for details.
+%            Filter transmission curve override filter name.
+%          - Filter name, see get_filter.m for details.
+%          - Magnitude system: {'Vega' | 'AB'}
+% Output : - Synthetic magnitude.
+%          - the fraction of flux that was extrapolated in case of
+%            partial coverage between spectrum and filter.
+%            0 - means no extrapolation.
+% Tested : Matlab 7.3
+%     By : Eran O. Ofek                       May 2008
+%    URL : http://wise-obs.tau.ac.il/~eran/matlab.html
+% Comments: based on basic_synthetic_photometry.m (by: Dovi Poznanski)
+% Reliable: 1
+%------------------------------------------------------------------------------
+if (isstr(FiltFam)==1),
+   Filter = get_filter(FiltFam,FiltName);
+   Tran   = Filter.nT{1};
+else
+   Tran   = FiltFam;
+end
+
+
+[Mag,Dmag,Flag]=basic_synthetic_photometry(Spec,Tran,MagSys,[],[0 1]);
+
+
+

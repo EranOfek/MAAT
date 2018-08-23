@@ -1,0 +1,125 @@
+function [Res,Dist,PA,Flag]=sdss_dr2_search(RA,Dec,ObjType,SearchSize,SearchShape);
+%---------------------------------------------------------------------------------------------
+% sdss_dr2_search function            Load and search the local copy compact version of 
+%                                   the SDSS DR2 cataloge.
+%                                   The Catalogue contains some basics info (only) on 
+%                                   each star or galaxy in the SDSS DR2 catalog.
+% Input  : - R.A. if scalar than given in radinas, if three element vector than [H M S].
+%          - Dec. if scalar than given in radinas, if four element vector than [Sign D M S].
+%          - ObjType: {'Gal' | 'Star'}.
+%          - Search radius/half-width in arcsec (up to 1500 arcsec.).
+%            (This limit is set because of technical reason, and maxDec~60).
+%          - Shape of search region, {'circle','box'}, default is 'box'.
+% Output : - Catalog of objects within the search radius.
+%            If empty than no sources has been found.
+%          - Vector of respective distances [radians] between search coordinates and object.
+%          - Vector of respective P.A. [radians] between search coordinates and object.
+%          - Flag indicating the number of RA regions which are in the search region
+%            and are not exist in the catalog.
+% Tested : Matlab 5.3
+%     By : Eran O. Ofek                    July 2004     
+%    URL : http://wise-obs.tau.ac.il/~eran/matlab.html
+%---------------------------------------------------------------------------------------------
+RAD               = 180./pi;
+ARCSEC_DEG        = 3600;
+STARCAT_ROOT_NAME = 'SDSS_DR2_Star_';
+GALCAT_ROOT_NAME  = 'SDSS_DR2_Gal_';
+EXTCAT_ROOT_NAME  = '.txt';
+
+if (nargin==4),
+   SearchShape = 'box';
+elseif (nargin==5),
+   % do nothing
+else
+   error('Ilegal number of input arguments');
+end
+
+if (SearchSize>1500),
+   error('Maximum search size allowed is 1500 arcsec.');
+end
+    
+if (length(RA)==1),
+   % radians
+elseif (length(RA)==3),
+   RA  = convertdms(RA,'H','r');
+else
+   error('Illegal number of elements in RA');
+end
+
+if (length(Dec)==1),
+   % radians
+elseif (length(Dec)==4),
+   Dec  = convertdms(Dec,'D','R');
+else
+   error('Illegal number of elements in RA');
+end
+
+% search size in radians
+SearchSizeRad = SearchSize./(ARCSEC_DEG.*RAD); 
+
+RA_deg   = RA.*RAD;
+Dec_deg  = Dec.*RAD;
+FloorRA  = floor(RA_deg);
+
+FracDegRA = RA_deg-FloorRA;  % RA fraction of degree
+if (SearchSize./ARCSEC_DEG>FracDegRA),
+   % previous RA region is also needed
+   PrevRA_deg = FloorRA - 1;
+   if (PrevRA_deg==-1),
+      PrevRA_deg = 359;
+   end
+else
+   PrevRA_deg    = []; 
+end
+if (SearchSize./ARCSEC_DEG>(1-FracDegRA)),
+   % next RA region is also needed
+   NextRA_deg = FloorRA + 1;
+   if (NextRA_deg==360),
+      NextRA_deg = 0;
+   end   
+else
+   NextRA_deg    = []; 
+end
+
+ListRegionsRA = [PrevRA_deg, PrevRA_deg+1; FloorRA, FloorRA+1; NextRA_deg, NextRA_deg+1];
+
+
+switch ObjType
+ case 'Star'
+    FILE_ROOT_NAME = STARCAT_ROOT_NAME;
+    Res            = zeros(0,18);
+ case 'Gal'
+    FILE_ROOT_NAME = GALCAT_ROOT_NAME;
+    Res            = zeros(0,18);
+ otherwise
+    error('Unknown ObjType option');
+end
+Dist = zeros(0,1);
+PA   = zeros(0,1);
+ 
+%--- search for objects ---
+Flag = 0;
+for Iregion=1:1:size(ListRegionsRA,1),
+   FileName  = sprintf('%s%3d_%3d%s',FILE_ROOT_NAME,ListRegionsRA(Iregion,1),ListRegionsRA(Iregion,2),EXTCAT_ROOT_NAME);
+ 
+   if (exist(FileName,'file')==0),
+      %--- RA center not within SDSS DR2 catalogue ---
+      Res   = NaN;
+   else
+      Cat   = load(FileName);
+      %--- Cat is sorted by declination ---
+      MinDec = Cat(1,2);
+      MaxDec = Cat(end,2);
+      if (Dec_deg>MinDec & Dec_deg<MaxDec),
+         [Lines,DistL,PAL] = cat_search(Cat(:,1:2)./RAD,[1 2],[RA,Dec],SearchSizeRad,SearchShape);
+         Res  = [Res; Cat(Lines,:)];
+         Dist = [Dist; DistL];
+         PA   = [PA; PAL];         
+      else
+         Res   = Res;
+         Dist  = Dist;
+         PA    = PA;
+         Flag  = Flag + 1;
+      end
+   end      
+end

@@ -1,0 +1,73 @@
+function Res=fitplcp(X,Y,Err,Alpha,varargin)
+%--------------------------------------------------------------------------
+% fitplcp function                                                  FitFun
+% Description: Given a data [X,Y], Fit a power-law of the form
+%              Y=A*(X+X0)^alpha. Where X0>0 and alpha is a constant
+%              defined by the user.
+% Input  : - Vector of X.
+%          - Vector of Y.
+%          - Vector of error in Y. If scalar than will use this error
+%            for all measurments. Default is 1.
+%          - Power law alpha. Default is -1.
+%          * Arbitrary number of pairs of input arguments: ...,key,val,...
+%            The following keywords are available:
+%            'Option'    - A cell array of key,val to pass to optimset.
+%                          Default is {'MaxIter',1000,'MaxFunEvals',1000,'TolX',1e-5,'TolFun',1e-5}
+%            'GuessPar'  - Best guess for initial value of parameters
+%                          [A, X0]. Default is [1 0].
+%            'Method'    - Sigma clipping method. See clip_resid.m for
+%                          options. Default is 'StD.
+%            'Mean'      - Sigma clipping mean method. See clip_resid.m for
+%                          options. Default is 'Median'.
+%            'Clip'      - Sigma clipping lower/upper clip values. See
+%                          clip_resid.m for options. Default is empty
+%                          matrix (i.e., no rejection).
+%            'StdZ'      - Sigma clipping add epsilon parameter. Default
+%                          is 'y'.
+% Output : -
+% Tested : Matlab 2011b
+%     By : Eran O. Ofek                    Apr 2013
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: X = [1:1:10000]'; Y = 5.*(X+13).^-1.37+randn(size(X)).*0.01;
+%          Res=fitplcp(X,Y,0.01,-1.37)
+%          Res=fitplcp(X,Y,0.01,-1.37,'GuessPar',[5 13])
+%--------------------------------------------------------------------------
+
+
+Def.Err   = 1;
+Def.Alpha = -1;
+if (nargin==2),
+    Err = Def.Err;
+    Alpha = Def.Alpha;
+elseif (nargin==3),
+    Alpha = Def.Alpha;
+else
+    % do nothing
+end
+
+DefV.Option   = {'MaxIter',1000,'MaxFunEvals',1000,'TolX',1e-5,'TolFun',1e-5};
+DefV.GuessPar = [1 0];
+DefV.Method   = 'StD';
+DefV.Mean     = 'Median';
+DefV.Clip     = [];
+DefV.StdZ     = 'y';
+InPar = set_varargin_keyval(DefV,'y','use',varargin{:});
+
+Nm  = length(X);  % number of measurments
+if (length(Err)==1),
+    Err = Err.*ones(size(Nm));
+end
+
+Alpha
+
+Chi2pl = @(Par) sum(( (Y - (Par(1)) .*(X+abs( Par(2) ) ).^( Alpha ) )./Err).^2);
+
+Options = optimset(InPar.Option{:});
+
+Res.Par     = fminsearch(Chi2pl,InPar.GuessPar,Options);
+Res.Par(2)  = abs(Res.Par(2));
+Res.Chi2    = Chi2pl(Res.Par);
+H           = Util.fit.calc_hessian(Chi2pl,Res.Par,0.1.*Res.Par); %ones(size(Res.Par)));
+Res.Cov     = inv(0.5.*H);
+Res.ParErr  = sqrt(diag(inv(0.5.*H)));
+Res.Resid   = Y - Res.Par(1).*(X+Res.Par(2)).^(Alpha);

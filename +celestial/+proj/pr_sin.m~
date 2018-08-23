@@ -1,0 +1,25 @@
+function [X,Y]=pr_sin(Theta,Phi,Center)
+% Slant ortographic (SIN) projection
+% Package: celestial.proj
+% Description: Slant ortographic (SIN) projection
+% Input  : - Longitude [rad].
+%          - Latitude [rad].
+%          - [Long, Lat] o
+%          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+%            where keyword are one of the followings:
+% Output : - 
+% License: GNU general public license version 3
+%     By : Eran O. Ofek                    Mar 2017
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: 
+% Reliable: 
+%--------------------------------------------------------------------------
+RAD = 180./pi;
+
+Theta_C = Center(1);
+Phi_C   = Center(2);
+Zeta = +cot(Theta_C).*sin(Phi_C);
+Eta  = -cot(Theta_C).*cos(Phi_C);
+
+X = +RAD.*(cos(Theta).*sin(Phi) + Zeta.*(1-sin(Theta)));
+Y = -RAD.*(cos(Theta).*cos(Phi) - Eta .*(1-sin(Theta)));

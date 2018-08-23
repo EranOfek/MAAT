@@ -1,0 +1,327 @@
+function [AstOut,AstUM]=match(AstR,AstC,varargin)
+%--------------------------------------------------------------------------
+% match function                                             class/@AstCat
+% Description: Match an AstCat object (a reference catalog) with a list
+%              of other catalogs. The sources in the catalogs are matched
+%              by position to the sources in the reference is the matched
+%              sources in the additional
+%              catalogs are appended to the reference catalog. Lines with
+%              no matches are populated by NaNs.
+%              In addition to the catalog columns, also appended are
+%              columns indicating the number of possible matches within
+%              search radius, and more.
+%              Also returned is a list of unmatched sources.
+% Input  : - An AstCat object containing a single catalog, or a SIM image
+%            containing a single catalog. This catalog will be matched
+%            by position against other catalogs.
+%          - An AstCat object containing multiple catalogs to match.
+%            Alternatively this can be a matrix containing the catalog
+%            itself.
+%          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+%            where keyword are one of the followings:
+%            'RefColNames'- Column names of coordinates to match in the
+%                           reference catalog.
+%                           Default is {'ALPHAWIN_J2000','DELTAWIN_J2000'}.
+%            'CatColNames'- Column names of coordinates to match in the
+%                           other catalogs.
+%                           Default is {'RA','Dec'}.
+%            'RefUnits'   - Units of coordinates in reference catalog:
+%                           'deg'|'rad'|'pix'. Default is 'deg'.
+%            'CatUnits'   - Units of coordinates in the other catalog:
+%                           'deg'|'rad'|'pix'. Default is 'rad'.
+%            'CooType'    - Coordinates type: 'sphere'|'plane' for search.
+%                           Default is 'sphere'.
+%            'SearchRad'  - Search radius [radians or pixels].
+%                           Default is 2".
+%            'SearchMethod'- Search method. See search_cat.m for options.
+%                           Default is 'binms'.
+%            'AuxCol'     - Vector of flags indicating which auxilary
+%                           columns to show. Auxilary columns include
+%                           [Nfound, Dist], where Nfound is number of
+%                           matched sources, and Dist is the distance to
+%                           the nearest match. Default is [true true].
+%            'EdgeCol'    - Vector of flags indicating which additional
+%                           columns to show with information regarding to
+%                           is the unmatched source is inside the search
+%                           footprint. This works only if the reference
+%                           catalog is a SIM image with a WCS information
+%                           from which the footprint can be calculated.
+%                           The additional columns are:
+%                           [Flag, DistEdge, DistCenter, DistPA].
+%                           Default is [true true true true].
+%            'RefOutCol' - Cell array or column indices in the reference
+%                          catalog, to append to the output catalog.
+%                          If empty show all columns. 
+%                          If NaN will show no columns.
+%                          Default is NaN.
+%            'CatOutCol' - Cell array or column indices in the other
+%                          catalog, to append to the output catalog.
+%                          If empty show all columns. Default is empty.
+%            'CatName'   - Catalog name (cell or string).
+%                          These names will be appended as a
+%                          prefix to the column names of the other
+%                          catalogs in the output. Default is ''.
+%            'MatchIndiv'- This program has two modes. If true than each
+%                          catalog will be matched against the reference,
+%                          and the matched columns will be appended to the
+%                          reference catalog columns (single output
+%                          catalog). If false, then each
+%                          catalog will be matched individualy to the
+%                          reference and the output is a catalog per
+%                          catalog in the input. Deafult is true.
+%                          If false, then CatName need to be a cell array
+%                          of names.
+%            'Verbose'   - Default is false.
+% Output : - AstCat object with the combined matched catalogs.
+%            The number of lines is the number of sources in the reference
+%            catalog. If there is no match than Nfound will be zero, and
+%            the columns of the other catalog will be set to NaN.
+%          - An AstCat object with sources in the other catalogs that were
+%            unmatched to the reference catalog.
+%            The number of elements in this object is equal to the number
+%            of other catalogs.
+%            Also appended to the columns in these catalogs is a flag
+%            indicating if the sources is in the footprint of the
+%            reference catalog and its distance from the image edge [pix].
+% See also: astcat2matched_array.m
+% License: GNU general public license version 3
+% Tested : Matlab R2015b
+%     By : Eran O. Ofek                    Mar 2016
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: [AstOut,AstUM]=match(Sim,Sim1,'CatName',{'A'},'CatUnits','Deg','RefUnits','Deg','CatColNames',{'ALPHAWIN_J2000','DELTAWIN_J2000'});
+%          Sm=match(S1,S2,'RefColNames',{'XWIN_IMAGE','YWIN_IMAGE'},'CatColNames',{'XWIN_IMAGE','YWIN_IMAGE'},'CooType','plane','CatName',{'B'})
+% Reliable: 2
+%--------------------------------------------------------------------------
+RAD        = 180./pi;
+ARCSEC_DEG = 3600;
+
+CatField    = 'Cat';
+
+% default parameters
+DefV.RefColNames       = {'ALPHAWIN_J2000','DELTAWIN_J2000'};
+DefV.CatColNames       = {'RA','Dec'};
+DefV.RefUnits          = 'deg';   
+DefV.CatUnits          = 'rad';   
+DefV.CooType           = 'sphere';
+DefV.SearchRad         = 2./(RAD.*ARCSEC_DEG);
+DefV.SearchMethod      = 'binms';
+DefV.AuxCol            = [true true];   % show Aux columns [Nfound, Dist]
+DefV.EdgeCol           = [true true true true]; % show dis edge columns [Flag, DistEdge, DistCenter, DistPA]
+DefV.RefOutCol         = NaN;  %[];   % all columns
+DefV.CatOutCol         = [];   % all columns
+DefV.CatName           = '';   % {'Ex'};
+DefV.MatchIndiv        = true;
+DefV.Verbose           = false;
+
+InPar = set_varargin_keyval(DefV,'n','use',varargin{:});
+
+
+% If Ref cat is not provided use AstC(1)
+if (isempty(AstR)),
+    AstR = AstC(1);
+end
+
+if (numel(AstR)>1),
+    error('Reference catalog should contain a single element');
+end
+
+if (~isastcat(AstC)),
+    Tmp  = AstC;
+    AstC = AstCat;
+    AstC.(CatField) = Tmp;
+end
+
+if (~iscell(InPar.CatName)),
+    InPar.CatName = {InPar.CatName};
+end
+Ncn = numel(InPar.CatName);
+
+
+% Reference catalog details
+RefColInd = colname2ind(AstR,InPar.RefColNames);
+% sort Ref
+AstR = sortrows(AstR,RefColInd(2));
+[RefNrow, RefNcol] = size(AstR.(CatField));
+
+RefCoo    = AstR.(CatField)(:,RefColInd);   % [RA, Dec] 
+
+switch lower(InPar.CooType)
+    case 'plane'
+        % no conversion
+        CatFactor = 1;
+    case 'sphere'
+        % spherical coordinates - conversion may be needed
+        
+        % Ref Conversion factor (to radians)
+        RefFactor = convert_units(InPar.RefUnits,'rad');
+        % Cat Conversion factor (to radians)
+        CatFactor = convert_units(InPar.CatUnits,'rad');
+
+        RefCoo = RefCoo.*RefFactor;
+    otherwise
+        error('Unknown CooType option');
+end
+
+
+% output Ref column indices:
+if (isempty(InPar.RefOutCol)),
+    RefOutCol = (1:1:RefNcol);
+else
+    if (~iscell(InPar.RefOutCol)),
+        if (isnan(InPar.RefOutCol)),
+            RefOutCol = [];
+        else
+            RefOutCol = colname2ind(AstR,InPar.RefOutCol);
+        end
+    else
+        RefOutCol = colname2ind(AstR,InPar.RefOutCol);
+    end
+end
+
+% Is input catalog also SIM objects
+IsSIMref = issim(AstR);
+IsSIMcat = issim(AstC);
+
+% Auxilary columns [Nfound, Dist] in putput catalog
+% which columns to show
+AuxCol          = [1 2];
+AuxCol          = AuxCol(InPar.AuxCol);
+
+% for each catalog
+Nc = numel(AstC);
+if (InPar.MatchIndiv),
+    AstOut = astcatdef(size(AstC));
+else
+    AstOut = AstCat;
+end
+
+AstUM  = astcatdef(size(AstC));
+for Ic=1:1:Nc,
+    if (InPar.Verbose),
+        fprintf('Match catalog %d\n',Ic);
+    end
+    % Catalog coordinates column names
+    CatColInd = colname2ind(AstC(Ic),InPar.CatColNames);
+    
+    % Cat size
+    [CatNrow, CatNcol] = size(AstC(Ic).(CatField));
+    
+    % catalog may need conversion to radians
+    % RefCoo is already in radians (if CooType='sphere')
+    AstC(Ic) = sortrows(AstC(Ic),CatColInd(2));
+    [Res,CatUM]     = search_cat(AstC(Ic).(CatField)(:,CatColInd).*CatFactor,RefCoo,[],...
+                                 'CooType',InPar.CooType,'IsRad',true,...
+                                 'SearchMethod',InPar.SearchMethod);
+                             
+    %Flag = Res.Nfound>0;
+    %Res(Flag).IndCat(1)
+    
+    
+    % output Ref column indices:
+    if (isempty(InPar.CatOutCol)),
+        CatOutCol = (1:1:CatNcol);
+    else
+        CatOutCol = colname2ind(AstC(Ic),InPar.CatOutCol);
+    end
+    NextraCol = numel(CatOutCol);   % number of output columns for Cat
+    
+    % extra columns
+    CatMatchedCol   = nan(RefNrow,NextraCol);
+    CatAuxCol       = nan(RefNrow,2);   % Nfound, Dist
+    CatAuxCol(:,2)  = NaN;
+    
+    % Get Name of AstC catalog
+    % this will be appended to the extra column names
+    if (isempty(AstC(Ic).Name)),
+        if (isempty(InPar.CatName)),
+            error('Cat Name is not available - set it using the CatName keyword or Name field');
+        else
+            Name = InPar.CatName{min(Ic,Ncn)};
+        end
+    else
+        if (~isempty(InPar.CatName))
+            Name = InPar.CatName{min(Ic,Ncn)};
+        else
+            Name = AstC(Ic).Name;
+        end
+    end
+    
+    CatAuxColName   = {'%sNfound','%sDist'};
+    CatAuxColName   = cell_sprintf(CatAuxColName,{Name});
+    %AstOut(Ic).Cat = [AstR.Cat(:,RefOutCol), 
+    % for each matched source
+    for Ires=1:1:RefNrow,
+        if (Res(Ires).Nfound>0),
+            [~,MinInd] = min(Res(Ires).DistRAD);
+            CatMatchedCol(Ires,:) = AstC(Ic).(CatField)(Res(Ires).IndCat(MinInd),CatOutCol);
+            CatAuxCol(Ires,:)     = [Res(Ires).Nfound, Res(Ires).DistRAD(MinInd)];
+        end
+    end
+    
+    % for SIM images
+    if (IsSIMref && all(InPar.EdgeCol)),
+        % Flag sources in Ref which are outside the boundries of Cat
+        
+        % Flag sources in Cat which are outside the boundries of Ref
+        [InAstC]=coo_inimage(AstR,AstC(Ic).(CatField)(CatUM,CatColInd),...
+                             'CooType',InPar.CooType,'ColNames',{'RA','Dec'},'ColUnits',InPar.CatUnits);
+                         
+        CatEdgeCol     = InAstC.(CatField)(:,InPar.EdgeCol);
+        CatEdgeColName = InAstC.ColCell(InPar.EdgeCol);
+        CatEdgeColName = cellstr_prefix(CatEdgeColName,sprintf('%s',Name));
+    else
+        % empty - no edge distance is required
+        CatEdgeCol     = []; %nan(RefNrow,0);
+        CatEdgeColName = {};
+    end
+        
+    % Prepare output catalogs
+    % Matched sources catalog
+    if (InPar.MatchIndiv),
+        Iout = Ic;
+        
+        AstOut(Iout).(CatField) = [AstR.(CatField)(:,RefOutCol), CatAuxCol(:,AuxCol), CatMatchedCol];
+        CatCol  = ind2colname(AstC(Ic),CatOutCol);
+        % need to add catalog name prefix to CatCol:
+        CatCol  = cellstr_prefix(CatCol,sprintf('%s',Name));
+
+        AstOut(Iout).ColCell     = [ind2colname(AstR,RefOutCol), CatAuxColName(AuxCol), CatCol];
+        AstOut(Iout)             = colcell2col(AstOut(Iout));
+        AstOut(Iout).Source      = sprintf('Ref catalog (%s) matched with catalog (%s)',AstR.Source,AstC(Ic).Source);
+        AstOut(Iout).SortedBy    = AstR.SortedBy;
+        AstOut(Iout).SortedByCol = AstR.SortedByCol;
+        
+    else
+        Iout = 1;
+        if (Nc>1),
+            error('MatchIndiv false option not available yet for multiple element AstCat input');
+        end
+        AstOut(Iout).(CatField) = [AstR.(CatField)(:,RefOutCol), CatAuxCol(:,AuxCol), CatMatchedCol];
+
+        CatCol  = ind2colname(AstC(Ic),CatOutCol);
+        % need to add catalog name prefix to CatCol:
+        CatCol  = cellstr_prefix(CatCol,sprintf('%s',Name));
+
+        AstOut(Iout).ColCell     = [ind2colname(AstR,RefOutCol), CatAuxColName(AuxCol), CatCol];
+        AstOut(Iout)             = colcell2col(AstOut(Iout));
+        AstOut(Iout).Source      = sprintf('Ref catalog (%s) matched with catalog (%s)',AstR.Source,AstC(Ic).Source);
+        AstOut(Iout).SortedBy    = AstR.SortedBy;
+        AstOut(Iout).SortedByCol = AstR.SortedByCol;
+       
+    end
+    
+    
+    
+    % Unmatched sources in the catalog
+    AstUM(Ic).(CatField)   = [AstC(Ic).(CatField)(CatUM,:), CatEdgeCol];
+    AstUM(Ic).ColCell      = [AstC(Ic).ColCell, CatEdgeColName];
+    AstUM(Ic)              = colcell2col(AstUM(Ic));
+    AstUM(Ic).ColUnits     = AstC(Ic).ColUnits;
+    AstUM(Ic).Source      = sprintf('Unmatched sources in Cat (%s) compared with Ref',AstC(Ic).Source,AstR.Source);
+    AstUM(Ic).SortedBy    = AstC(Ic).SortedBy;
+    AstUM(Ic).SortedByCol = AstC(Ic).SortedByCol;
+    
+    
+end
+
+

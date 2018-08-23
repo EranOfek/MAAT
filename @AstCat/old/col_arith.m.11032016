@@ -1,0 +1,86 @@
+function [Val]=col_arith(AstC,Expression,OutType)
+%--------------------------------------------------------------------------
+% col_arith function                                         class/@AstCat
+% Description: Perform arithmetic on columns in an AstCat object.
+% Input  : - AstCat object.
+%          - An expression (string) or a cell array of expressions.
+%            Each expression is evaluated and populate a column in the
+%            output matrix. An expression contains column or columns names
+%            and operations (see example).
+%          - Output type:
+%            'mat' - A matrix with column per expression. This output is
+%                    valid only for single element AstCat object.
+%            'astcat' - An AstCat object with element per catalog, and
+%                    column per expression. Default.
+% Output : - AstCat object or a matrix of evaluated expressions.
+%            A column per expression.
+% License: GNU general public license version 3
+% Tested : Matlab R2015b
+%     By : Eran O. Ofek                    Mar 2016
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: Val = col_arith(AstC,'XWIN_IMAGE>5 & APER_MAG<18')
+%          Val = col_arith(AstC,...
+%               {'mod(XWIN_IMAGE,1)','XWIN_IMAGE+YWIN_IMAGE.^2','APER_MAG<18'});
+% Reliable: 2
+%--------------------------------------------------------------------------
+
+if (nargin<3),
+    OutType = 'astcat';
+end
+
+if (numel(AstC)>1 && ~strcmpi(OutType,'astcat')),
+    error('OutType==mat works only for a single element AstCat');
+end
+
+if (~iscell(Expression)),
+    Expression = {Expression};
+end
+
+Nc = numel(AstC);
+switch lower(OutType)
+    case 'astcat'
+        Val = astcatdef(size(AstC));
+    otherwise
+        % do nothing
+end
+          
+for Ic=1:1:Nc,
+    Nf = numel(AstC(Ic).ColCell); % number of fields
+    if (istable(AstC(Ic).Cat)),
+        % table case
+        for If=1:1:Nf,
+            % for each field
+            % evaluate field into field name
+
+            eval(sprintf(' %s = table2array(AstC(Ic).Cat(:,If));',AstC(Ic).ColCell{If}));
+        end
+    else
+        % array case
+        for If=1:1:Nf,
+            % for each field
+            % evaluate field into field name
+
+            eval(sprintf(' %s = AstC(Ic).Cat(:,If);',AstC(Ic).ColCell{If}));
+        end
+    end
+
+    % evaluate expressions
+    Nexp = numel(Expression);   % number of expressions
+    switch lower(OutType)
+        case 'astcat'
+            Val(Ic).Cat = zeros(size(AstC(Ic).Cat,1),Nexp);
+            Val(Ic).ColCell = cell(1,Nexp);
+            for Iexp=1:1:Nexp,
+                Val(Ic).Cat(:,Iexp) = eval(Expression{Iexp});
+                Val(Ic).ColCell{Iexp} = sprintf('exp%d',Iexp);
+            end
+            Val(Ic) = colcell2col(Val(Ic));
+        case 'mat'
+            Val  = zeros(size(AstC(Ic).Cat,1),Nexp);
+            for Iexp=1:1:Nexp,
+                Val(:,Iexp) = eval(Expression{Iexp});
+            end
+        otherwise
+            error('Unknown OutType option');
+    end
+end

@@ -1,0 +1,50 @@
+function Flag=col_bitmask_find(AstC,BitMask,Col,Operator,Dic)
+% Find specific bitmask values in a catalog column
+% Package: class/@AstCat
+% Description: Given an AstCat object in which one of the columns is
+%              a bitmask integer, search for lines in which specific
+%	       bits are on or off.
+% Input  : - An AstCat object that contain a single element.
+%          - List of bitmasks to search for.
+%	     This is either a decimal number or a cell array of
+%	     bit names as defined in a bitmask dictionary (see below).
+%          - Column name of index that contains the bitmask column
+%	     in the catalog. Default is 'FLAGS'.
+%          - Operator:
+%	     'bitor'  - Check if one or more of the bits are on.
+%            'bitand' - Check if all the bits are on.
+%            'notbitand' - Check if all the bits are off.
+%            Default is 'bitor'.
+%          - Bitmask dictionary. Default is @def_bitmask_pipeline.
+% Output : - A vector of logicals of the search results.
+%     By : Eran O. Ofek                    Jan 2017
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: 
+% Reliable: 
+
+if (numel(AstC)>1)
+    error('The AstCat object must contain a single element');
+end
+
+Def.Col      = 'FLAGS';
+Def.Operator = 'bitor';
+Def.Dic      = @def_bitmask_pipeline;
+
+if (nargin<3)
+    Col      = Def.Col;
+    Operator = Def.Operator;
+    Dic      = Def.Dic
+elseif (nargin<4)
+    Col      = Def.Col;
+    Operator = Def.Operator;
+elseif (nargin<5)
+    Col      = Def.Col;
+elseif (nargin==5),
+    % do nothing
+else
+    error('Illegal number of input arguments: col_bitmask_find(AstC,BitMask,[Col,Operator,Dic])');
+end
+
+
+.....
+

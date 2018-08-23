@@ -1,0 +1,62 @@
+function Head=replace_key(Head,varargin)
+%--------------------------------------------------------------------------
+% replace_key function                                       class/@Header
+% Description: Replace the value and comment of a keyword in an Header
+%              object.
+% Input  : - An Header object.
+%          * Either an arbitrary number of triplets:
+%            ...,key,val,comment,...
+%            or an arbitrary number of cell arrays, each cell array
+%            containing 2 or 3 columns of {key,val,comment}, where the
+%            comment field is optional.
+% Output : - An Header object in which the content of the keyword was
+%            replaced.
+% License: GNU general public license version 3
+% Tested : Matlab R2015b
+%     By : Eran O. Ofek                    Mar 2016
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: Head=replace_key(Head,'EXPTIME',60,'Exp. time [s]','NAXIS',3,'');
+%          Head=replace_key(Head,{'EXPTIME',60;'NAXIS',2});
+% Reliable: 
+%--------------------------------------------------------------------------
+
+HeaderField = 'Header';
+
+if (~iscell(varargin{1})),
+    % assume varargin contains triplets of key,val,comments
+    Ntriplets   = numel(varargin)./3;
+    Tmp = reshape({varargin},3,Ntriplets).';
+    clear varargin;
+    varargin{1} = Tmp;
+end
+
+Narg = numel(varargin);
+
+Nh = numel(Head);
+for Ih=1:1:Nh,
+    for Iarg=1:1:Narg,
+        [Nline,Nrow] = size(varargin{Iarg});
+        for Iline=1:1:Nline,
+            Key = varargin{Iarg}{Iline,1};
+            Val = varargin{Iarg}{Iline,2};
+            if (Nrow>2),
+                Com = varargin{Iarg}{Iline,3};
+            else
+                Com = '';
+            end
+            
+            % searck for key in Header
+            Flag = strcmp(Head(Ih).(HeaderField)(:,1),Key);
+            if (all(~Flag)),
+                warning('Keyword %s was not found in header',Key);
+            else
+                Head(Ih).(HeaderField){Flag,1} = Key;
+                Head(Ih).(HeaderField){Flag,2} = Val;
+                Head(Ih).(HeaderField){Flag,3} = Com;
+            end
+        end
+    end
+end
+
+    
+    

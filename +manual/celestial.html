@@ -1,0 +1,311 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>celestial</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-04-27"><meta name="DC.source" content="celestial.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">import <span class="string">celestial.coo.*</span>
+help <span class="string">sphere_dist</span>
+<span class="comment">% convert sexagesimal coordinates to degrees</span>
+celestial.coo.convertdms(<span class="string">'15:10:56.1'</span>,<span class="string">'SH'</span>,<span class="string">'d'</span>)
+<span class="comment">% convert sexagesimal vector to radians</span>
+celestial.coo.convertdms([ -1 0 10 56.1],<span class="string">'D'</span>,<span class="string">'r'</span>)
+AM=celestial.coo.hardie([1;1.1])
+[N,NM]=celestial.coo.nutation(2451545+(1:2)');
+<span class="comment">% conversion of [RA Dec] in radians from J2000.0 to ecliptic</span>
+C=celestial.coo.coco(rand(4,2),<span class="string">'j2000.0'</span>,<span class="string">'e'</span>)
+<span class="comment">% Galactic to super galactic, input and output in degrees</span>
+C=celestial.coo.coco([100 10],<span class="string">'g'</span>,<span class="string">'S'</span>,<span class="string">'d'</span>,<span class="string">'d'</span>)
+<span class="comment">% Super Galactic to Equatorial J2000.0.</span>
+R=celestial.coo.rotm_coo(<span class="string">'SGg'</span>)
+tic;
+[D,P]=celestial.coo.sphere_dist(rand(1e5,1),rand(1e5,1),[10 0 0],[1 40 0 0]);
+toc
+VecJD = celestial.time.julday([1 1 2000])+(1:6:366)';
+Lat   = 33.*pi./180;
+AM    = 1.8;
+TimeVis = 0;
+<span class="keyword">for</span> I=1:1:numel(VecJD)
+    [SkyArea(I),LON(I)]=celestial.coo.sky_area_above_am(VecJD(I),Lat,AM,TimeVis);
+<span class="keyword">end</span>
+plot(VecJD-VecJD(1),SkyArea)
+RAD = 180./pi;
+<span class="comment">% atmospheric refraction as a function of altitude</span>
+Alt = (20:1:90)./RAD;
+R   = celestial.coo.refraction(Alt);
+plot(Alt.*RAD,R.*RAD.*3600)
+xlabel(<span class="string">'Alt [deg]'</span>);
+ylabel(<span class="string">'Refraction [arcsec]'</span>);
+<span class="comment">% differntial refraction</span>
+plot(Alt(1:end-1).*RAD,diff(R).*RAD.*3600)
+xlabel(<span class="string">'Alt [deg]'</span>);
+ylabel(<span class="string">'Diff. Refraction [arcsec/deg]'</span>);
+<span class="comment">% color refraction as a function of altitude</span>
+[R5,N]=celestial.coo.refraction_wave(Alt,5000);
+[R6,N]=celestial.coo.refraction_wave(Alt,6000);
+plot(Alt.*RAD,(R5-R6).*RAD.*3600)
+xlabel(<span class="string">'Alt [deg]'</span>);
+ylabel(<span class="string">'Color ref. [arcsec] (500 to 600 nm)'</span>);
+import <span class="string">celestial.time.*</span>
+<span class="comment">% Calculate the JD now:</span>
+julday
+<span class="comment">% calculate the JD for some dates in [D M Y Frac_of_day] format</span>
+julday([1 1 2015 0.5; 1 2 2015 0.7])
+<span class="comment">% calculate the JD for a date in [D M Y H M S] format</span>
+julday([1 1 2015 18 30 45])
+<span class="comment">% calculate the JD from an ISO string</span>
+julday(<span class="string">'2015-01-01T18:30:45.0'</span>)
+<span class="comment">% or from several ISO strings</span>
+JD = julday({<span class="string">'2015-01-01T18:30:45.0'</span>,<span class="string">'2016-02-01T12:30:15'</span>})
+
+<span class="comment">% convert JD to date in [D M Y Frac] format</span>
+jd2date(JD)
+<span class="comment">% convert JD to date in [D M Y H M S] format</span>
+jd2date(JD,<span class="string">'H'</span>)
+
+<span class="comment">% convert jd to MJD</span>
+MJD=jd2mjd(JD)
+<span class="comment">% convert MJD to JD</span>
+JD=mjd2jd(MJD)
+import <span class="string">celestial.time.*</span>
+<span class="comment">% input is JD in UT1 time scale</span>
+JD = julday([1 1 2016])+(0:1:10)';
+<span class="comment">% calculate the GMST - output is in fraction of day</span>
+LST = lst(JD,0)
+<span class="comment">% calculate the Greenwich Apparent Sidereal Time</span>
+LST = lst(JD,0,<span class="string">'a'</span>)
+<span class="comment">% Mean sidereall time at longitude 35 def</span>
+LST = lst(JD,35.*pi./180)
+<span class="comment">% Store a local copy of The EOP file:</span>
+EOP=celestial.time.wget_eop(<span class="string">'get'</span>);
+<span class="comment">% Store a local copy of TAI/UTC file:</span>
+TAI_UTC=celestial.time.wget_tai_utc(<span class="string">'get'</span>);
+<span class="comment">% DeltaT = TT-UT1 (after 1984)</span>
+DeltaT=celestial.time.delta_t([2451545;celestial.time.julday])
+<span class="comment">% TDB-TT</span>
+Diff=celestial.time.tdb_tdt(2451545)
+<span class="comment">% TAI-UTC and TT-UTC:</span>
+[TAImUTC,TTmUTC]=celestial.time.tai_utc([0;2451545])
+<span class="comment">% UT1-UTC and Earth Oreientation Parameters</span>
+[UT1mUTC,EOP]=celestial.time.ut1_utc(2451545)
+<span class="comment">% number of days in Month in Feb 2000:</span>
+celestial.time.days_in_month(2000,2)
+<span class="comment">% Date of Easter in 2000:</span>
+celestial.time.easter_date(2000)
+[V,W,EGM]=celestial.Earth.earth_gravity_field(6731e5,1,1);
+<span class="comment">% solve the Kepler equation for elliptic orbit simultanously for 1e6 objects:</span>
+t = rand(1e6,1);  <span class="comment">% t-T (day)</span>
+q = rand(1e6,1);  <span class="comment">% q (au)</span>
+e = rand(1e6,1);   <span class="comment">% e</span>
+tic;
+[Nu,R,E]=celestial.Kepler.kepler_elliptic(t,q,e);
+toc
+JD = celestial.time.julday([1 1 2015])+(0:1:365)';
+<span class="comment">% Calculate apparent coordinate of the Sun in 2015</span>
+[RA,Dec,R,sl,ET]=celestial.SolarSys.suncoo(JD,<span class="string">'a'</span>);
+<span class="comment">% plot the analema</span>
+ET(ET&gt;900) = ET(ET&gt;900)-1440;
+plot(ET,Dec.*180./pi,<span class="string">'.'</span>)
+xlabel(<span class="string">'Time [min]'</span>);
+ylabel(<span class="string">'Declination [deg]'</span>);
+<span class="comment">% Convert coordinates of fixed position to radians</span>
+RA  = celestial.coo.convertdms(<span class="string">'15:45:12.1'</span>,<span class="string">'SH'</span>,<span class="string">'r'</span>);
+Dec = celestial.coo.convertdms(15.1,<span class="string">'d'</span>,<span class="string">'R'</span>)
+<span class="comment">% Moon coordinatesv from Israel</span>
+JD = celestial.time.julday([1 1 2015])+(0:1:365)';
+[MoonRA,MoonDec,HP]=celestial.SolarSys.mooncool(JD,[35 32].*pi./180);
+D = celestial.coo.sphere_dist(MoonRA,MoonDec,RA,Dec);
+plot(JD-2450000,D.*180./pi)
+<span class="comment">% January 2015:</span>
+celestial.SolarSys.jup_satcurve(1,2015)
+celestial.SolarSys.jupiter_map(celestial.time.julday([1 1 2015 23 0 0]))
+<span class="comment">% Calculate the Moon phases in January 2015:</span>
+celestial.SolarSys.moon_phases([1 1 2015],[1 2 2015])
+<span class="comment">% Approximate time for equinox and solstice between 2010 to 2020</span>
+Eq=celestial.SolarSys.equinox_solstice([2010;2020])
+</pre><pre class="codeoutput error">Undefined variable "celestial" or class "celestial.mlx".
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+import celestial.coo.*
+help sphere_dist
+% convert sexagesimal coordinates to degrees
+celestial.coo.convertdms('15:10:56.1','SH','d')
+% convert sexagesimal vector to radians
+celestial.coo.convertdms([ -1 0 10 56.1],'D','r')
+AM=celestial.coo.hardie([1;1.1])
+[N,NM]=celestial.coo.nutation(2451545+(1:2)');
+% conversion of [RA Dec] in radians from J2000.0 to ecliptic
+C=celestial.coo.coco(rand(4,2),'j2000.0','e')
+% Galactic to super galactic, input and output in degrees
+C=celestial.coo.coco([100 10],'g','S','d','d')
+% Super Galactic to Equatorial J2000.0.
+R=celestial.coo.rotm_coo('SGg')
+tic;
+[D,P]=celestial.coo.sphere_dist(rand(1e5,1),rand(1e5,1),[10 0 0],[1 40 0 0]);
+toc
+VecJD = celestial.time.julday([1 1 2000])+(1:6:366)';
+Lat   = 33.*pi./180;
+AM    = 1.8;
+TimeVis = 0;
+for I=1:1:numel(VecJD)
+    [SkyArea(I),LON(I)]=celestial.coo.sky_area_above_am(VecJD(I),Lat,AM,TimeVis);
+end
+plot(VecJD-VecJD(1),SkyArea)
+RAD = 180./pi;
+% atmospheric refraction as a function of altitude
+Alt = (20:1:90)./RAD;
+R   = celestial.coo.refraction(Alt);
+plot(Alt.*RAD,R.*RAD.*3600)
+xlabel('Alt [deg]');
+ylabel('Refraction [arcsec]');
+% differntial refraction
+plot(Alt(1:end-1).*RAD,diff(R).*RAD.*3600)
+xlabel('Alt [deg]');
+ylabel('Diff. Refraction [arcsec/deg]');
+% color refraction as a function of altitude
+[R5,N]=celestial.coo.refraction_wave(Alt,5000);
+[R6,N]=celestial.coo.refraction_wave(Alt,6000);
+plot(Alt.*RAD,(R5-R6).*RAD.*3600)
+xlabel('Alt [deg]');
+ylabel('Color ref. [arcsec] (500 to 600 nm)');
+import celestial.time.*
+% Calculate the JD now:
+julday
+% calculate the JD for some dates in [D M Y Frac_of_day] format
+julday([1 1 2015 0.5; 1 2 2015 0.7])
+% calculate the JD for a date in [D M Y H M S] format
+julday([1 1 2015 18 30 45])
+% calculate the JD from an ISO string
+julday('2015-01-01T18:30:45.0')
+% or from several ISO strings
+JD = julday({'2015-01-01T18:30:45.0','2016-02-01T12:30:15'})
+
+% convert JD to date in [D M Y Frac] format
+jd2date(JD)
+% convert JD to date in [D M Y H M S] format
+jd2date(JD,'H')
+
+% convert jd to MJD
+MJD=jd2mjd(JD)
+% convert MJD to JD
+JD=mjd2jd(MJD)
+import celestial.time.*
+% input is JD in UT1 time scale
+JD = julday([1 1 2016])+(0:1:10)';
+% calculate the GMST - output is in fraction of day
+LST = lst(JD,0)
+% calculate the Greenwich Apparent Sidereal Time
+LST = lst(JD,0,'a')
+% Mean sidereall time at longitude 35 def
+LST = lst(JD,35.*pi./180)
+% Store a local copy of The EOP file:
+EOP=celestial.time.wget_eop('get');
+% Store a local copy of TAI/UTC file:
+TAI_UTC=celestial.time.wget_tai_utc('get');
+% DeltaT = TT-UT1 (after 1984)
+DeltaT=celestial.time.delta_t([2451545;celestial.time.julday])
+% TDB-TT
+Diff=celestial.time.tdb_tdt(2451545)
+% TAI-UTC and TT-UTC:
+[TAImUTC,TTmUTC]=celestial.time.tai_utc([0;2451545])
+% UT1-UTC and Earth Oreientation Parameters
+[UT1mUTC,EOP]=celestial.time.ut1_utc(2451545)
+% number of days in Month in Feb 2000:
+celestial.time.days_in_month(2000,2)
+% Date of Easter in 2000:
+celestial.time.easter_date(2000)
+[V,W,EGM]=celestial.Earth.earth_gravity_field(6731e5,1,1);
+% solve the Kepler equation for elliptic orbit simultanously for 1e6 objects:
+t = rand(1e6,1);  % t-T (day)
+q = rand(1e6,1);  % q (au)
+e = rand(1e6,1);   % e
+tic;
+[Nu,R,E]=celestial.Kepler.kepler_elliptic(t,q,e);
+toc
+JD = celestial.time.julday([1 1 2015])+(0:1:365)';
+% Calculate apparent coordinate of the Sun in 2015
+[RA,Dec,R,sl,ET]=celestial.SolarSys.suncoo(JD,'a');
+% plot the analema
+ET(ET>900) = ET(ET>900)-1440;
+plot(ET,Dec.*180./pi,'.')
+xlabel('Time [min]');
+ylabel('Declination [deg]');
+% Convert coordinates of fixed position to radians
+RA  = celestial.coo.convertdms('15:45:12.1','SH','r');
+Dec = celestial.coo.convertdms(15.1,'d','R')
+% Moon coordinatesv from Israel
+JD = celestial.time.julday([1 1 2015])+(0:1:365)';
+[MoonRA,MoonDec,HP]=celestial.SolarSys.mooncool(JD,[35 32].*pi./180);
+D = celestial.coo.sphere_dist(MoonRA,MoonDec,RA,Dec);
+plot(JD-2450000,D.*180./pi)
+% January 2015:
+celestial.SolarSys.jup_satcurve(1,2015)
+celestial.SolarSys.jupiter_map(celestial.time.julday([1 1 2015 23 0 0]))
+% Calculate the Moon phases in January 2015:
+celestial.SolarSys.moon_phases([1 1 2015],[1 2 2015])
+% Approximate time for equinox and solstice between 2010 to 2020
+Eq=celestial.SolarSys.equinox_solstice([2010;2020])
+##### SOURCE END #####
+--></body></html>

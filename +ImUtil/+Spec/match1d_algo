@@ -1,0 +1,46 @@
+
+
+load match1d_algo.mat  % observed sky spectra
+% observed sky spectral lines
+[SelectedMaxima,Contrast_UnitsRMS]=find_contrast_peaks(X,Y);
+% select 100 strongest lines:
+ObsLines = sortrows(SelectedMaxima,1);  % sorted by wavelength
+Nol = size(ObsLines,1);
+
+% list of known sky spectral lines:
+load ArcLines_SkyAll.dat
+% select 100 strongest lines:
+ArcLines_SkyAll = sortrows(ArcLines_SkyAll,4);
+ModelLines = ArcLines_SkyAll(end-99:end,[1 2]);  % [center Flux]
+ModelLines = sortrows(ModelLines,1);  % sorted by wavelength
+
+Nml = size(ModelLines,1);
+
+% construct all combinations of ModelLines:
+
+CombInd = combnk([1:1:Nml]',3);
+CombX   = combnk(ModelLines(:,1),3);
+Ratio   = (CombX(:,3)-CombX(:,2))./(CombX(:,3)-CombX(:,1));
+[SortedRatio,SRI] = sort(Ratio);
+
+tic;
+Nsim = 100;
+P_All = zeros(0,2);
+for Isim=1:1:Nsim,
+   RandPerm = randperm(Nol);
+   RandInd  = sort(RandPerm(1:3)');
+
+   ObsRatio = (ObsLines(RandInd(3),1) - ObsLines(RandInd(2),1))./ ...
+              (ObsLines(RandInd(3),1) - ObsLines(RandInd(1),1));
+
+   Icand = find(abs(Ratio-ObsRatio)<0.01);
+   Ncand = length(Icand);
+
+   P = zeros(Ncand,2);
+   for I=1:1:Ncand,
+      P(I,:) = polyfit(CombX(Icand(I),:)-8000,ObsLines(RandInd,1)',1);
+   end
+
+   P_All = [P_All; P];
+end
+toc
