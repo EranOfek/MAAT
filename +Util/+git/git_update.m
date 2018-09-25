@@ -1,0 +1,48 @@
+function git_update(Files,varargin)
+% git add and commit untracked and updated files
+% Package: Util.git
+% Description: git add and commit untracked and updated files
+% Input  : * Arbitrary number of pairs of arguments: ...,keyword,value,...
+%            where keyword are one of the followings:
+%            'BasePath'  - Default is '/matlab/fun'.
+%            'Comment'   - Default is 'Add untracked file for the first time'.
+%            'CommentUpdate' - Default is 'Auto commit updated files'.
+% Output : * 
+% License: GNU general public license version 3
+%     By : Eran O. Ofek                    Sep 2018
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: Util.git.git_update;
+% Reliable: 
+%--------------------------------------------------------------------------
+
+if (nargin==0)
+    Files = {};
+end
+
+
+DefV.BasePath             = '/matlab/fun';
+DefV.Comment              = 'Add untracked file for the first time';
+DefV.CommentUpdate        = 'Auto commit updated files';
+
+InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
+InPar.BasePath = regexprep(InPar.BasePath,'/',filesep);
+
+UserHome = Util.OS.get_userhome;
+
+Path = sprintf('%s%s%s',UserHome,InPar.BasePath,filesep);
+PWD = pwd;
+cd(Path);
+
+if (isempty(Files))
+    % get list of untracked files
+    Files = Util.git.git_status;
+end
+
+Nf = numel(Files);
+for If=1:1:Nf
+    system(sprintf('git add %s',Files{If}));
+    system(sprintf('git commit -m "%s"',InPar.Comment));
+end
+
+
