@@ -48,13 +48,13 @@ else
 end
 
 
-RA  = convertdms(RA,'gH','r');
-Dec = convertdms(Dec,'gD','r');
+RA  = celestial.coo.convertdms(RA,'gH','r');
+Dec = celestial.coo.convertdms(Dec,'gD','r');
 
 switch CooType
  case 'eq'
     % convert Equatorial to Galactic
-    Coo = coco([RA, Dec],'j2000.0','g');
+    Coo = celestial.coo.coco([RA, Dec],'j2000.0','g');
  case 'g'
     % do nothing - already in Galactic
     Coo = [RA, Dec];
