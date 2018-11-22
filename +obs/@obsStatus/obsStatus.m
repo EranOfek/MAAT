@@ -14,6 +14,7 @@ classdef obsStatus < handle
     properties (SetAccess = public)
         
         Period       = 60; % [s] timer period
+        Running      = 'off';
         
     
     end
@@ -61,9 +62,11 @@ classdef obsStatus < handle
             [ObsPar,ObsTable] = obs.obs.getObsPar(InPar.ObsName);
             
             
-            ObsC.T = timer;
-            ObsC.T.Period = ObsC.Period;
-            ObsC.T.
+            ObsC.T               = timer;
+            ObsC.T.Period        = ObsC.Period;
+            ObsC.T.ExecutionMode = 'fixedSpacing';
+            ObsC.T.TimerFcn      = @obsStatus.getStatus;
+            
             
         end
         
@@ -78,6 +81,20 @@ classdef obsStatus < handle
             ObsC.T.Period = Per;
             
         end
+        
+        
+        function ObsC=set.Running(ObsC,Mode)
+            % set Running mode of obsStatus object
+            
+            switch lower(Mode)
+                case {'off','on'}
+                    ObsC.Running = Mode;
+                otherwise
+                    error('Unknown running mode option (valid options are on/off)');
+            end
+              
+        end
+                    
         
     end
     

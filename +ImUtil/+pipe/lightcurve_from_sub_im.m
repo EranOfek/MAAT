@@ -1,4 +1,4 @@
-function [DataT,DataR]=lightcurve_from_sub_im(TargetXY,S,D,Scorr,SigmaF,Summary,CoaddSim,varargin)
+function [DataT,DataR]=lightcurve_from_sub_im(TargetXY,S,D,Scorr,SigmaF,Summary,CoaddSim,GradSN,varargin)
 % Generate light curve from subtraction images
 % Package: ImUtil
 % Description: 
@@ -216,10 +216,14 @@ DataT.MagBest    = convert.luptitude(DataT.ValBest,10.^(0.4.*InPar.ZP));
 DataT.MagErrBest = 1.086.*DataT.ValErrBest./DataT.ValBest;
    
 SGPeak = nan(Nim,Ntarget);
+SGx = SIM;
+SGy = SIM;
 for Id=1:1:Nim
     % propagate astrometric error
     % estimate astrometric noise on photometry
-    [SGx,SGy] = gradient(S(Id));
+    %[SGx,SGy] = gradient(S(Id));
+    SGx.(ImageField) = GradSN(Id).X;
+    SGy.(ImageField) = GradSN(Id).Y;
     [SGxPeak] = squeeze(get_value(SGx,[DataT.BestX(Id,:)' DataT.BestY(Id,:)']));
     [SGyPeak] = squeeze(get_value(SGy,[DataT.BestX(Id,:)' DataT.BestY(Id,:)']));
     SGPeak(Id,:) = sqrt(SGxPeak.^2 + SGyPeak.^2);

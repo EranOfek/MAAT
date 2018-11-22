@@ -50,7 +50,8 @@ Nsim = numel(Sim);
 AstC = AstCat(size(Sim));
 for Isim=1:1:Nsim
     % for each SIM element
-    Image = Sim(Isim).(InPar.Field);
+    %Image = Sim(Isim).(InPar.Field);
+    Image = double(Sim(Isim).(InPar.Field)); % Na'ama, 20180828
     
     SizeIm = size(Image);
     %[MatX,MatY] = meshgrid((1:1:SizeIm(2)),(1:1:SizeIm(1)));

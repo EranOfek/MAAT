@@ -7,6 +7,7 @@ function [Chi2,Dof,AngRad,AngRadErr]=chi2_bb_photometry(Par,Phot,Ebv)
 % Input  : - [T(K),AngRad(radians)].
 %          - A structure array with photometry. An element per band, with
 %            the following fields:
+%            .Family
 %            .Band   - Band name.
 %            .System - System name.
 %            .Mag    - Magnitude.

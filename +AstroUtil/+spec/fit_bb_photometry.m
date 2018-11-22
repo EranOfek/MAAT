@@ -14,10 +14,10 @@ function [Chi2n,Res]=fit_bb_photometry(Phot,varargin)
 %--------------------------------------------------------------------------
 
 
-DefV.Dist                 = 40e6;  % [pc]
-DefV.VecT                 = logspace(log10(1000),log10(40000),200)';
+DefV.Dist                 = 144e6;  % [pc]
+DefV.VecT                 = logspace(log10(10000),log10(300000),200)';
 DefV.VecRad               = logspace(14,16,150)';
-DefV.Ebv                  = 0.11;
+DefV.Ebv                  = 0.011;
 DefV.ErrSigma             = 1;
 
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);

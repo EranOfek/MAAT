@@ -31,8 +31,8 @@ RAD = 180./pi;
 %InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 if (nargin==0)
-    Mass  = 1;
-    D_l   = 10;
+    Mass  = 1./50000; 1;
+    D_l   = 1./206; 10;
     D_s   = 1000;
     D_ls  = D_s - D_l;
     Beta0 = 2;   % [arcsec]

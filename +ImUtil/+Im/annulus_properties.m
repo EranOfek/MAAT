@@ -64,12 +64,14 @@ SubMatR2 = (SubMatX - X).^2 + (SubMatY - Y).^2;
 FlagAnn  = SubMatR2>R1.^2 & SubMatR2<=R2.^2;
 
 % calculate annulus background level
-BackVal  = BackFun(SubImage(FlagAnn));
+%BackVal  = BackFun(SubImage(FlagAnn));
+BackVal  = double(BackFun(SubImage(FlagAnn))); % Na'ama, 20180828
 
 if (nargout>1)
     % calculate annulus noise level
     Npix     = sum(FlagAnn(:));
-    ErrVal   = ErrFun(SubImage(FlagAnn))./sqrt(Npix);
+    %ErrVal   = ErrFun(SubImage(FlagAnn))./sqrt(Npix);
+    ErrVal   = ErrFun(double(SubImage(FlagAnn)))./sqrt(Npix); % Na'ama, 20180828
 end
 
 

@@ -64,7 +64,7 @@ if (isempty(Spec))
     Spec = scale2mag(Spec,20);
 end
 
-DefV.RN                   = 10;   % [e-]
+DefV.RN                   = 2.5;   % [e-]
 DefV.Gain                 = 1.5;  % [e-/ADU]
 DefV.ExpTime              = 900;  % [s]
 DefV.SubExp               = 1;
@@ -73,14 +73,14 @@ DefV.ExtraEff             = 0.8;  % Additional inefficiencies efficiency
 DefV.DC                   = 1e-2; % [e-/pix/s]
 DefV.Back                 = 'Gemini_SkyBack_dark';   % [cgs/A per arcsec]
 DefV.PixScale             = 0.6;  % [arcsec/pix]
-DefV.Seeing               = 1.5;    % FWHM [arcsec]
-DefV.SpecRes              = @(X) X./250; % @(X) 10+0.5.*X./200;  % 25;    % FWHM [Ang], or vec or fun
+DefV.Seeing               = 1.2;    % FWHM [arcsec]
+DefV.SpecRes              = @(X) X./200; % @(X) 10+0.5.*X./200;  % 25;    % FWHM [Ang], or vec or fun
 DefV.SpecSampling         = 12;      % Ang/pix; [] don't resample
 DefV.AirMass              = 1.4;   % 0 for space
 DefV.AtmosphericExt       = 'KPNO';
-DefV.Aper                 = 230;    % cm
+DefV.Aper                 = 220;    % cm
 DefV.TelTh                = 0.85;   % or [Wave, Th]
-DefV.SpecTh               = 0.75;   % or [Wave, Th]
+DefV.SpecTh               = 0.8;   % or [Wave, Th]
 DefV.QE                   = 0.9;   % or [Wave, Th]
 DefV.ExtractionSemiWidth  = 5;    % spatial pixels in which to fit PSF
 DefV.SpecRange            = [3500 9000];

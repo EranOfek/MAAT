@@ -249,7 +249,9 @@ for Isim=1:1:Nsim
 
             % cut image
             % Note that sources near boundries are ignored
-            [CutImage] = ImUtil.Im.trim_image(Image,[RoundXY(Isrc,1),RoundXY(Isrc,2),SizePSF],'center',[]);
+            %[CutImage] = ImUtil.Im.trim_image(Image,[RoundXY(Isrc,1),RoundXY(Isrc,2),SizePSF],'center',[]);
+            [CutImage] = double(ImUtil.Im.trim_image(Image,[RoundXY(Isrc,1),RoundXY(Isrc,2),SizePSF],'center',[])); % Na'ama, 20180828
+
             % Index of center of CutImage
             IndCenterIm = ceil(numel(CutImage).*0.5);
 

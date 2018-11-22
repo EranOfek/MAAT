@@ -13,7 +13,8 @@
 classdef obsStatus < handle
     properties (SetAccess = public)
         
-        Period % timer period
+        Period       = 60; % [s] timer period
+        Running      = 'off';
         
     
     end
@@ -61,21 +62,32 @@ classdef obsStatus < handle
             [ObsPar,ObsTable] = obs.obs.getObsPar(InPar.ObsName);
             
             
-            ObsC.T
+            ObsC.T               = timer;
+            ObsC.T.Period        = ObsC.Period;
+            ObsC.T.ExecutionMode = 'fixedSpacing';
+            ObsC.T.TimerFcn      = @obsStatus.getStatus;
             
-            
-            % in each cycle
-            % check all status and decide on action
-  
-            % construct timer object 
-            
-            
-          
             
         end
         
 
     end
+    
+    % getter/setter
+    methods
+        function ObsC=set.Period(ObsC,Per)
+            % set timer periodicity
+            
+            ObsC.T.Period = Per;
+            
+        end
+        
+        
+        function ObsC=set.Running(Ob
+        
+    end
+    
+    
     
     methods (Static)
         

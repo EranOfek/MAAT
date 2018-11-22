@@ -16,6 +16,7 @@ function [Section,FlagIn,CenterSection]=adaptive_section(ImSizeXY,PosXY,HalfSize
 
 
 DefV.Quantile             = [0.02 0.98];
+DefV.BoundryDist          = 10;
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 DistFromX1 = PosXY(:,1) - 1;
@@ -29,42 +30,42 @@ X2q = round(quantile(DistFromX2,InPar.Quantile(1)));
 Y1q = round(quantile(DistFromY1,InPar.Quantile(1)));
 Y2q = round(quantile(DistFromY2,InPar.Quantile(1)));
 
-if (X1q>=HalfSizeXY(1) && X2q>=HalfSizeXY(1))
+if (X1q>=(HalfSizeXY(1)+InPar.BoundryDist) && X2q>=(HalfSizeXY(1)+InPar.BoundryDist) )
     % no problem for X axis - object in center
     CenterX = HalfSizeXY(1);
     DX(1) = HalfSizeXY(1)+1;
     DX(2) = HalfSizeXY(1);
     
 else
-    if (X1q<HalfSizeXY(1))
+    if (X1q<(HalfSizeXY(1)+InPar.BoundryDist))
         % shift X center to X1q value
         CenterX = X1q;
-        DX(1)   = MinDist; %CenterX;
-        DX(2)   = 2.*HalfSizeXY(1)+1-DX(1);
+        DX(1)   = max(MinDist,CenterX) - InPar.BoundryDist; %MinDist; %CenterX;
+        DX(2)   = 2.*HalfSizeXY(1)+1-DX(1) + InPar.BoundryDist;
     else
         % shift X center to X2q value
         CenterX = X2q;
-        DX(2)   = MinDist; %CenterX;
-        DX(1)   = 2.*HalfSizeXY(1)+1-DX(2);
+        DX(2)   = max(MinDist,CenterX) - InPar.BoundryDist;  %MinDist; %CenterX;
+        DX(1)   = 2.*HalfSizeXY(1)+1-DX(2) + InPar.BoundryDist;
     end
 end
 
-if (Y1q>=HalfSizeXY(2) && Y2q>=HalfSizeXY(2))
+if (Y1q>=(HalfSizeXY(2)+InPar.BoundryDist) && Y2q>=(HalfSizeXY(2)+InPar.BoundryDist) )
     % no problem for Y axis - object in center
     CenterY = HalfSizeXY(2)+1;
     DY(1) = HalfSizeXY(2)+1;
     DY(2) = HalfSizeXY(2);
 else
-    if (Y1q<HalfSizeXY(2))
+    if (Y1q<(HalfSizeXY(2)+InPar.BoundryDist))
         % shift Y center to Y1q value
         CenterY = Y1q;
-        DY(1)   = max(MinDist,CenterY);
-        DY(2)   = 2.*HalfSizeXY(2)+1-DY(1);
+        DY(1)   = max(MinDist,CenterY) - InPar.BoundryDist;
+        DY(2)   = 2.*HalfSizeXY(2)+1-DY(1) + InPar.BoundryDist ;
     else
         % shift Y center to Y2q value
         CenterY = Y2q;
-        DY(2)   = max(MinDist,CenterY);
-        DY(1)   = 2.*HalfSizeXY(2)+1-DY(2);
+        DY(2)   = max(MinDist,CenterY)- InPar.BoundryDist ;
+        DY(1)   = 2.*HalfSizeXY(2)+1-DY(2) + InPar.BoundryDist;
     end
 end
 

@@ -73,21 +73,21 @@ OverSec = ccdsec(Sim,InPar.OverSec,true,InPar.GetKeyMethod);
 
 
 % make sure ExecField is a cell array
-if (~iscell(InPar.ExecField)),
+if (~iscell(InPar.ExecField))
     InPar.ExecField = {InPar.ExecField};
 end
 
 Nf   = numel(InPar.ExecField);
 Nsim = numel(Sim);
-if (nargout>1),
-    BiasSim = simdef(size(Sim));
+if (nargout>1)
+    BiasSim = SIM(size(Sim));
 end
-for Isim=1:1:Nsim,
+for Isim=1:1:Nsim
     % for each SIM element
-    for If=1:1:Nf,
+    for If=1:1:Nf
         % for each field
         Sec = OverSec(Isim,:);
-        if (any(isnan(Sec))),
+        if (any(isnan(Sec)))
             warning('Overscan region was not found for image %d - no correction applied',Isim);
         else
         
@@ -110,12 +110,12 @@ for Isim=1:1:Nsim,
             BiasLine = InPar.OverSecMethod(Scan,Dim,InPar.OverSecPar{:});
             
             % populate BiasSim
-            if (nargout>1),
+            if (nargout>1)
                 BiasSim(Isim).(InPar.ExecField{If}) = BiasLine;
             end
             
             % subtract bias line from image
-            if (InPar.SubtractBias),
+            if (InPar.SubtractBias)
                 % Check that the dimensions of the image and bias line are
                 % consistent
                 SizeIm = size(Sim(Isim).(InPar.ExecField{If}));
@@ -134,7 +134,7 @@ for Isim=1:1:Nsim,
 end  % over all images
 
 % cut the final section
-if (~isempty(InPar.FinalSec)),
+if (~isempty(InPar.FinalSec))
     % trim all images in SIM
     Sim = trim_image(Sim,InPar.FinalSec); %,'ExecField',InPar.ExecField);
 end

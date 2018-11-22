@@ -14,7 +14,7 @@
 %--------------------------------------------------------------------------
 
 classdef constant 
-             
+    
     
     % get all physical constants
     methods (Static)
@@ -671,7 +671,7 @@ classdef constant
             if (System)
                 % cgs
                 Const = 5.67037321e-5;
-                Units = 'erg * m^-2 * K^-4';
+                Units = 'erg * cm^-2 * K^-4';
             else
                 % SI
                 Const = 5.67037321e-8;

@@ -38,15 +38,16 @@ InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 
 Nsim = numel(Sim);
-for Isim=1:1:Nsim,
+for Isim=1:1:Nsim
     % for each SIM element
-    Sim(Isim).(ImageField) = Sim(Isim).(ImageField) - Sim(Isim).(BackField);
+    %Sim(Isim).(ImageField) = Sim(Isim).(ImageField) - Sim(Isim).(BackField);
+    Sim(Isim).(ImageField) = double(Sim(Isim).(ImageField)) - Sim(Isim).(BackField); % Na'ama, 20180828
     
     % Add/modify keywords in header
-    if (~isempty(InPar.ReplaceKey)),
+    if (~isempty(InPar.ReplaceKey))
         Sim = replace_key(Sim,InPar.ReplaceKey);
     end
-    if (~isempty(InPar.AddKey)),
+    if (~isempty(InPar.AddKey))
         Sim = add_key(Sim,InPar.AddKey);
     end
     
