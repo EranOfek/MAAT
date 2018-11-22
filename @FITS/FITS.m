@@ -1446,6 +1446,9 @@ classdef FITS
                 Header = replace_key(Header,'CRDATE',  Time.ISO,'Creation date of FITS file',...
                                             'COMMENT', 'File Created by MATLAB FITS.write.m written by E. Ofek', ''); % Na'ama, 20180518
                                         
+%=======
+%                                            'COMMENT', 'File Created by MATLAB FITS.write.m written by E. Ofek', '');
+%>>>>>>> 35a2a05383ff2610cc108265c1d7c311b103e2ac
             end
             Nline = size(Header.(HeaderField),1);
 
