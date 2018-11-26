@@ -33,8 +33,8 @@ ReplaceNaNVal  = 21.5;
 
 InterpMethod   = 'linear';
 RAD            = 180./pi;
-h              = get_constant('h','cgs');
-c              = get_constant('c','cgs');
+h              = constant.h; %'cgs');
+c              = constant.c; % ,'cgs');
 hc             = h*c*1e8; %[erg]*[Ang]
 
 Def.Date          = [];
@@ -63,7 +63,7 @@ end
 if (~isempty(Date))
     % assume ecliptic longitude as input
     % Transform Ecliptic coordinates to Helio-ecliptic coordinates
-    HelioEcLong = ecliptic2helioecliptic(Long,Date);
+    HelioEcLong = Celestila.coo.ecliptic2helioecliptic(Long,Date);
 else
     HelioEcLong = Long;
 end
@@ -73,7 +73,9 @@ HelioEcLong(HelioEcLong>pi) = 2.*pi - HelioEcLong(HelioEcLong>pi);
 
 
 % get sodi spectrum
-Spec=zodiac_spectrum;
+SpecA=AstSpec.zodiac_spectrum;
+Spec = [SpecA.Wave, SpecA.Int];
+
 
 
 %wavelength=data(:,1);
@@ -122,9 +124,9 @@ ZodiVmag(isnan(ZodiVmag)) = ReplaceNaNVal;
 Vmag0 = 22.1;   % synphot(Spec,'Johnson','V','Vega')
 DeltaMag = ZodiVmag-Vmag0;
 
-ZodiMag = DeltaMag + synphot(Spec,Filter_family,Filter_name,FilterSys);
+ZodiMag = DeltaMag + AstroUtil.spec.synphot(Spec,Filter_family,Filter_name,FilterSys);
 
-Filter = get_filter(Filter_family,Filter_name);
-FilterTr = [Filter.nT{1}(:,1), Filter.nT{1}(:,2)./max(Filter.nT{1}(:,2))];
-[Flux,Counts] = spec_photon_counts([Spec(:,1),Spec(:,2).*10.^(-0.4.*DeltaMag)],FilterTr,[],1,1./3.08e18);
-
+Filter = AstFilter.get(Filter_family,Filter_name);
+FilterTr = [Filter.nT(:,1), Filter.nT(:,2)./max(Filter.nT(:,2))];
+%[Flux,Counts] = AstroUtil.spec.spec_photon_counts([Spec(:,1),Spec(:,2).*10.^(-0.4.*DeltaMag)],FilterTr,[],1,1./3.08e18);
+[Flux,Counts] = telescope.sn.spec2photons([Spec(:,1),Spec(:,2).*10.^(-0.4.*DeltaMag)],FilterTr,[],1,1./3.08e18);

@@ -75,6 +75,16 @@ RoundXY = round([X,Y]);
 
 % select overlapping X/Y regions that covers RA/Dec position.
 ImageSizeXY = naxis(H);
+
+
+% remove images with source near boundry
+FlagInB = RoundXY(:,1) > InPar.MinDist & RoundXY(:,2)>InPar.MinDist & ...
+         RoundXY(:,1) < (ImageSizeXY(1) - InPar.MinDist) & RoundXY(:,2) < (ImageSizeXY(2) - InPar.MinDist);
+
+Files = Files(FlagInB);
+ImageSizeXY = ImageSizeXY(FlagInB,:);
+RoundXY = RoundXY(FlagInB,:);
+
 %[Section,FlagIn,CenterSection] = ImUtil.Im.best_section(ImageSizeXY, RoundXY, InPar.SectionHalfSize+InPar.ExtraHalfSize, InPar.MinDist);
 [Section,FlagIn,CenterSection] = ImUtil.Im.adaptive_section(ImageSizeXY, RoundXY, InPar.SectionHalfSize+InPar.ExtraHalfSize, InPar.MinDist);
 
@@ -82,6 +92,9 @@ ImageSizeXY = naxis(H);
 Files = Files(FlagIn);
 Section = Section(FlagIn,:);
 Nim = numel(Files);
+
+FlagInB(find(FlagInB)) = FlagIn;
+
 
 if (InPar.Verbose)
     fprintf('%d images were selected out of %d\n',Nim,numel(FlagIn));

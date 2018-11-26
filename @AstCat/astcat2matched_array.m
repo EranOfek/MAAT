@@ -39,6 +39,7 @@ function [Res,Summary,N_Ep]=astcat2matched_array(AstC,Cols,OutType)
 % Example: M=match(Ref,AstC);
 %          Res=astcat2matched_array(M,{'XWIN_IMAGE','YWIN_IMAGE','MAG_APER'});
 %          % step by step application:
+
 %          S=images2sim('PTF_2015*.fits');
 %          S=gain_correct(S);
 %          S=background(S,'Block',[64 64]);

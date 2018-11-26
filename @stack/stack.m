@@ -14,12 +14,13 @@
 classdef stack < handle
     properties (SetAccess = public)
         St
-        Data  
         StackType
+        RecentEntry = 'last';     
         UserData
     end
     
     properties (Hidden)
+        Data
         DataType
         Ind
         Size

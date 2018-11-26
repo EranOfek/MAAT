@@ -482,7 +482,7 @@ if (Nim>0)
 
 
              FluxMatch = Fzp.*mean(FzpC(1:end-1))./mean(Fzp);
-             [Summary,D,S,Scorr,SigmaF]=subtract_proper(AlSim,CoaddSim,'BackReCalc',false,'FluxMatch',FluxMatch,...
+             [Summary,D,S,Scorr,SigmaF,GradSN]=subtract_proper(AlSim,CoaddSim,'BackReCalc',false,'FluxMatch',FluxMatch,...
                                 'SigmaX',SigmaX ,'SigmaY',SigmaY);
 
 
@@ -495,7 +495,7 @@ if (Nim>0)
 
 
         case 'zogy'
-            [Summary,D,S,Scorr,SigmaF]=subtract_proper(AlSim,CoaddSim,'BackReCalc',false,...
+            [Summary,D,S,Scorr,SigmaF,GradSN]=subtract_proper(AlSim,CoaddSim,'BackReCalc',false,...
                                 'SigmaX',SigmaX,'SigmaY',SigmaY);
         otherwise
             error('Unknown MethodBeta option');
@@ -512,7 +512,7 @@ if (Nim>0)
     Sub(Iband).CoaddSim= CoaddSim;
     
     % Generate LC from subtraction images
-    [DataT,DataR] = ImUtil.pipe.lightcurve_from_sub_im([TargetX, TargetY],S,D,Scorr,SigmaF,Summary,CoaddSim,...
+    [DataT,DataR] = ImUtil.pipe.lightcurve_from_sub_im([TargetX, TargetY],S,D,Scorr,SigmaF,Summary,CoaddSim,GradSN,...
                                         'ZP',CoaddImageZP,'SigmaX',SigmaX,'SigmaY',SigmaY,...
                                         'SubBackS',false);
 

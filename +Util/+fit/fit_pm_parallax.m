@@ -63,10 +63,10 @@ DefV.Plx    = true;
 DefV.ModelJD= [];
 InPar = set_varargin_keyval(DefV,'y','use',varargin{:}); 
 
-if (isempty(InPar.RA)),
+if (isempty(InPar.RA))
     RA  = OffRA;
 end
-if (isempty(InPar.Dec)),
+if (isempty(InPar.Dec))
     Dec = OffDec;
 end
 
@@ -80,10 +80,10 @@ OffDec = OffDec(FlagNN);
 
 Nobs = numel(JD);
 
-if (size(OffRA,2)==1),
+if (size(OffRA,2)==1)
     OffRA  = [OffRA, ones(Nobs,1).*InPar.ErrRA];
 end
-if (size(OffDec,2)==1),
+if (size(OffDec,2)==1)
     OffDec = [OffDec, ones(Nobs,1).*InPar.ErrDec];
 end
 
@@ -93,7 +93,7 @@ RA   = celestial.coo.convertdms(InPar.RA,'gH','r');
 Dec  = celestial.coo.convertdms(InPar.Dec,'gD','R');
 
 % J2000.0 Equatorial position of the Earth [au]
-if (InPar.Plx),
+if (InPar.Plx)
    [Coo,Vel] = celestial.SolarSys.calc_vsop87(JD, 'Earth', 'e', 'E');
    X = Coo(1,:).';
    Y = Coo(2,:).';
@@ -118,7 +118,7 @@ Hd = [ones(Nobs,1), (JD-J2000)./JYear];
 Yd = OffDec(:,1);
 Yde= OffDec(:,2);
 
-if (InPar.Plx),
+if (InPar.Plx)
     % add Parallax to design matrix
     %Hp = [(X.*sin(RA_t) - Y.*cos(RA_t))./(15.*cos(Dec_t)); (X.*cos(RA_t).*sin(Dec_t) + Y.*sin(RA_t).*sin(Dec_t) - Z.*cos(Dec_t))];
     Hp = [(X.*sin(RA_t) - Y.*cos(RA_t)); (X.*cos(RA_t).*sin(Dec_t) + Y.*sin(RA_t).*sin(Dec_t) - Z.*cos(Dec_t))];
@@ -135,7 +135,7 @@ Nd = length(Yd);
 
 Nce  = numel(InPar.CE);
 Chi2 = zeros(Nce,1);
-for Ice=1:1:Nce,
+for Ice=1:1:Nce
     Yvar       = Ye.^2 + InPar.CE(Ice).^2;
     [Par]      = lscov(H,Y,1./Yvar);
     Resid      = Y - H*Par;
@@ -143,9 +143,9 @@ for Ice=1:1:Nce,
 end
 Dof          = Nobs.*2 - 5;
 ListZ = Util.find.find_local_zeros(InPar.CE,Chi2./Dof - 1);
-if (isempty(ListZ)),
+if (isempty(ListZ))
     % set cosmic error to 0
-    if (Chi2./Dof>2),
+    if (Chi2./Dof>2)
         CE = max(InPar.CE);
     else
        CE = 0;
@@ -178,13 +178,13 @@ ResPMP.ModelJD = InPar.ModelJD;
 
 
 % Return design matrix for plotting
-if (isempty(InPar.ModelJD)),
+if (isempty(InPar.ModelJD))
     ResPMP.ModelH  = [];
     ResPMP.ModelX  = [];
     ResPMP.ModelY  = [];
 else
     % J2000.0 Equatorial position of the Earth [au]
-    if (InPar.Plx),
+    if (InPar.Plx)
         [Coo,Vel] = calc_vsop87(InPar.ModelJD, 'Earth', 'e', 'E');
         X = Coo(1,:).';
         Y = Coo(2,:).';
@@ -197,7 +197,7 @@ else
     % design matrix for Dec
     Hd = [ones(Nmodel,1), (InPar.ModelJD-J2000)./JYear];
 
-    if (InPar.Plx),
+    if (InPar.Plx)
         % add Parallax to design matrix
         %Hp = [(X.*sin(RA_t) - Y.*cos(RA_t))./(15.*cos(Dec_t)); (X.*cos(RA_t).*sin(Dec_t) + Y.*sin(RA_t).*sin(Dec_t) - Z.*cos(Dec_t))];
         Hp = [(X.*sin(RA_t) - Y.*cos(RA_t)); (X.*cos(RA_t).*sin(Dec_t) + Y.*sin(RA_t).*sin(Dec_t) - Z.*cos(Dec_t))];

@@ -110,6 +110,7 @@ BackField    = SIM.BackField;
 ErrField     = SIM.ErrField;
 CatField     = AstCat.CatField;
 ColCellField = AstCat.ColCellField;
+HeaderField  = HEAD.HeaderField;
 
 %[RA,Dec]=VO.name.server_ned('SN2010jl','r')
 
@@ -146,6 +147,7 @@ DefV.FlagSatPar           = {};
 DefV.FlagHolesPar         = {};
 DefV.AlignPar             = {};
 %DefV.MinNumberCommonStars = 10;
+DefV.AstrometryFromIndiv  = true;
 DefV.MagCol               = 'MAG_PSF';
 DefV.MagErrCol            = 'MAGERR_PSF';
 DefV.xcatPar              = {};
@@ -406,9 +408,16 @@ if (Nim>0)
 
 
     %--- add astrometric solution to reference image ---
-    [CoaddSim_ResAst,CoaddSim] = astrometry(CoaddSim,'RA',RA,'Dec',Dec,'Flip',[1 1;1 -1;-1 1;-1 -1],...
-        'UseCase_TranC', {'affine_tt',             10;'affine',5});
-          % No flip as SWarp fliped the images!!
+    if (InPar.AstrometryFromIndiv)
+        CoaddSim.(HeaderField) = AlSim(1).(HeaderField);
+        CoaddSim_ResAst        = R(1);
+    else
+        [CoaddSim_ResAst,CoaddSim] = astrometry(CoaddSim,'RA',RA,'Dec',Dec,'Flip',[1 1;1 -1;-1 1;-1 -1],...
+            'UseCase_TranC', {'affine_tt',             10;'affine',5});
+              % No flip as SWarp fliped the images!!
+        
+    end
+              
     % update RA/Dec in CoaddSim
     CoaddSim = update_coordinates(CoaddSim);
 
@@ -473,12 +482,12 @@ if (Nim>0)
 
 
              FluxMatch = Fzp.*mean(FzpC(1:end-1))./mean(Fzp);
-             [Summary,D,S,Scorr,SigmaF]=subtract_proper(AlSim,CoaddSim,'BackReCalc',false,'FluxMatch',FluxMatch,...
-                                'SigmaX', ,'SigmaY',SigmaY);
+             [Summary,D,S,Scorr,SigmaF,GradSN]=subtract_proper(AlSim,CoaddSim,'BackReCalc',false,'FluxMatch',FluxMatch,...
+                                'SigmaX',SigmaX ,'SigmaY',SigmaY);
 
 
-%  [Summary,D,S,Scorr,SigmaF]=subtract_proper(AlSim(1),CoaddSim,'BackReCalc',false,'FluxMatch',FluxMatch(1).*1.1,...
-%                                 'SigmaX',SigmaX(1),'SigmaY',SigmaY(1));
+%   [Summary,D,S,Scorr,SigmaF]=subtract_proper(AlSim(1),CoaddSim,'BackReCalc',false,'FluxMatch',FluxMatch(1).*1.15,...
+%                                  'SigmaX',SigmaX(1),'SigmaY',SigmaY(1));
 
              
              
@@ -486,7 +495,7 @@ if (Nim>0)
 
 
         case 'zogy'
-            [Summary,D,S,Scorr,SigmaF]=subtract_proper(AlSim,CoaddSim,'BackReCalc',false,...
+            [Summary,D,S,Scorr,SigmaF,GradSN]=subtract_proper(AlSim,CoaddSim,'BackReCalc',false,...
                                 'SigmaX',SigmaX,'SigmaY',SigmaY);
         otherwise
             error('Unknown MethodBeta option');
@@ -503,8 +512,9 @@ if (Nim>0)
     Sub(Iband).CoaddSim= CoaddSim;
     
     % Generate LC from subtraction images
-    [DataT,DataR] = ImUtil.pipe.lightcurve_from_sub_im([TargetX, TargetY],S,D,Scorr,SigmaF,Summary,CoaddSim,...
-                                        'ZP',CoaddImageZP,'SigmaX',SigmaX,'SigmaY',SigmaY);
+    [DataT,DataR] = ImUtil.pipe.lightcurve_from_sub_im([TargetX, TargetY],S,D,Scorr,SigmaF,Summary,CoaddSim,GradSN,...
+                                        'ZP',CoaddImageZP,'SigmaX',SigmaX,'SigmaY',SigmaY,...
+                                        'SubBackS',false);
 
 
 

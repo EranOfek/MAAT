@@ -134,7 +134,8 @@ function [Cat,MetaData]=mextractor(Sim,varargin)
 %            'ReBackStd'          = false;
 %            'BackPar'            = {};
 %            '
-% Output : - The input SIM object, or a new AstCat object with the
+% Output : - The input SIM object were the image is in units of electrobs
+%            (i.e., multiplied by the gain), or a new AstCat object with the
 %            extracted source catalog populated in the 'Cat' field.
 % License: GNU general public license version 3
 % Tested : Matlab R2015b
@@ -480,7 +481,7 @@ end
 if (isempty(InPar.ForcePos))
     ForcePos = AstCat;  % empty catalog
 else
-    if (isastcat(InPar.ForcePos))
+    if (AstCat.isastcat(InPar.ForcePos))
         % ForcePos is already in AstCat format
         ForcePos = InPar.ForcePos;
     elseif (isnumeric(InPar.ForcePos))
@@ -799,7 +800,6 @@ for Isim=1:1:Nsim
         PeakForce = false(size(PeakX));
     end
 
-  
     % The catalog in SimFC(1) contains the X,Y positions of candidate
     % sources
     

@@ -55,7 +55,7 @@ DefV.UnitsRA            = [];       % [], 'deg','r'
 DefV.UnitsDec           = [];       % [], 'deg','r'
 %--- Reference catalog ---
 DefV.RefCat             = 'GAIADR2';  %@get_ucac4; %@wget_ucac4;   % string, function, struct
-DefV.RCrad              = 0.8/RAD;   % [radian]
+DefV.RCrad              = 0.8./RAD; %0.8/RAD;   % [radian]
 DefV.RefCatMagRange     = [10 19.0]; %19.0];
 DefV.UseMagRangeCat     = false;
 DefV.MaxRefStars        = 15000;
@@ -220,8 +220,8 @@ for Isim=1:1:Nsim
     % what to do if RefCat is empty
     if (isempty(RefCat.Cat))
         % No reference catalog found - astrometric solution failed
-        ResAst(Isim) = [];
-        warnning('Reference catalog is empty - no solution found');
+        %ResAst(Isim) = [];
+        warning('Reference catalog is empty - no solution found');
     else
         % RefCat is not empty
         
@@ -519,6 +519,8 @@ for Isim=1:1:Nsim
        
        MedianShift = nanmedian(ShiftRes,1);
        FlagShift   = abs(ShiftRes - MedianShift)< (max(InPar.SearchStepX,InPar.SearchStepY).*5);
+       %FlagShift   = abs(ShiftRes - MedianShift)< (max(InPar.SearchStepX,InPar.SearchStepY).*50); % for LFC
+       
        SubGood     = and(FlagShift(:,1),FlagShift(:,2));
        MatchedCat = [];
        MatchedRef = [];
