@@ -150,7 +150,7 @@ I_MS = find(diff(sign(MoonAlt+0.5./RAD))<0);  % Moon Set Index
 %--- Plot ---
 %------------
 plot(JD,ObjAirMass,'k');
-invy;
+%invy;
 hold on;
 set(gca,'FontSize',12);
 h=xlabel('U.T.');
