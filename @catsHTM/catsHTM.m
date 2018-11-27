@@ -889,6 +889,13 @@ classdef catsHTM
                 Radius = convert.angular(InPar.RadiusUnits,'rad',Radius);  % [radians]
             end
 
+            if (ischar(RA))
+                RA = celestial.coo.convertdms(RA,'SH','r');
+            end
+            if (ischar(Dec))
+                Dec = celestial.coo.convertdms(Dec,'SD','R');
+            end
+            
             InPar.ColCellFile = sprintf(InPar.ColCellFile,CatName);
 
             %Ncol = 45;
