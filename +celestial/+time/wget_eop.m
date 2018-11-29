@@ -28,7 +28,8 @@ Dir     = sprintf('%s%s..%s..%s..%sdata%sSolarSystem%s',Dir,filesep,filesep,file
 
 switch lower(Read)
     case 'get'
-        URL = 'https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/9/finals2000A.all/csv';
+      %  URL = 'https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/9/finals2000A.all/csv';
+        URL = 'https://datacenter.iers.org/data/csv/finals2000A.data.csv';
         Str=urlread(URL);
         Format = '%f %f %f %f %s %f %f %f %f %s %f %f %f %f %s %f %f %f %f %f %f %f %f %s %f %f %s %f %s %f %f %f %f\n';
         Cell = textscan(Str,Format,'Delimiter',';','HeaderLines',1);
