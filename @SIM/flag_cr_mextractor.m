@@ -127,6 +127,10 @@ for Isim=1:1:Nsim
             %MaxDelta = 2000;
             Iok = ~isnan(Mag) & Delta>0;
             
+            if (sum(Iok)<5)
+                warning('Number of stars is too small - consider changing CR algorithm [dont use chi2backcr] or ignore CR');
+            end
+            
             B = timeseries.binning([Mag(Iok), Delta(Iok)],0.5,[NaN NaN],{'MidBin',@numel,@median,@Util.stat.rstd});
             DeltaCalc = interp1(B(:,1),B(:,3),Mag);
             StdInt    = interp1(B(:,1),B(:,4),Mag,'nearest');

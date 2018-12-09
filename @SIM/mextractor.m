@@ -767,6 +767,15 @@ for Isim=1:1:Nsim
     %--------------------------------------------
     % SimF contains the filtered image and the updated ErrIm
     
+    [SimFC,SimDet] = threshold(SimF,InPar.Thresh, 'ExecField',    InPar.ExecField,...
+                                            'UseErrIm',     InPar.ThreshIsSigma,...
+                                            'CombineFilter',true,...
+                                            'MinArea',      InPar.MinArea,...
+                                            'AreaOpenConn', InPar.AreaOpenConn,...
+                                            'RegionMaxConn',InPar.RegionMaxConn,...
+                                            'ReplaceVal',   InPar.ReplaceVal,...
+                                            'ColXY',        InPar.ColXY);
+    
     if (InPar.OnlyForce)
         % use only the user supplied list
         PeakX     = [];
@@ -777,14 +786,8 @@ for Isim=1:1:Nsim
         if (InPar.Verbose)
             fprintf('    Threshold image and locate local maxima\n');
         end
-        [SimFC,SimDet] = threshold(SimF,InPar.Thresh, 'ExecField',    InPar.ExecField,...
-                                            'UseErrIm',     InPar.ThreshIsSigma,...
-                                            'CombineFilter',true,...
-                                            'MinArea',      InPar.MinArea,...
-                                            'AreaOpenConn', InPar.AreaOpenConn,...
-                                            'RegionMaxConn',InPar.RegionMaxConn,...
-                                            'ReplaceVal',   InPar.ReplaceVal,...
-                                            'ColXY',        InPar.ColXY);
+        % call threshold was here - moved before the if statement
+        
         ColInd    = colname2ind(SimFC(1),InPar.ColXY);
         
         if (InPar.CleanEdge)
@@ -1623,7 +1626,7 @@ for Isim=1:1:Nsim
         % Important: current version works only when units are electrons
         BB = col_get(Cat(Isim),'BACK');
         BS = col_get(Cat(Isim),'BACK_STD');
-        FlagBackGrad = (col_get(Cat(Isim),'SN').*BB)./(BB + col_get(Cat(Isim),'PEAK_GRADBACK').*InPar.GradBackSize)>InPar.Thresh;
+        FlagBackGrad = (col_get(Cat(Isim),'SN').*BB)./(BB + col_get(Cat(Isim),'PEAK_GRADBACK').*InPar.GradBackSize)>InPar.Thresh | PeakForce;
         %FlagBackGrad = (col_get(Cat(Isim),'SN').*BS)./sqrt((BS.^2 + col_get(Cat(Isim),'PEAK_GRADBACK').*InPar.GradBackSize))>InPar.Thresh;
         Cat(Isim)    = row_select(Cat(Isim),FlagBackGrad);
         
@@ -1634,6 +1637,8 @@ for Isim=1:1:Nsim
     
     if (InPar.SearchCR)
         for IcrMethod=1:1:numel(InPar.MethodCR)
+            % note that the 'chi2backcr' will work only if there are enough
+            % stars in the image
             Cat(Isim) = flag_cr_mextractor(Cat(Isim),'Method',InPar.MethodCR{IcrMethod});
         end
     end
