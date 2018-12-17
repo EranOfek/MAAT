@@ -102,7 +102,7 @@ DefV.SN           = [];
 
 %--- Telescope ----
 %DefV.Tel          = [];
-DefV.Aper         = 55; %48*2.54; %30; %55; %1.8; %55;        % [cm] Telescope aperture
+DefV.Aper         = 57; %48*2.54; %30; %55; %1.8; %55;        % [cm] Telescope aperture
 DefV.FocalLength  = 108; %48.*2.54.*2.8; %30.*1.44; %108; %1.7; %108;        % [cm] Telescope focal length
 DefV.Family       = 'SDSS'; %'Cousins'; %'Cousins'; %'Cousins'; %'Johnson'; %'SDSS';  %
 DefV.Band         = 'g'; %'R'; %'R'; %'R'; %'r';        %

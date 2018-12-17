@@ -31,7 +31,7 @@ function [Res,CatUM,Cat]=search_cat(Cat,X,Y,varargin)
 %            to convert the longitude into radians.
 %          * Arbitrary number of pairs or arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
-%            'SearchRad' - Search radius. Default is 2./(RAD*3600) (2").
+%            'SearchRad' - Search radius (radians). Default is 2./(RAD*3600) (2").
 %            'CooType' - {'sphere'|'plane'}. Default is 'sphere'.
 %                        Alternatively this can be a function handle name
 %                        which calculate the distance between two points
