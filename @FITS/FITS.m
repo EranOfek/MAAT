@@ -2065,6 +2065,8 @@ classdef FITS
                     [Col(Ifile).Cell{Icol},Col(Ifile).Units{Icol},Col(Ifile).TypeChar{Icol},...
                                            Col(Ifile).Repeat{Icol},Col(Ifile).Scale{Icol},Col(Ifile).Zero{Icol},...
                                            Col(Ifile).Nulval{Icol},Col(Ifile).Tdisp{Icol}]= Fun_getColParms(Fptr,Icol);
+                                       
+                                       
                     [Col(Ifile).Data{Icol}] = fits.readCol(Fptr,Icol,CellRowPar{:});
                     if (~isempty(InPar.OutClass))
                         Col(Ifile).Data{Icol} = InPar.OutClass(Col(Ifile).Data{Icol});
@@ -2145,3 +2147,4 @@ classdef FITS
     
 end % end class
             
+ 
