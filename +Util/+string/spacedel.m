@@ -14,12 +14,12 @@ function TrimStr=spacedel(Str,Numeric)
 %---------------------------------------------------------------------------
 
 TrimStr = regexprep(Str,' ','');
-if (iscell(TrimStr)),
+if (iscell(TrimStr))
    If = find(Util.cell.isempty_cell(strfind(TrimStr,' '))==0);
 else
    If = strfind(TrimStr,' ');
 end
-if (~isempty(If)),
+if (~isempty(If))
    TrimStr=spacetrim(TrimStr);
 end
 
