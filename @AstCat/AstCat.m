@@ -18,6 +18,8 @@ classdef AstCat < HEAD
         ColCell
         ColUnits
         SortedBy
+    end
+    properties (Hidden = true)
         SortedByCol
         Name
         Source
