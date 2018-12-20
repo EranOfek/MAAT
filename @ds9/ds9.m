@@ -1189,6 +1189,15 @@ classdef ds9
             ds9.system('xpaset -p ds9 regions save %s',FileName);
         end
         
+        function plotc(varargin)
+            % Generate and plot a region file from a list of celestial coordinates
+            % Package: @ds9
+            % Input  : * see ds9.plot(...,'Coo','fk5')
+            
+            ds9.plot(varargin{:},'Coo','fk5');
+            
+        end
+        
         % plot regions
         function plot(varargin)
             % Generate and plot a region file from a list of coordinates

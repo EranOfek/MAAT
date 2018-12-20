@@ -16,6 +16,9 @@
 classdef ClassPSF
     properties (SetAccess = public)
         PSF       % either a matrix, cell array of matrices, or structure of .ImPSF, or a function handle [ImPSF,ErrPSF]=F(Par,X,Y)
+        
+    end
+    properties (Hidden = true)
         ErrPSF    
         ParPSF = {};  % Default parameters for PSF function
         CooPSF = [];  % corrdinates for PSFs [X,Y] - empty for all image...
