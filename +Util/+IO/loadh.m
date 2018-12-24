@@ -39,7 +39,7 @@ if (isempty(VarName))
     Info = h5info(FileName);
     if (~isempty(Info.Datasets))
         Nds = numel(Info.Datasets);
-        DatasetNames = natsort({Info.Datasets.Name}); % natural order sort (alphanumeric)
+        DatasetNames = Util.external.natsortfiles.natsort({Info.Datasets.Name}); % natural order sort (alphanumeric)
         for Ids=1:1:Nds
             Data.(DatasetNames{Ids}) = Util.IO.loadh(FileName,DatasetNames{Ids},GetAtt);
         end   
@@ -51,7 +51,7 @@ else
     
     if (GetAtt)
         Info = h5info(FileName);
-        DatasetNames = natsort({Info.Datasets.Name}); % natural order sort (alphanumeric)
+        DatasetNames = Util.external.natsortfiles.natsort({Info.Datasets.Name}); % natural order sort (alphanumeric)
         Ind  = strcmp(DatasetNames,VarName);
     end
 end
@@ -59,7 +59,7 @@ end
 if (~isempty(GetAtt))
     % Get all attributes for datasets
     Nds = numel(Ind);
-    [~, SortIdx] = natsort({Info.Datasets.Name}); % natural order sort (alphanumeric)
+    [~, SortIdx] = Util.external.natsortfiles.natsort({Info.Datasets.Name}); % natural order sort (alphanumeric)
     switch lower(GetAtt)
         case 'h'
             % attribute will be stored in an HEAD object
