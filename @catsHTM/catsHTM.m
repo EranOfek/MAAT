@@ -83,6 +83,9 @@ classdef catsHTM
             IndexVarName = sprintf('%s_HTM',CatName);
             
         end
+        
+        
+        
     end
     
     % Create/save data into HDF5/HTM related files
@@ -336,6 +339,43 @@ classdef catsHTM
                 
             end
         end
+        
+        function create_catalog_lists4wget(Dir)
+            % Create list of catalogs foe wget including checsums
+            % Input  : - Directory in which the catsHTM catalog resides
+            %            (e.g., '/raid/eran/catsHTM').
+            % Example:
+            % catsHTM.create_catalog_lists4wget('/raid/eran/catsHTM');
+           
+            
+            URL  = 'https://astro.weizmann.ac.il/catsHTM/';
+            Pars = '-U Mozilla/5.0 --no-check-certificate';
+            Nc   = numel(Dir);
+            
+            PWD = pwd;
+            cd(Dir);
+            
+            F1 = Util.IO.rdir('*.hdf5');
+            F2 = Util.IO.rdir('*.mat');
+            F  = [F1;F2];
+            
+            Nf = numel(F);
+            FIDw = fopen('list.euler.wget','w');
+            FIDc = fopen('list.euler.checksum','w');
+            tic;
+            for If=1:1:Nf
+                fprintf(FIDw,'wget %s %s%s/%s\n',Pars,URL,F(If).folder(Nc+1:end),F(If).name);
+                [~,Str] = system(sprintf('md5sum %s%s%s',F(If).folder,filesep,F(If).name));
+                fprintf(FIDc,'%s',Str);
+            end
+            fclose(FIDw);
+            fclose(FIDc);
+            toc
+            
+            cd(PWD);
+            
+        end
+        
     end
     
     % Load and search HDF5/HTM files
@@ -889,6 +929,13 @@ classdef catsHTM
                 Radius = convert.angular(InPar.RadiusUnits,'rad',Radius);  % [radians]
             end
 
+            if (ischar(RA))
+                RA = celestial.coo.convertdms(RA,'SH','r');
+            end
+            if (ischar(Dec))
+                Dec = celestial.coo.convertdms(Dec,'SD','R');
+            end
+            
             InPar.ColCellFile = sprintf(InPar.ColCellFile,CatName);
 
             %Ncol = 45;

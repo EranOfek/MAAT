@@ -529,7 +529,11 @@ classdef ds9
                     if (SIM.issim(Images))
                         % to fix a problem - delete the PCOUNT and GCOUNT
                         % header keywords
-                        Images(Iim) = delete_key(Images(Iim),{'PCOUNT','GCOUNT','PSCALET1','PSCALET2'});
+                        %Images(Iim) = delete_key(Images(Iim),{'PCOUNT','GCOUNT','PSCALET1','PSCALET2'});
+                        Images(Iim) = delete_key(Images(Iim),{'PCOUNT','GCOUNT','PSCALET1','PSCALET2',...
+                            'XTENSION','TTYPE1','TFORM1','TTYPE2','TFORM2','TTYPE3','TFORM3'}); % Na'ama, 20180831, to display fits.fz (fpacked) images
+                        
+                        
                         FITS.write(Images(Iim).(ImageField),TmpName,'Header',Images(Iim).Header);
                     else
                         FITS.write(List{Iim},TmpName);
@@ -1183,6 +1187,15 @@ classdef ds9
                 FileName = sprintf('%s%s%s',pwd,filesep,FileName);
             end
             ds9.system('xpaset -p ds9 regions save %s',FileName);
+        end
+        
+        function plotc(varargin)
+            % Generate and plot a region file from a list of celestial coordinates
+            % Package: @ds9
+            % Input  : * see ds9.plot(...,'Coo','fk5')
+            
+            ds9.plot(varargin{:},'Coo','fk5');
+            
         end
         
         % plot regions

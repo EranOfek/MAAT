@@ -59,115 +59,119 @@ for IdirM=1:1:NdirM
     FunName = DirM(IdirM).name;
     FunName
     
-    FileCell = Util.files.file2str(FunName,'cell');
-    %List(Nl).Nlines = numel(FileCell);
+    if (~strcmp(FunName,'startup.m'))
     
-    if any(~Util.cell.isempty_cell(strfind(FileCell,'classdef '))) && ~strcmp(FunName,'prep_function_list.m')
-        % class definition and methods
-      
-        
-        Imethod  = find(~Util.cell.isempty_cell(strfind(FileCell,'methods')));
-        ImethodS = find(~Util.cell.isempty_cell(strfind(FileCell,'methods (Static)')));
-        Ifun     = find(~Util.cell.isempty_cell(strfind(FileCell,'function')) & ...
-                         Util.cell.isempty_cell(strfind(FileCell,'%')) & ...
-                         Util.cell.isempty_cell(strfind(FileCell,'function_handle')));
-        Nfun     = numel(Ifun);
-        for If=1:1:Nfun
+    
+        FileCell = Util.files.file2str(FunName,'cell');
+        %List(Nl).Nlines = numel(FileCell);
+
+        if any(~Util.cell.isempty_cell(strfind(FileCell,'classdef '))) && ~strcmp(FunName,'prep_function_list.m')
+            % class definition and methods
+
+
+            Imethod  = find(~Util.cell.isempty_cell(strfind(FileCell,'methods')));
+            ImethodS = find(~Util.cell.isempty_cell(strfind(FileCell,'methods (Static)')));
+            Ifun     = find(~Util.cell.isempty_cell(strfind(FileCell,'function')) & ...
+                             Util.cell.isempty_cell(strfind(FileCell,'%')) & ...
+                             Util.cell.isempty_cell(strfind(FileCell,'function_handle')));
+            Nfun     = numel(Ifun);
+            for If=1:1:Nfun
+                Nl = Nl + 1;
+                List=init_List(List,Nl);
+                % add FunName name...
+                Lfun = FileCell{Ifun(If)};
+                I1=strfind(Lfun,'function');
+                I2=strfind(Lfun,'=');
+                I3=strfind(Lfun,'(');
+                if (isempty(I2))
+                    Istart = length('function ')+I1;
+                else
+                    Istart = I2+1;
+                end
+                if (isempty(I3))
+                    Iend=length(Lfun);
+                else
+                    Iend=I3-1;
+                end
+                List(Nl).FunName = Lfun(Istart:Iend);
+
+                LineDesc = FileCell{Ifun(If)+1};
+                Icom = strfind(LineDesc,'%');
+                List(Nl).ShortDesc = LineDesc(Icom+1:end);
+                List(Nl).IsPackage = false;
+                List(Nl).IsClass   = true;
+                Diff = Ifun(If)-Imethod;
+                Diff = min(Diff(Diff>0));
+                DiffS = Ifun(If)-ImethodS;
+                DiffS = min(DiffS(DiffS>0));
+                if (Diff==DiffS)
+                    List(Nl).IsStatic = true;
+                else
+                    List(Nl).IsStatic = false;
+                end
+                List(Nl).LastUpdate = DirM(IdirM).date(1:11);
+
+                List(Nl).Path = DirM(IdirM).folder;
+                if (If==1)
+                    List(Nl).Nlines = numel(FileCell);
+                end
+            end
+
+
+        else
+            % function or methods
             Nl = Nl + 1;
             List=init_List(List,Nl);
-            % add FunName name...
-            Lfun = FileCell{Ifun(If)};
-            I1=strfind(Lfun,'function');
-            I2=strfind(Lfun,'=');
-            I3=strfind(Lfun,'(');
-            if (isempty(I2))
-                Istart = length('function ')+I1;
-            else
-                Istart = I2+1;
-            end
-            if (isempty(I3))
-                Iend=length(Lfun);
-            else
-                Iend=I3-1;
-            end
-            List(Nl).FunName = Lfun(Istart:Iend);
-                
-            LineDesc = FileCell{Ifun(If)+1};
-            Icom = strfind(LineDesc,'%');
-            List(Nl).ShortDesc = LineDesc(Icom+1:end);
-            List(Nl).IsPackage = false;
-            List(Nl).IsClass   = true;
-            Diff = Ifun(If)-Imethod;
-            Diff = min(Diff(Diff>0));
-            DiffS = Ifun(If)-ImethodS;
-            DiffS = min(DiffS(DiffS>0));
-            if (Diff==DiffS)
-                List(Nl).IsStatic = true;
-            else
-                List(Nl).IsStatic = false;
-            end
-            List(Nl).LastUpdate = DirM(IdirM).date(1:11);
 
+            List(Nl).Nlines = numel(FileCell);
             List(Nl).Path = DirM(IdirM).folder;
-            if (If==1)
-                List(Nl).Nlines = numel(FileCell);
+            List(Nl).FunName = FunName;
+
+
+            PWD = pwd;
+            RE = regexp(PWD,filesep,'split');
+            Idir = find(strcmp(RE,'fun'));
+            Pc = RE(Idir+1:end);
+            List(Nl).Package = Pc;
+
+            fprintf('%4d',Nl);
+            fprintf('%40s     ',FunName);
+            Npc = numel(Pc);
+            for Ipc=1:1:Npc
+                fprintf('%20s',Pc{Ipc});
             end
-        end
-            
-        
-    else
-        % function or methods
-        Nl = Nl + 1;
-        List=init_List(List,Nl);
-        
-        List(Nl).Nlines = numel(FileCell);
-        List(Nl).Path = DirM(IdirM).folder;
-        List(Nl).FunName = FunName;
-        
-        
-        PWD = pwd;
-        RE = regexp(PWD,filesep,'split');
-        Idir = find(strcmp(RE,'fun'));
-        Pc = RE(Idir+1:end);
-        List(Nl).Package = Pc;
-        
-        fprintf('%4d',Nl);
-        fprintf('%40s     ',FunName);
-        Npc = numel(Pc);
-        for Ipc=1:1:Npc
-            fprintf('%20s',Pc{Ipc});
-        end
-        fprintf('\n');
-        
-        List(Nl).ShortDesc = FileCell{2}(2:end);
-        
-        %List(Nl).ShortDesc
-        FunName
-        List(Nl).ShortDesc
-        if numel(List(Nl).ShortDesc)<2
-            List(Nl).Formatted = false;
-        else
-            if ~isempty(strfind(List(Nl).ShortDesc(1:2),'-'))
+            fprintf('\n');
+
+            List(Nl).ShortDesc = FileCell{2}(2:end);
+
+            %List(Nl).ShortDesc
+            FunName
+            List(Nl).ShortDesc
+            if numel(List(Nl).ShortDesc)<2
                 List(Nl).Formatted = false;
             else
-                List(Nl).Formatted = true;
+                if ~isempty(strfind(List(Nl).ShortDesc(1:2),'-'))
+                    List(Nl).Formatted = false;
+                else
+                    List(Nl).Formatted = true;
+                end
             end
-        end
-        
-        if (strcmp(Pc(1),'+'))
-            List(Nl).IsPackage = true;
-        else
-            List(Nl).IsPackage = false;
-        end
-        if (strcmp(Pc(1),'@'))
-            List(Nl).IsClass = true;
-        else
-            List(Nl).IsClass = false;
-        end
-        
 
-        List(Nl).LastUpdate = DirM(IdirM).date(1:11);
+            if (strcmp(Pc(1),'+'))
+                List(Nl).IsPackage = true;
+            else
+                List(Nl).IsPackage = false;
+            end
+            if (strcmp(Pc(1),'@'))
+                List(Nl).IsClass = true;
+            else
+                List(Nl).IsClass = false;
+            end
 
+
+            List(Nl).LastUpdate = DirM(IdirM).date(1:11);
+
+        end
     end
 end
 

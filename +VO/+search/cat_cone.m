@@ -62,7 +62,7 @@ if (isa(CatName,'function_handle'))
     end
 else
     % if catalog is a string than assume this is an HDF5/HTM catalog
-    [Cat,ColCell] = VO.search.htmcat_search(CatName,RA,Dec,RadiusAS);
+    [Cat,ColCell] = catsHTM.cone_search(CatName,RA,Dec,RadiusAS);
     % default output is matrix
     switch lower(InPar.OutType)
         case 'astcat'

@@ -190,15 +190,24 @@ classdef ClassWCS
                     end
                 end
                 
+                % bug fix - treat cases in whic not all CD keywords are
+                % provided - assume no rotation.
+                if (any(isnan(CD(:))) && ~all(isnan(CD(:))))
+                    CD(isnan(CD)) = 0;
+                end
+                    
+                
+                
                 if (any(isnan(CD(:))) || isempty(CD))
                     % CD is empty try to read PC
                     ValCD = mgetkey(H(Ih),KeysPC);
                     K = 0;
+                    ScaleName = sprintf('CDELT');
                     for Iaxes1=1:1:Naxes
-                        ScaleName = sprintf('CDELT%d',Iaxes1);
+                        %ScaleName = sprintf('CDELT%d',Iaxes1);
                         for Iaxes2=1:1:Naxes
                             K = K + 1;
-                            CD(Iaxes1,Iaxes2) = ValCD{K}.*W(Ih).(WCSField).(ScaleName);
+                            CD(Iaxes1,1) = ValCD{K}.*W(Ih).(WCSField).(ScaleName)(Iaxes1);
                         end
                     end
                     

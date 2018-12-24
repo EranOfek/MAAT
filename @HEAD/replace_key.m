@@ -61,7 +61,8 @@ for Ih=1:1:Nh
             
             % search for key in Header
             Flag = strcmp(Head(Ih).(HeaderField)(:,1),Key);
-            if (all(~Flag))
+            %%if (all(~Flag))
+            if (all(~Flag)) || strcmpi(Key, 'COMMENT') % Na'ama, 20180907    
                 %warning('Keyword %s was not found in header',Key);
                 Nline = size(Head(Ih).(HeaderField),1);
                 Head(Ih).(HeaderField){Nline+1,1} = Key;

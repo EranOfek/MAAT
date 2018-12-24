@@ -121,7 +121,7 @@ system('mv ./doc/main.html index.html');
 
 % rsync function directory
 cd(InPar.FunPath)
-system(sprintf('rsync -avx ./ %s',InPar.WebFunPath));
+system(sprintf('rsync -avx --exclude=".*" ./ %s',InPar.WebFunPath));
 
 
 % prepare tar files

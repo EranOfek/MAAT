@@ -1441,8 +1441,14 @@ classdef FITS
             %--- Write creation date to header ---
             if (InPar.WriteTime)
                 Time = celestial.time.get_atime([],0,0); % Na'ama, 20180516
+                %Header = replace_key(Header,'CRDATE',  Time.ISO,'Creation date of FITS file',...
+                %                            'COMMENT', '',      'File Created by MATLAB FITS.write.m written by E. Ofek');
                 Header = replace_key(Header,'CRDATE',  Time.ISO,'Creation date of FITS file',...
-                                            'COMMENT', '',      'File Created by MATLAB FITS.write.m written by E. Ofek');
+                                            'COMMENT', 'File Created by MATLAB FITS.write.m written by E. Ofek', ''); % Na'ama, 20180518
+                                        
+%=======
+%                                            'COMMENT', 'File Created by MATLAB FITS.write.m written by E. Ofek', '');
+%>>>>>>> 35a2a05383ff2610cc108265c1d7c311b103e2ac
             end
             Nline = size(Header.(HeaderField),1);
 
@@ -1470,7 +1476,7 @@ classdef FITS
                             fits.writeComment(Fptr,Header.(HeaderField){Inl,2});
                         case 'history'
                             fits.writeHistory(Fptr,Header.(HeaderField){Inl,2});
-                        case 'extname'
+                        case {'extname', 'xtension'} % Na'ama, 20180905
                             % do nothing
                         case {'simple','bitpix','naxis','naxis1','naxis2','naxis3','naxis4'}
                             % do nothing - these keywords are written by
@@ -2059,6 +2065,8 @@ classdef FITS
                     [Col(Ifile).Cell{Icol},Col(Ifile).Units{Icol},Col(Ifile).TypeChar{Icol},...
                                            Col(Ifile).Repeat{Icol},Col(Ifile).Scale{Icol},Col(Ifile).Zero{Icol},...
                                            Col(Ifile).Nulval{Icol},Col(Ifile).Tdisp{Icol}]= Fun_getColParms(Fptr,Icol);
+                                       
+                                       
                     [Col(Ifile).Data{Icol}] = fits.readCol(Fptr,Icol,CellRowPar{:});
                     if (~isempty(InPar.OutClass))
                         Col(Ifile).Data{Icol} = InPar.OutClass(Col(Ifile).Data{Icol});
@@ -2139,3 +2147,4 @@ classdef FITS
     
 end % end class
             
+ 

@@ -1,4 +1,4 @@
-function [Summary,D,S,Scorr,SigmaF]=subtract_proper(Sim,SimRef,varargin)
+function [Summary,D,S,Scorr,SigmaF,SN]=subtract_proper(Sim,SimRef,varargin)
 % Image subtraction using the ZOGY algorithm.
 % Package: class/@SIM
 % Description: Image subtraction using the Zackay, Ofek, Gal-Yam (2016)
@@ -496,9 +496,16 @@ for Isim=1:1:Nsim
         fftKN2 = fft2(ifft2(fftKN).^2);   
         
                 
+        
         if (isempty(InPar.SigmaX) || isempty(InPar.SigmaY))
             VastSN = 0;
             VastSR = 0;
+            GradSNx = 0;
+            GradSNy = 0;
+            GradSRx = 0;
+            GradSRy = 0;
+            VastSN  = 0;
+            VastSR  = 0;
         else
             IndX     = min(Isim,NsigmaX);
             IndY     = min(Isim,NsigmaY);
@@ -595,8 +602,10 @@ for Isim=1:1:Nsim
         
         Summary(Isim).F_S = F_S;
         Summary(Isim).SigmaFlux = SigmaFlux;
+        
     end
-    
+    GradSN(Isim).X = GradSNx;
+    GradSN(Isim).Y = GradSNy;
     
     
     
