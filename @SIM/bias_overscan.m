@@ -80,7 +80,7 @@ end
 Nf   = numel(InPar.ExecField);
 Nsim = numel(Sim);
 if (nargout>1),
-    BiasSim = simdef(size(Sim));
+    BiasSim = SIM(size(Sim));
 end
 for Isim=1:1:Nsim,
     % for each SIM element
