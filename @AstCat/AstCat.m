@@ -18,6 +18,8 @@ classdef AstCat < HEAD
         ColCell
         ColUnits
         SortedBy
+    end
+    properties (Hidden = true)
         SortedByCol
         Name
         Source
@@ -217,7 +219,7 @@ classdef AstCat < HEAD
             for Ifn=1:1:Nfn
                 AstC(Ifn).(CatField) = Data.(FN{Ifn});
                 AstC(Ifn).(ColField) = Att(Ifn);
-                AstC  = col2colcell(AstC);
+                AstC(Ifn)  = col2colcell(AstC(Ifn));
             end
                 
             

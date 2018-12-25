@@ -39,8 +39,9 @@ if (isempty(VarName))
     Info = h5info(FileName);
     if (~isempty(Info.Datasets))
         Nds = numel(Info.Datasets);
+        DatasetNames = Util.external.natsortfiles.natsort({Info.Datasets.Name}); % natural order sort (alphanumeric)
         for Ids=1:1:Nds
-            Data.(Info.Datasets(Ids).Name) = Util.IO.loadh(FileName,Info.Datasets(Ids).Name,GetAtt);
+            Data.(DatasetNames{Ids}) = Util.IO.loadh(FileName,DatasetNames{Ids},GetAtt);
         end   
         Ind = (1:1:Nds);  % indices of all datasets
     end
@@ -50,24 +51,26 @@ else
     
     if (GetAtt)
         Info = h5info(FileName);
-        Ind  = strcmp({Info.Datasets.Name},VarName);
+        DatasetNames = Util.external.natsortfiles.natsort({Info.Datasets.Name}); % natural order sort (alphanumeric)
+        Ind  = strcmp(DatasetNames,VarName);
     end
 end
 
 if (~isempty(GetAtt))
     % Get all attributes for datasets
     Nds = numel(Ind);
+    [~, SortIdx] = Util.external.natsortfiles.natsort({Info.Datasets.Name}); % natural order sort (alphanumeric)
     switch lower(GetAtt)
         case 'h'
             % attribute will be stored in an HEAD object
             Att = HEAD(Nds,1);
             for Ids=1:1:Nds
-                Att(Ids).Header = [{Info.Datasets(Ids).Attributes.Name}.', {Info.Datasets(Ids).Attributes.Value}.'];
+                Att(Ids).Header = [{Info.Datasets(SortIdx(Ids)).Attributes.Name}.', {Info.Datasets(SortIdx(Ids)).Attributes.Value}.'];
             end          
         case 's'
             % attributes will be stored in a structure
             for Ids=1:1:Nds
-                Att(Ids) = cell2struct({Info.Datasets(Ids).Attributes.Value},{Info.Datasets(Ids).Attributes.Name},2);
+                Att(Ids) = cell2struct({Info.Datasets(SortIdx(Ids)).Attributes.Value},{Info.Datasets(SortIdx(Ids)).Attributes.Name},2);
             end
         otherwise
             error('Unknown attributes output type');

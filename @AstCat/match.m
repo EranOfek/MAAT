@@ -21,7 +21,7 @@ function [AstOut,AstUM]=match(AstC,AstR,varargin)
 %              the reference catalog.
 % Input  : - An AstCat object containing multiple catalogs to match against
 %            the reference catalog. The catalog must contain an a 2D
-%            coordinates in pix, radiaons or degres units.
+%            coordinates in pix, radians or degres units.
 %            By default, this catalog will be sorted by Y or declination.
 %          - An AstCat object containing a single reference catalog against
 %            all the the input catalogs will be matched.
@@ -385,11 +385,11 @@ for Ic=1:1:Nc
     CatUnits = get_colunits(AstC(Ic),CatColInd(1));
     if (isempty(CatUnits))
         Ncu      = numel(InPar.CatUnits);
-        CatUnits = InPar.RefUnits{min(Ncu,CatUseInd)};
+        CatUnits = InPar.CatUnits{min(Ncu,CatUseInd)};
     end
     
     % Check if CooType is consistent with units
-    [CatFactor,CatCooType] = set_cootype(RefUnits,InPar.CooType);
+    [CatFactor,CatCooType] = set_cootype(CatUnits,InPar.CooType);
 
     if (~strcmp(InPar.CooType,CatCooType))
         error('Ref and Cat Coo types are not consistent');

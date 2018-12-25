@@ -48,7 +48,7 @@ DefV.CooUnits             = 'deg';
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 
-InPar.SearchRadius = convert.angular(InPar.SearchRadiusUnits,'arcsec',InPar.SearchRadius);
+InPar.SearchRadius = convert.angular(InPar.SearchRadiusUnits,'arcsec',InPar.SearchRadius,InPar.SearchRadiusUnits);
 
 Nac = numel(AC);
 % for each AstCat element
@@ -73,6 +73,7 @@ for Iac=1:1:Nac
     % get entire catalog overlap to the AstCat object
     % ccordinates units are 'rad'
     [HCat,Col] = catsHTM.cone_search(CatName,MeanRA,MeanDec,BigRadius.*RAD.*ARCSEC_DEG,'OutType','astcat');
+    HCat       = sortrows(HCat,2);
     
     CatColNames = [InPar.ColRA(:), InPar.ColDec(:)];
     [CatUnits{1:numel(InPar.ColRA)}] = deal(InPar.CooUnits);
@@ -81,7 +82,10 @@ for Iac=1:1:Nac
     % find a match to each HCat source - output is the size of HCat
     %[AM] = match(AC(Iac),HCat,'SkipWCS',false,'CatColNames',CatColNames,'CatUnits',CatUnits,'CooType',CooType);
     % find a match to each AC source - output is the size of AC(Iac)
-    [AM(Iac)] = match(HCat,AC(Iac),'SkipWCS',false,'CatColNames',CatColNames,'CatUnits',CatUnits,'CooType',CooType,'SearchRad',InPar.SearchRadius);
+    
+    [AM(Iac)] = match(HCat,AC(Iac),'SkipWCS',false,'CatColNames',CatColNames,...
+                                   'RefUnits',CatUnits,'CatUnits',{'rad','rad','rad'}','CooType',CooType',...
+                                   'SearchRad',InPar.SearchRadius,'SearchRadUnits',InPar.SearchRadiusUnits);
       
     
 end

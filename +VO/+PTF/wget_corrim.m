@@ -6,7 +6,6 @@ function  [Link,TableSort,Col,FileName]=wget_corrim(RA,DEC,varargin)
 %               can also retrieve the files.
 % Input  : - J2000.0 RA in [rad] or [H M S] or sexagesimal string.
 %            Alternatively, if the second argument is an empty matrix then
-
 %            then the first input argument will be regarded as
 %            [FieldID CCDID].
 %          - J2000.0 Dec in [rad] or [Sign D M S] or sexagesimal string. 
