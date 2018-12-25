@@ -1088,7 +1088,7 @@ classdef AstSpec < HEAD
                 AstS(It).Int = convert.flux(Flambda,'cgs/A',UnitsOut,Lam,'cm');
                 AstS(It).WaveUnits = UnitsWave;
                 AstS(It).IntUnits  = UnitsOut;
-                AstS(It).source    = 'blackbody.m';
+                AstS(It).source    = 'AstSpec.blackbody';
                 AstS(It).ObjName   = sprintf('Planck spectrum T=%f',VecT(It));
                 AstS(It).z         = 0;
             end
@@ -3383,7 +3383,7 @@ classdef AstSpec < HEAD
     
     % Specific Operators
     methods
-        function [AS1]=astspec_arith(AS1,AS2,Operator)
+        function [AS]=astspec_arith(AS1,AS2,Operator)
             %--------------------------------------------------------------------------
             % astspec_arith function                                         AstroSpec
             % Description: Basic arithmetics on AstSpec class objects.
@@ -3403,28 +3403,64 @@ classdef AstSpec < HEAD
             % Reliable: 2
             %--------------------------------------------------------------------------
 
-            N1 = numel(AS1);
-            N2 = numel(AS2);
-            if (~(N2==1 || N2==N1))
-                error('Size of second argument should be 1 or equal to that of the first argument');
+%             N1 = numel(AS1);
+%             N2 = numel(AS2);
+%             if (~(N2==1 || N2==N1))
+%                 error('Size of second argument should be 1 or equal to that of the first argument');
+%             end
+            S1 = size(AS1);
+            S2 = size(AS2);
+            if (sum(S1(S1~=S2)~=1 & S2(S1~=S2)~=1))~=0)
+                error('Matrix dimension must agree.');
             end
-
-
+            
+            D1 = length(S1);
+            D2 = length(S2);
+            if (D1>D2)
+                S2(D1+1:D1)=1;
+            elseif (D2>D1)
+                S1(D2+1:D2)=1;
+            end
+            S = max(S1,S2);
+            
+            AS = AstSpec(S);
             if (~AstSpec.isastspec(AS2))
                 % assume AS2 is numeric
-                AS2 = AS2.*ones(size(AS1));
-
-                for I1=1:1:N1
-                    I2 = I1;
+%                 AS2 = AS2.*ones(size(AS1));
+                
+%                 for I1=1:1:N1
+%                     I2 = I1;
+                for I=1:prod(S)
+                    [i,j] = ind2sub(S,I);
+                    if S1(1)>1
+                        I1 = i;
+                    else
+                        I1 = 1;
+                    end
+                    if S1(2)>1
+                        J1 = j;
+                    else
+                        J1 = 1;
+                    end
+                    if S2(1)>1
+                        I2 = i;
+                    else
+                        I2 = 1;
+                    end
+                    if S2(2)>1
+                        J2 = j;
+                    else
+                        J2 = 1;
+                    end
                     if (~isempty(AS1(I1).Int))
-                        AS1(I1).Int  = Operator(AS1(I1).Int,AS2(I2));
+                        AS(I).Int  = Operator(AS1(I1,J1).Int,AS2(I2,J2));
                     end
                     if (~isempty(AS1(I1).Back))
-                        AS1(I1).Back = Operator(AS1(I1).Back,AS2(I2));
+                        AS(I).Back = Operator(AS1(I1,J1).Back,AS2(I2,J2));
                     end
                     if (~isempty(AS1(I1).Err))
                         if (any(strcmpi(func2str(Operator),{'times','rdivide'})))
-                            AS1(I1).Err  = Operator(AS1(I1).Err,AS2(I2));
+                            AS(I).Err  = Operator(AS1(I1,J1).Err,AS2(I2,J2));
                         else
                             % do nothing to .Err
                         end
@@ -3432,29 +3468,51 @@ classdef AstSpec < HEAD
                 end
             else
                 % AS2 is AstSpec
-                N = max(N1,N2);
-                for I=1:1:N
-                    I1 = min(I,N1);
-                    I2 = min(I,N2);
-                    if (~isempty(AS1(I1).Int))
-                        AS1(I1).Int = Operator(AS1(I1).Int,AS2(I2).Int);
+%                 N = max(N1,N2);
+%                 for I=1:1:N
+%                     I1 = min(I,N1);
+%                     I2 = min(I,N2);
+                for I=1:prod(S)
+                    [i,j] = ind2sub(S,I);
+                    if S1(1)>1
+                        I1 = i;
+                    else
+                        I1 = 1;
+                    end
+                    if S1(2)>1
+                        J1 = j;
+                    else
+                        J1 = 1;
+                    end
+                    if S2(1)>1
+                        I2 = i;
+                    else
+                        I2 = 1;
+                    end
+                    if S2(2)>1
+                        J2 = j;
+                    else
+                        J2 = 1;
+                    end
+                    if (~isempty(AS1(I1,J1).Int))
+                        AS(I).Int = Operator(AS1(I1,J1).Int,AS2(I2,J2).Int);
                     end
                     if (~isempty(AS1(I1).Back))
-                        if (~isempty(AS2(I2).Back))
-                            AS1(I1).Back = Operator(AS1(I1).Back,AS2(I2).Back);
+                        if (~isempty(AS2(I2,J2).Back))
+                            AS(I).Back = Operator(AS1(I1,J2).Back,AS2(I2,J2).Back);
                         else
                             % Back of AS2 is not available - use AS1 back
                             % do nothing
                         end
                     end
-                    if (~isempty(AS1(I1).Err))
-                        if (~isempty(AS2(I2).Err))
+                    if (~isempty(AS1(I1,J1).Err))
+                        if (~isempty(AS2(I2,K2).Err))
                             if (any(strcmpi(func2str(Operator),{'times'})))
-                                [~,AS1(I1).Err] = times_err(AS1(I1).Int,AS1(I1).Err, AS2(I2).Int,AS2(I2).Err);
+                                [~,AS(I).Err] = times_err(AS1(I1,J1).Int,AS1(I1,J1).Err, AS2(I2,J2).Int,AS2(I2,J2).Err);
                             elseif (any(strcmpi(func2str(Operator),{'rdivide'})))
-                                [~,AS1(I1).Err] = rdivide_err(AS1(I1).Int,AS1(I1).Err, AS2(I2).Int,AS2(I2).Err);
+                                [~,AS(I).Err] = rdivide_err(AS1(I1,J1).Int,AS1(I1,J1).Err, AS2(I2,J2).Int,AS2(I2,J2).Err);
                             elseif (any(strcmpi(func2str(Operator),{'plus','minus'})))
-                                AS1(I1).Err = sqrt(AS1(I1).Err.^2 + AS2(I2).Err.^2);
+                                AS(I).Err = sqrt(AS1(I1,J1).Err.^2 + AS2(I2,J2).Err.^2);
                             else
                                 % do nothing 
                             end
