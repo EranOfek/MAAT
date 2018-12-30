@@ -157,13 +157,13 @@ classdef TempHumidityDog < handle
             LineH = WC.RetLine{2};
             
             WC.Temp    = str2double(LineT);
-            WC.Humidty = str2double(LineH);
+            WC.Humidity = str2double(LineH);
             if (isnan(WC.Temp))
                 WC.TempStatus = 'error';
             else
                 WC.TempStatus = 'ok';
             end
-            if (isnan(WC.Humidty))
+            if (isnan(WC.Humidity))
                 WC.HumidityStatus = 'error';
             else
                 WC.HumidityStatus = 'ok';
