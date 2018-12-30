@@ -462,6 +462,53 @@ classdef AstSpec < HEAD
             end
         end
         
+        function Spec=get_all_gaia_synspec
+            % Get a;; GAIA synthetic spectra from local DB
+            % Package: @AstSpec
+            % Description: get all synthetic stellar spectrum from the local GAIA
+            %              spectral library. Spectra are in the range 2500-10500A
+            %              and 1A resolution.
+            %              Assuming alpha enhanement 0, and micro-turbulence 2km/s.
+            % Input  : *
+            % Output : - AstSpec object with the spectra in flux units [wavelength[Ang], Flux].
+            %            Flux units [erg cm^-2 s^-1 A^-1 on star]
+            %            Return NaN if spectrum doesn't exist or web site is down.
+            % Reference: http://gaia.esa.int/spectralib/spectralib1A/SpectraLib1a.cfm
+            % Tested : Matlab 7.3
+            %     By : Eran O. Ofek                    Nov 2008
+            %    URL : http://weizmann.ac.il/home/eofek/matlab/
+            % See also: wget_gaia_synspec.m
+            % Example: Spec=AstSpec.get_gaia_synspec(5000,0,0,0);
+            % Reliable: 2
+            %--------------------------------------------------------------------------
+
+            MSDir      = Util.files.which_dir(mfilename);
+            %DirLocation = sprintf('%s%s..%s..%s%s%s%s%s',MSDir,filesep,filesep,filesep,'data',filesep,'GAIA_SpecTemplates',filesep);
+            %DirLocation = sprintf('%s%s..%s..%s..%s%s%s%s%s',MSDir,filesep,filesep,filesep,filesep,'data',filesep,'GAIA_SpecTemplates',filesep);
+            DirLocation = sprintf('%s%s..%s..%s%s%s%s%s%s%s',MSDir,filesep,filesep,filesep,'data',filesep,'spec',filesep,'GAIA_SpecTemplate',filesep);
+            
+            PWD = pwd;
+            cd(DirLocation);
+            
+            WaveFileName = 'GAIA_Wave1A.mat';
+            W        = Util.IO.load2(sprintf('%s%s',DirLocation,WaveFileName));
+            
+            Files = dir('T*.mat');
+            Nf    = numel(Files);
+            Spec  = AstSpec(Nf,1);
+            for If=1:1:Nf
+                SpecMat  = [W, Util.IO.load2(Files(If).name)];
+            
+                Spec(If)=AstSpec.mat2spec(SpecMat,{'Wave','Int'},{'Ang','erg*cm^-2 *s^-1*Ang^-1'});
+                Spec(If).z = 0;
+                Spec(If).source = 'GAIA local DB';
+                Spec(If).ObjName = sprintf('GAIA synspec %s',Files(If).name);
+
+            end
+        end
+        
+        
+        
         function Spec=wget_gaia_synspec(Temp,Grav,Metal,Rot)
             % wget GAIA synthetic spectra from web
             % Package: @AstSpec
@@ -1001,6 +1048,7 @@ classdef AstSpec < HEAD
             else
                 % get a single file
                 Spec = cats.spec.AtmoExtinction.(Name);
+                
                 
                 switch lower(OutType)
                     case 'mat'
@@ -3099,6 +3147,9 @@ classdef AstSpec < HEAD
             else
                 error('Unknown atmospheric extinction type');
             end
+            
+            %Ext.Wave(end+1)=12000;
+            %Ext.Int(end+1) = 0.02;
             
             Ns = numel(AstS);
             AirMass = AirMass(:).*ones(Ns,1);
