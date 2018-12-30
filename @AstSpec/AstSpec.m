@@ -3410,7 +3410,7 @@ classdef AstSpec < HEAD
 %             end
             S1 = size(AS1);
             S2 = size(AS2);
-            if (sum(S1(S1~=S2)~=1 & S2(S1~=S2)~=1))~=0)
+            if (sum(S1(S1~=S2)~=1 & S2(S1~=S2)~=1)~=0)
                 error('Matrix dimension must agree.');
             end
             
@@ -3422,6 +3422,9 @@ classdef AstSpec < HEAD
                 S1(D2+1:D2)=1;
             end
             S = max(S1,S2);
+            ndim = length(S);
+            pow1 = [1 cumprod(S1(1:end-1))];
+            pow2 = [1 cumprod(S2(1:end-1))];
             
             AS = AstSpec(S);
             if (~AstSpec.isastspec(AS2))
@@ -3431,36 +3434,23 @@ classdef AstSpec < HEAD
 %                 for I1=1:1:N1
 %                     I2 = I1;
                 for I=1:prod(S)
-                    [i,j] = ind2sub(S,I);
-                    if S1(1)>1
-                        I1 = i;
-                    else
-                        I1 = 1;
+                    Irem = I; I1 = 1; I2 = 1;
+                    for i = 1:ndim
+                        sub = rem(Irem-1,S(i))+1;
+                        Irem = (Irem-sub)/S(i)+1;
+                        if(S1(i)>1),I1 = I1+(sub-1)*pow1(i);end
+                        if(S2(i)>1),I2 = I2+(sub-1)*pow2(i);end
                     end
-                    if S1(2)>1
-                        J1 = j;
-                    else
-                        J1 = 1;
-                    end
-                    if S2(1)>1
-                        I2 = i;
-                    else
-                        I2 = 1;
-                    end
-                    if S2(2)>1
-                        J2 = j;
-                    else
-                        J2 = 1;
-                    end
+                        
                     if (~isempty(AS1(I1).Int))
-                        AS(I).Int  = Operator(AS1(I1,J1).Int,AS2(I2,J2));
+                        AS(I).Int  = Operator(AS1(I1).Int,AS2(I2));
                     end
                     if (~isempty(AS1(I1).Back))
-                        AS(I).Back = Operator(AS1(I1,J1).Back,AS2(I2,J2));
+                        AS(I).Back = Operator(AS1(I1).Back,AS2(I2));
                     end
                     if (~isempty(AS1(I1).Err))
                         if (any(strcmpi(func2str(Operator),{'times','rdivide'})))
-                            AS(I).Err  = Operator(AS1(I1,J1).Err,AS2(I2,J2));
+                            AS(I).Err  = Operator(AS1(I1).Err,AS2(I2));
                         else
                             % do nothing to .Err
                         end
@@ -3473,46 +3463,33 @@ classdef AstSpec < HEAD
 %                     I1 = min(I,N1);
 %                     I2 = min(I,N2);
                 for I=1:prod(S)
-                    [i,j] = ind2sub(S,I);
-                    if S1(1)>1
-                        I1 = i;
-                    else
-                        I1 = 1;
+                    Irem = I; I1 = 1; I2 = 1;
+                    for i = 1:ndim
+                        sub = rem(Irem-1,S(i))+1;
+                        Irem = (Irem-sub)/S(i)+1;
+                        if(S1(i)>1),I1 = I1+(sub-1)*pow1(i);end
+                        if(S2(i)>1),I2 = I2+(sub-1)*pow2(i);end
                     end
-                    if S1(2)>1
-                        J1 = j;
-                    else
-                        J1 = 1;
-                    end
-                    if S2(1)>1
-                        I2 = i;
-                    else
-                        I2 = 1;
-                    end
-                    if S2(2)>1
-                        J2 = j;
-                    else
-                        J2 = 1;
-                    end
-                    if (~isempty(AS1(I1,J1).Int))
-                        AS(I).Int = Operator(AS1(I1,J1).Int,AS2(I2,J2).Int);
+                    
+                    if (~isempty(AS1(I1).Int))
+                        AS(I).Int = Operator(AS1(I1).Int,AS2(I2).Int);
                     end
                     if (~isempty(AS1(I1).Back))
-                        if (~isempty(AS2(I2,J2).Back))
-                            AS(I).Back = Operator(AS1(I1,J2).Back,AS2(I2,J2).Back);
+                        if (~isempty(AS2(I2).Back))
+                            AS(I).Back = Operator(AS1(I1).Back,AS2(I2).Back);
                         else
                             % Back of AS2 is not available - use AS1 back
                             % do nothing
                         end
                     end
-                    if (~isempty(AS1(I1,J1).Err))
-                        if (~isempty(AS2(I2,K2).Err))
+                    if (~isempty(AS1(I1).Err))
+                        if (~isempty(AS2(I2).Err))
                             if (any(strcmpi(func2str(Operator),{'times'})))
-                                [~,AS(I).Err] = times_err(AS1(I1,J1).Int,AS1(I1,J1).Err, AS2(I2,J2).Int,AS2(I2,J2).Err);
+                                [~,AS(I).Err] = times_err(AS1(I1).Int,AS1(I1).Err, AS2(I2).Int,AS2(I2).Err);
                             elseif (any(strcmpi(func2str(Operator),{'rdivide'})))
-                                [~,AS(I).Err] = rdivide_err(AS1(I1,J1).Int,AS1(I1,J1).Err, AS2(I2,J2).Int,AS2(I2,J2).Err);
+                                [~,AS(I).Err] = rdivide_err(AS1(I1).Int,AS1(I1).Err, AS2(I2).Int,AS2(I2).Err);
                             elseif (any(strcmpi(func2str(Operator),{'plus','minus'})))
-                                AS(I).Err = sqrt(AS1(I1,J1).Err.^2 + AS2(I2,J2).Err.^2);
+                                AS(I).Err = sqrt(AS1(I1).Err.^2 + AS2(I2).Err.^2);
                             else
                                 % do nothing 
                             end
@@ -3586,4 +3563,3 @@ classdef AstSpec < HEAD
         
 end
 
-            
