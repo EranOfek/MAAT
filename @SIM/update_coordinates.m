@@ -19,6 +19,7 @@ function Cat=update_coordinates(Cat,varargin)
 %                           for the Y coordinates. Use the first existing
 %                           column. Default is
 %                           {'YWIN_IMAGE','Y','Y_IMAGE'}.
+%            'OutUnits'   - Output units. Default is 'rad'.
 % Output : - The input SIM object with an update RA/Dec in the catalog.
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Jun 2018
@@ -34,6 +35,7 @@ DefV.ColNameRA            = 'ALPHAWIN_J2000';
 DefV.ColNameDec           = 'DELTAWIN_J2000';
 DefV.ColNameX             = {'XWIN_IMAGE','X','X_IMAGE'};
 DefV.ColNameY             = {'YWIN_IMAGE','Y','Y_IMAGE'};
+DefV.OutUnits             = 'rad';
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 
@@ -41,7 +43,7 @@ Ncat = numel(Cat);
 for Icat=1:1:Ncat
     W = ClassWCS.populate(Cat(Icat));
     
-    [RA,Dec] = xy2coo(W,Cat(Icat),'ColNameX',InPar.ColNameX,'ColNameY',InPar.ColNameY);
+    [RA,Dec] = xy2coo(W,Cat(Icat),'ColNameX',InPar.ColNameX,'ColNameY',InPar.ColNameY,'OutUnits',InPar.OutUnits);
     ColRA  = colname2ind(Cat(Icat),InPar.ColNameRA);
     ColDec = colname2ind(Cat(Icat),InPar.ColNameDec);
     Cat(Icat).(CatField)(:,ColRA) = RA;
