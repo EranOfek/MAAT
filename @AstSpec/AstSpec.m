@@ -462,6 +462,53 @@ classdef AstSpec < HEAD
             end
         end
         
+        function Spec=get_all_gaia_synspec
+            % Get a;; GAIA synthetic spectra from local DB
+            % Package: @AstSpec
+            % Description: get all synthetic stellar spectrum from the local GAIA
+            %              spectral library. Spectra are in the range 2500-10500A
+            %              and 1A resolution.
+            %              Assuming alpha enhanement 0, and micro-turbulence 2km/s.
+            % Input  : *
+            % Output : - AstSpec object with the spectra in flux units [wavelength[Ang], Flux].
+            %            Flux units [erg cm^-2 s^-1 A^-1 on star]
+            %            Return NaN if spectrum doesn't exist or web site is down.
+            % Reference: http://gaia.esa.int/spectralib/spectralib1A/SpectraLib1a.cfm
+            % Tested : Matlab 7.3
+            %     By : Eran O. Ofek                    Nov 2008
+            %    URL : http://weizmann.ac.il/home/eofek/matlab/
+            % See also: wget_gaia_synspec.m
+            % Example: Spec=AstSpec.get_gaia_synspec(5000,0,0,0);
+            % Reliable: 2
+            %--------------------------------------------------------------------------
+
+            MSDir      = Util.files.which_dir(mfilename);
+            %DirLocation = sprintf('%s%s..%s..%s%s%s%s%s',MSDir,filesep,filesep,filesep,'data',filesep,'GAIA_SpecTemplates',filesep);
+            %DirLocation = sprintf('%s%s..%s..%s..%s%s%s%s%s',MSDir,filesep,filesep,filesep,filesep,'data',filesep,'GAIA_SpecTemplates',filesep);
+            DirLocation = sprintf('%s%s..%s..%s%s%s%s%s%s%s',MSDir,filesep,filesep,filesep,'data',filesep,'spec',filesep,'GAIA_SpecTemplate',filesep);
+            
+            PWD = pwd;
+            cd(DirLocation);
+            
+            WaveFileName = 'GAIA_Wave1A.mat';
+            W        = Util.IO.load2(sprintf('%s%s',DirLocation,WaveFileName));
+            
+            Files = dir('T*.mat');
+            Nf    = numel(Files);
+            Spec  = AstSpec(Nf,1);
+            for If=1:1:Nf
+                SpecMat  = [W, Util.IO.load2(Files(If).name)];
+            
+                Spec(If)=AstSpec.mat2spec(SpecMat,{'Wave','Int'},{'Ang','erg*cm^-2 *s^-1*Ang^-1'});
+                Spec(If).z = 0;
+                Spec(If).source = 'GAIA local DB';
+                Spec(If).ObjName = sprintf('GAIA synspec %s',Files(If).name);
+
+            end
+        end
+        
+        
+        
         function Spec=wget_gaia_synspec(Temp,Grav,Metal,Rot)
             % wget GAIA synthetic spectra from web
             % Package: @AstSpec
@@ -1002,6 +1049,7 @@ classdef AstSpec < HEAD
                 % get a single file
                 Spec = cats.spec.AtmoExtinction.(Name);
                 
+                
                 switch lower(OutType)
                     case 'mat'
                         AstS = Spec;
@@ -1088,7 +1136,7 @@ classdef AstSpec < HEAD
                 AstS(It).Int = convert.flux(Flambda,'cgs/A',UnitsOut,Lam,'cm');
                 AstS(It).WaveUnits = UnitsWave;
                 AstS(It).IntUnits  = UnitsOut;
-                AstS(It).source    = 'blackbody.m';
+                AstS(It).source    = 'AstSpec.blackbody';
                 AstS(It).ObjName   = sprintf('Planck spectrum T=%f',VecT(It));
                 AstS(It).z         = 0;
             end
@@ -3100,6 +3148,9 @@ classdef AstSpec < HEAD
                 error('Unknown atmospheric extinction type');
             end
             
+            %Ext.Wave(end+1)=12000;
+            %Ext.Int(end+1) = 0.02;
+            
             Ns = numel(AstS);
             AirMass = AirMass(:).*ones(Ns,1);
             AstS    = convert_wave(AstS,'Ang');
@@ -3383,7 +3434,7 @@ classdef AstSpec < HEAD
     
     % Specific Operators
     methods
-        function [AS1]=astspec_arith(AS1,AS2,Operator)
+        function [AS]=astspec_arith(AS1,AS2,Operator)
             %--------------------------------------------------------------------------
             % astspec_arith function                                         AstroSpec
             % Description: Basic arithmetics on AstSpec class objects.
@@ -3403,28 +3454,54 @@ classdef AstSpec < HEAD
             % Reliable: 2
             %--------------------------------------------------------------------------
 
-            N1 = numel(AS1);
-            N2 = numel(AS2);
-            if (~(N2==1 || N2==N1))
-                error('Size of second argument should be 1 or equal to that of the first argument');
+%             N1 = numel(AS1);
+%             N2 = numel(AS2);
+%             if (~(N2==1 || N2==N1))
+%                 error('Size of second argument should be 1 or equal to that of the first argument');
+%             end
+            S1 = size(AS1);
+            S2 = size(AS2);
+            if (sum(S1(S1~=S2)~=1 & S2(S1~=S2)~=1)~=0)
+                error('Matrix dimension must agree.');
             end
-
-
+            
+            D1 = length(S1);
+            D2 = length(S2);
+            if (D1>D2)
+                S2(D1+1:D1)=1;
+            elseif (D2>D1)
+                S1(D2+1:D2)=1;
+            end
+            S = max(S1,S2);
+            ndim = length(S);
+            pow1 = [1 cumprod(S1(1:end-1))];
+            pow2 = [1 cumprod(S2(1:end-1))];
+            
+            AS = AstSpec(S);
             if (~AstSpec.isastspec(AS2))
                 % assume AS2 is numeric
-                AS2 = AS2.*ones(size(AS1));
-
-                for I1=1:1:N1
-                    I2 = I1;
+%                 AS2 = AS2.*ones(size(AS1));
+                
+%                 for I1=1:1:N1
+%                     I2 = I1;
+                for I=1:prod(S)
+                    Irem = I; I1 = 1; I2 = 1;
+                    for i = 1:ndim
+                        sub = rem(Irem-1,S(i))+1;
+                        Irem = (Irem-sub)/S(i)+1;
+                        if(S1(i)>1),I1 = I1+(sub-1)*pow1(i);end
+                        if(S2(i)>1),I2 = I2+(sub-1)*pow2(i);end
+                    end
+                        
                     if (~isempty(AS1(I1).Int))
-                        AS1(I1).Int  = Operator(AS1(I1).Int,AS2(I2));
+                        AS(I).Int  = Operator(AS1(I1).Int,AS2(I2));
                     end
                     if (~isempty(AS1(I1).Back))
-                        AS1(I1).Back = Operator(AS1(I1).Back,AS2(I2));
+                        AS(I).Back = Operator(AS1(I1).Back,AS2(I2));
                     end
                     if (~isempty(AS1(I1).Err))
                         if (any(strcmpi(func2str(Operator),{'times','rdivide'})))
-                            AS1(I1).Err  = Operator(AS1(I1).Err,AS2(I2));
+                            AS(I).Err  = Operator(AS1(I1).Err,AS2(I2));
                         else
                             % do nothing to .Err
                         end
@@ -3432,16 +3509,25 @@ classdef AstSpec < HEAD
                 end
             else
                 % AS2 is AstSpec
-                N = max(N1,N2);
-                for I=1:1:N
-                    I1 = min(I,N1);
-                    I2 = min(I,N2);
+%                 N = max(N1,N2);
+%                 for I=1:1:N
+%                     I1 = min(I,N1);
+%                     I2 = min(I,N2);
+                for I=1:prod(S)
+                    Irem = I; I1 = 1; I2 = 1;
+                    for i = 1:ndim
+                        sub = rem(Irem-1,S(i))+1;
+                        Irem = (Irem-sub)/S(i)+1;
+                        if(S1(i)>1),I1 = I1+(sub-1)*pow1(i);end
+                        if(S2(i)>1),I2 = I2+(sub-1)*pow2(i);end
+                    end
+                    
                     if (~isempty(AS1(I1).Int))
-                        AS1(I1).Int = Operator(AS1(I1).Int,AS2(I2).Int);
+                        AS(I).Int = Operator(AS1(I1).Int,AS2(I2).Int);
                     end
                     if (~isempty(AS1(I1).Back))
                         if (~isempty(AS2(I2).Back))
-                            AS1(I1).Back = Operator(AS1(I1).Back,AS2(I2).Back);
+                            AS(I).Back = Operator(AS1(I1).Back,AS2(I2).Back);
                         else
                             % Back of AS2 is not available - use AS1 back
                             % do nothing
@@ -3450,11 +3536,11 @@ classdef AstSpec < HEAD
                     if (~isempty(AS1(I1).Err))
                         if (~isempty(AS2(I2).Err))
                             if (any(strcmpi(func2str(Operator),{'times'})))
-                                [~,AS1(I1).Err] = times_err(AS1(I1).Int,AS1(I1).Err, AS2(I2).Int,AS2(I2).Err);
+                                [~,AS(I).Err] = times_err(AS1(I1).Int,AS1(I1).Err, AS2(I2).Int,AS2(I2).Err);
                             elseif (any(strcmpi(func2str(Operator),{'rdivide'})))
-                                [~,AS1(I1).Err] = rdivide_err(AS1(I1).Int,AS1(I1).Err, AS2(I2).Int,AS2(I2).Err);
+                                [~,AS(I).Err] = rdivide_err(AS1(I1).Int,AS1(I1).Err, AS2(I2).Int,AS2(I2).Err);
                             elseif (any(strcmpi(func2str(Operator),{'plus','minus'})))
-                                AS1(I1).Err = sqrt(AS1(I1).Err.^2 + AS2(I2).Err.^2);
+                                AS(I).Err = sqrt(AS1(I1).Err.^2 + AS2(I2).Err.^2);
                             else
                                 % do nothing 
                             end
@@ -3528,4 +3614,3 @@ classdef AstSpec < HEAD
         
 end
 
-            
