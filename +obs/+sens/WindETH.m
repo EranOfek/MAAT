@@ -60,7 +60,7 @@ classdef WindETH < handle
             
             T = tcpip(IP,Port);
             
-            WC.Data     = stack(nan(100,3));
+            WC.Data     = stack(nan(100,numel(WC.DataCol)));
             WC.IP       = IP;
             WC.Port     = Port;
             WC.Protocol = 'tcpip';
