@@ -106,7 +106,7 @@ classdef ClassWCS
             %            header keywords.
             % Output : - A populated ClassWCS object.
             
-            Default.CUNIT = 'deg';
+            De
             
             HeaderField = HEAD.HeaderField;
             WCSField    = 'WCS';
@@ -162,16 +162,13 @@ classdef ClassWCS
                 ValN = mgetkey(H(Ih),KeyNname);
                 ValN = reshape(ValN,2,Nn);
                 for In=1:1:Nn
-                    % fixing a bug found by Na'ama
                     switch lower(KeysN{In})
                         case 'cunit'
                             if (any(isnan(ValN{1,In})))
                                 % CUNIT is not popuklated in header
                                 % set to degault
-                                ValN{1,In} = Default.CUNIT;
-                                ValN{2,In} = Default.CUNIT;
-                            end
-                    end
+                                
+                    
                     
                     if (iscellstr(ValN(:,In)))
                         W(Ih).(WCSField).(KeysN{In}) = ValN(:,In).';
@@ -1258,7 +1255,7 @@ classdef ClassWCS
                 Xr = zeros(size(Xi));
                 CRVal = zeros(1,Ncol);
                 for Icol=1:1:Ncol
-                    Xr(:,Icol)  = convert.angular(W(Iw).(WCSField).CUNIT{Icol},'rad',Xi(:,Icol));
+                    Xr(:,Icol)  = convert.angular(A,'rad',Xi(:,Icol));
                     CRVal(Icol) = convert.angular(W(Iw).(WCSField).CUNIT{Icol},'rad',W(Iw).(WCSField).CRVAL(Icol));
                 end
                 
