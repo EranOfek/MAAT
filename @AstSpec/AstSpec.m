@@ -3461,21 +3461,11 @@ classdef AstSpec < HEAD
 %             end
             S1 = size(AS1);
             S2 = size(AS2);
-            if (sum(S1(S1~=S2)~=1 & S2(S1~=S2)~=1)~=0)
-                error('Matrix dimension must agree.');
-            end
+            [S, S1, S2] = Util.array.bsx_size(S1,S2);
             
-            D1 = length(S1);
-            D2 = length(S2);
-            if (D1>D2)
-                S2(D1+1:D1)=1;
-            elseif (D2>D1)
-                S1(D2+1:D2)=1;
-            end
-            S = max(S1,S2);
-            ndim = length(S);
-            pow1 = [1 cumprod(S1(1:end-1))];
-            pow2 = [1 cumprod(S2(1:end-1))];
+%             ndim = length(S);
+%             pow1 = [1 cumprod(S1(1:end-1))];
+%             pow2 = [1 cumprod(S2(1:end-1))];
             
             AS = AstSpec(S);
             if (~AstSpec.isastspec(AS2))
@@ -3485,13 +3475,13 @@ classdef AstSpec < HEAD
 %                 for I1=1:1:N1
 %                     I2 = I1;
                 for I=1:prod(S)
-                    Irem = I; I1 = 1; I2 = 1;
-                    for i = 1:ndim
-                        sub = rem(Irem-1,S(i))+1;
-                        Irem = (Irem-sub)/S(i)+1;
-                        if(S1(i)>1),I1 = I1+(sub-1)*pow1(i);end
-                        if(S2(i)>1),I2 = I2+(sub-1)*pow2(i);end
-                    end
+                    sub = Util.array.ind2sub_array(S,I);
+                    sub1 = sub;
+                    sub1(S1==1) = 1;
+                    I1 = Util.array.sub2ind_array(S1,sub1);
+                    sub2 = sub;
+                    sub2(S2==1) = 1;
+                    I2 = Util.array.sub2ind_array(S2,sub2);
                         
                     if (~isempty(AS1(I1).Int))
                         AS(I).Int  = Operator(AS1(I1).Int,AS2(I2));
@@ -3514,13 +3504,13 @@ classdef AstSpec < HEAD
 %                     I1 = min(I,N1);
 %                     I2 = min(I,N2);
                 for I=1:prod(S)
-                    Irem = I; I1 = 1; I2 = 1;
-                    for i = 1:ndim
-                        sub = rem(Irem-1,S(i))+1;
-                        Irem = (Irem-sub)/S(i)+1;
-                        if(S1(i)>1),I1 = I1+(sub-1)*pow1(i);end
-                        if(S2(i)>1),I2 = I2+(sub-1)*pow2(i);end
-                    end
+                    sub = Util.array.ind2sub_array(S,I);
+                    sub1 = sub;
+                    sub1(S1==1) = 1;
+                    I1 = Util.array.sub2ind_array(S1,sub1);
+                    sub2 = sub;
+                    sub2(S2==1) = 1;
+                    I2 = Util.array.sub2ind_array(S2,sub2);
                     
                     if (~isempty(AS1(I1).Int))
                         AS(I).Int = Operator(AS1(I1).Int,AS2(I2).Int);
