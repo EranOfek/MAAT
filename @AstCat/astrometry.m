@@ -632,11 +632,15 @@ for Isim=1:1:Nsim
            ResAst(Isim).SubGood    = any(SubGood);
            %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
            %add the catalog data of the used objects with the cols data
-           ResAst(Isim).Cat = MatchedCat(ResAst.FlagMag,:);
-           ResAst(Isim).Col=SimCat.Col; 
-           ResAst(Isim).ColCell=SimCat.ColCell; 
+           TempAstCat=AstCat;
+           TempAstCat.Cat = MatchedCat(ResAst.FlagMag,:);
+           TempAstCat.Col=SimCat.Col; 
+           TempAstCat.ColCell=SimCat.ColCell; 
+           ResAst(Isim).AstCat= TempAstCat;
            %indexes vector of the used objects in the original catalog
-           ResAst(Isim).IndexInSim=unique(MatchedCat(ResAst.FlagMag,ResAst(Isim).Col.IndexSimYsorted));
+           ResAst(Isim).IndexInSim1=unique(MatchedCat(ResAst.FlagMag,ResAst(Isim).AstCat.Col.IndexSimYsorted));
+           ResAst(Isim).IndexInSimN= ResAst(Isim).IndexInSim1(ResAst.FlagG);
+           ResAst(Isim).FlagMag=[];
            %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
            
            %---------------------------------------------------------
@@ -650,10 +654,10 @@ for Isim=1:1:Nsim
            if (nargout>1)
                W = ClassWCS.tranclass2wcs_tpv(ResAst(Isim).TranC,'CooCenter',[RA,Dec], 'ImCenter',ImCenter, 'NormXY',NormXY, 'Scale',Scale,'CD',CD);
                OrigSim(Isim) = wcs2head(W,OrigSim(Isim));
-             %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!  
+             
              %add WCS field
                ResAst(Isim).WCS=OrigSim(Isim).WCS;
-             %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
+             
            end
            
            
