@@ -143,13 +143,14 @@ classdef ClassWCS
                 % read keywords from the KeysSingle list
                 ValSingle = mgetkey(H(Ih),KeysSingle);
                
+                
                 % concat
                 KeyNames = {'WCSAXES', KeysSingle{:}};
                 KeyVal   = {Naxes, ValSingle{:}};
                 
                 W(Ih).(WCSField) = cell2struct(KeyVal,KeyNames,2);
                 
-                
+              
                 % read Keywords from the KeysN list
                 KeyNname = cell(1,Nn.*Naxes);
                 K = 0;
@@ -172,16 +173,16 @@ classdef ClassWCS
                                 ValN{2,In} = Default.CUNIT;
                             end
                     end
-                    
+
                     if (iscellstr(ValN(:,In)))
                         W(Ih).(WCSField).(KeysN{In}) = ValN(:,In).';
                     else
                         W(Ih).(WCSField).(KeysN{In}) = cell2mat(ValN(:,In)).';
                     end
-                  
+
                 end
-                    
-                
+
+
                 % Read The CD/PC matrix
                 KeysCD = cell(1,Naxes.^2);
                 KeysPC = cell(1,Naxes.^2);
@@ -193,7 +194,7 @@ classdef ClassWCS
                         KeysPC{K} = sprintf('PC%d_%d',Iaxes1,Iaxes2);
                     end
                 end
-                
+
                 ValCD = mgetkey(H(Ih),KeysCD);
                 K = 0;
                 CD = nan(Naxes,Naxes);
@@ -203,15 +204,15 @@ classdef ClassWCS
                         CD(Iaxes1,Iaxes2) = ValCD{K};
                     end
                 end
-                
+
                 % bug fix - treat cases in whic not all CD keywords are
                 % provided - assume no rotation.
                 if (any(isnan(CD(:))) && ~all(isnan(CD(:))))
                     CD(isnan(CD)) = 0;
                 end
-                    
-                
-                
+
+
+
                 if (any(isnan(CD(:))) || isempty(CD))
                     % CD is empty try to read PC
                     ValCD = mgetkey(H(Ih),KeysPC);
@@ -224,31 +225,31 @@ classdef ClassWCS
                             CD(Iaxes1,1) = ValCD{K}.*W(Ih).(WCSField).(ScaleName)(Iaxes1);
                         end
                     end
-                    
+
                 end
                 W(Ih).(WCSField).CD = CD;
-                
-                
+
+
                 % Read distortions
-                
+
                 % look for PV coeficients
                 FlagMatchPV = ~Util.cell.isempty_cell(regexp(H(Ih).(HeaderField)(:,1),'PV\d+\_\d+','match'));
-                
-                
+
+
                 Names  =regexp(H(Ih).(HeaderField)(FlagMatchPV,1), 'PV(?<D1>\d+)\_(?<D2>\d+)','names');
                 Nnames = numel(Names);
                 PV_Ind = zeros(Nnames,2);
                 for Inames=1:1:Nnames
                     PV_Ind(Inames,:) = [str2double(Names{Inames}.D1), str2double(Names{Inames}.D2)];
                 end
-                
+
                 W(Ih).(WCSField).PV.Ind     = PV_Ind;
                 W(Ih).(WCSField).PV.KeyVal  = H(Ih).(HeaderField)(FlagMatchPV,2);
                 W(Ih).(WCSField).PV.KeyName = H(Ih).(HeaderField)(FlagMatchPV,1);
-                
+
                 % look for SIP coeficients
                 % TBD
-                
+
             end
                 
         end
