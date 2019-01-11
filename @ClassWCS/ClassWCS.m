@@ -107,6 +107,8 @@ classdef ClassWCS
             % Output : - A populated ClassWCS object.
             
             Default.CUNIT = 'deg';
+            Default.CTYPE1 = 'RA---TAN';
+            Default.CTYPE2 = 'DEC--TAN';
             
             HeaderField = HEAD.HeaderField;
             WCSField    = 'WCS';
@@ -167,10 +169,18 @@ classdef ClassWCS
                     switch lower(KeysN{In})
                         case 'cunit'
                             if (any(isnan(ValN{1,In})))
-                                % CUNIT is not popuklated in header
-                                % set to degault
+                                % CUNIT is not populated in header
+                                % set to default
                                 ValN{1,In} = Default.CUNIT;
                                 ValN{2,In} = Default.CUNIT;
+                            end
+                            
+                        case 'ctype'
+                            if (any(isnan(ValN{1,In})))
+                                % CUNIT is not populated in header
+                                % set to default
+                                ValN{1,In} = Default.CTYPE1;
+                                ValN{2,In} = Default.CTYPE2;
                             end
                     end
 
