@@ -83,13 +83,13 @@ if (iscell(List1)==1)
    NewList1{1} = SampVec;
    NewList1{2} = Y1;
 else
-   NewList1 = [SampVec, Y1];
+   NewList1 = [SampVec(:), Y1(:)];
 end
 
 if (iscell(List2)==1)
    NewList2{1} = SampVec;
    NewList2{2} = Y2;
 else
-   NewList2 = [SampVec, Y2];
+   NewList2 = [SampVec(:), Y2(:)];
 end
 
