@@ -262,7 +262,13 @@ if (~isempty(RefMag))
     Res.ParErrX = ParErrX;
     Res.ParErrY = ParErrY;
     Res.NormXY  = InPar.NormXY;
+    %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
     
+    %Add the used flag to the residuals structure in order to save the used
+    %objects.
+    Res.FlagMag=Flag; 
+    
+    %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!    
     if all(InPar.BlockSize>=InPar.ImSize)
         % no Block statistics
     else

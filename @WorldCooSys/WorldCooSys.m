@@ -171,6 +171,7 @@ classdef WorldCooSys
             
         end
         
+        % not working
         function X=pix2intermediate(P,Ref,RotMat)
             %
             % Input  : - A matrix with pixel coordinates.
@@ -230,7 +231,7 @@ classdef WorldCooSys
             
         end
             
-            
+        % not working  
         function pix2native(P,Proj,PV) 
             %
             
@@ -243,6 +244,7 @@ classdef WorldCooSys
                     
         end
         
+        % not working
         function distortion_sip_poly2keys(PolyOrder,PolyCoef)
             
         end
