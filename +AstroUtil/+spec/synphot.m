@@ -117,15 +117,11 @@ switch lower(Algo)
         % Interp transminssion curve on Spec
         if iscell(Spec)
             [Spec,Tran]     = AstroUtil.spec.eq_sampling(Spec,Tran,Spec{1},InterpMethod);
-            I = find(~isnan(Tran(:,2)));
-            Spec{1} = Spec{1}(I,:);
-            Spec{2} = Spec{2}(I,:);
-            Tran = Tran(I,:);
         else
             [Spec,Tran]     = AstroUtil.spec.eq_sampling(Spec,Tran,Spec(:,1),InterpMethod);
-            I = find(~isnan(Tran(:,2)));
-            Spec = Spec(I,:);
-            Tran = Tran(I,:);
+%             I = find(~isnan(Tran(:,2)));
+%             Spec = Spec(I,:);
+%             Tran = Tran(I,:);
         end
      case {'spec_on_curve','soc'}
         % Interp Spec on transminssion curve
