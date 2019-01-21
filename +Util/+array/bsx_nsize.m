@@ -11,7 +11,7 @@ function [S,varargout]=bsx_nsize(varargin)
     sizemat = ones(nargin,max(lengths));
     for i=1:nargin,sizemat(i,1:lengths(i))=varargin{i};end
     S = max(sizemat,[],1);
-    if (sum(sizemat(sizemat~=S)~=1)~=0)
+    if (sum(sizemat(sizemat~=S)>1)~=0)
         error('Matrix dimension must agree.');
     end
     
