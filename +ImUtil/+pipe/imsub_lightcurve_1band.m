@@ -486,8 +486,8 @@ if (Nim>0)
                                 'SigmaX',SigmaX ,'SigmaY',SigmaY);
 
 
-%   [Summary,D,S,Scorr,SigmaF]=subtract_proper(AlSim(1),CoaddSim,'BackReCalc',false,'FluxMatch',FluxMatch(1).*1.15,...
-%                                  'SigmaX',SigmaX(1),'SigmaY',SigmaY(1));
+   [Summary,D,S,Scorr,SigmaF]=subtract_proper(AlSim(1),CoaddSim,'BackReCalc',false,'FluxMatch',FluxMatch(1).*1,...
+                                  'SigmaX',SigmaX(1),'SigmaY',SigmaY(1));
 
              
              

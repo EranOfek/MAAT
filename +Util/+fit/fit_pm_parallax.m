@@ -61,7 +61,7 @@ DefV.ErrRA  = 1;
 DefV.ErrDec = 1;
 DefV.Plx    = true;
 DefV.ModelJD= [];
-InPar = set_varargin_keyval(DefV,'y','use',varargin{:}); 
+InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 if (isempty(InPar.RA))
     RA  = OffRA;

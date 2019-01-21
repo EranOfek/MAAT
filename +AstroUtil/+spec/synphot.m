@@ -72,6 +72,32 @@ else
 end
 %FiltEffWave = Filter.eff_wl{1};
 
+if (iscell(Spec))
+    if ~isvector(Spec{1})
+        error('MAAT:AstroUtils:spec:synphot:spec_wave_no_vector',...
+            'Error. The first component of the Spec cell must be a vector.');
+    else
+        if ismatrix(Spec{2})
+            if size(Spec{2},1)~=length(Spec{1})
+                if size(Spec{2},2)==length(Spec{1})
+                    Spec{2} = Spec{2}.';
+                else
+                    error('MAAT:AstroUtils:spec:synphot:spec_wrong_elements',...
+                        'Error. One of the two dimensions of the second component of the Spec cell must be in agreement with the number of elements of the first component.');
+                end
+            end
+        elseif isvector(Spec{2})
+            if length(Spec{2})~=length(Spec{1})
+                error('MAAT:AstroUtils:spec:synphot:spec_wrong_elements',...
+                    'Error. The number of elements in the two components of the Spec cell must be in agreement with eachother.');
+            end
+        else
+            error('MAAT:AstroUtils:spec:synphot:spec_wrong_elements',...
+                'Error. Only matrix and vector are supported in the second component of the Spec cell.');
+        end
+    end
+end             
+                  
 if (Ebv>0)
    % apply extinction
    A = extinction(Ebv,Spec(:,1)./10000,[],R);
@@ -88,27 +114,43 @@ switch lower(Algo)
     Direction = 'cos';
     switch lower(Direction)
      case {'curve_on_spec','cos'}
+        Tran = Tran(~isnan(Tran(:,2)),:);
         % Interp transminssion curve on Spec
-        [Spec,Tran]     = AstroUtil.spec.eq_sampling(Spec,Tran,Spec(:,1),InterpMethod);
-        I = find(~isnan(Tran(:,2)));
-        Spec = Spec(I,:);
-        Tran = Tran(I,:);
+        if iscell(Spec)
+            [Spec,Tran]     = AstroUtil.spec.eq_sampling(Spec,Tran,Spec{1},InterpMethod);
+%             I = find(~isnan(Tran(:,2)));
+%             Spec{1} = Spec{1}(I,:);
+%             Spec{2} = Spec{2}(I,:);
+%             Tran = Tran(I,:);
+        else
+            [Spec,Tran]     = AstroUtil.spec.eq_sampling(Spec,Tran,Spec(:,1),InterpMethod);
+%             I = find(~isnan(Tran(:,2)));
+%             Spec = Spec(I,:);
+%             Tran = Tran(I,:);
+        end
      case {'spec_on_curve','soc'}
         % Interp Spec on transminssion curve
         Spec     = AstroUtil.spec.eq_sampling(Spec,Tran,Tran(:,1));
      otherwise
         error('Unknown Direction option');
     end
-
-    [MinSpec,MinI] = min(Spec(:,1));
-    [MaxSpec,MaxI] = max(Spec(:,1));
-    if (MaxI-MinI)<2
-        Flag = 1;
+    
+    if iscell(Spec)
+        [~,MinI] = min(Spec{1});
+        [~,MaxI] = max(Spec{1});
     else
-        Flag = 1 - trapz(Tran(MinI:MaxI,1),Tran(MinI:MaxI,2))./TranNorm;
+        [~,MinI] = min(Spec(:,1));
+        [~,MaxI] = max(Spec(:,1));
     end
-    if (Flag<1e-5)
-        Flag = 0;
+    if (nargout>=2)
+        if (MaxI-MinI)<2
+            Flag = 1;
+        else
+            Flag = 1 - trapz(Tran(MinI:MaxI,1),Tran(MinI:MaxI,2))./TranNorm;
+        end
+        if (Flag<1e-5)
+            Flag = 0;
+        end
     end
     %Min = min(min(Tran(:,1))-min(Spec(:,1)),0);
     %Max = max(max(Spec(:,1))-max(Tran(:,1)),0);
@@ -118,10 +160,14 @@ switch lower(Algo)
      case 'ab'
         % convert F_lambda to F_nu
         Freq     = convert.energy('A','Hz',Tran(:,1));
-        SpecFnu  = convert.flux(Spec(:,2),'cgs/A','cgs/Hz',Tran(:,1),'A');
+        if iscell(Spec)
+            SpecFnu  = convert.flux(Spec{2},'cgs/A','cgs/Hz',Tran(:,1),'A');
+        else
+            SpecFnu  = convert.flux(Spec(:,2),'cgs/A','cgs/Hz',Tran(:,1),'A');
+        end
 
         if (size(Tran,1)<2)
-            NormTran = 1;
+ %           NormTran = 1;
             Fnu      = NaN;
         else
             NormTran = trapz(Freq,Tran(:,2));
@@ -133,7 +179,7 @@ switch lower(Algo)
      case 'vega'
         load vega_spec.mat;
         VegaF   = AstroUtil.spec.eq_sampling(vega_spec,Tran,Tran(:,1));
-        Freq    = convert.energy('A','Hz',Tran(:,1));
+%        Freq    = convert.energy('A','Hz',Tran(:,1));
         Fvega   = trapz(Tran(:,1),Spec(:,2).*Tran(:,2)./VegaF(:,2));
         Mag     = -2.5.*log10(Fvega);
 

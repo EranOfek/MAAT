@@ -310,13 +310,20 @@ for Ipeak=1:1:NpeakCheck
 %     Xcat = Res(Ipeak).FlipX.*Xcat;
 %     Ycat = Res(Ipeak).FlipY.*Ycat;
 
-    
+    %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
     %[ResMatch,OutCat]     = ImUtil.pattern.test_match(Cat,Ref,[Res(Ipeak).ShiftX, Res(Ipeak).ShiftY, Res(Ipeak).Rot./RAD],'Radius',InPar.Radius);
-    [ResMatch,OutCat,CatS]= ImUtil.pattern.test_match([Xcat, Ycat],Ref,...
+    %[ResMatch,OutCat,CatS]= ImUtil.pattern.test_match([Xcat, Ycat],Ref,...
+    %                                                  [Res(Ipeak).ShiftX, Res(Ipeak).ShiftY, Res(Ipeak).Rot./RAD],...
+    %                                                  'Radius',InPar.Radius,...
+    %                                                  'Flip',[Res(Ipeak).FlipX, Res(Ipeak).FlipY]);
+    
+    %inserting the whole catalog instead of only X-Y columns
+    [ResMatch,OutCat,CatS]= ImUtil.pattern.test_match(Cat,Ref,...
                                                       [Res(Ipeak).ShiftX, Res(Ipeak).ShiftY, Res(Ipeak).Rot./RAD],...
                                                       'Radius',InPar.Radius,...
                                                       'Flip',[Res(Ipeak).FlipX, Res(Ipeak).FlipY]);
-        
+    %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
+                                                  
     Res(Ipeak).Nmatch     = numel(ResMatch.IndCat);
     %Res(Ipeak).MatchedCat = OutCat(ResMatch.IndCat,:);
     Res(Ipeak).MatchedCat = CatS(ResMatch.IndCat,:);
