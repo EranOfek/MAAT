@@ -1117,6 +1117,7 @@ classdef AstSpec < HEAD
             c      = constant.c; %29979245800;     % = get_constant('c','cgs');          % speed of light [cm]
             k      = constant.kB; %1.380648813e-16; % = get_constant('kB','cgs');         % Boltzmann constant [cgs]
 
+            VecW = VecW(:);
             Lam = VecW.*convert.units(UnitsWave,'cm');   % convert wavelength to cm
             %Lam    = W.*1e-8;            % convert Ang to cm
             Nu     = c./Lam;             % convert wavelength to frequency [Hz]
@@ -2747,7 +2748,7 @@ classdef AstSpec < HEAD
     
        
     % syntheic photometry
-    methods
+    methods (Static)
             
         function [Mag,Flag,EffW]=synphot(AS,varargin)
             % Synthetic photometry on AstSpec class spectra.
@@ -3483,6 +3484,19 @@ classdef AstSpec < HEAD
                     sub2(S2==1) = 1;
                     I2 = Util.array.sub2ind_array(S2,sub2);
                         
+                    % copy from AS1 fields which are not affected by the
+                    % operation.
+                    AS(I).Wave      = AS1(I1).Wave;
+                    AS(I).Mask      = AS1(I1).Mask;
+                    AS(I).WaveUnits = AS1(I1).WaveUnits;
+                    AS(I).IntUnits  = AS1(I1).IntUnits;
+                    AS(I).AddCol    = AS1(I1).AddCol;
+                    AS(I).ObjName   = AS1(I1).ObjName;
+                    AS(I).comments  = AS1(I1).comments;
+                    AS(I).source    = AS1(I1).source;
+                    AS(I).FileName  = AS1(I1).FileName;
+                    AS(I).z         = AS1(I1).z;
+
                     if (~isempty(AS1(I1).Int))
                         AS(I).Int  = Operator(AS1(I1).Int,AS2(I2));
                     end
@@ -3512,6 +3526,23 @@ classdef AstSpec < HEAD
                     sub2(S2==1) = 1;
                     I2 = Util.array.sub2ind_array(S2,sub2);
                     
+                    if (AS1(I1).Wave ~= AS2(I2).Wave)
+                        error(AstSpec:astspec_arith:WaveNotAgreed,...
+                            'On AstSpec arithmetic operation both AstSpec waves should be agreed.');
+                    end
+                    % copy from AS1 fields which are not affected by the
+                    % operation.
+                    AS(I).Wave      = AS1(I1).Wave;
+                    AS(I).Mask      = AS1(I1).Mask;
+                    AS(I).WaveUnits = AS1(I1).WaveUnits;
+                    AS(I).IntUnits  = AS1(I1).IntUnits;
+                    AS(I).AddCol    = AS1(I1).AddCol;
+                    AS(I).ObjName   = AS1(I1).ObjName;
+                    AS(I).comments  = AS1(I1).comments;
+                    AS(I).source    = AS1(I1).source;
+                    AS(I).FileName  = AS1(I1).FileName;
+                    AS(I).z         = AS1(I1).z;
+
                     if (~isempty(AS1(I1).Int))
                         AS(I).Int = Operator(AS1(I1).Int,AS2(I2).Int);
                     end
