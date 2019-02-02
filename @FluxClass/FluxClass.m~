@@ -21,11 +21,10 @@ classdef FluxClass
         BandName     % cell of str or str
         Telescope
         Instrument
-        Ref
     end
     
     properties (Hidden)
-        
+        Ref
     end
 
     % constructor
@@ -258,7 +257,6 @@ classdef FluxClass
             Fit.Npar     = size(H,2);
             Fit.Dof      = Fit.Nobs - Fit.Npar;
             Fit.RMS      = std(Fit.Resid);
-            Fit.MeanTime = mean(F.Time(FlagT));
             
         end
        

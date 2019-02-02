@@ -151,104 +151,116 @@ classdef ClassWCS
                 W(Ih).(WCSField) = cell2struct(KeyVal,KeyNames,2);
                 
               
-                % read Keywords from the KeysN list
-                KeyNname = cell(1,Nn.*Naxes);
-                K = 0;
-                for In=1:1:Nn
-                    for Iaxis=1:1:Naxes
-                        K = K + 1;
-                        KeyNname{K} = sprintf('%s%d',KeysN{In},Iaxis);
-                    end
-                end
-                ValN = mgetkey(H(Ih),KeyNname);
-                ValN = reshape(ValN,2,Nn);
-                for In=1:1:Nn
-                    % fixing a bug found by Na'ama
-                    switch lower(KeysN{In})
-                        case 'cunit'
-                            if (any(isnan(ValN{1,In})))
-                                % CUNIT is not popuklated in header
-                                % set to degault
-                                ValN{1,In} = Default.CUNIT;
-                                ValN{2,In} = Default.CUNIT;
-                            end
-                    end
-
-                    if (iscellstr(ValN(:,In)))
-                        W(Ih).(WCSField).(KeysN{In}) = ValN(:,In).';
-                    else
-                        W(Ih).(WCSField).(KeysN{In}) = cell2mat(ValN(:,In)).';
-                    end
-
-                end
-
-
-                % Read The CD/PC matrix
-                KeysCD = cell(1,Naxes.^2);
-                KeysPC = cell(1,Naxes.^2);
-                K = 0;
-                for Iaxes1=1:1:Naxes
-                    for Iaxes2=1:1:Naxes
-                        K = K + 1;
-                        KeysCD{K} = sprintf('CD%d_%d',Iaxes1,Iaxes2);
-                        KeysPC{K} = sprintf('PC%d_%d',Iaxes1,Iaxes2);
-                    end
-                end
-
-                ValCD = mgetkey(H(Ih),KeysCD);
-                K = 0;
-                CD = nan(Naxes,Naxes);
-                for Iaxes1=1:1:Naxes
-                    for Iaxes2=1:1:Naxes
-                        K = K + 1;
-                        CD(Iaxes1,Iaxes2) = ValCD{K};
-                    end
-                end
-
-                % bug fix - treat cases in whic not all CD keywords are
-                % provided - assume no rotation.
-                if (any(isnan(CD(:))) && ~all(isnan(CD(:))))
-                    CD(isnan(CD)) = 0;
-                end
-
-
-
-                if (any(isnan(CD(:))) || isempty(CD))
-                    % CD is empty try to read PC
-                    ValCD = mgetkey(H(Ih),KeysPC);
+                if isnan(Naxes)
+                    % deal with missing WCS keywords
+                    W(Ih).(WCSField).CD = nan(2,2);
+                    W(Ih).(WCSField).CRPIX = nan(1,2);
+                    W(Ih).(WCSField).CRVAL = nan(1,2);
+                    W(Ih).(WCSField).CDELT = nan(1,2);
+                    W(Ih).(WCSField).CTYPE = {'RA---TPV','DEC--TPV'};
+                    W(Ih).(WCSField).CUNIT = {'deg','deg'};
+                else
+                    
+                    
+                    % read Keywords from the KeysN list
+                    KeyNname = cell(1,Nn.*Naxes);
                     K = 0;
-                    ScaleName = sprintf('CDELT');
+                    for In=1:1:Nn
+                        for Iaxis=1:1:Naxes
+                            K = K + 1;
+                            KeyNname{K} = sprintf('%s%d',KeysN{In},Iaxis);
+                        end
+                    end
+                    ValN = mgetkey(H(Ih),KeyNname);
+                    ValN = reshape(ValN,2,Nn);
+                    for In=1:1:Nn
+                        % fixing a bug found by Na'ama
+                        switch lower(KeysN{In})
+                            case 'cunit'
+                                if (any(isnan(ValN{1,In})))
+                                    % CUNIT is not popuklated in header
+                                    % set to degault
+                                    ValN{1,In} = Default.CUNIT;
+                                    ValN{2,In} = Default.CUNIT;
+                                end
+                        end
+
+                        if (iscellstr(ValN(:,In)))
+                            W(Ih).(WCSField).(KeysN{In}) = ValN(:,In).';
+                        else
+                            W(Ih).(WCSField).(KeysN{In}) = cell2mat(ValN(:,In)).';
+                        end
+
+                    end
+
+
+                    % Read The CD/PC matrix
+                    KeysCD = cell(1,Naxes.^2);
+                    KeysPC = cell(1,Naxes.^2);
+                    K = 0;
                     for Iaxes1=1:1:Naxes
-                        %ScaleName = sprintf('CDELT%d',Iaxes1);
                         for Iaxes2=1:1:Naxes
                             K = K + 1;
-                            CD(Iaxes1,1) = ValCD{K}.*W(Ih).(WCSField).(ScaleName)(Iaxes1);
+                            KeysCD{K} = sprintf('CD%d_%d',Iaxes1,Iaxes2);
+                            KeysPC{K} = sprintf('PC%d_%d',Iaxes1,Iaxes2);
                         end
                     end
 
+                    ValCD = mgetkey(H(Ih),KeysCD);
+                    K = 0;
+                    CD = nan(Naxes,Naxes);
+                    for Iaxes1=1:1:Naxes
+                        for Iaxes2=1:1:Naxes
+                            K = K + 1;
+                            CD(Iaxes1,Iaxes2) = ValCD{K};
+                        end
+                    end
+
+                    % bug fix - treat cases in whic not all CD keywords are
+                    % provided - assume no rotation.
+                    if (any(isnan(CD(:))) && ~all(isnan(CD(:))))
+                        CD(isnan(CD)) = 0;
+                    end
+
+
+
+                    if (any(isnan(CD(:))) || isempty(CD))
+                        % CD is empty try to read PC
+                        ValCD = mgetkey(H(Ih),KeysPC);
+                        K = 0;
+                        ScaleName = sprintf('CDELT');
+                        for Iaxes1=1:1:Naxes
+                            %ScaleName = sprintf('CDELT%d',Iaxes1);
+                            for Iaxes2=1:1:Naxes
+                                K = K + 1;
+                                CD(Iaxes1,1) = ValCD{K}.*W(Ih).(WCSField).(ScaleName)(Iaxes1);
+                            end
+                        end
+
+                    end
+                    W(Ih).(WCSField).CD = CD;
+
+
+                    % Read distortions
+
+                    % look for PV coeficients
+                    FlagMatchPV = ~Util.cell.isempty_cell(regexp(H(Ih).(HeaderField)(:,1),'PV\d+\_\d+','match'));
+
+
+                    Names  =regexp(H(Ih).(HeaderField)(FlagMatchPV,1), 'PV(?<D1>\d+)\_(?<D2>\d+)','names');
+                    Nnames = numel(Names);
+                    PV_Ind = zeros(Nnames,2);
+                    for Inames=1:1:Nnames
+                        PV_Ind(Inames,:) = [str2double(Names{Inames}.D1), str2double(Names{Inames}.D2)];
+                    end
+
+                    W(Ih).(WCSField).PV.Ind     = PV_Ind;
+                    W(Ih).(WCSField).PV.KeyVal  = H(Ih).(HeaderField)(FlagMatchPV,2);
+                    W(Ih).(WCSField).PV.KeyName = H(Ih).(HeaderField)(FlagMatchPV,1);
+
+                    % look for SIP coeficients
+                    % TBD
                 end
-                W(Ih).(WCSField).CD = CD;
-
-
-                % Read distortions
-
-                % look for PV coeficients
-                FlagMatchPV = ~Util.cell.isempty_cell(regexp(H(Ih).(HeaderField)(:,1),'PV\d+\_\d+','match'));
-
-
-                Names  =regexp(H(Ih).(HeaderField)(FlagMatchPV,1), 'PV(?<D1>\d+)\_(?<D2>\d+)','names');
-                Nnames = numel(Names);
-                PV_Ind = zeros(Nnames,2);
-                for Inames=1:1:Nnames
-                    PV_Ind(Inames,:) = [str2double(Names{Inames}.D1), str2double(Names{Inames}.D2)];
-                end
-
-                W(Ih).(WCSField).PV.Ind     = PV_Ind;
-                W(Ih).(WCSField).PV.KeyVal  = H(Ih).(HeaderField)(FlagMatchPV,2);
-                W(Ih).(WCSField).PV.KeyName = H(Ih).(HeaderField)(FlagMatchPV,1);
-
-                % look for SIP coeficients
-                % TBD
 
             end
                 

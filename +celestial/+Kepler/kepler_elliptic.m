@@ -43,31 +43,31 @@ function [Nu,R,E,Vel,M]=kepler_elliptic(T,Q,Ecc,K,Tol)
 % Reliable: 2
 %--------------------------------------------------------------------------
 DefTol = 1e-8;
-if (nargin==3),
+if (nargin==3)
    K   = 0.017202098950000;
    Tol = DefTol;
-elseif (nargin==4),
+elseif (nargin==4)
    Tol = DefTol;
-elseif (nargin==5),
+elseif (nargin==5)
    % do nothing
 else
    error('Illigal number of input arguments');
 end
 
 MaxLength = max([length(T), length(Q), length(Ecc)]);
-if (length(T)==1),
+if (length(T)==1)
    T = T.*ones(MaxLength,1);
 end
-if (length(Q)==1),
+if (length(Q)==1)
    Q = Q.*ones(MaxLength,1);
 end
-if (length(Ecc)==1),
+if (length(Ecc)==1)
    Ecc = Ecc.*ones(MaxLength,1);
 end
 
 
 % elliptic motion
-if (~isnan(K)),
+if (~isnan(K))
    A      = Q./(1-Ecc);
    Period = 2.*pi.*(A.^1.5)./K;   % in time units
    N      = 2.*pi./Period;        % mean motion (n)
