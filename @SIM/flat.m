@@ -38,7 +38,7 @@ function [FlatSim,Summary,IsFlat]=flat(Sim,varargin)
 %                          then this parameter is used to specify if the
 %                          bit mask is a vector of indices ('index') or a
 %                          bit mask value ('value'). Default is 'value'.
-%            'ExecField' - Cell array of SIM objects fields which to caodd.
+%            'ExecField' - Cell array of SIM objects fields which to coadd.
 %                          Default is {'Im'}.
 %            'FilterKey' - A filter keyword string or a cell array of
 %                          filter keyword strings by which to group the
