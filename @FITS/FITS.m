@@ -1402,11 +1402,11 @@ classdef FITS
                  case {'int8',8}
                     DataType = 'uint8';
                  case {'int16',16}
-                    DataType = 'uint16';
+                    DataType = 'int16';
                  case {'int32',32}
-                    DataType = 'uint32';
+                    DataType = 'int32';
                  case {'int64',64}
-                    DataType = 'uint64';
+                    DataType = 'int64';
                  case {'single','float32',-32}
                     DataType = 'single';
                  case {'double','float64',-64}
