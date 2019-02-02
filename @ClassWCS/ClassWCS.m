@@ -107,6 +107,8 @@ classdef ClassWCS
             % Output : - A populated ClassWCS object.
             
             Default.CUNIT = 'deg';
+            Default.CTYPE1 = 'RA---TAN';
+            Default.CTYPE2 = 'DEC--TAN';
             
             HeaderField = HEAD.HeaderField;
             WCSField    = 'WCS';
@@ -151,6 +153,7 @@ classdef ClassWCS
                 W(Ih).(WCSField) = cell2struct(KeyVal,KeyNames,2);
                 
               
+<<<<<<< HEAD
                 if isnan(Naxes)
                     % deal with missing WCS keywords
                     W(Ih).(WCSField).CD = nan(2,2);
@@ -170,6 +173,43 @@ classdef ClassWCS
                             K = K + 1;
                             KeyNname{K} = sprintf('%s%d',KeysN{In},Iaxis);
                         end
+=======
+                % read Keywords from the KeysN list
+                KeyNname = cell(1,Nn.*Naxes);
+                K = 0;
+                for In=1:1:Nn
+                    for Iaxis=1:1:Naxes
+                        K = K + 1;
+                        KeyNname{K} = sprintf('%s%d',KeysN{In},Iaxis);
+                    end
+                end
+                ValN = mgetkey(H(Ih),KeyNname);
+                ValN = reshape(ValN,2,Nn);
+                for In=1:1:Nn
+                    % fixing a bug found by Na'ama
+                    switch lower(KeysN{In})
+                        case 'cunit'
+                            if (any(isnan(ValN{1,In})))
+                                % CUNIT is not populated in header
+                                % set to default
+                                ValN{1,In} = Default.CUNIT;
+                                ValN{2,In} = Default.CUNIT;
+                            end
+                            
+                        case 'ctype'
+                            if (any(isnan(ValN{1,In})))
+                                % CUNIT is not populated in header
+                                % set to default
+                                ValN{1,In} = Default.CTYPE1;
+                                ValN{2,In} = Default.CTYPE2;
+                            end
+                    end
+
+                    if (iscellstr(ValN(:,In)))
+                        W(Ih).(WCSField).(KeysN{In}) = ValN(:,In).';
+                    else
+                        W(Ih).(WCSField).(KeysN{In}) = cell2mat(ValN(:,In)).';
+>>>>>>> d3d1fd3e53a5851582211798c8cdcd679ba36ecd
                     end
                     ValN = mgetkey(H(Ih),KeyNname);
                     ValN = reshape(ValN,2,Nn);
