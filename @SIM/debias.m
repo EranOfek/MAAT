@@ -98,6 +98,7 @@ end
 
 % subtract super bias
 % and combine the mask of the image with that of the bias
+% bfun2sim(double(... -> bfun2sim [no need for double conversion]
 Sim(NotIsBias) = bfun2sim(Sim(NotIsBias),BiasSim,@minus,'MaskFun',@mask_add,'MaskFunPar',{@bitor});
 
 % subtract bias overscan
