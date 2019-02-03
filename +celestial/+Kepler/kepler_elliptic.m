@@ -47,7 +47,6 @@ function [Nu,R,E,Vel,M]=kepler_elliptic(T,Q,Ecc,K,Tol)
 DefTol = 1e-8;
 if (nargin==3)
    K   = 0.017202098950000;
-<<<<<<< HEAD
    Mass=1;
    Tol=DefTol;
 elseif (nargin==4),
