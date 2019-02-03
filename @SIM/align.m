@@ -33,7 +33,7 @@ function [AlSim,ResFit,IndRef]=align(Sim,SimRef,varargin)
 %                         'wcsCoo' - Match the sources based on the RA/Dec
 %                                    in the catalogs and than fit the X/Y
 %                                    transformation.
-%                         'xyCoo'  - atch the sources based on the X/Y in
+%                         'xyCoo'  - match the sources based on the X/Y in
 %                                    the catalogs and than fit the X/Y
 %                                    transformation.
 %                                    This option assumes that the catalogs

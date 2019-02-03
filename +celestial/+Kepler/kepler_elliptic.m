@@ -45,8 +45,9 @@ function [Nu,R,E,Vel,M]=kepler_elliptic(T,Q,Ecc,K,Tol)
 % Reliable: 2
 %--------------------------------------------------------------------------
 DefTol = 1e-8;
-if (nargin==3),
+if (nargin==3)
    K   = 0.017202098950000;
+<<<<<<< HEAD
    Mass=1;
    Tol=DefTol;
 elseif (nargin==4),
@@ -66,25 +67,32 @@ elseif (nargin==5),
         K=K(1);
     end
     % do nothing
+=======
+   Tol = DefTol;
+elseif (nargin==4)
+   Tol = DefTol;
+elseif (nargin==5)
+   % do nothing
+>>>>>>> 8cfee13639d209658ceccd47e25e0d0abb31e056
 else
    error('Illigal number of input arguments');
 end
 %InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 MaxLength = max([length(T), length(Q), length(Ecc)]);
-if (length(T)==1),
+if (length(T)==1)
    T = T.*ones(MaxLength,1);
 end
-if (length(Q)==1),
+if (length(Q)==1)
    Q = Q.*ones(MaxLength,1);
 end
-if (length(Ecc)==1),
+if (length(Ecc)==1)
    Ecc = Ecc.*ones(MaxLength,1);
 end
 
 
 % elliptic motion
-if (~isnan(K)),
+if (~isnan(K))
    A      = Q./(1-Ecc);
    %PeriodEran = 2.*pi.*(A.^1.5)./K;   % in time units - true for M= 1 solar mass
    %Periodold = 2.*pi.*(A.^1.5)./K./sqrt(Mass);

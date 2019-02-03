@@ -28,6 +28,7 @@ DefV.StepSizeUnits       = 'd';
 DefV.OutputColumns       = '1,9,10,13,19,20,23,24';  % https://ssd.jpl.nasa.gov/horizons.cgi?s_tset=1#top
 DefV.OutCoo              = 'rad';
 DefV.CENTER              = '@sun'; %code for observer location. Earth -  '500', GAIA - '500@-139479'
+DefV.WebOptions          = weboptions;
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 
@@ -96,12 +97,16 @@ for Istr=1:1:Nstr
 end
 
 UrlCommand = sprintf('%s%s',BaseURL,AllCommand);
-Data = webread(UrlCommand);
+Data = webread(UrlCommand,InPar.WebOptions);
 
 % read header
 Lines = regexp(Data,'\n','split');
 Iline = find(~Util.cell.isempty_cell(strfind(Lines,'Date__')));
 ColCell = regexp(Lines(Iline),',','split');
+if isempty(ColCell)
+    Cat = AstCat;
+   return  
+end
 ColCell = Util.string.spacedel(ColCell{1});
 Ncol    = numel(ColCell);
 
@@ -219,6 +224,14 @@ for Icol=1:1:Ncol
             C{Icol} = str2double(C{Icol});
             ColCell{Icol}  = 'ObsEcLat';
             ColUnits{Icol} = 'deg';      
+        case 'T-mag'
+            C{Icol} = str2double(C{Icol});
+            ColCell{Icol}  = 'T_mag';
+            ColUnits{Icol} = 'mag';      
+	    case 'N-mag'
+            C{Icol} = str2double(C{Icol});
+            ColCell{Icol}  = 'N_mag';
+            ColUnits{Icol} = 'mag';      
         otherwise
             error('Unknwon column name option');
     end

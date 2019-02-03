@@ -1,4 +1,4 @@
-function [Summary,D,S,Scorr,SigmaF,SN]=subtract_proper(Sim,SimRef,varargin)
+function [Summary,D,S,Scorr,SigmaF,GradSN]=subtract_proper(Sim,SimRef,varargin)
 % Image subtraction using the ZOGY algorithm.
 % Package: class/@SIM
 % Description: Image subtraction using the Zackay, Ofek, Gal-Yam (2016)

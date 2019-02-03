@@ -24,21 +24,21 @@ DefM2 = 0;
 DefM1 = 1;
 DefR  = 1;
 DefT  = 1;
-if (nargin==0),
+if (nargin==0)
    M2  = DefM2;
    M1  = DefM1;
    R   = DefR;
    T   = DefT;
-elseif (nargin==1),
+elseif (nargin==1)
    M1  = DefM1;
    R   = DefR;
    T   = DefT;
-elseif (nargin==2),
+elseif (nargin==2)
    R   = DefR;
    T   = DefT;
-elseif (nargin==3),
+elseif (nargin==3)
    T   = DefT;
-elseif (nargin==4),
+elseif (nargin==4)
    % do nothing
 else
    error('Illegal number of input arguments');

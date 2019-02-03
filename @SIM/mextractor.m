@@ -959,6 +959,7 @@ for Isim=1:1:Nsim
     % WCS positions
     % % fixing a bug in WCS - need to fix this within SIM...
     Wsim = ClassWCS.populate(Sim(Isim));
+   
     if (Calc.CooPeak)
         [AlphaPeak,DeltaPeak] = xy2coo(WSim,[PeakX,PeakY]);   % radians
         
