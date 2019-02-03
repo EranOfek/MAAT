@@ -44,4 +44,4 @@ else
    error('Illegal number of input arguments');
 end
 
-K = 0.017202098950000.*R.^(3./2).*sqrt(M1+M2)./T;
+K = 0.017202098950000.*R.^(3./2)./(sqrt(M1+M2).*T);
