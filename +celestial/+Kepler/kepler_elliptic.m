@@ -66,13 +66,11 @@ elseif (nargin==5),
         K=K(1);
     end
     % do nothing
-=======
    Tol = DefTol;
 elseif (nargin==4)
    Tol = DefTol;
 elseif (nargin==5)
    % do nothing
->>>>>>> 8cfee13639d209658ceccd47e25e0d0abb31e056
 else
    error('Illigal number of input arguments');
 end
