@@ -5,7 +5,7 @@ function Nsrc=build_htm_catalog(Cat,varargin)
 %              into HTM cells. This program is used for the construction of
 %              fast access large catalogs. You can search such catalogs
 %              using the VO.search.htmcat_search.
-% Input  : - Catalog in array or AstCat format with Long/Lat in radians. 
+% Input  : - Catalog, in array or AstCat format, with Long/Lat in radians. 
 %          * Arbitrary number of pairs of ...,key,val,... parameters.
 %            The following keywords are available:
 %            'Nsrc' - a matrix of [IndHTM Nsrc], where IndHTM is the HTM
