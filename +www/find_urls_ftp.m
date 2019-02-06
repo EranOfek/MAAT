@@ -37,13 +37,13 @@ InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 try
     Str = urlread(URL);
 catch
-    fptintf('urlread failed - try again in 10min');
+    fprintf('urlread failed - try again in 10min');
     pause(600);
     try
         Str = urlread(URL);
     catch
-        fptintf('urlread failed - try again in 60min');
-        fptintf('save List.mat');
+        fprintf('urlread failed - try again in 60min');
+        fprintf('save List.mat');
         save -v7.3 List.mat List
         pause(3600);
         

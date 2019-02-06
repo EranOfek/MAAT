@@ -153,7 +153,7 @@ classdef ClassWCS
                 W(Ih).(WCSField) = cell2struct(KeyVal,KeyNames,2);
                 
               
-<<<<<<< HEAD
+%<<<<<<< HEAD
                 if isnan(Naxes)
                     % deal with missing WCS keywords
                     W(Ih).(WCSField).CD = nan(2,2);
@@ -173,7 +173,9 @@ classdef ClassWCS
                             K = K + 1;
                             KeyNname{K} = sprintf('%s%d',KeysN{In},Iaxis);
                         end
-=======
+%=======
+                    end
+                end
                 % read Keywords from the KeysN list
                 KeyNname = cell(1,Nn.*Naxes);
                 K = 0;
@@ -209,7 +211,7 @@ classdef ClassWCS
                         W(Ih).(WCSField).(KeysN{In}) = ValN(:,In).';
                     else
                         W(Ih).(WCSField).(KeysN{In}) = cell2mat(ValN(:,In)).';
->>>>>>> d3d1fd3e53a5851582211798c8cdcd679ba36ecd
+%>>>>>>> d3d1fd3e53a5851582211798c8cdcd679ba36ecd
                     end
                     ValN = mgetkey(H(Ih),KeyNname);
                     ValN = reshape(ValN,2,Nn);
