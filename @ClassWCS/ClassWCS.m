@@ -902,31 +902,43 @@ classdef ClassWCS
                 Iac = max(Nac,I);
                 % for each ClassWCS element
                 
+                
+                
                 [~,ColX] = select_exist_colnames(AC(Iac),InPar.ColNameX.');
                 [~,ColY] = select_exist_colnames(AC(Iac),InPar.ColNameY.');
                 
                 PixCoo = AC(Iac).(CatField)(:,[ColX, ColY]);
+                Nsrc   = size(PixCoo,1);
                 
-                % Applay shift (via CRPIX) and rotation (via CD matrix)
-                % Include TPV distortions
-                Xi = pixel2intermediate(W(Iw),PixCoo); 
                 
-                % Applay distortions (e.g., PV)
-                %Xd = pixel_distortion
+                if any(isnan(W(Iw).WCS.CTYPE))
+                    % ClassWCS is not containing relevant info
+                    RA  = nan(Nsrc,1);
+                    Dec = nan(Nsrc,1);
                 
-                % Applay sky projection
-                Angle = intermediate2native(W(Iw),Xi,'rad');
-                
-                % Applay sky rotation
-                % native2celestial
-                % TBD
-                
-                RA  = Angle(:,1);
-                Dec = Angle(:,2);
-                
-                ConvFactor = convert.angular('rad',InPar.OutUnits);
-                RA         = RA.*ConvFactor;
-                Dec        = Dec.*ConvFactor;
+                else
+                    
+                    % Applay shift (via CRPIX) and rotation (via CD matrix)
+                    % Include TPV distortions
+                    Xi = pixel2intermediate(W(Iw),PixCoo); 
+
+                    % Applay distortions (e.g., PV)
+                    %Xd = pixel_distortion
+
+                    % Applay sky projection
+                    Angle = intermediate2native(W(Iw),Xi,'rad');
+
+                    % Applay sky rotation
+                    % native2celestial
+                    % TBD
+
+                    RA  = Angle(:,1);
+                    Dec = Angle(:,2);
+
+                    ConvFactor = convert.angular('rad',InPar.OutUnits);
+                    RA         = RA.*ConvFactor;
+                    Dec        = Dec.*ConvFactor;
+                end
                 
                 if (nargout==1)
                     OutAC(I).(CatField)     = [RA, Dec];
