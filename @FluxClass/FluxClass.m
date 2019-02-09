@@ -21,15 +21,17 @@ classdef FluxClass
         BandName     % cell of str or str
         Telescope
         Instrument
+        Ref
     end
     
     properties (Hidden)
-        Ref
+        
     end
 
     % constructor
     methods
         
+        % constructor
         function S=FluxClass(varargin)
             % FluxClass constructor method
             % Package: @FluxClass
@@ -190,42 +192,76 @@ classdef FluxClass
         end
         
         
+        function F=columnvec(F)
+            % convert properties to column vectors
+            
+            Fields = fields(F);
+            Nf     = numel(Fields);
+            for If=1:1:Nf
+                F.(Fields{If}) = F.(Fields{If})(:);
+            end
+            
+        end
+        
+        function F=sort_time(F)
+            % sort FluxClass object by time
+            
+            Fields = fields(F);
+            Nf     = numel(Fields);
+            Nobj   = numel(F);
+            for Iobj=1:1:Nobj
+                [~,SI] = sort(F(Iobj).Time);
+                Nsi    = numel(SI);
+                for If=1:1:Nf
+                    if (numel(F(Iobj).(Fields{If}))==Nsi)
+                        F(Iobj).(Fields{If}) = F(Iobj).(Fields{If})(SI);
+                    end
+                end
+                
+            end
+            
+        end
+        
     end
     
     % fitting/interpolations
     methods
-        function Fit=fit_pl(F,TimeRange)
+        function Fit=fit_pl(F,FlagT,DoConvert)
            
             
-            F = convert(F,'Time','JD');
-            F = convert(F,'Wave','Hz');
-            F = convert(F,'Flux','mJy');
-            %F = convert(F,'FluxErr','mJy');
+            if (nargin==2)
+                DoConvert = false;
+            end
             
-            FlagT = F.Time>=TimeRange(1) & F.Time<=TimeRange(2);
+            if (DoConvert)
+                F = convert(F,'Time','JD');
+                F = convert(F,'Wave','Hz');
+                F = convert(F,'Flux','mJy');
+                %F = convert(F,'FluxErr','mJy');
+            end
             
-            F.Time(FlagT)
-            F.Flux(FlagT)
-            F.FluxErr(FlagT)
-            F.Wave(FlagT)
+            %FlagT = F.Time>=TimeRange(1) & F.Time<=TimeRange(2);
+            
             
             % fit F = A*t^alpha * nu^beta
             %     log(F) = log(A) +alpha*log(t) + beta*log(nu)
             
-            Nobs = sum(FlagT); % number of observations in time range
+            Fit.Nobs = sum(FlagT); % number of observations in time range
             % design matrix
-            H    = [ones(Nobs,1), log10(F.Time(FlagT)), log10(F.Wave(FlagT))];
+            H    = [ones(Fit.Nobs,1), log10(F.Time(FlagT)), log10(F.Wave(FlagT))];
             Y    = log10(F.Flux(FlagT));
             ErrY = F.FluxErr(FlagT)./F.Flux(FlagT);
             [Fit.Par,Fit.ParErr] = lscov(H,Y,ErrY);
-            Fit.Resid    = Y - H*Par;
-            Fit.ResidStd = (Resid./ErrY).^2;
-            Fit.Chi2     = sum(ResidStd);
+            Fit.Resid    = Y - H*Fit.Par;
+            Fit.ResidStd = (Fit.Resid./ErrY).^2;
+            Fit.Chi2     = sum(Fit.ResidStd);
             Fit.Npar     = size(H,2);
-            Fit.Dof      = Nobs - Npar;
-            
+            Fit.Dof      = Fit.Nobs - Fit.Npar;
+            Fit.RMS      = std(Fit.Resid);
+            Fit.MeanTime = mean(F.Time(FlagT));
             
         end
+       
         
     end
     

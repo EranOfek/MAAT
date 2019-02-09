@@ -1,4 +1,4 @@
-function [L,Res]=macronova_multizone(t,varargin)
+function [L,Res]=kilonova_multizone(t,varargin)
 % Calculate the Waxman et al. analytic multizone kilonova model 
 % Package: AstroUtil.supernova
 % Description: Calculate the Waxman et al. analytic multizone kilonova
@@ -12,6 +12,8 @@ function [L,Res]=macronova_multizone(t,varargin)
 %                     '1b' - XM<0 & s<0
 %                     '2a' - XM>0 & s>0
 %                     '2b' - XM>0 & s<0
+%            'eConf'- Electron confinment (true). If false than assume free
+%                     electrons escape. Default is true.
 %            'M'    - Ejecta mass [solar mass].
 %            'vM'   - Ejecta v_M velocity [speed of light].
 %            'Alpha'- Ejecta velocity distribution: v(m)=vM m^-Alpha.
@@ -31,6 +33,7 @@ function [L,Res]=macronova_multizone(t,varargin)
 %--------------------------------------------------------------------------
 
 DefV.Case                 = [];
+DefV.eConf                = true;
 DefV.M                    = 5e-2;  % solar mass
 DefV.vM                   = 0.15;   % fraction of speed of light
 DefV.Alpha                = 0.7;
@@ -152,7 +155,11 @@ if (tM<teps)
     I = t>tM & t<teps;
     L(I) = LM.*(t(I)./tM).^(-Beta);
     I = t>teps;
-    L(I) = LM.*XM.^(Beta./2) .*(t(I)./teps).^(-Beta-2);
+    if (InPar.eConf)
+        L(I) = LM.*XM.^(Beta./2) .*(t(I)./teps).^-2.8;
+    else
+        L(I) = LM.*XM.^(Beta./2) .*(t(I)./teps).^(-Beta-2);
+    end
 else
     % tM>teps
     if (s<0)
@@ -165,8 +172,11 @@ else
         L(I) = LM.*Eta.*XM.^(-1+Beta./2) .* (t(I)./tM).^ ( (2-Gamma)./(1+Alpha) - Beta+s.*(1-Beta./2) );
     end
     I = t>tM;
-    L(I) = (LM./XM).*(t(I)./tM).^(-Beta-2);
-    
+    if (InPar.eConf)
+        L(I) = (LM./XM).*(t(I)./tM).^-2.8;
+    else
+        L(I) = (LM./XM).*(t(I)./tM).^(-Beta-2);
+    end
 end
 
 

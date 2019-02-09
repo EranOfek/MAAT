@@ -37,20 +37,8 @@ InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 try
     Str = urlread(URL);
 catch
-    fprintf('urlread failed - try again in 10min');
-    pause(600);
-    try
-        Str = urlread(URL);
-    catch
-        fprintf('urlread failed - try again in 60min');
-        fprintf('save List.mat');
-        save -v7.3 List.mat List
-        pause(3600);
-        
-        Str = urlread(URL);
-    end
-    
-end
+    fptintf
+    pause(600)
     
 C   = textscan(Str,'%s %d %d %d %d %s %d %s %s\n');
 FileNames = C{end};
