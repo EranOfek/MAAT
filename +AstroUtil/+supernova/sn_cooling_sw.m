@@ -197,9 +197,9 @@ switch lower(InPar.Type)
             v_sstar = 1.05 .* InPar.f_rho^-beta .* sqrt(InPar.E51.*1e51./(InPar.Ms.*SolM));
         end
         
-        eps1 = 0.027; eps2 = 0.086; 
+        eps1 = 0.016; eps2 = 0.175; 
         
-        T_phRW = 1.61 .* ( (v_sstar/10^8.5).^2 .* t_d.^2 ./ (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)) ).^ eps1 .* ...
+        T_phRW = 1.69 .* ( (v_sstar/10^8.5).^2 .* t_d.^2 ./ (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)) ).^ eps1 .* ...
             (InPar.Rs.*SolR./1e13).^0.25 ./ (InPar.kappa./0.34).^0.25 .* t_d.^-0.5;  % [eV]             
 %         T_phRW = 1.61 .* ( (v_sstar(:)/10^8.5).^2 .* t_d.^2 ./ (InPar.f_rho(:) .* InPar.Ms(:) .* (InPar.kappa(:)./0.34)) ).^ eps1 .* ...
 %             (InPar.Rs(:).*SolR./1e13).^0.25 ./ (InPar.kappa(:)./0.34).^0.25 .* t_d.^-0.5;  % [eV]             
@@ -210,7 +210,7 @@ switch lower(InPar.Type)
         end        
         Tc    = convert.energy('eV','T',T_phRW.*Tcorr);
         
-        L_RW   = 2e42 .* ( (v_sstar/10^8.5) .* t_d.^2 ./ (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)) ).^ -eps2 .* ...
+        L_RW   = 2.1e42 .* ( (v_sstar/10^8.5) .* t_d.^2 ./ (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)) ).^ -eps2 .* ...
             (v_sstar/10^8.5).^2 .* (InPar.Rs.*SolR./1e13) ./ (InPar.kappa./0.34);  % [erg/s]
 %         L_RW   = 2e42 .* ( (v_sstar(:)/10^8.5) .* t_d.^2 ./ (InPar.f_rho(:) .* InPar.Ms(:) .* (InPar.kappa(:)./0.34)) ).^ -eps2 .* ...
 %             (v_sstar(:)/10^8.5).^2 .* (InPar.Rs(:).*SolR./1e13) ./ (InPar.kappa(:)./0.34);  % [erg/s]
@@ -222,7 +222,7 @@ switch lower(InPar.Type)
         end
         t_tr   = 19.5 .* sqrt((InPar.kappa./0.34).*Menv./(v_sstar/10^8.5));  % [d]
         
-        A = 0.94; a = 1.67; alpha = 0.8;
+        A = 0.79; a = 4.57; alpha = 0.73;
         if strcmpi(InPar.Model,'SW')
             LtoL_RW = A.*exp(-(a.*t_d./t_tr).^alpha);
             L = L_RW .* LtoL_RW;
