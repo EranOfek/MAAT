@@ -127,7 +127,7 @@ classdef ClassWCS
             KeysN      = {'CTYPE','CUNIT','CRPIX','CRVAL','CDELT'};
             Nn         = numel(KeysN);
             
-            
+
             for Ih=1:1:Nh
                 % for each header
                 % Read number of axes
@@ -144,8 +144,7 @@ classdef ClassWCS
                 
                 % read keywords from the KeysSingle list
                 ValSingle = mgetkey(H(Ih),KeysSingle);
-              
-                TmpCtype = getkey(H(Ih),'CTYPE');
+               
                 
                 % concat
                 KeyNames = {'WCSAXES', KeysSingle{:}};
@@ -155,7 +154,7 @@ classdef ClassWCS
                 
               
 %<<<<<<< HEAD
-                if isnan(Naxes) || isnan(TmpCtype{1})
+                if isnan(Naxes) 
                     % deal with missing WCS keywords
                     W(Ih).(WCSField).Status = false;
                     W(Ih).(WCSField).CD = nan(2,2);
