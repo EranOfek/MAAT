@@ -114,7 +114,6 @@ switch lower(Algo)
     Direction = 'cos';
     switch lower(Direction)
      case {'curve_on_spec','cos'}
-        Tran = Tran(~isnan(Tran(:,2)),:);
         % Interp transminssion curve on Spec
         if iscell(Spec)
             [Spec,Tran]     = AstroUtil.spec.eq_sampling(Spec,Tran,Spec{1},InterpMethod);

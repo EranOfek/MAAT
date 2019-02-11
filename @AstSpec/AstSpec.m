@@ -965,7 +965,8 @@ classdef AstSpec < HEAD
             
             Dir = Util.files.which_dir(mfilename);
             SpecDir = 'SpecGalQSO';
-            DirPath = sprintf('~/matlab/data/spec/%s%s',SpecDir,filesep);
+%            DirPath = sprintf('~/matlab/data/spec/%s%s',SpecDir,filesep);
+            DirPath = sprintf('D:/matlab/data/spec/%s%s',SpecDir,filesep);
             
             if (isempty(Name))
                 % show all spectral template available
@@ -2748,7 +2749,7 @@ classdef AstSpec < HEAD
     
        
     % syntheic photometry
-    methods (Static) 
+    methods  
         function [Mag,Flag,EffW]=synphot(AS,varargin)
             % Synthetic photometry on AstSpec class spectra.
             % Description: Synthetic photometry on AstSpec class spectra.

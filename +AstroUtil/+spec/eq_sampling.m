@@ -72,7 +72,14 @@ else
    if (length(Samp)==1)
       SampVec = [MinVal:Samp:MaxVal].';
    else
-      SampVec = Samp;
+      if strcmp(Method,'spline')||strcmp(Method,'cubic')
+         % Those method support extrapolation
+         SampVec = Samp;
+      else
+         % Truncate Samp to the lists common interval to avoid NaN result
+         % outside this interval
+         SampVec = Samp(Samp>=MinVal&Samp<=MaxVal);
+      end
    end
 end
 
