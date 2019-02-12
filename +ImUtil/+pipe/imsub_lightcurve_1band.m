@@ -421,7 +421,7 @@ if (Nim>0)
     % update RA/Dec in CoaddSim
     CoaddSim = update_coordinates(CoaddSim);
 
-    %--- find photometric solution of CoaddSim (Reference image) ---
+    %--- find photometric solution of CoaddSim (Reference image) --
     ResPhot = ImUtil.Im.photometric_calibration(CoaddSim,'Band',Band,...
                                                          'Color',InPar.Color);
     %ResPhot = ImUtil.Im.photometric_calibration(Sim(IndImMaxStars));

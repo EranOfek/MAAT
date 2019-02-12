@@ -189,7 +189,7 @@ if (SIM.issim(Images) || isstruct(Images) || isnumeric(Images))
     end
     %ImList = sims2fits(Images,varargin{:},'TmpName',true);
     %ImList = sims2fits(Images,'TmpName',true);
-    ImList = FITS.sim2fits(Images);
+    ImList = FITS.sim2fits(Images,'DataType','double');
     
     TmpImages = true;
 else

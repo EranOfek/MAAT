@@ -145,7 +145,7 @@ classdef ClassWCS
                 % read keywords from the KeysSingle list
                 ValSingle = mgetkey(H(Ih),KeysSingle);
               
-                TmpCtype = getkey(H(Ih),'CTYPE');
+                TmpCtype = getkey(H(Ih),'CTYPE1');
                 
                 % concat
                 KeyNames = {'WCSAXES', KeysSingle{:}};
@@ -155,7 +155,7 @@ classdef ClassWCS
                 
               
 %<<<<<<< HEAD
-                if isnan(Naxes) || isnan(TmpCtype{1})
+                if isnan(Naxes) || isnan(TmpCtype{1}(1))
                     % deal with missing WCS keywords
                     W(Ih).(WCSField).Status = false;
                     W(Ih).(WCSField).CD = nan(2,2);
