@@ -2748,7 +2748,7 @@ classdef AstSpec < HEAD
     
        
     % syntheic photometry
-    methods (Static) 
+    methods 
         function [Mag,Flag,EffW]=synphot(AS,varargin)
             % Synthetic photometry on AstSpec class spectra.
             % Description: Synthetic photometry on AstSpec class spectra.
