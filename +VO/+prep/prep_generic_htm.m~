@@ -58,7 +58,7 @@ for If=1:1:Nf
         end
     else
         Dec1(If) = str2double(StrDec1);
-        Dec2(If) = str2double(StrDec2);
+        Dec1(If) = str2double(StrDec1);
     end
     
 end

@@ -1094,7 +1094,7 @@ classdef catsHTM
             
         end
         
-        function [ColCell]=serial_search(CatName,Fun,varargin)
+        function [ColCell,ConcatRes]=serial_search(CatName,Fun,varargin)
             % Execute a function on entire HDF5/HTM catalog
             % Package: @catsHTM
             % Description: Execute a function on entire HDF5/HTM catalog.
@@ -1105,6 +1105,10 @@ classdef catsHTM
             %            Fun(Cat,FunPar{:})
             %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
             %            where keyword are one of the followings:
+            %            'Concat' - Concat results to previous results.
+            %                       Default is true.
+            %                       Concat result will be outputed as
+            %                       second output argument.
             %            'FunPar' - Cell array of additional parameters to
             %                       pass to the function.
             %            'NparPool' - Number of parallel processes to run.
@@ -1123,9 +1127,11 @@ classdef catsHTM
             %                       is 100 arcsec.
             %            'SearchRadiusUnits' - Default is 'arcsec'.
             % Output : - Cell array of column names in catalog.
+            %          - Optional concat results.
             % Example: [ColCell]=catsHTM.serial_search('APASS',@sin)
             % Reliable: 2
             
+            DefV.Concat                = true;
             DefV.FunPar                = {};
             DefV.NparPool              = 24;
             DefV.Xmatch                = false;
@@ -1164,8 +1170,9 @@ classdef catsHTM
             %Sum{1}=0;
             %Sum{2}=0;
             %tic;
+            First = true;
              for Ih=1:1:Nh
-                 %Ih
+                 Ih
 %                  if (Ih./1000)==floor(Ih./1000)
 %                     Ih
 %                     toc
@@ -1183,7 +1190,17 @@ classdef catsHTM
                     
                    
                     if (~isempty(Fun))
-                        Fun(Cat,InPar.FunPar{:});
+                        if (InPar.Concat)
+                            CR = Fun(Cat,InPar.FunPar{:});
+                            if (First)
+                                First = false;
+                                ConcatRes(1).Cat = CR.';
+                            else
+                                ConcatRes(end+1).Cat = CR.';
+                            end
+                        else
+                            Fun(Cat,InPar.FunPar{:});
+                        end
                     end
                     
                 end

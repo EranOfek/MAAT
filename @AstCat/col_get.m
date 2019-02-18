@@ -71,7 +71,11 @@ elseif (isnumeric(Col) && numel(Col)==1)
 elseif (ischar(Col) || iscellstr(Col))
     % Col contains column name
     ColInd = colname2ind(AstC,Col);
-    Col    = AstC.Cat(:,ColInd);
+    if (isnan(ColInd))
+        Col = NaN;
+    else
+        Col    = AstC.Cat(:,ColInd);
+    end
     
     if (isempty(Units))
         if (~isempty(AstC.ColUnits))

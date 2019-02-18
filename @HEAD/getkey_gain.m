@@ -33,7 +33,7 @@ InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 % get gain
 % output is in a cell array
-Gain = getkey_fromlist(Head,InPar.GainKeys,InPar.SelectionMethod);
+Gain = getkey_fromlist(Head,InPar.GainKeys,InPar.SelectionMethod,'Conv2Num',true);
 
 % output type
 switch lower(InPar.OutType)

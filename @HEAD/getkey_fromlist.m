@@ -20,6 +20,8 @@ function BestVal=getkey_fromlist(Head,KeyList,Method,varargin)
 %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
 %            'SpaceDel' - Delete spaces from key value. Default is true.
+%            'Conv2Num' - A logical flag indicating if to attempt to convert the value
+%                         to a number (if possible). Default is false.
 % Output : - A cell vector of the best selected key values. One per header.
 % License: GNU general public license version 3
 % Tested : Matlab R2015b
@@ -34,6 +36,7 @@ if (nargin<3)
 end
 
 DefV.SpaceDel          = true;
+DefV.Conv2Num          = false;
 if (numel(varargin)>0)
     InPar = InArg.populate_keyval(DefV,varargin,mfilename);
     %InPar = set_varargin_keyval(DefV,'n','use',varargin{:});
@@ -56,7 +59,7 @@ if (isnumeric(KeyList))
     % a cell array.
     BestVal = num2cell(BestVal);
 else
-    Val     = mgetkey(Head,KeyList,InPar.SpaceDel); 
+    Val     = mgetkey(Head,KeyList,InPar.SpaceDel,InPar.Conv2Num); 
     IsNaN   = Util.cell.isnan_cell(Val);
     
     BestVal = cell(Nh,1);

@@ -46,7 +46,7 @@ function [Files,Links,Prop,Cat]=wget_ztf_images_irsa(RA,Dec,varargin)
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: [Files,Links,Prop,Cat]=VO.ZTF.wget_ztf_images_irsa(358./RAD,23./RAD);
 %          Files = VO.ZTF.wget_ztf_images_irsa([],[],'Where','field=600 and ccdid=2','ImType','raw'); 
-%          Files = VO.ZTF.wget_ztf_images_irsa([],[],'Where','field=600 and ccdid=2','ImType','sci'); 
+%          [Files,Links] = VO.ZTF.wget_ztf_images_irsa([],[],'Where','field=600 and ccdid=2','ImType','sci','Product','diff','GetFiles',false); 
 % Reliable: 2
 %--------------------------------------------------------------------------
 

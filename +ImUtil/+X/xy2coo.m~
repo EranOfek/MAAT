@@ -60,9 +60,8 @@ KS.TCDLT3  = str2double(KeywordVal{6});
 
 
 if (isempty(X) || isempty(Y))
-    %[~,~,~,Col]=get_fitstable_col(File,'BinTable');
-    TT = FITS.read_table(File);
-    Col = TT.Col;
+    [~,~,~,Col]=get_fitstable_col(File,'BinTable');
+    TFITS.read_table(File);
     
 
     Table = fitsread(File,'BinTable');

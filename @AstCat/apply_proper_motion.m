@@ -83,6 +83,10 @@ DefV.ColPM_RA          = 'pmRA';
 DefV.ColPM_Dec         = 'pmDec';
 DefV.ColPlx            = 'Plx';
 DefV.ColRV             = 'RV';
+%!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
+%logical parallax correction 
+DefV.ApplyParallax     = false;
+%!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
 DefV.NewColName        = [];   % if empty then insert instead of existing RA/Dec cols
 
 %InPar = set_varargin_keyval(DefV,'n','use',varargin{:});
@@ -211,8 +215,16 @@ for Icat=1:1:Ncat
 
         % calculate RA/Dec at EpochOut
         RV(isnan(RV)) = 0;
-        [RA,Dec] = celestial.coo.proper_motion(EpochOut,EpochInRA,EpochInDec,RA,Dec,PM_RA,PM_Dec,Plx,RV);
-
+        % -------- !!!!!! ---------
+        
+        %Check for user flag for apply parallax barycentric
+        if (InPar.ApplyParallax)
+            [RA,Dec] = celestial.coo.proper_motion_parallax(EpochOut,EpochInRA,EpochInDec,RA,Dec,PM_RA,PM_Dec,Plx,RV);
+        else
+            [RA,Dec] = celestial.coo.proper_motion(EpochOut,EpochInRA,EpochInDec,RA,Dec,PM_RA,PM_Dec,Plx,RV);
+        end
+        % -------- !!!!!! ---------
+        
         if (isempty(InPar.NewColName))
             % insert RA/Dec instead of existing columns
             OutCat(Icat) = col_replace(OutCat(Icat),[RA,Dec],ColInd(1:2));
