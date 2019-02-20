@@ -214,6 +214,7 @@ if (~isempty(RefMag))
     end
         
     if (InPar.Plot)
+        figure;
         semilogy(RefMag(FlagG),(Resid(FlagG)),'.')    
         hold on
         plot(Xmag,10.^polyval(Par,Xmag),'k-') 
