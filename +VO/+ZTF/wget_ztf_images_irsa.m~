@@ -86,14 +86,9 @@ if (InPar.GetFiles)
         case 'all'
             LinksR = Links;
         case 'first'
-            LinksR = Links{1};
-        case 'last'
-            LinksR = Links{end};
-        otherwise
-            error('Unknown GetN option');
-    end
-    
-    Files = www.pwget(LinksR,InPar.pwgetExtra,InPar.MaxGet,[],'wget');
+            LinksR = Links{1}
+        
+    Files = www.pwget(Links,InPar.pwgetExtra,InPar.MaxGet,[],'wget');
 else
     Files = {};
 end
