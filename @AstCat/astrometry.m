@@ -633,14 +633,13 @@ for Isim=1:1:Nsim
            %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
            %add the catalog data of the used objects with the cols data
            TempAstCat=AstCat;
-           TempAstCat.Cat = MatchedCat(ResAst.FlagMag,:);
+           TempAstCat.Cat = MatchedCat(ResAst(Isim).FlagMag,:);
            TempAstCat.Col=SimCat.Col; 
            TempAstCat.ColCell=SimCat.ColCell; 
            ResAst(Isim).AstCat= TempAstCat;
            %indexes vector of the used objects in the original catalog
            ResAst(Isim).IndexInSim1=unique(MatchedCat(ResAst.FlagMag,ResAst(Isim).AstCat.Col.IndexSimYsorted));
            ResAst(Isim).IndexInSimN= ResAst(Isim).IndexInSim1(ResAst.FlagG);
-           ResAst(Isim).FlagMag=[];
            %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
            
            %---------------------------------------------------------
