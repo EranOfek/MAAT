@@ -23,6 +23,6 @@ end
 if nargout>0
 HIMAGE=imshow(Sim.Im,[Sim.background.BackIm,Sim.background.BackIm+3*Sim.background.ErrIm]);% 3 sigma
 else
-    imshow(Sim.Im,[Sim.background.BackIm,Sim.background.BackIm+3*Sim.background.ErrIm]);
+    imshow(Sim.Im,[Sim.background.BackIm,Sim.background.BackIm+3*Sim.background.ErrIm],'InitialMagnification', 'fit');
 end
 
