@@ -1598,16 +1598,15 @@ for Isim=1:1:Nsim
                 % NaN if no source within search radius (InPar.NearSearchRad)
                 Cat(Isim).(CatField)(:,Icol) = NaN;
                 FlagNfound = [ResNear.Nfound]>0;
-                Cat(Isim).(CatField)(FlagNfound,Icol) = [ResNear.IndCat].';   
-                
+                Cat(Isim).(CatField)(FlagNfound,Icol) = cat(1,ResNear.IndCat); 
             case 'NEAREST_SRCDIST'
                 % Distance to nearest source [pixels]
                 % NaN if no source within search radius (InPar.NearSearchRad)
                 Cat(Isim).(CatField)(:,Icol) = NaN;
-                FlagNfound = [ResNear.Nfound]>0;
-                Cat(Isim).(CatField)(FlagNfound,Icol) = [ResNear.DistRAD].';   
+                FlagNfound = [ResNear.Nfound]>0; 
+                Cat(Isim).(CatField)(FlagNfound,Icol) = cat(1,ResNear.DistRAD);   
                 
-                if (any([ResNear.DistRAD]<1))
+                if (any(cat(1,ResNear.DistRAD))<1)
                     warning('There are some distance smaller than 1 - check why');
                 end
                   
