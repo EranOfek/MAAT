@@ -1,4 +1,4 @@
-function [R]=elements2position(Date,OrbElem,Mu,GK)
+function [R,Vel]=elements2position(Date,OrbElem,Mu,GK)
 % Convert orbital elements and date to position and velocity vectors.
 % Package: celestial.Kepler
 % Description: Convert orbital elements and date to position vector and
@@ -56,9 +56,9 @@ W     = OrbElem(6);
 
 if (E<1 && E>=0)
    % elliptic motion
-   A      = Q.*(1 - E);
-   MM  = sqrt(Mu./(A.^3));   % mean motion [rad/day]
-   M   = MM.*(JD - T);      % Mean anomaly
+   %A      = Q.*(1 - E);
+   %MM  = sqrt(Mu./(A.^3));   % mean motion [rad/day]
+   %M   = MM.*(JD - T);      % Mean anomaly
    [Nu,Rad,~,Vel] = celestial.Kepler.kepler_elliptic(JD-T,Q,E);
    
    
