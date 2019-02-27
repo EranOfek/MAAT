@@ -132,22 +132,27 @@ for Isim=1:1:Nsim
             end
             
             B = timeseries.binning([Mag(Iok), Delta(Iok)],0.5,[NaN NaN],{'MidBin',@numel,@median,@Util.stat.rstd});
-            DeltaCalc = interp1(B(:,1),B(:,3),Mag);
-            StdInt    = interp1(B(:,1),B(:,4),Mag,'nearest');
-            Thresh    = 6;
-            Ind       = find((Delta - DeltaCalc)>Thresh.*StdInt & StdInt>1e-5);
-            
-            if (~isempty(Ind))
-                X           = Sim(Isim).(CatField)(Ind,ColIndX);
-                Y           = Sim(Isim).(CatField)(Ind,ColIndY);
+            if (~isempty(B))
+                DeltaCalc = interp1(B(:,1),B(:,3),Mag);
+                StdInt    = interp1(B(:,1),B(:,4),Mag,'nearest');
+                Thresh    = 6;
+                Ind       = find((Delta - DeltaCalc)>Thresh.*StdInt & StdInt>1e-5);
 
-                X = round(X);
-                Y = round(Y);
-                
-                FlagInImage = X>0 & Y>0 & X<=SizeIm(2) & Y<=SizeIm(1);
-                
-                FlagIm(Y(FlagInImage),X(FlagInImage)) = true;
-                
+                if (~isempty(Ind))
+                    X           = Sim(Isim).(CatField)(Ind,ColIndX);
+                    Y           = Sim(Isim).(CatField)(Ind,ColIndY);
+
+                    X = round(X);
+                    Y = round(Y);
+
+                    FlagInImage = X>0 & Y>0 & X<=SizeIm(2) & Y<=SizeIm(1);
+
+                    FlagIm(Y(FlagInImage),X(FlagInImage)) = true;
+
+                end
+            else
+                Ind = [];
+                warning('Can not use flag_cr_mextractor - not enough stars');
             end
             
         case 'ht'
