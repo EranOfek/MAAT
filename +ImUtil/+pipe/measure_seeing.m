@@ -72,6 +72,13 @@ ColCell            = {'XWIN_IMAGE','YWIN_IMAGE','XPEAK_IMAGE','YPEAK_IMAGE',...
 tic;
 S = mextractor(S,'ColCell',ColCell,'Thresh',InPar.MinSN);
 toc
+[CG,HWHM]=S.curve_growth_psf
+FWHM = 2.*HWHM;
+
+X2 = S.(CatField)(:,S.Col.X2WIN_IMAGE);
+Y2 = S.(CatField)(:,S.Col.Y2WIN_IMAGE);
+XY = S.(CatField)(:,S.Col.XYWIN_IMAGE);
+SN = S.(CatField)(:,S.Col.SN);
 
 SizeXY = fliplr(size(S.(ImageField)));
 [ListEdge,ListCenter]=ImUtil.Im.image_blocks(SizeXY,InPar.BlockSize,10,'simple');
