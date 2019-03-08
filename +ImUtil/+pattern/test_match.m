@@ -59,13 +59,15 @@ InPar = InArg.populate_keyval(DefV,varargin,mfilename);
                                          [TranC(1:2),TranC(3)], InPar.RotationUnits);
 OutCat = [OutCatX, OutCatY];
 
-if (~issorted(OutCat(:,InPar.ColYc)))
-    [OutCat,SI] = sortrows(OutCat,InPar.ColYc);
+if (~issorted(OutCat(:,2)))
+    [OutCat,SI] = sortrows(OutCat,2);
     Cat         = Cat(SI,:);
 end
 
 % match catalogs
-[~,Matched] = VO.search.match_cats_pl(OutCat(:,[InPar.ColXc, InPar.ColYc]),Ref(:,[InPar.ColXr, InPar.ColYr]),'Radius',InPar.Radius);
+%[~,Matched] = VO.search.match_cats_pl(OutCat(:,[InPar.ColXc, InPar.ColYc]),Ref(:,[InPar.ColXr, InPar.ColYr]),'Radius',InPar.Radius);
+[~,Matched] = VO.search.match_cats_pl(OutCat(:,[1, 2]),Ref(:,[InPar.ColXr, InPar.ColYr]),'Radius',InPar.Radius);
+
 
 % [Res11,~,~]=search_cat(OutCat(:,[InPar.ColXc, InPar.ColYc]),Ref(:,[InPar.ColXr, InPar.ColYr]),[],...
 %                                     'CooType','plane',...
@@ -80,8 +82,8 @@ IndRef = [Matched(FlagN1).IndRef];
 % output
 Res.IndCat = IndCat;
 Res.IndRef = IndRef;
-Res.ResidX = OutCat(IndCat,InPar.ColXc) - Ref(IndRef,InPar.ColXr);
-Res.ResidY = OutCat(IndCat,InPar.ColYc) - Ref(IndRef,InPar.ColYr);
+Res.ResidX = OutCat(IndCat,1) - Ref(IndRef,InPar.ColXr);
+Res.ResidY = OutCat(IndCat,2) - Ref(IndRef,InPar.ColYr);
 
 Res.StdX   = nanstd(Res.ResidX);
 Res.StdY   = nanstd(Res.ResidY);

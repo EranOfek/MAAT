@@ -49,7 +49,7 @@ if (nargin==3)
    K   = 0.017202098950000;
    Mass=1;
    Tol=DefTol;
-elseif (nargin==4),
+elseif (nargin==4)
     if (numel(K) == 1)
         Mass = 1; 
     else
@@ -58,7 +58,7 @@ elseif (nargin==4),
     end
     Tol=DefTol;
 
-elseif (nargin==5),
+elseif (nargin==5)
     if (numel(K) == 1)
         Mass = 1; 
     else
@@ -93,8 +93,8 @@ if (~isnan(K))
    A      = Q./(1-Ecc);
    %PeriodEran = 2.*pi.*(A.^1.5)./K;   % in time units - true for M= 1 solar mass
    %Periodold = 2.*pi.*(A.^1.5)./K./sqrt(Mass);
-   Period = 2*pi*sqrt(((A.*(1.49597870691e+13)).^3)...
-    ./((6.67259e-08).*((Mass)).*(1.98892e+33)))./86400; %Period [days] 
+   %Period = 2*pi*sqrt(((A.*(constant.au)).^3)./((constant.G).*((Mass)).*(constant.SunM)))./86400; %Period [days] 
+   Period = 2.*pi.*sqrt( (A.*(constant.au)).^3 ./ (constant.G.*Mass.*constant.SunM) )./86400;  % Period [days]
    
    N      = 2.*pi./Period;        % mean motion (n)
    M      = N.*T;                 % Mean anomaly n*(t-T)
@@ -112,7 +112,7 @@ IndUnsolved = (1:1:Ns).';
 
 I = 0;
 %while max(abs( E1(IndUnsolved)-E0(IndUnsolved) ))>Tol,
-while (any(abs(E1-E0)>Tol)),
+while (any(abs(E1-E0)>Tol))
    I = I + 1;
 %   [I, length(IndUnsolved)]
 
