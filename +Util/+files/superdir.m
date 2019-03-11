@@ -67,14 +67,15 @@ elseif (Nib1==1 && Nib2==1)
 
       Dir1 = dir(FileName);
       N1   = length(Dir1);
-      Dir  = Util.struct.struct_def({'name','folder','date','bytes','isdir','datenum'},N1,1);
+   %Dir  = Util.struct.struct_def({'name','folder','date','bytes','isdir','datenum'},Stop-Start+1,1);
       for I1=1:1:N1
-         Dir(I1) = Dir1(I1);
+         Dir(end+1) = Dir1(I1);
       end
 
    end
+   Dir = Dir(2:end);
 else
    error('Illegal filename string');
 end
 
-%Dir = Dir(2:end);
+
