@@ -340,13 +340,18 @@ classdef catsHTM
             end
         end
         
-        function create_catalog_lists4wget(Dir)
+        function create_catalog_lists4wget(Dir,WriteDir)
             % Create list of catalogs foe wget including checsums
             % Input  : - Directory in which the catsHTM catalog resides
             %            (e.g., '/raid/eran/catsHTM').
+            %          - Directory in which to write wget lists.
+            %            Default is '' - i.e., current dir.
             % Example:
             % catsHTM.create_catalog_lists4wget('/raid/eran/catsHTM');
            
+            if (nargin<2)
+                WriteDir = '';
+            end
             
             URL  = 'https://astro.weizmann.ac.il/catsHTM/';
             Pars = '-U Mozilla/5.0 --no-check-certificate';
@@ -360,8 +365,8 @@ classdef catsHTM
             F  = [F1;F2];
             
             Nf = numel(F);
-            FIDw = fopen('list.euler.wget','w');
-            FIDc = fopen('list.euler.checksum','w');
+            FIDw = fopen(sprintf('%s%s',WriteDir,'list.euler.wget'),'w');
+            FIDc = fopen(sprintf('%s%s',WriteDir,'list.euler.checksum'),'w');
             tic;
             for If=1:1:Nf
                 fprintf(FIDw,'wget %s %s%s/%s\n',Pars,URL,F(If).folder(Nc+1:end),F(If).name);
@@ -1005,7 +1010,8 @@ classdef catsHTM
             % Description: Given a catalog of sources with their RA/Dec,
             %              match each one of them to a source in an
             %              catsHTM catalog.
-            % Input  : -
+            % Input  : - catsHTM catalog name (e.g., 'UCAC4').
+            %          - An AstCat object with sources.
             % Output : -
             % Example: CatM=catsHTM.sources_match('GAIADR2',CoaddSim);
             

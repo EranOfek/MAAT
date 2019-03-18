@@ -180,7 +180,7 @@ for If=1:1:Nf
     Cat = colcell2col(Cat);
     Cat.Cat(:,1:2) = Cat.Cat(:,1:2)./RAD;
     Cat = sortrows(Cat,'Dec');
-    FFF = abs(Cat.Cat(:,11))<1e-32 &  abs(Cat.Cat(:,12))<1e-32 & abs(Cat.Cat(:,13))<1e-32;
+    FFF = abs(Cat.Cat(:,11))<1e-32 &  
     Cat.Cat(FFF,11:13) = NaN;
   
     
