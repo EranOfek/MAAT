@@ -42,7 +42,8 @@ switch Formula
     In = find(AltD<=-0.6);
     
     R = zeros(size(Alt));
-    R(Ia) = 0.00452.*P./(T.*tan(Alt(Ia)).*RAD);
+   % R(Ia) = 0.00452.*P./(T.*tan(Alt(Ia)).*RAD);
+    R(Ia) = 0.00452.*P./(T.*tand(AltD(Ia)+7.32./(AltD(Ia)+4.32)).*RAD);
     R(Ib) = P.*(0.1594 + 0.0196.*AltD(Ib) + 0.00002.*AltD(Ib).*AltD(Ib))./(T.*(1 + 0.505.*AltD(Ib) + 0.0845.*AltD(Ib).*AltD(Ib)).*RAD);
     R(In) = 0;
 
