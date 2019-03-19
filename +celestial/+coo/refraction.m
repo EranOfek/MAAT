@@ -56,7 +56,7 @@ switch Formula
     Z     = pi./2 - Alt;
     TanZ  = tan(Z);
     R     = 16.271.*Q.*TanZ.*(1 + 0.0000394.*Q.*TanZ.^2) - 0.0000749.*P.*TanZ.*(1 + TanZ.^2);
-    R     = R./3660./RAD;
+    R     = R./3600./RAD;
 
  otherwise
     error('Unknown refraction formula option');
