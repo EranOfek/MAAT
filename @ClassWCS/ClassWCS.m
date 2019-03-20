@@ -477,7 +477,7 @@ classdef ClassWCS
             
             
             W = ClassWCS;
-                        
+            W.(WCSField).Status = true;            
             W.(WCSField).WCSAXES = 2;
             W.(WCSField).RADECSYS= 'ICRS';
             W.(WCSField).CRVAL   = InPar.CooCenter.*RAD;
@@ -917,7 +917,7 @@ classdef ClassWCS
                 
                 
                 if (~W(Iw).WCS.Status)
-                    % ClassWCS is not containing relevant info
+                    % ClassWCS is not containing relevant infof
                     RA  = nan(Nsrc,1);
                     Dec = nan(Nsrc,1);
                 
