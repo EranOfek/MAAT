@@ -22,8 +22,8 @@ DefV.FileExtName         = 'fit'; %'h5'; %'txt';%'hdf5'; %'.mat'; %'.fit'; %'.ma
 DefV.FileSplit           = '_';
 DefV.FileType            = 'fits'; %'hdf5'; %'ned'; %'hdf5'; %'astcat'; %'astcat'; 'fits'; %'mat'; %'fits';
 DefV.UseMforMinus        = false; %true;
-DefV.DecSize             = 2;  % deg
-DefV.HTM_Level           = 9;
+DefV.DecSize             = 3;  % deg
+DefV.HTM_Level           = 8;
 DefV.HTMsize             = [];
 
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
@@ -175,7 +175,7 @@ for If=1:1:Nf
     
     % URAT1
     Cat.Cat = Cat.Cat(:,13:25);
-    Cat.ColCell = {'RA','Dec','PosErrScatter','PosErrModel','Nset','Nmeanpos','Epoch','Mag','Mag','Nmag','PM_RA','PM_Dec','PMErr'};
+    Cat.ColCell = {'RA','Dec','PosErrScatter','PosErrModel','Nset','Nmeanpos','Epoch','Mag','MagErr','Nmag','PM_RA','PM_Dec','PMErr'};
     Cat.ColUnits = {'rad','rad','mas','mas','','','JYear','mag','mag','','mas/yr','mas/yr','mas/yr'};
     Cat = colcell2col(Cat);
     Cat.Cat(:,1:2) = Cat.Cat(:,1:2)./RAD;
@@ -215,6 +215,7 @@ end
 
 switch lower(Type)
     case 'fits'
+        File
         Cat = FITS.read_table(File,'ModColName',true);
         Ncol = numel(Cat.ColCell);
         for Icol=1:1:Ncol
