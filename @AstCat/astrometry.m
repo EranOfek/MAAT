@@ -668,7 +668,13 @@ for Isim=1:1:Nsim
                OrigSim(Isim) = wcs2head(W,OrigSim(Isim));
              
              %add WCS field
-               ResAst(Isim).WCS=OrigSim(Isim).WCS;
+             ResAst(Isim).WCS=W;
+             %add or update WCS field in OriginSim
+             % it seems WCS in SIM is inherited from superclass WorldCooSys
+             % thus xy2coo for SIM call function in WorldCooSys, need to
+             % fix? now we have to W = ClassWCS.populate(OrigSim); and call
+             % xy2coo(W,[X,Y]);
+              OrigSim(Isim).WCS=W;
              
            end
            
