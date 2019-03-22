@@ -54,6 +54,7 @@ DefV.KeyEquinox         = {'EQUINOX'};
 DefV.UnitsRA            = [];       % [], 'deg','r'
 DefV.UnitsDec           = [];       % [], 'deg','r'
 %--- Reference catalog ---
+DefV.RefCatName         = 'GAIADR2';% the name of input catalog; string ,must be given when external catalog provided
 DefV.RefCat             = 'GAIADR2';  %@get_ucac4; %@wget_ucac4;   % string, function, struct
 DefV.RCrad              = 0.8./RAD; %0.8/RAD;   % [radian]
 DefV.RefCatMagRange     = [12 19.0]; %19.0];
@@ -242,6 +243,8 @@ for Isim=1:1:Nsim
         RefCat = AstCat.struct2astcat(RefCat);
     else
         % External catalog was not provided
+         % in this case RefCat provided as catalog name
+         InPar.RefCatName=InPar.RefCat;
         % try to retrieve
         RefCat = VO.search.cat_cone(InPar.RefCat,RA(1),Dec(1),InPar.RCrad,'RadiusUnits','rad','OutType','astcat');
     end
@@ -255,7 +258,7 @@ for Isim=1:1:Nsim
         % RefCat is not empty
         
         % clean the GAIA catalog
-        switch lower(InPar.RefCat)
+        switch lower(InPar.RefCatName)
             case 'gaiadr1'
                 % remove sources with excess noise >5 sigma and outside the
                 % mag range
