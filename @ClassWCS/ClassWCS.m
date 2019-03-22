@@ -917,7 +917,7 @@ classdef ClassWCS
                 
                 
                 if (~W(Iw).WCS.Status)
-                    % ClassWCS is not containing relevant infof
+                    % ClassWCS is not containing relevant info
                     RA  = nan(Nsrc,1);
                     Dec = nan(Nsrc,1);
                 
