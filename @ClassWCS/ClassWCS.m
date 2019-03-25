@@ -478,6 +478,7 @@ classdef ClassWCS
             
             W = ClassWCS;
                         
+            W.(WCSField).Status = true;  
             W.(WCSField).WCSAXES = 2;
             W.(WCSField).RADECSYS= 'ICRS';
             W.(WCSField).CRVAL   = InPar.CooCenter.*RAD;
@@ -572,7 +573,7 @@ classdef ClassWCS
             
             
             W = ClassWCS;
-                        
+            W.(WCSField).Status = true;              
             W.(WCSField).WCSAXES = 2;
             W.(WCSField).RADECSYS= 'ICRS';
             W.(WCSField).CRVAL   = InPar.CooCenter.*RAD;
