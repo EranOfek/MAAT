@@ -18,10 +18,10 @@ RAD = 180./pi;
 
 DefV.CatName             = 'URAT1'; %'PS1ps';  %'NEDz'; %'GAIADR2'; %'HSCv2'; %'SAGE'; %'SWIREz'; %'SDSSoffset'; %'VSTkids';
 DefV.FileBaseName        = 'URAT1'; % 'ned'; %'GaiaDR2'; %'HSC'; %'SpitzerSAGE'; % 'swire'; %'MyTable'; %'kids';
-DefV.FileExtName         = 'fit'; %'h5'; %'txt';%'hdf5'; %'.mat'; %'.fit'; %'.mat'; %'.fit';
+DefV.FileExtName         = '.fit'; %'h5'; %'txt';%'hdf5'; %'.mat'; %'.fit'; %'.mat'; %'.fit';
 DefV.FileSplit           = '_';
 DefV.FileType            = 'fits'; %'hdf5'; %'ned'; %'hdf5'; %'astcat'; %'astcat'; 'fits'; %'mat'; %'fits';
-DefV.UseMforMinus        = false; %true;
+DefV.UseMforMinus        = true; %true;
 DefV.DecSize             = 3;  % deg
 DefV.HTM_Level           = 8;
 DefV.HTMsize             = [];

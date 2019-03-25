@@ -642,12 +642,12 @@ for Isim=1:1:Nsim
            %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
            %add the catalog data of the used objects with the cols data
            TempAstCat=AstCat;
-           TempAstCat.Cat = MatchedCat(ResAst.FlagMag,:);
+           TempAstCat.Cat = MatchedCat(ResAst(Isim).FlagMag,:);
            TempAstCat.Col=SimCat.Col; 
            TempAstCat.ColCell=SimCat.ColCell; 
            ResAst(Isim).AstCat= TempAstCat;
            %indexes vector of the used objects in the original catalog
-           ResAst(Isim).IndexInSim1=unique(MatchedCat(ResAst.FlagMag,ResAst(Isim).AstCat.Col.IndexSimYsorted));
+           ResAst(Isim).IndexInSim1=unique(MatchedCat(ResAst(Isim).FlagMag,ResAst(Isim).AstCat.Col.IndexSimYsorted));
            ResAst(Isim).IndexInSimN= ResAst(Isim).IndexInSim1(ResAst.FlagG);
            ResAst(Isim).FlagMag=[];
            %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
@@ -666,6 +666,15 @@ for Isim=1:1:Nsim
              
              %add WCS field
                ResAst(Isim).WCS=OrigSim(Isim).WCS;
+               
+               % Vancky
+               %add or update WCS field in OriginSim
+               % it seems WCS in SIM is inherited from superclass WorldCooSys
+               % thus xy2coo for SIM call function in WorldCooSys, need to
+               % fix? now we have to W = ClassWCS.populate(OrigSim); and call
+               % xy2coo(W,[X,Y]);
+               ResAst(Isim).WCS  = W;
+               OrigSim(Isim).WCS = W;
              
            end
            

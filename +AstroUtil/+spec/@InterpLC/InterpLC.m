@@ -88,6 +88,7 @@ classdef InterpLC
                 M = Data(Is,Col.M);
                 E = Data(Is,Col.E);
 
+                
                 Interp(Isec).MinT       = min(T);
                 Interp(Isec).MaxT       = max(T);
                 Interp(Isec).ValidRange = [Interp(Isec).MinT - InPar.ExtrapOutOfRange, Interp(Isec).MaxT + InPar.ExtrapOutOfRange];

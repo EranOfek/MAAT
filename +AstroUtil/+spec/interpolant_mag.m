@@ -63,13 +63,6 @@ for Isec=1:1:Nsec
     Interp(Isec).ValidRange = [Interp(Isec).MinT - InPar.ExtrapOutOfRange, Interp(Isec).MaxT + InPar.ExtrapOutOfRange];
     Interp(Isec).Data       = [T, M, E];
     
-%     Mmag = M;
-%     if (InPar.PolyFlux)
-%         % convert Magn to Flux
-%         M = 10.^(-0.4.*M);
-%         E = M.*E;
-%     end
-    
     % fit
     NobsSec  = numel(T);
     TimeSpan = range(T);
@@ -88,10 +81,7 @@ for Isec=1:1:Nsec
     % residuals from fit
     Resid    = M - Y;
     Std      = std(Resid);
-%     if (InPar.PolyFlux)
-%         % convert std to relative error
-%         Std = Std./mean(M);
-%     end
+
     Chi2     = sum(Resid./E).^2;
     Dof      = NobsSec - Deg;
     

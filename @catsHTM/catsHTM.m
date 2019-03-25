@@ -369,7 +369,8 @@ classdef catsHTM
             FIDc = fopen(sprintf('%s%s',WriteDir,'list.euler.checksum'),'w');
             tic;
             for If=1:1:Nf
-                fprintf(FIDw,'wget %s %s%s/%s\n',Pars,URL,F(If).folder(Nc+1:end),F(If).name);
+                Pars1 = sprintf('%s -P .%s',Pars,F(If).folder(Nc+1:end));
+                fprintf(FIDw,'wget %s %s%s/%s\n',Pars1,URL,F(If).folder(Nc+1:end),F(If).name);
                 [~,Str] = system(sprintf('md5sum %s%s%s',F(If).folder,filesep,F(If).name));
                 fprintf(FIDc,'%s',Str);
             end
