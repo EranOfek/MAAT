@@ -365,8 +365,8 @@ classdef catsHTM
             F  = [F1;F2];
             
             Nf = numel(F);
-            FIDw = fopen(sprintf('%s%s',WriteDir,'list.euler.wget'),'w');
-            FIDc = fopen(sprintf('%s%s',WriteDir,'list.euler.checksum'),'w');
+            FIDw = fopen(sprintf('%s%s%s',WriteDir,filesep,'list.euler.wget'),'w');
+            FIDc = fopen(sprintf('%s%s%s',WriteDir,filesep,'list.euler.checksum'),'w');
             tic;
             for If=1:1:Nf
                 Pars1 = sprintf('%s -P .%s',Pars,F(If).folder(Nc+1:end));
@@ -600,17 +600,22 @@ classdef catsHTM
             
         end
         
-        function [ColCell,ColUnits] = load_colcell(CatName)
+        function [ColCell,ColUnits,Col] = load_colcell(CatName)
             % Load ColCell and ColUnits for an HDF5/HTM catalog
             % Package: @catsHTM
             % Input  : - Catalog base name (e.g., 'DECaLS').
             % Output : - Cell array of column names.
             %          - Cell array of column units
+            %          - Structure with column names and indices
             % Example: [ColCell,ColUnits]=catsHTM.load_colcell('APASS')
             % Reliable: 2
             
             File = sprintf('%s_htmColCell.mat',CatName);
             load(File);
+            
+            if (nargout>2)
+                Col = cell2struct(num2cell(1:1:numel(ColCell)),ColCell,2)
+            end
         end
         
         function [ColCell,Col]=read_colnames(FileName,VarName)
@@ -1501,7 +1506,7 @@ classdef catsHTM
                     MaxDec  = max(HTM(Ihtm1).coo(:,2))+SearchRadius;
 
                     %%
-                    if ((MeanDec.*180./pi)>-30)
+                    %if ((MeanDec.*180./pi)>-30)
                     
                     D = celestial.coo.sphere_dist_fast(MeanRA,MeanDec,HTM(Ihtm1).coo(:,1),HTM(Ihtm1).coo(:,2));
                     CircRadius = max(D) + SearchRadius; % [rad]
@@ -1532,6 +1537,7 @@ classdef catsHTM
                         %Cat2ID = Cat2ID(SI,:);
 
                         % cross match Cat1 and Cat2
+                        % return list of size of Cat1
                         [Match,Ind,IndCatMinDist] = VO.search.match_cats(Cat2,Cat1,'Radius',SearchRadius,'RadiusUnits','rad');
 
                         if (~isempty(InPar.QueryAllFun))
@@ -1575,7 +1581,7 @@ classdef catsHTM
                         end
                     end
                     %%
-                    end
+                    %end
                 end
             end
             
