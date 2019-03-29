@@ -46,6 +46,7 @@ DefV.FilterKey          = 'FILTER';
 DefV.FlatPar            = {};
 DefV.IsFlatPar          = {};
 DefV.NotIsFlat          = true;    % list of images from which to subtract the bias
+DefV.LogOn              = false;   % logging for deflat, false for default
 %DefV.ExecField          = {SIM.ImageField};
 
 %InPar = set_varargin_keyval(DefV,'n','use',varargin{:});
@@ -92,6 +93,8 @@ for Ifilter=1:1:Nfilter
         % divide super flat
         % and combine the mask of the image with that of the flat
         Sim(GroupFlag) = bfun2sim(Sim(GroupFlag),FlatSim(Ifilter),@rdivide,'MaskFun',@mask_add,'MaskFunPar',{@bitor}); %,'ExecField',InPar.ExecField);
-
+        if InPar.LogOn % add logging information
+            fprintf('%s: There are %d images in %s Filter deflat.\n',datestr(now,31),sum(GroupFlag),KeyVal{2})
+        end
     end
 end
