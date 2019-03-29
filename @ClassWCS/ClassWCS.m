@@ -782,7 +782,7 @@ classdef ClassWCS
             % Output : - A structure for the X axis orders and coef.
             %            Orders include three columns [X order, Y order, R
             %            order].
-            %          - A structure for the X axis orders and coef.
+            %          - A structure for the Y axis orders and coef.
             %          - Pixel coordinate X
             %          - Pixel coordinate Y
             % Example: [SX,SY]=get_tpv(W);
