@@ -761,6 +761,16 @@ classdef ClassWCS
                     KeyVal  = {};
                     KeyName = {};
                 end
+            elseif (isfield(W(Iw).(WCSField),'tpv'))
+                if (~isempty(W(Iw).(WCSField).tpv))
+                    Ind     = W(Iw).(WCSField).tpv.Ind;
+                    KeyVal  = W(Iw).(WCSField).tpv.KeyVal;
+                    KeyName = W(Iw).(WCSField).tpv.KeyName;
+                else
+                    Ind     = [];
+                    KeyVal  = {};
+                    KeyName = {};
+                end
             else
                 Ind     = [];
                 KeyVal  = {};
