@@ -1221,34 +1221,45 @@ classdef ClassWCS
             
             Iw = 1;
             
-            Xt_O = Xt;
-            Yt_O = Yt;
-            
-            [~,~,Xtt_1,Ytt_1] = get_tpv(W(Iw),Xt,Yt);
-            
-            
-            DX_1 = Xt - Xtt_1;
-            DY_1 = Yt - Ytt_1;
-            Conv = false;
-            while (~Conv)
-                
-                X_1  = Xt + DX_1;
-                Y_1  = Yt + DY_1;
-
-                [~,~,Xt_1,Yt_1] = get_tpv(W(Iw),X_1,Y_1);
-                DX_1 = Xt_O - Xt_1;
-                DY_1 = Yt_O - Yt_1;
-                %[DX_1, DY_1]
-                Xt = X_1;
-                Yt = Y_1;
-                if (max(abs(Xt_O-Xt_1))<ThreshConv && max(abs(Yt_O-Yt_1))<ThreshConv)
-                    Conv = true;
-                end
-                
+%             Xt_O = Xt;
+%             Yt_O = Yt;
+%             
+%             [~,~,Xtt_1,Ytt_1] = get_tpv(W(Iw),Xt,Yt);
+%             
+%             
+%             DX_1 = Xt - Xtt_1;
+%             DY_1 = Yt - Ytt_1;
+%             Conv = false;
+%             while (~Conv)
+%                 
+%                 X_1  = Xt + DX_1;
+%                 Y_1  = Yt + DY_1;
+% 
+%                 [~,~,Xt_1,Yt_1] = get_tpv(W(Iw),X_1,Y_1);
+%                 DX_1 = Xt_O - Xt_1;
+%                 DY_1 = Yt_O - Yt_1;
+%                 %[DX_1, DY_1]
+%                 Xt = X_1;
+%                 Yt = Y_1;
+%                 if (max(abs(Xt_O-Xt_1))<ThreshConv && max(abs(Yt_O-Yt_1))<ThreshConv)
+%                     Conv = true;
+%                 end
+%                 
+%             end
+%             X = X_1;
+%             Y = Y_1;
+%       use matlab fsolve to get root, now support vector use
+            X=Xt;Y=Yt;
+            for k=1:length(Xt)
+                options=optimoptions(@fsolve,'Display','off','FunctionTolerance',1e-16);%
+                [tmp,~]=fsolve(@(x) tpv_root(W(Iw),[Xt(k),Yt(k)],x),[Xt(k),Yt(k)],options);
+                X(k)=tmp(1);Y(k)=tmp(2);
             end
-            X = X_1;
-            Y = Y_1;
-            
+            function F = tpv_root(W,x0,x)
+                [~,~,y1,y2]=get_tpv(W,x(1),x(2));
+                F(1)=x0(1)-y1;
+                F(2)=x0(2)-y2;
+            end
         end
         
         function PixCoo=intermediate2pixel(W,XY)
