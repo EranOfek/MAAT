@@ -1,20 +1,19 @@
 function AllEdges=binning_adaptive(T,varargin)
-% Construct list of edges for binning, given some bin size criteria
+% SHORT DESCRIPTION HERE
 % Package: timeseries
 % Description: 
-% Input  : - List of times for which to construct edges for binning.
+% Input  : - 
 %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
 % Output : - 
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Mar 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: AllEdges=timeseries.binning_adaptive
+% Example: 
 % Reliable: 
 %--------------------------------------------------------------------------
 
 
-%T=[1 1.1   2 2.2 2.3 2.6 2.8 3 3.4 3.8 4 4.4  6 6.1]
 
 
 DefV.MaxBin               = 1;
@@ -54,7 +53,6 @@ for Ig=1:1:Ng
     end
     AllEdges = [AllEdges;Edges];
 end
-AllEdges = [AllEdges;max(T)];
     
 
 
