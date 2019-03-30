@@ -56,10 +56,22 @@ else
 end
 
 
-DefV.Case = 'n';
-DefV.Out  = 'c';  % 'a' - for array; 'c' - for cell. 
-InPar = set_varargin_keyval(DefV,'y','use',varargin{:});
+% DefV.Case = 'n';
+% DefV.Out  = 'c';  % 'a' - for array; 'c' - for cell. 
+% InPar = set_varargin_keyval(DefV,'y','use',varargin{:});
 
+InPar.Case = 'n';
+InPar.Out = 'c'; % 'a' - for array; 'c' - for cell. 
+
+for ii = 1:2:length(varargin)
+    key = varargin{ii};
+    val = varargin{ii+1};
+    if strcmp(key, 'Case')
+        InPar.Case = val;
+    elseif strcmp(key, 'Out')
+        InPar.Out = val;
+    end
+end
 
 if (isnumeric(FamilyNameStr)),
     % Filter transmission curve is provided
@@ -79,7 +91,7 @@ if (isnumeric(FamilyNameStr)),
 else
     % Filter family is a char array
     
-    load Filters.mat;
+    load(fullfile(getenv('DATA'), 'MAAT', 'Filters.mat'));
 
     if (isempty(FamilyNameStr)==1 && isnan(BandNameStr)==1),
        % retrieve all famalies
@@ -154,7 +166,7 @@ else
         OutF.half_width  = F.half_width(AllI);
         OutF.comments    = F.comments(AllI);
         OutF.source      = F.source(AllI);
-        OutF.Tunits      = F.Tunits(AllI);
+%         OutF.Tunits      = F.Tunits(AllI);
      case 1
         [GroupStr]=group_cellstr(F.family,'y');
         OutF = GroupStr;

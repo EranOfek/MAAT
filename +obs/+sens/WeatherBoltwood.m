@@ -92,8 +92,8 @@ classdef WeatherBoltwood < handle
         function open(WB)
             % Open Boltwood weather application. Also open connection to
             % application if already opened.
-            WB.ComObj = actxserver('ClarityII.CloudSensorII');;
-        end-
+            WB.ComObj = actxserver('ClarityII.CloudSensorII');
+        end
 
         function update(WB)
             % Read weather parameters

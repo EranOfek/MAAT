@@ -151,3 +151,4 @@ switch lower(OutType)
     otherwise
         % do nothing - output is a matrix
 end
+

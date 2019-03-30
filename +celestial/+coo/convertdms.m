@@ -362,7 +362,7 @@ switch OutType
            StrDec = sprintf('%s%02d:%02d:%010.6f',DecSign(I),Dec(I,2:4));   
         case 'SDn'
            StrDec = sprintf('%s%02d%02d%05.2f',DecSign(I),Dec(I,2:4));
-        case 'SDn'
+        case 'SDb'
            StrDec = sprintf('%s%02d %02d %05.2f',DecSign(I),Dec(I,2:4));
         otherwise
            error('Unknown  OutType Option');

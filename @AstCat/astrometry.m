@@ -56,7 +56,7 @@ DefV.UnitsDec           = [];       % [], 'deg','r'
 %--- Reference catalog ---
 DefV.RefCat             = 'GAIADR2';  %@get_ucac4; %@wget_ucac4;   % string, function, struct
 DefV.RCrad              = 0.8./RAD; %0.8/RAD;   % [radian]
-DefV.RefCatMagRange     = [10 19.0]; %19.0];
+DefV.RefCatMagRange     = [12 19.0]; %19.0];
 DefV.UseMagRangeCat     = false;
 DefV.MaxRefStars        = 15000;
 DefV.Shape              = 'box';
@@ -64,7 +64,7 @@ DefV.RC_ColRA           = 'RA';
 DefV.RC_ColDec          = 'Dec';
 DefV.RC_ColMag          = 'Mag_G'; %'MagModel'; %'ModelMag';
 DefV.RC_ColColor        = 'Mag_BP-Mag_RP';
-DefV.ApplyPM            = true; %true;
+DefV.ApplyPM            = false; %true; %true;
 DefV.RC_ColPM_RA        = 'PMRA';
 DefV.RC_ColPM_Dec       = 'PMDec';
 DefV.RC_ColPlx          = 'Plx';
@@ -124,15 +124,13 @@ DefV.AnalysisBlockSize  = [512 512];
 DefV.Verbose            = true;
 DefV.Plot               = false;
 
-%!!!!!!!!  -----  !!!!!!!!  
 %maximum Excess noise in the reference catalog (GAIA)
-DefV.MaxExcessNoise=1;
+DefV.MaxExcessNoise     = 10;
 %threshold for proper motion errors(GAIA)
-DefV.MaxPMerr=[];
+DefV.MaxPMerr           = [];
 %Logical for applying parallax correction (barycentric)
-DefV.ApplyParallax= false;
+DefV.ApplyParallax      = false;
 
-%!!!!!!!!  -----  !!!!!!!!  
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 % number of images
@@ -216,11 +214,20 @@ for Isim=1:1:Nsim
     %add column with the order of the objects in the catalog 
     %Y location sorted in order find the objects that used in the fit
     
-    Sim(Isim).Cat(:,end+1)=[1:1:length(Sim(Isim).Cat(:,1))]'; 
-
-    Sim(Isim).Col.IndexSimYsorted=length(Sim(Isim).Cat(1,:)); 
     
-    Sim(Isim).ColCell{end+1}='IndexSimYsorted'; 
+    %[~,ColXc]     = select_exist_colnames(Sim(Isim),InPar.ColXc(:));
+    %[~,ColYc]     = select_exist_colnames(Sim(Isim),InPar.ColYc(:));
+    
+    %Sim(Isim).Cat(:,end+1)=(1:1:length(Sim(Isim).Cat(:,ColXc))).'; 
+
+    Sim(Isim) = col_insert(Sim(Isim),...
+                           (1:1:size(Sim(Isim).Cat,1)).',...
+                           numel(Sim(Isim).ColCell)+1,...
+                           'IndexSimYsorted');
+    
+    %Sim(Isim).Col.IndexSimYsorted=length(Sim(Isim).Cat(1,:)); 
+    
+    %Sim(Isim).ColCell{end+1}='IndexSimYsorted'; 
     
     
     %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
@@ -613,13 +620,15 @@ for Isim=1:1:Nsim
            MatchedRefCD        = MatchedRef;
            MatchedRefCD(:,1:2) = [CD*MatchedRefCD(:,1:2)']';
            MatchedCatCD        = MatchedCat;
-           MatchedCatCD(:,1:2) = [CD*MatchedCatCD(:,1:2)']';
+           MatchedCatCD(:,[ColXc, ColYc]) = [CD*MatchedCatCD(:,[ColXc, ColYc])']';
            
            ResAst(Isim) = ImUtil.pattern.fit_transform(MatchedRefCD,MatchedCatCD,TranC,'ImSize',ImSize(Isim,:),...
                                                                           'BlockSize',InPar.AnalysisBlockSize,...
                                                                           'PixScale',InPar.Scale,...
                                                                           'CooUnits','deg',...
                                                                           'NormXY',1,...
+                                                                          'ColCatX',ColXc,...
+                                                                          'ColcatY',ColYc,...
                                                                           'PolyMagDeg',3,...
                                                                           'StepMag',0.1,...
                                                                           'Niter',InPar.Niter,...
@@ -633,12 +642,12 @@ for Isim=1:1:Nsim
            %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
            %add the catalog data of the used objects with the cols data
            TempAstCat=AstCat;
-           TempAstCat.Cat = MatchedCat(ResAst.FlagMag,:);
+           TempAstCat.Cat = MatchedCat(ResAst(Isim).FlagMag,:);
            TempAstCat.Col=SimCat.Col; 
            TempAstCat.ColCell=SimCat.ColCell; 
            ResAst(Isim).AstCat= TempAstCat;
            %indexes vector of the used objects in the original catalog
-           ResAst(Isim).IndexInSim1=unique(MatchedCat(ResAst.FlagMag,ResAst(Isim).AstCat.Col.IndexSimYsorted));
+           ResAst(Isim).IndexInSim1=unique(MatchedCat(ResAst(Isim).FlagMag,ResAst(Isim).AstCat.Col.IndexSimYsorted));
            ResAst(Isim).IndexInSimN= ResAst(Isim).IndexInSim1(ResAst.FlagG);
            ResAst(Isim).FlagMag=[];
            %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
@@ -657,6 +666,15 @@ for Isim=1:1:Nsim
              
              %add WCS field
                ResAst(Isim).WCS=OrigSim(Isim).WCS;
+               
+               % Vancky
+               %add or update WCS field in OriginSim
+               % it seems WCS in SIM is inherited from superclass WorldCooSys
+               % thus xy2coo for SIM call function in WorldCooSys, need to
+               % fix? now we have to W = ClassWCS.populate(OrigSim); and call
+               % xy2coo(W,[X,Y]);
+               ResAst(Isim).WCS  = W;
+               OrigSim(Isim).WCS = W;
              
            end
            

@@ -68,6 +68,7 @@ Table.Header = Header;
 SpC{1} = regexp(ColHead{1},'\|','split');
 SpC{2} = regexp(ColHead{2},'\|','split');
 SpC{3} = regexp(ColHead{3},'\|','split');
+
 SpC{1} = spacedel(SpC{1}(2:end-1));
 SpC{2} = spacedel(SpC{2}(2:end-1));
 SpC{3} = spacedel(SpC{3}(2:end-1));

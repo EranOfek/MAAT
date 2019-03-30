@@ -1,0 +1,44 @@
+function []=match_and_fit(AstC,AstR,varargin)
+% Match sources in AstCat object, fit motion, and calculate rms.
+% Package: @AstCat
+% Description: 
+% Input  : - 
+%          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+%            where keyword are one of the followings:
+% Output : - 
+% License: GNU general public license version 3
+%     By : Eran O. Ofek                    Mar 2019
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: 
+% Reliable: 
+%--------------------------------------------------------------------------
+
+DefV.natchPar             = {};
+DefV.Time                 = [];
+DefV.ColX                 = 'XWIN_IMAGE';
+DefV.ColY                 = 'YWIN_IMAAGE';
+
+InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
+Ncat = numel(AstC);
+if isempty(InPar.Time)
+    InPar.Time = (1:1:Ncat)';
+end
+InPar.Time = InPar.Time(:);  % make col vector
+
+% match sources
+[AstOut] = match(AstC,AstR,InPar.matchPar{:});
+
+% prep array of matched sources
+[ResM,Summary]  = astcat2matched_array(AstOut,{InPar.ColX, InPar.ColY});
+
+Nsrc = size(ResM.(InPar.ColX),2);
+Nep  = numel(InPar.Time);
+
+% design matrix for linear motion fit
+H    = [ones(Nep,1), InPar.Time];
+
+Par = H \ ResM.(InPar.ColX);
+
+Res.std
+

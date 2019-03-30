@@ -340,13 +340,18 @@ classdef catsHTM
             end
         end
         
-        function create_catalog_lists4wget(Dir)
+        function create_catalog_lists4wget(Dir,WriteDir)
             % Create list of catalogs foe wget including checsums
             % Input  : - Directory in which the catsHTM catalog resides
             %            (e.g., '/raid/eran/catsHTM').
+            %          - Directory in which to write wget lists.
+            %            Default is '' - i.e., current dir.
             % Example:
             % catsHTM.create_catalog_lists4wget('/raid/eran/catsHTM');
            
+            if (nargin<2)
+                WriteDir = '';
+            end
             
             URL  = 'https://astro.weizmann.ac.il/catsHTM/';
             Pars = '-U Mozilla/5.0 --no-check-certificate';
@@ -360,11 +365,12 @@ classdef catsHTM
             F  = [F1;F2];
             
             Nf = numel(F);
-            FIDw = fopen('list.euler.wget','w');
-            FIDc = fopen('list.euler.checksum','w');
+            FIDw = fopen(sprintf('%s%s%s',WriteDir,filesep,'list.euler.wget'),'w');
+            FIDc = fopen(sprintf('%s%s%s',WriteDir,filesep,'list.euler.checksum'),'w');
             tic;
             for If=1:1:Nf
-                fprintf(FIDw,'wget %s %s%s/%s\n',Pars,URL,F(If).folder(Nc+1:end),F(If).name);
+                Pars1 = sprintf('%s -P .%s',Pars,F(If).folder(Nc+1:end));
+                fprintf(FIDw,'wget %s %s%s/%s\n',Pars1,URL,F(If).folder(Nc+1:end),F(If).name);
                 [~,Str] = system(sprintf('md5sum %s%s%s',F(If).folder,filesep,F(If).name));
                 fprintf(FIDc,'%s',Str);
             end
@@ -594,17 +600,22 @@ classdef catsHTM
             
         end
         
-        function [ColCell,ColUnits] = load_colcell(CatName)
+        function [ColCell,ColUnits,Col] = load_colcell(CatName)
             % Load ColCell and ColUnits for an HDF5/HTM catalog
             % Package: @catsHTM
             % Input  : - Catalog base name (e.g., 'DECaLS').
             % Output : - Cell array of column names.
             %          - Cell array of column units
+            %          - Structure with column names and indices
             % Example: [ColCell,ColUnits]=catsHTM.load_colcell('APASS')
             % Reliable: 2
             
             File = sprintf('%s_htmColCell.mat',CatName);
             load(File);
+            
+            if (nargout>2)
+                Col = cell2struct(num2cell(1:1:numel(ColCell)),ColCell,2)
+            end
         end
         
         function [ColCell,Col]=read_colnames(FileName,VarName)
@@ -1005,7 +1016,8 @@ classdef catsHTM
             % Description: Given a catalog of sources with their RA/Dec,
             %              match each one of them to a source in an
             %              catsHTM catalog.
-            % Input  : -
+            % Input  : - catsHTM catalog name (e.g., 'UCAC4').
+            %          - An AstCat object with sources.
             % Output : -
             % Example: CatM=catsHTM.sources_match('GAIADR2',CoaddSim);
             
@@ -1494,7 +1506,7 @@ classdef catsHTM
                     MaxDec  = max(HTM(Ihtm1).coo(:,2))+SearchRadius;
 
                     %%
-                    if ((MeanDec.*180./pi)>-30)
+                    %if ((MeanDec.*180./pi)>-30)
                     
                     D = celestial.coo.sphere_dist_fast(MeanRA,MeanDec,HTM(Ihtm1).coo(:,1),HTM(Ihtm1).coo(:,2));
                     CircRadius = max(D) + SearchRadius; % [rad]
@@ -1525,6 +1537,7 @@ classdef catsHTM
                         %Cat2ID = Cat2ID(SI,:);
 
                         % cross match Cat1 and Cat2
+                        % return list of size of Cat1
                         [Match,Ind,IndCatMinDist] = VO.search.match_cats(Cat2,Cat1,'Radius',SearchRadius,'RadiusUnits','rad');
 
                         if (~isempty(InPar.QueryAllFun))
@@ -1568,7 +1581,7 @@ classdef catsHTM
                         end
                     end
                     %%
-                    end
+                    %end
                 end
             end
             

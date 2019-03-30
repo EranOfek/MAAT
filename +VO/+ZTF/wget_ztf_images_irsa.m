@@ -11,6 +11,8 @@ function [Files,Links,Prop,Cat]=wget_ztf_images_irsa(RA,Dec,varargin)
 %            where keyword are one of the followings:
 %            'GetFiles'- Get files (true) or just query images (false).
 %                        Default is true.
+%            'GetN'    - Get specific image {'all','last','first'}.
+%                        Default is 'all'.
 %            'ImType'  - ZTF image type to query: 'sci' | 'raw' | 'cal'.
 %                        Default is 'sci'.
 %            'Product' - Image product type:
@@ -52,6 +54,7 @@ function [Files,Links,Prop,Cat]=wget_ztf_images_irsa(RA,Dec,varargin)
 
 
 DefV.GetFiles             = true;
+DefV.GetN                 = 'all';
 DefV.ImType               = 'sci';
 DefV.Product              = 'image';
 DefV.Where                = '';
@@ -79,7 +82,18 @@ Prop  = VO.ZTF.irsa_table2prop(Cat,'ImType',InPar.ImType,'Product',InPar.Product
 Links = VO.ZTF.irsa_image_link(Prop,InPar.constructPar{:});
 
 if (InPar.GetFiles)
-    Files = www.pwget(Links,InPar.pwgetExtra,InPar.MaxGet,[],'wget');
+    switch lower(InPar.GetN)
+        case 'all'
+            LinksR = Links;
+        case 'first'
+            LinksR = Links{1};
+        case 'last'
+            LinksR = Links{end};
+        otherwise
+            error('Unknown GetN option');
+    end
+    
+    Files = www.pwget(LinksR,InPar.pwgetExtra,InPar.MaxGet,[],'wget');
 else
     Files = {};
 end

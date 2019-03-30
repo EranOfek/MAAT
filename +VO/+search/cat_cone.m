@@ -35,6 +35,7 @@ function [AstC,ColCell]=cat_cone(CatName,RA,Dec,Radius,varargin)
 
 CatField     = AstCat.CatField;
 ColCellField = AstCat.ColCellField;
+ColUnitsField= AstCat.ColUnitsField;
 
 
 DefV.RadiusUnits          = 'arcsec';
@@ -62,13 +63,14 @@ if (isa(CatName,'function_handle'))
     end
 else
     % if catalog is a string than assume this is an HDF5/HTM catalog
-    [Cat,ColCell] = catsHTM.cone_search(CatName,RA,Dec,RadiusAS);
+    [Cat,ColCell,ColUnits] = catsHTM.cone_search(CatName,RA,Dec,RadiusAS);
     % default output is matrix
     switch lower(InPar.OutType)
         case 'astcat'
             AstC = AstCat;
             AstC.(CatField)     = Cat;
             AstC.(ColCellField) = ColCell;
+            AstC.(ColUnitsField)= ColUnits;
             AstC = colcell2col(AstC);
         otherwise
             AstC = Cat; 
