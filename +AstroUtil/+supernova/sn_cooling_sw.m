@@ -272,7 +272,7 @@ if (nargout>3) && (~isempty(InPar.FiltFam) || ~isempty(InPar.Wave))
         Spec=Spec.*SpecFactor(:);
         clear F
 
-        Mag = AstSpec.synphot(Spec,Filter,[],InPar.FiltSys);
+        Mag = synphot(Spec,Filter,[],InPar.FiltSys);
     else 
         [~,In]=AstroUtil.spec.black_body(Tc./(1+InPar.redshift),InPar.Wave).*(1+InPar.redshift).^4;
         Mag = convert.flux(In.*R.^2./(Dist.*Pc).^2,'cgs/Hz','AB',InPar.Wave,'A');
