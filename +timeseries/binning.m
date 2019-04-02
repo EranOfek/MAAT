@@ -122,6 +122,8 @@ for Ibin=1:1:Nbin
                     Res(Ibin,Icol) = median(Data(Flag,Col.X));
                 case 'stdbin'
                     Res(Ibin,Icol) = std(Data(Flag,Col.X));
+                case 'wmean'
+                    Res(Ibin,Icol) = Util.stat.wmean(Data(Flag,[Col.X,Col.E]));
                 otherwise
                     error('Unknown Column option');
             end

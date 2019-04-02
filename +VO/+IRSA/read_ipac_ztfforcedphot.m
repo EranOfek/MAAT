@@ -15,7 +15,13 @@ function [Table,FilterList]=read_ipac_ztfforcedphot(File,varargin)
 %--------------------------------------------------------------------------
 
 
-DefV.BinSize              = 1;
+DefV.BinSize               = 1;
+DefV.BaseZP                = 25;
+DefV.Max_forcediffimchisq  = 1.5;
+DefV.Max_zpmaginpscirms    = 0.05;
+DefV.Val_procstatus        = 0;
+DefV.DelBadData            = true; 
+DefV.SubMedFlux            = true;
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 ColCellString = '# Order of columns below:';
@@ -75,28 +81,66 @@ while (~feof(FID))
 end
 fclose(FID);
 
+% add columns of normalized flux
+FluxFactor = 10.^(-0.4.*Table.zpdiff) ./10.^(-0.4.*InPar.BaseZP);
+Table      = addvars(Table,FluxFactor);
+Flux       =  Table.forcediffimflux.*FluxFactor;
+FluxErr    = Table.forcediffimfluxuncap.*FluxFactor;
+Table      = addvars(Table,Flux,FluxErr);
+
+% remove bad points
+
+% Table.forcediffimchisq <1.5
+% Table.procststus
+% Table.zpmaginpscirms < 0.05
+
+FlagGood = Table.forcediffimchisq < InPar.Max_forcediffimchisq & ...
+           Table.zpmaginpscirms   < InPar.Max_zpmaginpscirms & ...
+           Table.procstatus      == InPar.Val_procstatus;
+      
+Table      = addvars(Table,FlagGood);
+
 %plot(Table.jd-2450000,Table.forcediffimflux,'.')  % forcediffimfluxuncap
 %B = timeseries.binning([Table.jd, Table.forcediffimflux, Table.forcediffimfluxuncap],InPar.BinSize,[],{'MeanBin',@nanmean,@rstd,@numel});
-Data = [Table.jd, Table.forcediffimflux, Table.forcediffimfluxuncap];
+%Data = [Table.jd, Table.forcediffimflux, Table.forcediffimfluxuncap];
+
+Data = [Table.jd, Table.Flux, Table.FluxErr];
+if (InPar.DelBadData)
+    Data = Data(FlagGood,:);
+    Table = Table(FlagGood,:);
+end
+
+
 
 UniqueFilter = unique(Table.filter);
 Nfilter      = numel(UniqueFilter);
 for Ifilter=1:1:Nfilter
     FilterList(Ifilter).FilterInd = UniqueFilter(Ifilter);
     FilterList(Ifilter).Ind       = find(Table.filter == UniqueFilter(Ifilter));
+    
+    MedianFlux = median(Table.Flux(FilterList(Ifilter).Ind));
+    FilterList(Ifilter).MedianFlux = MedianFlux;
+    FilterList(Ifilter).rstdFlux   = Util.stat.rstd(Table.Flux(FilterList(Ifilter).Ind));
+    if (InPar.SubMedFlux)
+        
+        % subtract median flux
+        Table.Flux(FilterList(Ifilter).Ind) = Table.Flux(FilterList(Ifilter).Ind) - MedianFlux;
+    end
+    
 
-    B    = timeseries.binning(Data(FilterList(Ifilter).Ind,:),InPar.BinSize,[NaN NaN],{'MeanBin',@nanmean,@Util.stat.rstd,@numel});
+    B    = timeseries.binning(Data(FilterList(Ifilter).Ind,:),InPar.BinSize,[NaN NaN],{'MeanBin',@nanmedian,@Util.stat.rstd,@numel});
     Flag = ~isnan(B(:,1));
     B    = B(Flag,:);
-    B(:,3)./sqrt(B(:,4))
+    Err  = B(:,3)./sqrt(B(:,4));
     
-    FilterList(Ifilter).B         = B;
+    FilterList(Ifilter).B         = [B, Err];
+    FilterList(Ifilter).B(:,1)    = FilterList(Ifilter).B(:,1);
 end
 
-Table.forcediffimchisq <1.5
-Table.procststus
-Table.zpmaginpscirms < 0.05
-Table.zpdiff
+
+
+
+
 
 
 

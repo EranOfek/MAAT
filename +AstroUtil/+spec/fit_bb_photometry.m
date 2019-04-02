@@ -126,6 +126,3 @@ Res.R        = Rmid;
 Res.Rerr     = [Rmid-Rlow, Rhigh-Rmid];
 
 
-
-
-
