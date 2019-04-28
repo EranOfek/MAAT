@@ -1,4 +1,4 @@
-function []=wget_irsa_forcedphot_diff(RA,Dec,varargin)
+function [Stat,Res]=wget_irsa_forcedphot_diff(RA,Dec,varargin)
 % SHORT DESCRIPTION HERE
 % Package: VO.ZTF
 % Description: http://web.ipac.caltech.edu/staff/fmasci/ztf/forcedphot.pdf
@@ -19,11 +19,11 @@ function []=wget_irsa_forcedphot_diff(RA,Dec,varargin)
 % Reliable: 
 %--------------------------------------------------------------------------
 
-RA = 280.8058788;
-Dec = 45.2077645;
-
-RA = 241.518638;
-Dec = 36.871243;
+% RA = 280.8058788;
+% Dec = 45.2077645;
+% 
+% RA = 241.518638;
+% Dec = 36.871243;
 
 OutFile = 'log.txt';
 
@@ -52,4 +52,4 @@ Options = weboptions('UserName',InPar.User,'Password',InPar.Pass);
 webread(URL,Options);
 
 CL = sprintf('wget --http-user=%s --http-passwd=%s -O %s "%s"',InPar.User,InPar.Pass,OutFile,URL);
-[Stat,Res] = system(CL)
+[Stat,Res] = system(CL);
