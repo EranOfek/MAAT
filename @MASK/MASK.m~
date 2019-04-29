@@ -274,7 +274,7 @@ classdef MASK
                 case 'exactval'
                     Flag = Mask == BitMaskVal;
                 case 'bitand'
-                    Flag = bitand(uint32(Mask),uint32(BitMaskVal),'uint32')>0;
+                    Flag = bitand(Mask,BitMaskVal,'uint16')>0;
                 otherwise
                     error('Unknown Comparison option');
             end
