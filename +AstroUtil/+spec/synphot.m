@@ -98,10 +98,15 @@ if (iscell(Spec))
     end
 end             
                   
-if (Ebv>0)
+if any(Ebv>0)
    % apply extinction
-   A = extinction(Ebv,Spec(:,1)./10000,[],R);
-   Spec(:,2) = Spec(:,2).*10.^(-0.4.*A);
+   if iscell(Spec)
+       A = AstroUtil.spec.extinction(shiftdim(Ebv,-1),Spec{1}(:)./10000,[],R);
+       Spec{2} = Spec{2}.*10.^(-0.4.*A);
+   else
+       A = AstroUtil.spec.extinction(Ebv,Spec(:,1)./10000,[],R);
+       Spec(:,2) = Spec(:,2).*10.^(-0.4.*A);
+   end
 end
 
 TranNorm = trapz(Tran(:,1),Tran(:,2));
