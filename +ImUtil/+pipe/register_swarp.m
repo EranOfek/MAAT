@@ -17,6 +17,7 @@ ImageField  = SIM.ImageField;
 HeaderField = SIM.HeaderField;
 
 DefV.BackType             = 'MANUAL'; % ['AUTO' | 'MANUAL']
+DefV.GainCorrect          = true;
 DefV.BackDefault          = 0;
 DefV.BackSize             = 128;
 DefV.SimResamp            = true;
@@ -39,6 +40,10 @@ else
     Sim = FITS.read2sim(Images,InPar.read2simPar{:});
 end
 Nsim = numel(Sim);
+
+if (InPar.GainCorrect)
+    Sim = gain_correct(Sim);
+end
 
 % execute astrometry.m
 FlagGA = true(Nsim,1);
