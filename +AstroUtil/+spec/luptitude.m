@@ -16,15 +16,15 @@ function Lup=luptitude(Flux,Flux0,B)
 
 Def.Flux0 = 1;
 Def.B     = 1e-10;
-if (nargin==1),
+if (nargin==1)
    Flux0 = Def.Flux0;
    B     = Def.B;
-elseif (nargin==2),
+elseif (nargin==2)
    B     = Def.B;
-elseif (nargin==3),
+elseif (nargin==3)
    % do nothing
 else
    error('Illegal number of input arguments');
 end
 
-Lup = -2.5./log(10).*(asinh((Flux/Flux0)./(2.*B))+log(B));
+Lup = -2.5./log(10).*(asinh((Flux./Flux0)./(2.*B))+log(B));
