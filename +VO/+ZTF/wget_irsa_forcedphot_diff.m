@@ -1,8 +1,12 @@
 function [Stat,Res]=wget_irsa_forcedphot_diff(RA,Dec,varargin)
-% SHORT DESCRIPTION HERE
+% Send a forced photometry request to ZTF archive
 % Package: VO.ZTF
-% Description: http://web.ipac.caltech.edu/staff/fmasci/ztf/forcedphot.pdf
-% Input  : - 
+% Description: Send a forced photometry on subtraction images request to
+%              ZTF archive.
+%              See more details in:
+%              http://web.ipac.caltech.edu/staff/fmasci/ztf/forcedphot.pdf
+% Input  : - J2000 RA [deg]
+%          - J2000 Dec [deg]
 %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
 %            'User'    - String containing the IRSA/IPAC user name, or a
@@ -33,6 +37,7 @@ DefV.User                 = {'/home/eran/matlab/passwords/ztfForced_ipac_pass'};
 DefV.Pass                 = [];
 DefV.email                = 'eran.ofek@weizmann.ac.il'; % note that in this service the e-mail is copuled to user/pass!
 DefV.BaseURL              = 'http://ztfweb.ipac.caltech.edu/cgi-bin/requestForcedPhotometry.cgi?';
+DefV.Wait                 = 2;
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 
@@ -42,14 +47,17 @@ if (iscell(InPar.User))
 end
 
 
-URL = sprintf('%sra=%-10.6f&dec=%-10.6f&jdstart=%-11.3f&jdend=%-11.3f&email=%s',...
-    InPar.BaseURL,RA,Dec,InPar.JDstart,InPar.JDend,InPar.email);
-URL = replace(URL,' ','');
+N = numel(RA);
+for I=1:1:N
 
-Options = weboptions('UserName',InPar.User,'Password',InPar.Pass);
+    URL = sprintf('%sra=%-10.6f&dec=%-10.6f&jdstart=%-11.3f&jdend=%-11.3f&email=%s',...
+        InPar.BaseURL,RA(I),Dec(I),InPar.JDstart,InPar.JDend,InPar.email);
+    URL = replace(URL,' ','');
 
+    %Options = weboptions('UserName',InPar.User,'Password',InPar.Pass);
+    %webread(URL,Options);
 
-webread(URL,Options);
-
-CL = sprintf('wget --http-user=%s --http-passwd=%s -O %s "%s"',InPar.User,InPar.Pass,OutFile,URL);
-[Stat,Res] = system(CL);
+    CL = sprintf('wget --http-user=%s --http-passwd=%s -O %s "%s"',InPar.User,InPar.Pass,OutFile,URL);
+    [Stat,Res] = system(CL);
+    pause(InPar.Wait);
+end

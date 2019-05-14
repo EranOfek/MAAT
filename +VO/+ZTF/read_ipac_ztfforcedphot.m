@@ -1,6 +1,6 @@
 function [Table,FilterList]=read_ipac_ztfforcedphot(File,varargin)
 % Read ZTF forced photometry file
-% Package: VO.IRSA
+% Package: VO.ZTF
 % Description: Read ZTF forced photometry file generated using
 %              VO.ZTF.wget_irsa_forcedphot_diff
 % Input  : - File name
@@ -10,7 +10,7 @@ function [Table,FilterList]=read_ipac_ztfforcedphot(File,varargin)
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Mar 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: [Table,FilterList]=VO.IRSA.read_ipac_ztfforcedphot('forcedphotometry_req00000265_lc.txt');
+% Example: [Table,FilterList]=VO.ZTF.read_ipac_ztfforcedphot('forcedphotometry_req00000265_lc.txt');
 % Reliable: 
 %--------------------------------------------------------------------------
 

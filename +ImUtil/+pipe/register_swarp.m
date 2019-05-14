@@ -2,7 +2,9 @@ function [FileNameResamp,R,Sim,FlagGA]=register_swarp(Images,RA,Dec,varargin)
 % Register images using astrometry.m and SWarp.
 % Package: ImUtil
 % Description: Register images using astrometry.m and SWarp.
-% Input  : - 
+% Input  : - Cell arrray containing list of images to swarp.
+%          - J2000 R.A. [radians]
+%          - J2000 Dec. [radians]
 %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
 % Output : - 
@@ -58,6 +60,8 @@ if (InPar.ExecAstrometry)
     end
     R   = R(FlagGA);
     Sim = Sim(FlagGA);
+else
+    R = [];
 end
 
 
