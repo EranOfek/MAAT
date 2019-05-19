@@ -47,7 +47,7 @@ switch lower(Method)
             FunConv = @conv2;
             Pars    = {'same'};
         else
-            if (numel(Image{1})<1000 && numel(Kernel{1})<1000)
+            if (numel(Image{1})<2000 && numel(Kernel{1})<2000)
                 % use conv2.m as images are small stamps
                 FunConv = @conv2;
                 Pars    = {'same'};
