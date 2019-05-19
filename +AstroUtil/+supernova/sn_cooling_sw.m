@@ -264,23 +264,23 @@ if (nargout>3) && (~isempty(InPar.FiltFam) || ~isempty(InPar.Wave))
         end
         
         redshiftedTc = Tc./(1+InPar.redshift);
-        Spec = AstSpec.blackbody(redshiftedTc(:),WaveRange');
-%        Spec = AstSpec.blackbody(redshiftedTc,WaveRange');
+        Spec{1} = WaveRange;
+        [~,~,Spec{2}] = AstroUtil.spec.black_body(redshiftedTc(:),WaveRange');
         F  = SigmaB .* (redshiftedTc).^4;
 
         SpecFactor = L./(4.*pi.*(Dist.*Pc).^2)./F;
-        Spec=Spec.*SpecFactor(:);
+        Spec{2}=Spec{2}.*SpecFactor(:);
         clear F
 
-        if (InPar.Ebv>0)
-            Mag = synphot(Spec,Filter,[],InPar.FiltSys,'cos',InPar.Ebv,InPar.Rv);
+        if any(InPar.Ebv>0)
+            Mag = AstroUtil.spec.synphot(Spec,Filter,[],InPar.FiltSys,[],InPar.Ebv,InPar.Rv,'photon');
         else
-            Mag = synphot(Spec,Filter,[],InPar.FiltSys);
+            Mag = AstroUtil.spec.synphot(Spec,Filter,[],InPar.FiltSys,[],[],[],'photon');
         end
     else 
         [~,In]=AstroUtil.spec.black_body(Tc./(1+InPar.redshift),InPar.Wave).*(1+InPar.redshift).^4;
         Mag = convert.flux(In.*R.^2./(Dist.*Pc).^2,'cgs/Hz','AB',InPar.Wave,'A');
-        if (InPar.Ebv>0)
+        if any(InPar.Ebv>0)
             A = AstroUtil.spec.extinction(InPar.Ebv,InPar.FiltFam,InPar.FiltName,InPar.Rv);
             Mag = Mag + A;
         end
