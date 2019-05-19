@@ -16,7 +16,7 @@ function [Files,Links,Prop,Cat]=wget_ztf_images_irsa(RA,Dec,varargin)
 %            'ImType'  - ZTF image type to query: 'sci' | 'raw' | 'cal'.
 %                        Default is 'sci'.
 %            'Product' - Image product type:
-%                        'log'|'mask'|'image'|'scilog'|'sex'|'dao'|'daopsf'|'diff'|'diffpsf'|...
+%                        'log'|'mask'|'image'|'scilog'|'sex'|'dao'|'daopsf'|'daopsfcent'|'diff'|'diffpsf'|
 %                        Default is 'image'.
 %            'Where'   - String containing WHERE clause (e.g.,
 %                        'field=600 and ccdid=2'). Default is ''.
