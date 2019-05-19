@@ -18,7 +18,7 @@ function Sun=get_sun(JD,GeodCoo)
 % Reliable: 1
 %--------------------------------------------------------------------------
 DT = 1./86400;   % 1 s [days]
-if (size(JD,2)==1),
+if (size(JD,2)==1)
    % already in JD
 else
   JD = celestial.time.julday(JD).';

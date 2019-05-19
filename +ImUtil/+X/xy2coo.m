@@ -60,7 +60,10 @@ KS.TCDLT3  = str2double(KeywordVal{6});
 
 
 if (isempty(X) || isempty(Y))
-    [~,~,~,Col]=get_fitstable_col(File,'BinTable');
+    %[~,~,~,Col]=get_fitstable_col(File,'BinTable');
+    TT = FITS.read_table(File);
+    Col = TT.Col;
+    
 
     Table = fitsread(File,'BinTable');
     switch lower(Tel)

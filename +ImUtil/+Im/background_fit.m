@@ -14,7 +14,7 @@ function [BackIm,NoiseIm,Back]=background_fit(Image,varargin)
 %--------------------------------------------------------------------------
 
 
-DefV.BinSize              = [64 64];   % X Y
+DefV.BinSize              = [32 32]; %[64 64];   % X Y
 DefV.StepFraction         = 0.5;
 DefV.InterpMethod         = 'spline';
 DefV.Sampling             = 2;

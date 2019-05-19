@@ -16,13 +16,14 @@ function prep_generic_htm(varargin)
 
 RAD = 180./pi;
 
-DefV.CatName             = 'NEDz'; %'GAIADR2'; %'HSCv2'; %'SAGE'; %'SWIREz'; %'SDSSoffset'; %'VSTkids';
-DefV.FileBaseName        = 'ned'; %'GaiaDR2'; %'HSC'; %'SpitzerSAGE'; % 'swire'; %'MyTable'; %'kids';
-DefV.FileExtName         = 'txt'; %'hdf5'; %'.mat'; %'.fit'; %'.mat'; %'.fit';
+DefV.CatName             = 'URAT1'; %'PS1ps';  %'NEDz'; %'GAIADR2'; %'HSCv2'; %'SAGE'; %'SWIREz'; %'SDSSoffset'; %'VSTkids';
+DefV.FileBaseName        = 'URAT1'; % 'ned'; %'GaiaDR2'; %'HSC'; %'SpitzerSAGE'; % 'swire'; %'MyTable'; %'kids';
+DefV.FileExtName         = '.fit'; %'h5'; %'txt';%'hdf5'; %'.mat'; %'.fit'; %'.mat'; %'.fit';
 DefV.FileSplit           = '_';
-DefV.FileType            = 'ned'; %'hdf5'; %'astcat'; %'astcat'; 'fits'; %'mat'; %'fits';
-DefV.DecSize             = 2;  % deg
-DefV.HTM_Level           = 7;
+DefV.FileType            = 'fits'; %'hdf5'; %'ned'; %'hdf5'; %'astcat'; %'astcat'; 'fits'; %'mat'; %'fits';
+DefV.UseMforMinus        = true; %true;
+DefV.DecSize             = 3;  % deg
+DefV.HTM_Level           = 8;
 DefV.HTMsize             = [];
 
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
@@ -44,14 +45,19 @@ for If=1:1:Nf
     StrDec2 = RegExp{If}{3};
     StrDec2 = StrDec2(1:end-numel(InPar.FileExtName));
     
-    if (strcmp(StrDec1(1),'m'))
-        Dec1(If) = -str2double(StrDec1(2:end));
+    if (InPar.UseMforMinus)
+        if (strcmp(StrDec1(1),'m'))
+            Dec1(If) = -str2double(StrDec1(2:end));
+        else
+            Dec1(If) = str2double(StrDec1);
+        end
+        if (strcmp(StrDec2(1),'m'))
+            Dec2(If) = -str2double(StrDec2(2:end));
+        else
+            Dec2(If) = str2double(StrDec2);
+        end
     else
         Dec1(If) = str2double(StrDec1);
-    end
-    if (strcmp(StrDec2(1),'m'))
-        Dec2(If) = -str2double(StrDec2(2:end));
-    else
         Dec2(If) = str2double(StrDec2);
     end
     
@@ -166,6 +172,16 @@ for If=1:1:Nf
 %                     'mag','mag','mag','mag','mag','mag','km/s','km/s','K','K','K','mag'};
 
     % NED
+    
+    % URAT1
+    Cat.Cat = Cat.Cat(:,13:25);
+    Cat.ColCell = {'RA','Dec','PosErrScatter','PosErrModel','Nset','Nmeanpos','Epoch','Mag','MagErr','Nmag','PM_RA','PM_Dec','PMErr'};
+    Cat.ColUnits = {'rad','rad','mas','mas','','','JYear','mag','mag','','mas/yr','mas/yr','mas/yr'};
+    Cat = colcell2col(Cat);
+    Cat.Cat(:,1:2) = Cat.Cat(:,1:2)./RAD;
+    Cat = sortrows(Cat,'Dec');
+    FFF = abs(Cat.Cat(:,11))<1e-32 &  abs(Cat.Cat(:,12))<1e-32 & abs(Cat.Cat(:,13))<1e-32;
+    Cat.Cat(FFF,11:13) = NaN;
   
     
     DecRange    = [Dec1(If), Dec2(If)]./RAD;
@@ -199,6 +215,7 @@ end
 
 switch lower(Type)
     case 'fits'
+        File
         Cat = FITS.read_table(File,'ModColName',true);
         Ncol = numel(Cat.ColCell);
         for Icol=1:1:Ncol

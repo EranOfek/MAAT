@@ -27,6 +27,8 @@ DefV.StepSize            = 1;
 DefV.StepSizeUnits       = 'd';
 DefV.OutputColumns       = '1,9,10,13,19,20,23,24';  % https://ssd.jpl.nasa.gov/horizons.cgi?s_tset=1#top
 DefV.OutCoo              = 'rad';
+DefV.CENTER              = '@sun'; %code for observer location. Earth -  '500', GAIA - '500@-139479'
+DefV.WebOptions          = weboptions;
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 
@@ -40,6 +42,11 @@ Str(I).value   = 1;
 I = I + 1;
 Str(I).command = 'COMMAND';
 Str(I).value   = InPar.ObjectInd;
+
+I = I + 1;
+Str(I).command = 'CENTER';
+Str(I).value   = InPar.CENTER;
+
 
 I = I + 1;
 Str(I).command = 'MAKE_EPHEM';
@@ -65,11 +72,12 @@ Str(I).value   = sprintf('%d%%20%s',InPar.StepSize,InPar.StepSizeUnits);
 
 I = I + 1;
 Str(I).command = 'QUANTITIES';
-Str(I).value   = '1,9,10,13,19,20,23,24';
+Str(I).value   = InPar.OutputColumns;
 
 I = I + 1;
 Str(I).command = 'CSV_FORMAT';
 Str(I).value   = 'YES';
+
 
 
 Nstr       = numel(Str);
@@ -89,12 +97,16 @@ for Istr=1:1:Nstr
 end
 
 UrlCommand = sprintf('%s%s',BaseURL,AllCommand);
-Data = webread(UrlCommand);
+Data = webread(UrlCommand,InPar.WebOptions);
 
 % read header
 Lines = regexp(Data,'\n','split');
 Iline = find(~Util.cell.isempty_cell(strfind(Lines,'Date__')));
 ColCell = regexp(Lines(Iline),',','split');
+if isempty(ColCell)
+    Cat = AstCat;
+   return  
+end
 ColCell = Util.string.spacedel(ColCell{1});
 Ncol    = numel(ColCell);
 
@@ -200,7 +212,26 @@ for Icol=1:1:Ncol
             C{Icol} = str2double(C{Icol});
             ColCell{Icol}  = 'SubTargetObsAng';
             ColUnits{Icol} = 'deg';
-            
+        case '1-way_LT'
+            C{Icol} = str2double(C{Icol});
+            ColCell{Icol}  = 'LightTime_1w';
+            ColUnits{Icol} = 'minute';
+        case 'ObsEcLon'
+            C{Icol} = str2double(C{Icol});
+            ColCell{Icol}  = 'ObsEcLon';
+            ColUnits{Icol} = 'deg';        
+        case 'ObsEcLat'
+            C{Icol} = str2double(C{Icol});
+            ColCell{Icol}  = 'ObsEcLat';
+            ColUnits{Icol} = 'deg';      
+        case 'T-mag'
+            C{Icol} = str2double(C{Icol});
+            ColCell{Icol}  = 'T_mag';
+            ColUnits{Icol} = 'mag';      
+	    case 'N-mag'
+            C{Icol} = str2double(C{Icol});
+            ColCell{Icol}  = 'N_mag';
+            ColUnits{Icol} = 'mag';      
         otherwise
             error('Unknwon column name option');
     end

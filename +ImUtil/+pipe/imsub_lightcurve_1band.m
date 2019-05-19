@@ -399,7 +399,7 @@ if (Nim>0)
                        'BoundryDist',10,...
                        'MinSN',10,...
                        'SatLevel',CoaddSatLimit};
-    % find sources in CoaddSim
+  % find sources in CoaddSim
     CoaddSim = mextractor(CoaddSim,'ZP',InPar.ZP,'PSFSelectorPar',PSFSelectorPar);
 
     % set background to global value
@@ -421,7 +421,7 @@ if (Nim>0)
     % update RA/Dec in CoaddSim
     CoaddSim = update_coordinates(CoaddSim);
 
-    %--- find photometric solution of CoaddSim (Reference image) ---
+    %--- find photometric solution of CoaddSim (Reference image) --
     ResPhot = ImUtil.Im.photometric_calibration(CoaddSim,'Band',Band,...
                                                          'Color',InPar.Color);
     %ResPhot = ImUtil.Im.photometric_calibration(Sim(IndImMaxStars));
@@ -486,8 +486,8 @@ if (Nim>0)
                                 'SigmaX',SigmaX ,'SigmaY',SigmaY);
 
 
-%   [Summary,D,S,Scorr,SigmaF]=subtract_proper(AlSim(1),CoaddSim,'BackReCalc',false,'FluxMatch',FluxMatch(1).*1.15,...
-%                                  'SigmaX',SigmaX(1),'SigmaY',SigmaY(1));
+%    [Summary,D,S,Scorr,SigmaF]=subtract_proper(AlSim(1),CoaddSim,'BackReCalc',false,'FluxMatch',FluxMatch(1).*1,...
+%                                   'SigmaX',SigmaX(1),'SigmaY',SigmaY(1));
 
              
              

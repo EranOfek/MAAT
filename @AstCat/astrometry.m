@@ -56,7 +56,7 @@ DefV.UnitsDec           = [];       % [], 'deg','r'
 %--- Reference catalog ---
 DefV.RefCat             = 'GAIADR2';  %@get_ucac4; %@wget_ucac4;   % string, function, struct
 DefV.RCrad              = 0.8./RAD; %0.8/RAD;   % [radian]
-DefV.RefCatMagRange     = [10 19.0]; %19.0];
+DefV.RefCatMagRange     = [12 19.0]; %19.0];
 DefV.UseMagRangeCat     = false;
 DefV.MaxRefStars        = 15000;
 DefV.Shape              = 'box';
@@ -64,7 +64,7 @@ DefV.RC_ColRA           = 'RA';
 DefV.RC_ColDec          = 'Dec';
 DefV.RC_ColMag          = 'Mag_G'; %'MagModel'; %'ModelMag';
 DefV.RC_ColColor        = 'Mag_BP-Mag_RP';
-DefV.ApplyPM            = true; %true;
+DefV.ApplyPM            = true; %true; %true;
 DefV.RC_ColPM_RA        = 'PMRA';
 DefV.RC_ColPM_Dec       = 'PMDec';
 DefV.RC_ColPlx          = 'Plx';
@@ -111,6 +111,7 @@ DefV.NstarsRescaleBlock = 9000;     % if Nstars> then shrink blocksize by x2 and
 DefV.ReScaleFactor      = 2;
 DefV.BlockSize          = [1024 1024]; %[512 512]; %[1024 1024]; %'full';
 DefV.BufferSize         = 200;
+
 %--- Fitting ---
 %DefV.UseCase_TranC      = {'affine',             5}; %{'affine_tt_cheby2_4', 100; 'affine_tt_cheby2_3', 70; 'affine_tt',          20; 'affine',             5};
 DefV.UseCase_TranC      = {'affine_tt_cheby2_4', 100; 'affine_tt_cheby2_3', 70; 'affine_tt',          10; 'affine',             5};
@@ -122,6 +123,13 @@ DefV.AnalysisBlockSize  = [512 512];
 %--- Verbose/plot ---
 DefV.Verbose            = true;
 DefV.Plot               = false;
+
+%maximum Excess noise in the reference catalog (GAIA)
+DefV.MaxExcessNoise     = 10;
+%threshold for proper motion errors(GAIA)
+DefV.MaxPMerr           = [];
+%Logical for applying parallax correction (barycentric)
+DefV.ApplyParallax      = false;
 
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
@@ -202,6 +210,27 @@ for Isim=1:1:Nsim
     
     Scale = InPar.Scale(Isim);
     
+    %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
+    %add column with the order of the objects in the catalog 
+    %Y location sorted in order find the objects that used in the fit
+    
+    
+    %[~,ColXc]     = select_exist_colnames(Sim(Isim),InPar.ColXc(:));
+    %[~,ColYc]     = select_exist_colnames(Sim(Isim),InPar.ColYc(:));
+    
+    %Sim(Isim).Cat(:,end+1)=(1:1:length(Sim(Isim).Cat(:,ColXc))).'; 
+
+    Sim(Isim) = col_insert(Sim(Isim),...
+                           (1:1:size(Sim(Isim).Cat,1)).',...
+                           numel(Sim(Isim).ColCell)+1,...
+                           'IndexSimYsorted');
+    
+    %Sim(Isim).Col.IndexSimYsorted=length(Sim(Isim).Cat(1,:)); 
+    
+    %Sim(Isim).ColCell{end+1}='IndexSimYsorted'; 
+    
+    
+    %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
     %--------------------------
     %--- Reference Catalaog ---
     %--------------------------
@@ -237,7 +266,7 @@ for Isim=1:1:Nsim
             case 'gaiadr2'
                 MagG = col_get(RefCat,{InPar.RC_ColMag});
                 ExcessNoise = col_get(RefCat,{'ExcessNoise'});
-                F = ExcessNoise<10 & MagG> InPar.RefCatMagRange(1) & MagG< InPar.RefCatMagRange(2);
+                F = ExcessNoise<InPar.MaxExcessNoise & MagG> InPar.RefCatMagRange(1) & MagG< InPar.RefCatMagRange(2);
                 RefCat.(CatField) = RefCat.(CatField)(F,:);
                 
                 
@@ -249,6 +278,10 @@ for Isim=1:1:Nsim
         if (InPar.ApplyPM)
             % applay proper motion, RV and parallax to star positions
             EpochOut = julday(Sim);  % get JD of image - (image epoch)
+            %%% ----- !!!!!!!!!!!  ----- !!!!!!!!!!!!
+            
+            %The field 'ApplyParallax' added to the apply proper motion
+            %call
             RefCat = apply_proper_motion(RefCat,'EpochInRA',InPar.RC_EpochInRA,...
                                                 'EpochInDec',InPar.RC_EpochInDec,...
                                                 'EpochInUnits',InPar.RC_EpochInUnits,...
@@ -257,8 +290,15 @@ for Isim=1:1:Nsim
                                                 'ColPM_RA',InPar.RC_ColPM_RA,...
                                                 'ColPM_Dec',InPar.RC_ColPM_Dec,...
                                                 'ColPlx',InPar.RC_ColPlx,...
-                                                'ColRV',InPar.RC_ColRV);
-
+                                                'ColRV',InPar.RC_ColRV, ...
+                                                'ApplyParallax', InPar.ApplyParallax);
+                                            
+            %apply the limit on the PM error (if given by the user)
+            if (~isempty(InPar.MaxPMerr))
+                IndForPMerr= RefCat.Cat(:,9)<InPar.MaxPMerr;
+                RefCat.Cat=RefCat.Cat(IndForPMerr,:);
+            end
+            %%% ----- !!!!!!!!!!!  ----- !!!!!!!!!!!!
         end
 
         % Generate a version of the reference catalog with only selected columns
@@ -570,16 +610,25 @@ for Isim=1:1:Nsim
            % Special treatment for PV distortions
            % convert coordinates from pixels to deg
            CD = [1 0; 0 1].*Scale./3600;
+           %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
+           %clear many appearence of the same object.
+           [indexes,ia,ic]=unique(MatchedCat(:,Sim(Isim).Col.IndexSimYsorted));
+           MatchedRef=MatchedRef(ia,:);
+           MatchedCat=MatchedCat(ia,:);
+           %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
+
            MatchedRefCD        = MatchedRef;
            MatchedRefCD(:,1:2) = [CD*MatchedRefCD(:,1:2)']';
            MatchedCatCD        = MatchedCat;
-           MatchedCatCD(:,1:2) = [CD*MatchedCatCD(:,1:2)']';
+           MatchedCatCD(:,[ColXc, ColYc]) = [CD*MatchedCatCD(:,[ColXc, ColYc])']';
            
            ResAst(Isim) = ImUtil.pattern.fit_transform(MatchedRefCD,MatchedCatCD,TranC,'ImSize',ImSize(Isim,:),...
                                                                           'BlockSize',InPar.AnalysisBlockSize,...
                                                                           'PixScale',InPar.Scale,...
                                                                           'CooUnits','deg',...
                                                                           'NormXY',1,...
+                                                                          'ColCatX',ColXc,...
+                                                                          'ColcatY',ColYc,...
                                                                           'PolyMagDeg',3,...
                                                                           'StepMag',0.1,...
                                                                           'Niter',InPar.Niter,...
@@ -590,7 +639,18 @@ for Isim=1:1:Nsim
            
            ResAst(Isim).ShiftRes   = ShiftRes;
            ResAst(Isim).SubGood    = any(SubGood);
-           ResAst(Isim).MatchedCat = MatchedCat + ImSize(Isim,:).*0.5;  % in the original coo sys
+           %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
+           %add the catalog data of the used objects with the cols data
+           TempAstCat=AstCat;
+           TempAstCat.Cat = MatchedCat(ResAst(Isim).FlagMag,:);
+           TempAstCat.Col=SimCat.Col; 
+           TempAstCat.ColCell=SimCat.ColCell; 
+           ResAst(Isim).AstCat= TempAstCat;
+           %indexes vector of the used objects in the original catalog
+           ResAst(Isim).IndexInSim1=unique(MatchedCat(ResAst(Isim).FlagMag,ResAst(Isim).AstCat.Col.IndexSimYsorted));
+           ResAst(Isim).IndexInSimN= ResAst(Isim).IndexInSim1(ResAst.FlagG);
+           ResAst(Isim).FlagMag=[];
+           %!!!!!!!!!!!!!!!!!!!-----------------------!!!!!!!!!!!!!!!!!!!!!
            
            %---------------------------------------------------------
            %--- Convert the transformation to WCS header keywords ---
@@ -603,7 +663,21 @@ for Isim=1:1:Nsim
            if (nargout>1)
                W = ClassWCS.tranclass2wcs_tpv(ResAst(Isim).TranC,'CooCenter',[RA,Dec], 'ImCenter',ImCenter, 'NormXY',NormXY, 'Scale',Scale,'CD',CD);
                OrigSim(Isim) = wcs2head(W,OrigSim(Isim));
+             
+             %add WCS field
+               ResAst(Isim).WCS=OrigSim(Isim).WCS;
+               
+               % Vancky
+               %add or update WCS field in OriginSim
+               % it seems WCS in SIM is inherited from superclass WorldCooSys
+               % thus xy2coo for SIM call function in WorldCooSys, need to
+               % fix? now we have to W = ClassWCS.populate(OrigSim); and call
+               % xy2coo(W,[X,Y]);
+               ResAst(Isim).WCS  = W;
+               OrigSim(Isim).WCS = W;
+             
            end
+           
            
      
            %Res(Isim).plot_resmag = @(Res) semilogy(Res(

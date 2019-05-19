@@ -88,9 +88,13 @@ for Isim=1:1:Nsim
             if (isempty(AstC(Icat).(CatField)))
                 XY = zeros(0,2);
             else
-                [X,Y] = coo2xy(Sim(Isim),...
-                               AstC(Icat).(CatField)(:,ColInd(1)).*ConvFactor,...
-                               AstC(Icat).(CatField)(:,ColInd(2)).*ConvFactor);
+                W = ClassWCS.populate(Sim(Isim));
+                [X,Y] = coo2xy(W,[AstC(Icat).(CatField)(:,ColInd(1)).*ConvFactor, AstC(Icat).(CatField)(:,ColInd(2)).*ConvFactor]);
+                
+                % old version of WCS
+%                 [X,Y] = coo2xy(Sim(Isim),...
+%                                AstC(Icat).(CatField)(:,ColInd(1)).*ConvFactor,...
+%                                AstC(Icat).(CatField)(:,ColInd(2)).*ConvFactor);
                 XY = [X,Y];
             end
         otherwise

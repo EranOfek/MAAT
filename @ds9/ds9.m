@@ -530,7 +530,7 @@ classdef ds9
                         % to fix a problem - delete the PCOUNT and GCOUNT
                         % header keywords
                         %Images(Iim) = delete_key(Images(Iim),{'PCOUNT','GCOUNT','PSCALET1','PSCALET2'});
-                        Images(Iim) = delete_key(Images(Iim),{'PCOUNT','GCOUNT','PSCALET1','PSCALET2',...
+                        Images(Iim) = delete_key(Images(Iim),{'EXTVER','PCOUNT','GCOUNT','PSCALET1','PSCALET2',...
                             'XTENSION','TTYPE1','TFORM1','TTYPE2','TFORM2','TTYPE3','TFORM3'}); % Na'ama, 20180831, to display fits.fz (fpacked) images
                         
                         
@@ -613,7 +613,7 @@ classdef ds9
             % Reliable: 2
             
             % Read entire image from ds9
-            TmpName = tempname;
+            TmpName = sprintf('%s.fits',tempname);
             Answer  = ds9.system('xpaset -p ds9 save %s',TmpName);
             %Sim     = image2sim(TmpName);
             Sim     = FITS.read2sim(TmpName);

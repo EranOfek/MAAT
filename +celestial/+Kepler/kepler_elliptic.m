@@ -15,9 +15,11 @@ function [Nu,R,E,Vel,M]=kepler_elliptic(T,Q,Ecc,K,Tol)
 %            The periastron distance is related to the semi major
 %            major axis (a), through q=a*(1-e).
 %          - Orbital eccentricity.
-%          - Gaussian constant for the system (k).
-%            Default is : 0.017202098950000 (appropriate for the solar
-%            system; negligible mass object orbiting the Sun; time units
+%          - [K,M] Gaussian constant for the system (k) and Mass [SolarMass].
+%            Default is : 
+%            k=0.017202098950000 , M=1 [SolarMass];
+%            (appropriate for the solar system; 
+%            negligible mass object orbiting the Sun; time units
 %            are days and distance units are au). See gauss_grav_const.m
 %            If NaN, then use the first argument as the mean anomaly, 
 %            instead of time since periastron.
@@ -43,33 +45,57 @@ function [Nu,R,E,Vel,M]=kepler_elliptic(T,Q,Ecc,K,Tol)
 % Reliable: 2
 %--------------------------------------------------------------------------
 DefTol = 1e-8;
-if (nargin==3),
+if (nargin==3)
    K   = 0.017202098950000;
+   Mass=1;
+   Tol=DefTol;
+elseif (nargin==4)
+    if (numel(K) == 1)
+        Mass = 1; 
+    else
+        Mass=K(2);
+        K=K(1);
+    end
+    Tol=DefTol;
+
+elseif (nargin==5)
+    if (numel(K) == 1)
+        Mass = 1; 
+    else
+        Mass=K(2);
+        K=K(1);
+    end
+    % do nothing
    Tol = DefTol;
-elseif (nargin==4),
+elseif (nargin==4)
    Tol = DefTol;
-elseif (nargin==5),
+elseif (nargin==5)
    % do nothing
 else
    error('Illigal number of input arguments');
 end
+%InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 MaxLength = max([length(T), length(Q), length(Ecc)]);
-if (length(T)==1),
+if (length(T)==1)
    T = T.*ones(MaxLength,1);
 end
-if (length(Q)==1),
+if (length(Q)==1)
    Q = Q.*ones(MaxLength,1);
 end
-if (length(Ecc)==1),
+if (length(Ecc)==1)
    Ecc = Ecc.*ones(MaxLength,1);
 end
 
 
 % elliptic motion
-if (~isnan(K)),
+if (~isnan(K))
    A      = Q./(1-Ecc);
-   Period = 2.*pi.*(A.^1.5)./K;   % in time units
+   %PeriodEran = 2.*pi.*(A.^1.5)./K;   % in time units - true for M= 1 solar mass
+   %Periodold = 2.*pi.*(A.^1.5)./K./sqrt(Mass);
+   %Period = 2*pi*sqrt(((A.*(constant.au)).^3)./((constant.G).*((Mass)).*(constant.SunM)))./86400; %Period [days] 
+   Period = 2.*pi.*sqrt( (A.*(constant.au)).^3 ./ (constant.G.*Mass.*constant.SunM) )./86400;  % Period [days]
+   
    N      = 2.*pi./Period;        % mean motion (n)
    M      = N.*T;                 % Mean anomaly n*(t-T)
    M      = mod(M,2.*pi);
@@ -86,7 +112,7 @@ IndUnsolved = (1:1:Ns).';
 
 I = 0;
 %while max(abs( E1(IndUnsolved)-E0(IndUnsolved) ))>Tol,
-while (any(abs(E1-E0)>Tol)),
+while (any(abs(E1-E0)>Tol))
    I = I + 1;
 %   [I, length(IndUnsolved)]
 

@@ -50,7 +50,7 @@ for Ih=1:1:Nh
                 error('Unknown data type');
         end
         Size     = size(Head(Ih).(ImageField));
-        Naxis    = size(Size);
+        Naxis    = numel(Size);
     
         
         Ik = Ik + 1;

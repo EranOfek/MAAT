@@ -72,7 +72,14 @@ else
    if (length(Samp)==1)
       SampVec = [MinVal:Samp:MaxVal].';
    else
-      SampVec = Samp;
+      if strcmp(Method,'spline')||strcmp(Method,'cubic')
+         % Those method support extrapolation
+         SampVec = Samp;
+      else
+         % Truncate Samp to the lists common interval to avoid NaN result
+         % outside this interval
+         SampVec = Samp(Samp>=MinVal&Samp<=MaxVal);
+      end
    end
 end
 
@@ -83,13 +90,13 @@ if (iscell(List1)==1)
    NewList1{1} = SampVec;
    NewList1{2} = Y1;
 else
-   NewList1 = [SampVec, Y1];
+   NewList1 = [SampVec(:), Y1(:)];
 end
 
 if (iscell(List2)==1)
    NewList2{1} = SampVec;
    NewList2{2} = Y2;
 else
-   NewList2 = [SampVec, Y2];
+   NewList2 = [SampVec(:), Y2(:)];
 end
 

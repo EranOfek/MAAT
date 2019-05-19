@@ -62,18 +62,19 @@ end
 if (numel(Spectrum)==1)
    % Assumes black-body spectrum
    %[Il,In,IlA,ImJy,Ip] = black_body(Spectrum,Filter(:,1));
-   Spectrum = blackbody(Spectrum,Filter(:,1),'cgs/A','Ang','mat');
+   %Spectrum = blackbody(Spectrum,Filter(:,1),'cgs/A','Ang','mat');
+   Spectrum = blackbody(Spectrum,Filter(:,1),'cgs/A','Ang'); %,'mat');
    %Spectrum = [Filter(:,1), IlA];
 end
 
 % Equalize Filter and Spectrum:
-[NewSpec,NewFilt]=eq_sampling(Spectrum,Filter,[],InterpMethod);
+[NewSpec,NewFilt]=AstroUtil.spec.eq_sampling([Spectrum.Wave,Spectrum.Int],Filter,[],InterpMethod);
 
 % applay extinction:
 if (isempty(Extin)==1)
    Extin = [NewSpec(:,1), ones(size(NewSpec,1),1)];
 end
-[NewSpec,NewExtin] = eq_sampling(NewSpec,Extin,NewSpec(:,1),InterpMethod);
+[NewSpec,NewExtin] = AstroUtil.spec.eq_sampling(NewSpec,Extin,NewSpec(:,1),InterpMethod);
 
 % Observd Spectrum:
 ObsSpec = [NewSpec(:,1), NewSpec(:,2) .* 4.*pi.* Radius.^2 ./(4.*pi.*(Dist.*Pc).^2)];

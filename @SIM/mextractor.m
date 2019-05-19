@@ -177,6 +177,7 @@ DefV.ColFile            = [];
 %                            'DELTA_S',...
 %                            'FLUX_PSF','FLUXERR_PSF','MAG_PSF','MAGERR_PSF','PSF_CHI2','PSF_CHI2BACK','PSF_CHI2CR',...
 %                            'FLUX_APER','FLUXERR_APER',...
+%                          
 %                            'BACK','BACK_STD','BACK_ANNULUS','STD_ANNULUS',...
 %                            'AZ','ALT','AIRMASS','PARANG',...
 %                            'PEAK_GRADBACK',...
@@ -188,17 +189,26 @@ DefV.ColFile            = [];
 %                            'FLUX_ISO','FLUXERR_ISO',...
 %                            'NEAREST_SRCIND','NEAREST_SRCDIST'};
                        
-DefV.ColCell            = {'XWIN_IMAGE','YWIN_IMAGE','XPEAK_IMAGE','YPEAK_IMAGE',...
+DefV.ColCell            = {'ISFORCE','XWIN_IMAGE','YWIN_IMAGE','XPEAK_IMAGE','YPEAK_IMAGE',...
                            'X2WIN_IMAGE','Y2WIN_IMAGE','XYWIN_IMAGE',...
                            'THETA','ELONGATION',...
                            'ALPHAWIN_J2000','DELTAWIN_J2000',...
                            'PEAKF_VAL','PEAKF_VALTOT',...
                            'SN','SN_UNF','SN_PSF','SN_ADD',...
+                           'MAG_SN',...
                            'FLUX_PSF','FLUXERR_PSF','MAG_PSF','MAGERR_PSF','PSF_CHI2','PSF_CHI2BACK','PSF_CHI2CR',...
                            'FLUX_APER','FLUXERR_APER',...
                            'BACK','BACK_STD','BACK_ANNULUS','STD_ANNULUS',...
                            'PEAK_GRADBACK',...
                            'FLAGS','NEAREST_SRCDIST'};
+                       
+% DefV.ColCell            = {'XWIN_IMAGE','YWIN_IMAGE','XPEAK_IMAGE','YPEAK_IMAGE',...
+%                            'X2WIN_IMAGE','Y2WIN_IMAGE','XYWIN_IMAGE',...
+%                            'THETA','ELONGATION',...
+%                            'ALPHAWIN_J2000','DELTAWIN_J2000',...
+%                            'PEAKF_VAL','PEAKF_VALTOT',...
+%                            'SN','SN_UNF','SN_ADD','FLAGS'};                       
+                       
 % Force positions
 DefV.ForcePos           = [];
 DefV.ForceCatCol        = {'XWIN_IMAGE','YWIN_IMAGE'};
@@ -957,11 +967,18 @@ for Isim=1:1:Nsim
     end
     
     % WCS positions
+    % % fixing a bug in WCS - need to fix this within SIM...
+    Wsim = ClassWCS.populate(Sim(Isim));
+   
     if (Calc.CooPeak)
-        [AlphaPeak,DeltaPeak] = xy2coo(Sim(Isim),PeakX,PeakY);   % radians
+        [AlphaPeak,DeltaPeak] = xy2coo(Wsim,[PeakX,PeakY]);   % radians
+        
+        %[AlphaPeak,DeltaPeak] = xy2coo(Sim(Isim),PeakX,PeakY);   % radians
     end
     if (Calc.CooWin)
-        [AlphaWin,DeltaWin] = xy2coo(Sim(Isim),Mom1.X,Mom1.Y);   % radians
+        [AlphaWin,DeltaWin] = xy2coo(Wsim,[Mom1.X,Mom1.Y]);   % radians
+        
+        %[AlphaWin,DeltaWin] = xy2coo(Sim(Isim),Mom1.X,Mom1.Y);   % radians
     end
         
     
@@ -1583,16 +1600,15 @@ for Isim=1:1:Nsim
                 % NaN if no source within search radius (InPar.NearSearchRad)
                 Cat(Isim).(CatField)(:,Icol) = NaN;
                 FlagNfound = [ResNear.Nfound]>0;
-                Cat(Isim).(CatField)(FlagNfound,Icol) = [ResNear.IndCat].';   
-                
+                Cat(Isim).(CatField)(FlagNfound,Icol) = cat(1,ResNear.IndCat); 
             case 'NEAREST_SRCDIST'
                 % Distance to nearest source [pixels]
                 % NaN if no source within search radius (InPar.NearSearchRad)
                 Cat(Isim).(CatField)(:,Icol) = NaN;
-                FlagNfound = [ResNear.Nfound]>0;
-                Cat(Isim).(CatField)(FlagNfound,Icol) = [ResNear.DistRAD].';   
+                FlagNfound = [ResNear.Nfound]>0; 
+                Cat(Isim).(CatField)(FlagNfound,Icol) = cat(1,ResNear.DistRAD);   
                 
-                if (any([ResNear.DistRAD]<1))
+                if (any(cat(1,ResNear.DistRAD))<1)
                     warning('There are some distance smaller than 1 - check why');
                 end
                   
@@ -1636,10 +1652,15 @@ for Isim=1:1:Nsim
     end    
     
     if (InPar.SearchCR)
-        for IcrMethod=1:1:numel(InPar.MethodCR)
-            % note that the 'chi2backcr' will work only if there are enough
-            % stars in the image
-            Cat(Isim) = flag_cr_mextractor(Cat(Isim),'Method',InPar.MethodCR{IcrMethod});
+        % check if can perform CR
+        
+        if (~isnan(col_get(Cat(Isim),'PSF_CHI2BACK') ))
+        
+            for IcrMethod=1:1:numel(InPar.MethodCR)
+                % note that the 'chi2backcr' will work only if there are enough
+                % stars in the image
+                Cat(Isim) = flag_cr_mextractor(Cat(Isim),'Method',InPar.MethodCR{IcrMethod});
+            end
         end
     end
    

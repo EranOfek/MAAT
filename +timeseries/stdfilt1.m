@@ -29,27 +29,27 @@ function Y=stdfilt1(X,N,BlockSize,Q)
 Def.N = 3;
 Def.BlockSize = length(X);
 Def.Q         = [];
-if (nargin==1),
+if (nargin==1)
    N         = Def.N;
    BlockSize = Def.BlockSize;
    Q         = Def.Q;
-elseif (nargin==2),
+elseif (nargin==2)
    BlockSize = Def.BlockSize;
    Q         = Def.Q;
-elseif (nargin==3),
+elseif (nargin==3)
    Q         = Def.Q;
-elseif (nargin==4),
+elseif (nargin==4)
    % do nothing
 else
    error('Illegal number of input arguments');
 end
 
-if (isempty(BlockSize)),
+if (isempty(BlockSize))
    BlockSize = Def.BlockSize;
 end
 
-if (~isempty(Q)),
-   if (length(Q)==1),
+if (~isempty(Q))
+   if (length(Q)==1)
       Q = [(1-Q)./2];
       Q = [Q, 1-Q];
    end
@@ -67,11 +67,11 @@ Y  = zeros(NX,1);
 % Work in chunks to save memory
 Indr = (0:N-1)';
 Indc = 1:NX;
-for I=1:BlockSize:NX,
+for I=1:BlockSize:NX
     Ind = Indc(ones(1,N),I:min(I+BlockSize-1,NX)) + ...
           Indr(:,ones(1,min(I+BlockSize-1,NX)-I+1));
     XX = reshape(Xe(Ind),N,min(I+BlockSize-1,NX)-I+1);
-    if (isempty(Q)),
+    if (isempty(Q))
        % use std
        Y(I:min(I+BlockSize-1,NX)) = std(XX,0,1);
     else
