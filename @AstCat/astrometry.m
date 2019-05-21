@@ -276,9 +276,13 @@ for Isim=1:1:Nsim
         %--- apply proper motion ---
         %---------------------------
         if (InPar.ApplyPM)
+            
             % applay proper motion, RV and parallax to star positions
             EpochOut = julday(Sim);  % get JD of image - (image epoch)
             %%% ----- !!!!!!!!!!!  ----- !!!!!!!!!!!!
+            if (isnan(EpochOut))
+                error('EpochOut must be defined if ApplyPM is true');
+            end
             
             %The field 'ApplyParallax' added to the apply proper motion
             %call
