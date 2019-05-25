@@ -204,8 +204,6 @@ switch lower(InPar.Type)
         
         T_phRW = 1.69 .* ( (v_sstar/10^8.5).^2 .* t_d.^2 ./ (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)) ).^ eps1 .* ...
             (InPar.Rs.*SolR./1e13).^0.25 ./ (InPar.kappa./0.34).^0.25 .* t_d.^-0.5;  % [eV]             
-%         T_phRW = 1.61 .* ( (v_sstar(:)/10^8.5).^2 .* t_d.^2 ./ (InPar.f_rho(:) .* InPar.Ms(:) .* (InPar.kappa(:)./0.34)) ).^ eps1 .* ...
-%             (InPar.Rs(:).*SolR./1e13).^0.25 ./ (InPar.kappa(:)./0.34).^0.25 .* t_d.^-0.5;  % [eV]             
         if isempty(InPar.Tcorr)
             Tcorr = 1.0;
         else
@@ -215,8 +213,6 @@ switch lower(InPar.Type)
         
         L_RW   = 2.1e42 .* ( (v_sstar/10^8.5) .* t_d.^2 ./ (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)) ).^ -eps2 .* ...
             (v_sstar/10^8.5).^2 .* (InPar.Rs.*SolR./1e13) ./ (InPar.kappa./0.34);  % [erg/s]
-%         L_RW   = 2e42 .* ( (v_sstar(:)/10^8.5) .* t_d.^2 ./ (InPar.f_rho(:) .* InPar.Ms(:) .* (InPar.kappa(:)./0.34)) ).^ -eps2 .* ...
-%             (v_sstar(:)/10^8.5).^2 .* (InPar.Rs(:).*SolR./1e13) ./ (InPar.kappa(:)./0.34);  % [erg/s]
         
         if true % Rc/R<<1
             Menv = InPar.f_rho.*(InPar.Ms)./(0.08+InPar.f_rho);
