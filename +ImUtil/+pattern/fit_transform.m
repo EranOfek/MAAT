@@ -50,6 +50,8 @@ if (~isempty(InPar.RefSelectFun))
     Flag = InPar.RefSelectFun(Ref,InPar.RefSelectFunPar{:});
     Ref  = Ref(Flag,:);
     Cat  = Cat(Flag,:);
+else
+    Flag = true(length(Ref),1);
 end
 
 RefX = Ref(:,InPar.ColRefX);
