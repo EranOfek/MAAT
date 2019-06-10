@@ -29,7 +29,7 @@ classdef AstFilter
         UserData
     end
     
-    % class constractor method
+    % class constructor method
     methods
         function AF=AstFilter(N,M)
             % Description: AstFilter constructor method
@@ -640,14 +640,28 @@ classdef AstFilter
                 % calculate filter half_width
                 % the width tranmit half the flux
                 Fnn = AstF(If).nT(~isnan(AstF(If).nT(:,2)),:);
-                CumSum = cumsum((Fnn(1:end-1,2)+eps).*diff(Fnn(:,1)));
-                if (CumSum(end)>CumSum(end-1))
-                    AstF(If).half_width = interp1(CumSum+eps,Fnn(1:end-1,1),0.75) - ...
-                                          interp1(CumSum+eps,Fnn(1:end-1,1),0.25);
-                else
-                    AstF(If).half_width = interp1(CumSum(1:end-1)+eps,Fnn(1:end-2,1),0.75) - ...
-                                          interp1(CumSum(1:end-1)+eps,Fnn(1:end-2,1),0.25);
+                
+%                 CumSum = cumsum((Fnn(1:end-1,2)+eps).*diff(Fnn(:,1)));
+                CumTrapz = cumtrapz(Fnn(:,1),Fnn(:,2));
+                if abs(CumTrapz(end)-1)>(1e-5)
+                    warning('Filter #%d, %s %s is not normalized',If, AstF(If).family, AstF(If).band)
                 end
+%                 for i=2:length(CumSum)
+%                     if CumSum(i)<=CumSum(i-1)
+%                         CumSum(i)=CumSum(i)+eps+(CumSum(i-1)-CumSum(i));
+%                     end
+%                 end
+                for i=2:length(CumTrapz)
+                    if CumTrapz(i)<=CumTrapz(i-1)
+                        CumTrapz(i)=CumTrapz(i-1)+eps;
+                    end
+                end
+%                 AstF(If).half_width = interp1(CumSum+eps,Fnn(1:end-1,1),0.75) - ...
+%                                       interp1(CumSum+eps,Fnn(1:end-1,1),0.25)
+                AstF(If).half_width = interp1(CumTrapz,Fnn(:,1),0.75) - ...
+                                      interp1(CumTrapz,Fnn(:,1),0.25);
+
+
                                   
                 % calculate fwhm
                 % the width at which the transmission drops by 1/2 relative
