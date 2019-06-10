@@ -347,7 +347,7 @@ classdef catsHTM
             %          - Directory in which to write wget lists.
             %            Default is '' - i.e., current dir.
             % Example:
-            % catsHTM.create_catalog_lists4wget('/raid/eran/catsHTM');
+            % catsHTM.create_catalog_lists4wget('/raid/eran/catsHTM','/raid/eran/catsHTM');
            
             if (nargin<2)
                 WriteDir = '';
@@ -364,9 +364,15 @@ classdef catsHTM
             F2 = Util.IO.rdir('*.mat');
             F  = [F1;F2];
             
+            if ~isempty(WriteDir)
+                WriteDir = sprintf('%s%s',WriteDir,filesep);
+            else
+                WriteDir = '';
+            end
+            
             Nf = numel(F);
-            FIDw = fopen(sprintf('%s%s%s',WriteDir,filesep,'list.euler.wget'),'w');
-            FIDc = fopen(sprintf('%s%s%s',WriteDir,filesep,'list.euler.checksum'),'w');
+            FIDw = fopen(sprintf('%s%s',WriteDir,'list.euler.wget'),'w');
+            FIDc = fopen(sprintf('%s%s',WriteDir,'list.euler.checksum'),'w');
             tic;
             for If=1:1:Nf
                 Pars1 = sprintf('%s -P .%s',Pars,F(If).folder(Nc+1:end));

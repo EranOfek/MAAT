@@ -23,7 +23,7 @@ function [Mag,Flag,FiltEffWave]=synphot(Spec,FiltFam,FiltName,MagSys,Algo,Ebv,R,
 %          - R_v of extinction. Default is 3.08.
 %          - Device to be use:
 %               'Bol' - Bolometric device which measure the total energy
-%                       within the band. 
+%                       within the band. [Default].
 %               'photon' - Photon Counting device which measure the number
 %                       of photons within the band
 % Output : - Synthetic magnitude.
@@ -211,7 +211,7 @@ switch lower(Algo)
     %        Freq    = convert.energy('A','Hz',Tran(:,1));
             Fvega   = trapz(Tran(:,1),Spec(:,2).*Tran(:,2)./VegaF(:,2));
         elseif strcmpi(Device,'photon')
-            error('Number of photon formula for vega was not implemented');
+            error('Number of photon formula for vega-magnitude was not implemented');
         end
         Mag     = -2.5.*log10(Fvega);
 
