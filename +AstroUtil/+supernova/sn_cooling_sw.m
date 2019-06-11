@@ -184,7 +184,10 @@ switch lower(InPar.Type)
                             ((InPar.f_rho.*(InPar.kappa./0.34).*InPar.Ms).^0.2 .* (v_sstar/10^8.5).^0.7) );  % [days]
         t_delta = 3*InPar.f_rho.^-0.1.*sqrt((InPar.kappa./0.34).*InPar.Ms)./(v_sstar/10^8.5);  % [days]
         % Opacity condition - Tph,RW>0.7eV: SW Eqs. 24
-        t_opac  = 7.4.*((InPar.Rs.*SolR./1e13)./(InPar.kappa./0.34)).^0.55;  % [days]
+%         t_opac  = 7.4.*((InPar.Rs.*SolR./1e13)./(InPar.kappa./0.34)).^0.55;  % [days]
+        % Opacity condition - Tph,RW>0.7ev, directly from eq. 4 (eq. 24 ignores the eps1 prefactor)
+        t_opac = (1.61/0.7*((v_sstar/10^8.5).^2./(InPar.f_rho.*(InPar.kappa./0.34).*InPar.Ms)).^eps1.*...
+                  ((InPar.Rs.*SolR./1e13)./(InPar.kappa./0.34)).^0.25                                     ).^(2./(1-4.*eps1));
         t_max   = t_tr/a;  % [days] - text below eq. 18
 
     case 'bsg'
@@ -201,8 +204,6 @@ switch lower(InPar.Type)
         
         T_phRW = 1.69 .* ( (v_sstar/10^8.5).^2 .* t_d.^2 ./ (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)) ).^ eps1 .* ...
             (InPar.Rs.*SolR./1e13).^0.25 ./ (InPar.kappa./0.34).^0.25 .* t_d.^-0.5;  % [eV]             
-%         T_phRW = 1.61 .* ( (v_sstar(:)/10^8.5).^2 .* t_d.^2 ./ (InPar.f_rho(:) .* InPar.Ms(:) .* (InPar.kappa(:)./0.34)) ).^ eps1 .* ...
-%             (InPar.Rs(:).*SolR./1e13).^0.25 ./ (InPar.kappa(:)./0.34).^0.25 .* t_d.^-0.5;  % [eV]             
         if isempty(InPar.Tcorr)
             Tcorr = 1.0;
         else
@@ -212,8 +213,6 @@ switch lower(InPar.Type)
         
         L_RW   = 2.1e42 .* ( (v_sstar/10^8.5) .* t_d.^2 ./ (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)) ).^ -eps2 .* ...
             (v_sstar/10^8.5).^2 .* (InPar.Rs.*SolR./1e13) ./ (InPar.kappa./0.34);  % [erg/s]
-%         L_RW   = 2e42 .* ( (v_sstar(:)/10^8.5) .* t_d.^2 ./ (InPar.f_rho(:) .* InPar.Ms(:) .* (InPar.kappa(:)./0.34)) ).^ -eps2 .* ...
-%             (v_sstar(:)/10^8.5).^2 .* (InPar.Rs(:).*SolR./1e13) ./ (InPar.kappa(:)./0.34);  % [erg/s]
         
         if true % Rc/R<<1
             Menv = InPar.f_rho.*(InPar.Ms)./(0.08+InPar.f_rho);
@@ -238,7 +237,10 @@ switch lower(InPar.Type)
                         
         t_delta = 3*InPar.f_rho.^-0.1.*sqrt((InPar.kappa./0.34).*InPar.Ms)./(v_sstar/10^8.5);  % [d]
         % Opacity condition - Tph,RW>0.7eV: SW Eqs. 24
-        t_opac  = 7.4.*((InPar.Rs.*SolR./1e13)./(InPar.kappa./0.34)).^0.55;  % [d]
+%        t_opac  = 7.4.*((InPar.Rs.*SolR./1e13)./(InPar.kappa./0.34)).^0.55;  % [d]
+        % Opacity condition - Tph,RW>0.7ev, directly from eq. 4 (eq. 24 ignores the eps1 prefactor)
+        t_opac = (1.69/0.7*((v_sstar/10^8.5).^2./(InPar.f_rho.*(InPar.kappa./0.34).*InPar.Ms)).^eps1.*...
+                  ((InPar.Rs.*SolR./1e13)./(InPar.kappa./0.34)).^0.25                                     ).^(2./(1-4.*eps1));
         t_max   = t_tr/a;  % [d] - text below eq. 18
                
 otherwise
