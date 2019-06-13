@@ -21,9 +21,15 @@ end
 
 URL = sprintf('http://ned.ipac.caltech.edu/cgi-bin/objsearch?objname=%s&extend=no&hconst=73&omegam=0.27&omegav=0.73&corr_z=1&out_csys=Equatorial&out_equinox=J2000.0&obj_sort=RA+or+Longitude&of=pre_text&zv_breaker=30000.0&list_limit=5&img_stamp=YES',Name);
 
-Str = urlread(URL);
+%Str = urlread(URL);
+Str = webread(URL);
+
 %SubStr = regexp(Str,'<A HREF="#ObjNo1">1.*\d\dh\d\dm\d\d\.\ds\s[+-]\d\dd\d\dm\d\ds.{1,100}(<A HREF)','match');
 Coo    = regexp(Str,'<A HREF="#ObjNo1">1.*(?<RA>\d\dh\d\dm\d\d\.\ds)\s(?<Dec>[+-]\d\dd\d\dm\d\ds).{1,100}(<A HREF)','names');
-RA  = celestial.coo.convertdms(Coo.RA,'SHh',OutUnits);
-Dec = celestial.coo.convertdms(Coo.Dec,'SDh',OutUnits);
-
+if (~isempty(Coo))
+    RA  = celestial.coo.convertdms(Coo.RA,'SHh',OutUnits);
+    Dec = celestial.coo.convertdms(Coo.Dec,'SDh',OutUnits);
+else
+    RA  = NaN;
+    Dec = NaN;
+end

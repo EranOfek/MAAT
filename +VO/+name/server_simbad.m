@@ -30,12 +30,15 @@ end
 
 URL = sprintf('http://simbad.u-strasbg.fr/simbad/sim-basic?Ident=%s&submit=SIMBAD+search',Name);
 
-Str = urlread(URL);
+%Str = urlread(URL);
+Str = webread(URL);
+
 %Coo    = regexp(Str,'ICRS.*J2000.*TT.{1,5}(?<RA>\d\d\s\d\d\s\d\d\.\d\d\d)\s(?<Dec>[+-]\d\d\s\d\d\s\d\d\.\d\d).*<A HREF=','names');
 Coo    = regexp(Str,sprintf('%s.{1,150}TT.{1,5}(?<RA>\\d\\d\\s\\d\\d\\s\\d\\d\\.\\d{0,7})\\s(?<Dec>[+-]\\d\\d\\s\\d\\d\\s\\d\\d\\.\\d{0,6}).*<A HREF=',CooType),'names');
 if (any(size(Coo) == 0))
-    error(['Did not find ' Name ' in SIMBAD'])
+    RA  = NaN;
+    Dec = NaN;
+else
+    RA  = celestial.coo.convertdms(Coo.RA,'SHb',OutUnits);
+    Dec = celestial.coo.convertdms(Coo.Dec,'SDb',OutUnits);
 end
-RA  = celestial.coo.convertdms(Coo.RA,'SHb',OutUnits);
-Dec = celestial.coo.convertdms(Coo.Dec,'SDb',OutUnits);
-
