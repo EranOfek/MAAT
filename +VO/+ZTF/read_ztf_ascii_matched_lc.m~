@@ -2,7 +2,6 @@ function [Data,ColCell]=read_ztf_ascii_matched_lc(File,varargin)
 % Read ZTF ascii file of matched light curves
 % Package: VO.ZTF
 % Description: Read ZTF ascii file of matched light curves.
-%              Optionally save the data and meta data in an HDF5 file.
 %              The matched light curves files and description are
 %              available from:
 %              https://www.ztf.caltech.edu/page/dr1#12c
@@ -85,8 +84,6 @@ while ~feof(FID)
 end
 
 fclose(FID);
-
-% Save the data in HDF5 file
 if ~isempty(InPar.H5_FileName)
     Nobj = numel(Data);
     Nep = [Data.Nep];
@@ -111,14 +108,14 @@ if ~isempty(InPar.H5_FileName)
     end
     
     IndAllLC = [ [Data.RA].'./RAD, [Data.Dec].'./RAD, I1, I2, [Data.Nep].',...
-                 (1:1:Nobj).', [Data.ID].', [Data.FilterID].',...
+                 [(1:1:Nobj).', [Data.ID].', [Data.FilterID].',...
                  [Data.Field].', [Data.RcID].',...
                  MeanMag, StdMag, RStdMag, MaxMean,MinMean, Chi2];
                  
                  
     
-    HDF5.save(IndAllLC,InPar.H5_FileName,InPar.H5_DataSetLC);
-    HDF5.save(LC,InPar.H5_FileName,InPar.H5_DataSetLC);
+    %HDF5.save(
+    HDF5.save(LC,'zz.hdf5','/LC');
 
 end
 

@@ -92,7 +92,7 @@ else
 end
 
 for Ihtm=1:1:Nhtm
-    Ihtm
+    %Ihtm
     % check if HTM mean Dec is in dec range
     IndHTM = ListIndexHTM(Ihtm);
     MeanRA  = mean(HTM(IndHTM).coo(:,1));
@@ -113,7 +113,11 @@ for Ihtm=1:1:Nhtm
         
         if (Nsrc(Ihtm,2)>0)
             [FileName,DataName]=HDF5.get_file_var_from_htmid(InPar.CatName,IndHTM,InPar.NfilesInHDF);
-            HDF5.save_cat(FileName,DataName,CatCC(Flag,:),InPar.ColDec,InPar.IndStep);
+            %try
+                HDF5.save_cat(FileName,DataName,CatCC(Flag,:),InPar.ColDec,InPar.IndStep);
+            %catch
+            %    fprintf('Failed save_cat: Ihtm=%d\n',Ihtm);
+            %end
         end
         
     end
