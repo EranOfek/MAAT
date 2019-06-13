@@ -70,8 +70,6 @@ for Ilink=1:1:Nlink
                     Suffix = 'scimrefdiffimg.fits.fz';
                 case 'diffpsf'
                     Suffix = 'diffimgpsf.fits';
-                case 'daopsfcent'
-                    Suffix = 'sciimgdaopsfcent.fits'; 
                 
                 otherwise
                     error('Unknown Product option');

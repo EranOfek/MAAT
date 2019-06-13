@@ -16,7 +16,7 @@ function fun_template(FunName,ToolBox,Path)
 
 
 if (nargin==2)
-    Path = '~/matlab/MAAT/';
+    Path = '~/matlab/fun/';
 end
 FullPath = sprintf('%s%s%s%s',Path,ToolBox,filesep,FunName);
 

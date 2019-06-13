@@ -23,7 +23,7 @@ function [Mag,Flag,FiltEffWave]=synphot(Spec,FiltFam,FiltName,MagSys,Algo,Ebv,R,
 %          - R_v of extinction. Default is 3.08.
 %          - Device to be use:
 %               'Bol' - Bolometric device which measure the total energy
-%                       within the band. [Default].
+%                       within the band. 
 %               'photon' - Photon Counting device which measure the number
 %                       of photons within the band
 % Output : - Synthetic magnitude.
@@ -96,7 +96,14 @@ if (iscell(Spec))
         error('MAAT:AstroUtils:spec:synphot:spec_wave_no_vector',...
             'Error. The first component of the Spec cell must be a vector.');
     else
-        if ismatrix(Spec{2})
+        if isvector(Spec{2})
+            if length(Spec{2})~=length(Spec{1})
+                error('MAAT:AstroUtils:spec:synphot:spec_wrong_elements',...
+                    'Error. The number of elements in the two components of the Spec cell must be in agreement with eachother.');
+            else
+                Spec{2}=Spec{2}(:);
+            end
+        elseif ismatrix(Spec{2})
             if size(Spec{2},1)~=length(Spec{1})
                 if size(Spec{2},2)==length(Spec{1})
                     Spec{2} = Spec{2}.';
@@ -104,11 +111,6 @@ if (iscell(Spec))
                     error('MAAT:AstroUtils:spec:synphot:spec_wrong_elements',...
                         'Error. One of the two dimensions of the second component of the Spec cell must be in agreement with the number of elements of the first component.');
                 end
-            end
-        elseif isvector(Spec{2})
-            if length(Spec{2})~=length(Spec{1})
-                error('MAAT:AstroUtils:spec:synphot:spec_wrong_elements',...
-                    'Error. The number of elements in the two components of the Spec cell must be in agreement with eachother.');
             end
         else
             error('MAAT:AstroUtils:spec:synphot:spec_wrong_elements',...
@@ -141,6 +143,9 @@ switch lower(Algo)
         % Interp transminssion curve on Spec
         if iscell(Spec)
             [Spec,Tran]     = AstroUtil.spec.eq_sampling(Spec,Tran,Spec{1},InterpMethod);
+            if isvector(Spec{2})
+                Spec{2}=Spec{2}(:);
+            end
 %             I = find(~isnan(Tran(:,2)));
 %             Spec{1} = Spec{1}(I,:);
 %             Spec{2} = Spec{2}(I,:);
@@ -208,14 +213,6 @@ switch lower(Algo)
         
      case 'vega'
         load vega_spec.mat;
-<<<<<<< HEAD
-        if strcmpi(Device,'bol')
-            VegaF   = AstroUtil.spec.eq_sampling(vega_spec,Tran,Tran(:,1));
-    %        Freq    = convert.energy('A','Hz',Tran(:,1));
-            Fvega   = trapz(Tran(:,1),Spec(:,2).*Tran(:,2)./VegaF(:,2));
-        elseif strcmpi(Device,'photon')
-            error('Number of photon formula for vega-magnitude was not implemented');
-=======
         switch lower(Device)
             case 'bol'
                 VegaF   = AstroUtil.spec.eq_sampling(vega_spec,Tran,Tran(:,1));
@@ -225,7 +222,6 @@ switch lower(Algo)
                 error('Number of photon formula for vega was not implemented');
             otherwise
                 error('Unknown Device option');           
->>>>>>> 84eb272f0a9e5a34ce0312e017e36fb7ed3a91e3
         end
         Mag     = -2.5.*log10(Fvega);
 

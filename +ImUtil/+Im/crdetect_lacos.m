@@ -67,7 +67,6 @@ DefV.BWmorphN = 1;
 DefV.MaskType = 'uint16';
 DefV.IntMethod= 2;
 DefV.NoiseMethod = 'poisson'; % {'poisson','mode_fit'}
-DefV.Method      = 'regionfill';
 %InPar = set_varargin_keyval(DefV,'n','use',varargin{:});
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
@@ -122,9 +121,7 @@ if (~isempty(InPar.BWmorph))
 end    
 
 % bit index
-if (~isnumeric(InPar.Bit_CR))
-    InPar.Bit_CR = get_bitmask_def(InPar.Bit_CR,'Bit_CR_LACOS');
-end
+InPar.Bit_CR = get_bitmask_def(InPar.Bit_CR,'Bit_CR_LACOS');
 
 if (isempty(InPar.Bit_CR))
     % Mask output is a logical image
@@ -141,12 +138,7 @@ else
 end
 
 if (nargout>1)
-    switch lower(InPar.Method)
-        case 'ininterp'
-            CleanImage = ImUtil.Im.iminterp(Image,ImageCR,'IntMethod',InPar.IntMethod);
-        case 'regionfill'
-            CleanImage = regionfill(Image,ImageCR);
-    end
+   CleanImage = ImUtil.Im.iminterp(Image,ImageCR,'IntMethod',InPar.IntMethod);
 end
 
 

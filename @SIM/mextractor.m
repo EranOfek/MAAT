@@ -735,7 +735,6 @@ for Isim=1:1:Nsim
             % default filter (e.g., optimal point source filter).
             % Note that here we assume that InPar.Filter is a 2D array.
             InPar.AddFilter = ImUtil.Im.conv2_cell(InPar.AddFilter,ImagePsf,'auto');
-            
         end
     end
 

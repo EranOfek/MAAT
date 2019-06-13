@@ -15,7 +15,7 @@ function Flux=blackbody_flux(Temp,WaveRange,Radius,Dist)
 % See Also: blackbody_mag.m, blackbody_bolmag.m
 % Reliable: 2
 %------------------------------------------------------------------------------
-Pc  = constant.pc('cgs');
+Pc  = get_constant('pc','cgs');
 
 DefRadius = 1;
 DefDist   = 10;
@@ -42,7 +42,7 @@ end
 
 Flux = zeros(Nt,1).*NaN;
 for It=1:1:Nt,
-   [Il,If] = AstroUtil.spec.black_body(Temp(It),WaveRange);
+   [Il,If] = black_body(Temp(It),WaveRange);
    Spec    = [WaveRange, Il.*1e-8];
 
    Flux(It) = trapz(Spec(:,1),Spec(:,2));

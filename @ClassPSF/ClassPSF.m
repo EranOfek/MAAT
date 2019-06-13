@@ -480,7 +480,7 @@ classdef ClassPSF
                     end
                     
                     Epsilon       = (1:1:numel(CurveGrowth)).*eps;
-                    RadHalf(Ipsf) = interp1(CurveGrowth.'+10.*Epsilon,RadVec,0.5);
+                    RadHalf(Ipsf) = interp1(CurveGrowth.'+Epsilon,RadVec,0.5);
                 end
                 
          end

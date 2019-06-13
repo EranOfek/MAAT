@@ -604,8 +604,7 @@ classdef SIM < AstCat & MASK & ClassPSF % & IM
             % Package: @SIM
             obj = true;  %isstruct(Sim) || isa(Sim,'SIM');
         end
-        
-       
+
         
 
         
