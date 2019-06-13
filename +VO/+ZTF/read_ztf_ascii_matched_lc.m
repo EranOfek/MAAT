@@ -93,32 +93,61 @@ if ~isempty(InPar.H5_FileName)
     I1  = cumsum([1,Nep]');
     I2  = [I1(2:end)-1; I1(end)+Nep(end)-1];
     
-    % RA Dec I1, I2, Nep, StarIndInFile, ID, FilterID, Field, RcID,
-    % MeanMag, MedianMag
     MeanMag = nan(Nobj,1);
     StdMag  = nan(Nobj,1);
     RStdMag = nan(Nobj,1);
-    MaxMean = nan(Nobj,1);
-    MinMean = nan(Nobj,1);
+    MaxMag  = nan(Nobj,1);
+    MinMag  = nan(Nobj,1);
     Chi2    = nan(Nobj,1);
-    for Iobj=1:1:Nobj
-        MeanMag(Iobj) = mean(LC(Iobj).LC(Col.Mag,:));
-        StdMag(Iobj)  = std(LC(Iobj).LC(Col.Mag,:));
-        RStdMag(Iobj) = Util.stat.rstd(LC(Iobj).LC(Col.Mag,:));
-        MaxMean(Iobj) = max(LC(Iobj).LC(Col.Mag,:)) - MeanMag(Iobj);
-        MinMean(Iobj) = MeanMag(Iobj) - min(LC(Iobj).LC(Col.Mag,:));
-        Chi2(Iobj)    = sum((LC(Iobj).LC(Col.Mag,:) - MeanMag(Iobj)).^2./LC(Iobj).LC(Col.MagErr,:).^2);
-    end
+    MaxPower= nan(Nobj,1);
+    FreqMaxPower= nan(Nobj,1);
     
+    FreqVec = (0:1./600:4)';
+    
+    Pool = parpool(12);
+    
+    tic;
+    parfor Iobj=1:1:Nobj
+        MeanMag(Iobj) = mean(Data(Iobj).LC(Col.Mag,:));
+        
+        StdMag(Iobj)  = std(Data(Iobj).LC(Col.Mag,:));
+      
+        RStdMag(Iobj) = Util.stat.rstd(Data(Iobj).LC(Col.Mag,:).');
+       
+        MaxMean(Iobj) = max(Data(Iobj).LC(Col.Mag,:)) - MeanMag(Iobj);
+        MinMean(Iobj) = MeanMag(Iobj) - min(Data(Iobj).LC(Col.Mag,:));
+        Chi2(Iobj)    = sum((Data(Iobj).LC(Col.Mag,:) - MeanMag(Iobj)).^2./Data(Iobj).LC(Col.MagErr,:).^2);
+        
+        
+        P = timeseries.period_normnl(Data(Iobj).LC( [Col.HMJD, Col.Mag],:).',FreqVec);
+        [MaxPower(Iobj),MaxInd] = max(P(:,2));
+        FreqMaxPower(Iobj) = FreqVec(MaxInd);
+        
+    end
+    toc
+    
+    delete(gcp('nocreate'))
+    
+    % RA Dec I1, I2, Nep, StarIndInFile, ID, FilterID, Field, RcID,
+    % MeanMag, StdMag, RStdMag, MaxMag, MinMag, Chi2, MaxPower,
+    % FreqMaxPower
+    ColCellInd = {'RA','Dec','I1','I2','Nep','StarIndInFile', 'ID',...
+                  'FilterID','Field','RcID',...
+                  'MeanMag', 'StdMag', 'RStdMag', 'MaxMag', 'MinMag',...
+                  'Chi2', 'MaxPower', 'FreqMaxPower'};
+    ColInd = cell2struct(num2cell(1:1:numel(ColCellInd)),ColCellInd,2);
+
     IndAllLC = [ [Data.RA].'./RAD, [Data.Dec].'./RAD, I1, I2, [Data.Nep].',...
                  (1:1:Nobj).', [Data.ID].', [Data.FilterID].',...
                  [Data.Field].', [Data.RcID].',...
-                 MeanMag, StdMag, RStdMag, MaxMean,MinMean, Chi2];
+                 MeanMag, StdMag, RStdMag, MaxMag,MinMag, Chi2, MaxPower, FreqMaxPower];
                  
                  
+    KeysInd = [ColCellInd', num2cell(1:1:numel(ColCellInd))'];
+    HDF5.save(IndAllLC,InPar.H5_FileName,InPar.H5_DataSetLC,KeysInd);
     
-    HDF5.save(IndAllLC,InPar.H5_FileName,InPar.H5_DataSetLC);
-    HDF5.save(LC,InPar.H5_FileName,InPar.H5_DataSetLC);
+    KeysLC = [ColCell', num2cell(1:1:numel(ColCell))'];
+    HDF5.save(LC,InPar.H5_FileName,InPar.H5_DataSetLC,KeysLC);
 
 end
 
