@@ -25,7 +25,7 @@ function [FreqVec,PS]=periodmulti_norm(T,Data,FreqVec,Norm)
 %--------------------------------------------------------------------------
 
 Def.Norm = 'Var';
-if (nargin==3),
+if (nargin==3)
    Norm = Def.Norm;
 end
 
@@ -39,8 +39,8 @@ Ns      = size(Data,2);   % number of columns (i.e., time series)
 M       = bsxfun(@minus,Data,mean(Data));
 PS      = zeros(Nf,Ns);
 %PS(:,1) = FreqVec;
-for FreqInd=1:1:Nf,
-   PS(FreqInd,:) = abs(sum(bsxfun(@times,M,exp(-2.*pi.*1i.*T.*FreqVec(FreqInd))))).^2./N;
+for FreqInd=1:1:Nf
+   PS(FreqInd,:) = abs(nansum(bsxfun(@times,M,exp(-2.*pi.*1i.*T.*FreqVec(FreqInd))))).^2./N;
 end
 
 switch lower(Norm)
