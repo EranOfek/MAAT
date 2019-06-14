@@ -114,8 +114,8 @@ if ~isempty(InPar.H5_FileName)
       
         RStdMag(Iobj) = Util.stat.rstd(Data(Iobj).LC(Col.Mag,:).');
        
-        MaxMean(Iobj) = max(Data(Iobj).LC(Col.Mag,:)) - MeanMag(Iobj);
-        MinMean(Iobj) = MeanMag(Iobj) - min(Data(Iobj).LC(Col.Mag,:));
+        MaxMag(Iobj) = max(Data(Iobj).LC(Col.Mag,:)) - MeanMag(Iobj);
+        MinMag(Iobj) = MeanMag(Iobj) - min(Data(Iobj).LC(Col.Mag,:));
         Chi2(Iobj)    = sum((Data(Iobj).LC(Col.Mag,:) - MeanMag(Iobj)).^2./Data(Iobj).LC(Col.MagErr,:).^2);
         
         
