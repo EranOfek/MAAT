@@ -77,7 +77,7 @@ Cat=VO.ZTF.irsa_query_ztf_images(RA,Dec,'Where',InPar.Where,'Intersect',InPar.In
                                  'User',InPar.User,'Pass',InPar.Pass,...
                                  InPar.QueryPar{:});
                              
-if isempty(Cat.Cat)
+if isempty(Cat)
    % If Cat is empty than exit
    Files = [];
    Links = [];
