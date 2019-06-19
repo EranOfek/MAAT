@@ -42,6 +42,10 @@ for FreqInd=1:1:Nf
 
    %PS(FreqInd,2) = abs(sum(M.*exp(-2.*pi.*1i.*(T-Tau).*FreqVec(FreqInd)))).^2./N;
    
+   %Tmp = 2.*pi.*FreqVec(FreqInd).*(T-Tau);
+   %PS(FreqInd,2) = 0.5.*( sum(M.*cos(Tmp) ).^2./sum( cos(Tmp  ).^2 )  + ...
+   %                       sum(M.*sin(Tmp) ).^2./sum( sin(Tmp  ).^2 )    );
+                      
    PS(FreqInd,2) = 0.5.*( sum(M.*cos(2.*pi.*FreqVec(FreqInd).*(T-Tau)) ).^2./sum( cos(2.*pi.*FreqVec(FreqInd).*(T-Tau)  ).^2 )  + ...
                           sum(M.*sin(2.*pi.*FreqVec(FreqInd).*(T-Tau)) ).^2./sum( sin(2.*pi.*FreqVec(FreqInd).*(T-Tau)  ).^2 )    );
                       
