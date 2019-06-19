@@ -26,10 +26,10 @@ function PS=period_normnl(Data,FreqVec,Norm,SubMean)
 
 Def.Norm    = 'Var';
 Def.SubMean = true;
-if (nargin==2),
+if (nargin==2)
     Norm    = Def.Norm;
     SubMean = Def.SubMean;
-elseif (nargin==3),
+elseif (nargin==3)
     SubMean = Def.SubMean;
 else
     % do nothing
@@ -41,7 +41,7 @@ Col.M = 2;
 T       = Data(:,Col.T);
 N       = numel(T);
 
-if (SubMean),
+if (SubMean)
     M       = Data(:,Col.M) - mean(Data(:,Col.M));
 else
     M       = Data(:,Col.M);

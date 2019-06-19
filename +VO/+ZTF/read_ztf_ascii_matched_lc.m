@@ -27,7 +27,13 @@ function [Data,ColCell]=read_ztf_ascii_matched_lc(File,varargin)
 %     By : Eran O. Ofek                    Jun 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: [Data,ColCell]=VO.ZTF.read_ztf_ascii_matched_lc(868);
-%          
+%          % example: convert all txt files tp HDF5 including statistical properties
+%          F=dir('field*.txt');
+%          for I=1:1:numel(F),
+%              FI=str2double(F(I).name(6:11));
+%              FN=sprintf('ztf_%06d.hdf5',FI);
+%              [Data,ColCell]=VO.ZTF.read_ztf_ascii_matched_lc(FI,'H5_FileName',FN);
+%          end
 % Reliable: 2
 %--------------------------------------------------------------------------
 
@@ -196,8 +202,8 @@ function IndAllLC=calc_prop(Data,Nlast,Col)
         MinMag(IobjP) = MeanMag(IobjP) - min(Data(IobjP).LC(Col.Mag,:));
         Chi2(IobjP)    = sum((Data(IobjP).LC(Col.Mag,:) - MeanMag(IobjP)).^2./Data(IobjP).LC(Col.MagErr,:).^2);
         
-        
         P = timeseries.period_normnl(Data(IobjP).LC( [Col.HMJD, Col.Mag],:).',FreqVec);
+        
         [MaxPower(IobjP),MaxInd] = max(P(:,2));
         FreqMaxPower(IobjP) = FreqVec(MaxInd);
         

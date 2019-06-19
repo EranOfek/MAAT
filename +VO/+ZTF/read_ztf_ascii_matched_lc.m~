@@ -27,6 +27,8 @@ function [Data,ColCell]=read_ztf_ascii_matched_lc(File,varargin)
 %     By : Eran O. Ofek                    Jun 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: [Data,ColCell]=VO.ZTF.read_ztf_ascii_matched_lc(868);
+%          F=dir('field*.txt');
+%          for I=1:1:numel(F), F(I).
 % Reliable: 2
 %--------------------------------------------------------------------------
 
@@ -146,8 +148,11 @@ if ~isempty(InPar.H5_FileName)
     
 
     KeysInd = [ColCellInd', num2cell(1:1:numel(ColCellInd))'];
-    HDF5.save(IndAllLC,InPar.H5_FileName,InPar.H5_DataSetLC,KeysInd);
-             
+    h5create(InPar.H5_FileName,InPar.H5_DataSetInd,size(IndAllLC));
+    h5write(InPar.H5_FileName,InPar.H5_DataSetInd,IndAllLC);
+    HDF5.writeatt(InPar.H5_FileName,InPar.H5_DataSetInd,KeysInd');
+    
+    
     delete(gcp('nocreate'))
      
 end
