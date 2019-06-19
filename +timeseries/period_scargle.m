@@ -39,8 +39,6 @@ PS      = zeros(Nf,2);
 PS(:,1) = FreqVec;
 for FreqInd=1:1:Nf
    Tau           = atan(sum(sin(4.*pi.*FreqVec(FreqInd).*T))./sum(cos(4.*pi.*FreqVec(FreqInd).*T)))./(4.*pi.*FreqVec(FreqInd));
-
-   %PS(FreqInd,2) = abs(sum(M.*exp(-2.*pi.*1i.*(T-Tau).*FreqVec(FreqInd)))).^2./N;
    
    %Tmp = 2.*pi.*FreqVec(FreqInd).*(T-Tau);
    %PS(FreqInd,2) = 0.5.*( sum(M.*cos(Tmp) ).^2./sum( cos(Tmp  ).^2 )  + ...

@@ -75,9 +75,16 @@ end
 
 % 
 %PS = [FreqVec, abs(sum(bsxfun(@times,M.',exp(-2*pi*1i.*FreqVec * T.')),2)).^2./N];         
-PS = [FreqVec, abs(sum(bsxfun(@times,M.',exp(-2*pi*1i.*bsxfun(@times,FreqVec,T.'))),2)).^2./N];   % faster!
+%PS = [FreqVec, abs(sum(bsxfun(@times,M.',exp(-2*pi*1i.*bsxfun(@times,FreqVec,T.'))),2)).^2./N];   % faster! not in new matlab versions
 
-PS1 = [FreqVec, abs(sum(M.'.*exp(-2*pi*1i.*(FreqVec.*T.')),2)).^2./N];
+error('bug - not equal to period_scargle')
+Tau = atan(sum(sin(4.*pi.*FreqVec.*T.'))./sum(cos(4.*pi.*FreqVec.*T.')))./(4.*pi.*FreqVec);
+
+Tmp = [2.*pi.*FreqVec.*(T.'-Tau)].';
+PS  = [FreqVec, 0.5.*( sum(M.*cos(Tmp) ).^2./sum( cos(Tmp  ).^2 )  + ...
+                       sum(M.*sin(Tmp) ).^2./sum( sin(Tmp  ).^2 )  ).'];
+       
+
 
 switch lower(Norm)
  case 'amp'
