@@ -48,6 +48,7 @@ DefV.IndStep              = 30;
 DefV.SaveInd              = true;
 DefV.HTM                  = [];
 DefV.LevelHTM             = [];
+DefV.CheckExist           = true;
 
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
@@ -113,8 +114,17 @@ for Ihtm=1:1:Nhtm
         
         if (Nsrc(Ihtm,2)>0)
             [FileName,DataName]=HDF5.get_file_var_from_htmid(InPar.CatName,IndHTM,InPar.NfilesInHDF);
+            Exist = false;
+            if (InPar.CheckExist)
+                try
+                    In = h5info(FileName);
+                    Exist = any(strcmp({In.Datasets.Name},DataName));
+                end
+            end
             %try
+            if (~Exist)
                 HDF5.save_cat(FileName,DataName,CatCC(Flag,:),InPar.ColDec,InPar.IndStep);
+            end
             %catch
             %    fprintf('Failed save_cat: Ihtm=%d\n',Ihtm);
             %end

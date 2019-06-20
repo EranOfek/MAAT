@@ -29,10 +29,11 @@ function [Data,ColCell]=read_ztf_ascii_matched_lc(File,varargin)
 % Example: [Data,ColCell]=VO.ZTF.read_ztf_ascii_matched_lc(868);
 %          % example: convert all txt files tp HDF5 including statistical properties
 %          F=dir('field*.txt');
-%          for I=1:1:numel(F),
+%          for I=28:1:numel(F),
+%               I
 %              FI=str2double(F(I).name(6:11));
-%              FN=sprintf('ztf_%06d.hdf5',FI);
-%              [Data,ColCell]=VO.ZTF.read_ztf_ascii_matched_lc(FI,'H5_FileName',FN);
+%              FN=sprintf('ztfLCDR1_%06d.hdf5',FI)
+%              [~,ColCell]=VO.ZTF.read_ztf_ascii_matched_lc(FI,'H5_FileName',FN);
 %          end
 % Reliable: 2
 %--------------------------------------------------------------------------
@@ -104,8 +105,16 @@ while ~feof(FID)
     Data(Iobj).RcID     = Header(6);  % readout channel ID (CCD/quad 0..63)
     Data(Iobj).RA       = Header(7);  % RA in ref
     Data(Iobj).Dec      = Header(8);
-    Data(Iobj).LC       = reshape(LC,Ncol,Nep);
     
+    if (isempty(LC))
+        Data(Iobj).LC = [];
+        
+        FID = fopen('Problems.txt','a+');
+        fprintf(FID,'ID %d\n',Header(2));
+        fclose(FID);
+    else
+        Data(Iobj).LC       = reshape(LC,Ncol,Nep);
+    end
     if ~isempty(InPar.H5_FileName)
         if (Iobj==1)
             h5create(InPar.H5_FileName,InPar.H5_DataSetLC,[Inf 5],'ChunkSize',[5 5]);
@@ -192,21 +201,22 @@ function IndAllLC=calc_prop(Data,Nlast,Col)
     
     %tic;
     parfor IobjP=1:1:Nobj
-        MeanMag(IobjP) = mean(Data(IobjP).LC(Col.Mag,:));
-        
-        StdMag(IobjP)  = std(Data(IobjP).LC(Col.Mag,:));
-      
-        RStdMag(IobjP) = Util.stat.rstd(Data(IobjP).LC(Col.Mag,:).');
-       
-        MaxMag(IobjP) = max(Data(IobjP).LC(Col.Mag,:)) - MeanMag(IobjP);
-        MinMag(IobjP) = MeanMag(IobjP) - min(Data(IobjP).LC(Col.Mag,:));
-        Chi2(IobjP)    = sum((Data(IobjP).LC(Col.Mag,:) - MeanMag(IobjP)).^2./Data(IobjP).LC(Col.MagErr,:).^2);
-        
-        P = timeseries.period_normnl(Data(IobjP).LC( [Col.HMJD, Col.Mag],:).',FreqVec);
-        
-        [MaxPower(IobjP),MaxInd] = max(P(:,2));
-        FreqMaxPower(IobjP) = FreqVec(MaxInd);
-        
+        if (~isempty(Data(IobjP).LC))
+            MeanMag(IobjP) = mean(Data(IobjP).LC(Col.Mag,:));
+
+            StdMag(IobjP)  = std(Data(IobjP).LC(Col.Mag,:));
+
+            RStdMag(IobjP) = Util.stat.rstd(Data(IobjP).LC(Col.Mag,:).');
+
+            MaxMag(IobjP) = max(Data(IobjP).LC(Col.Mag,:)) - MeanMag(IobjP);
+            MinMag(IobjP) = MeanMag(IobjP) - min(Data(IobjP).LC(Col.Mag,:));
+            Chi2(IobjP)    = sum((Data(IobjP).LC(Col.Mag,:) - MeanMag(IobjP)).^2./Data(IobjP).LC(Col.MagErr,:).^2);
+
+            P = timeseries.period_normnl(Data(IobjP).LC( [Col.HMJD, Col.Mag],:).',FreqVec);
+
+            [MaxPower(IobjP),MaxInd] = max(P(:,2));
+            FreqMaxPower(IobjP) = FreqVec(MaxInd);
+        end
     end
     %toc
     

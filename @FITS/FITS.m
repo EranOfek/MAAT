@@ -83,6 +83,7 @@ classdef FITS
             Nhdu     = zeros(Nlist,1);
 
             for Ilist=1:1:Nlist
+                %Ilist
                 Image = List{Ilist};
 
 
