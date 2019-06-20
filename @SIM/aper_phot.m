@@ -77,7 +77,13 @@ for Isim=1:1:Nsim
         AstC(Isim).(CatField)(Isrc,Col.Back) = InPar.BackFun(Image(IndBack),InPar.BackFunPar{:}); %./BackArea;  % already per pixel
 
         % background noise
-        AstC(Isim).(CatField)(Isrc,Col.BackErr) = InPar.BackErrFun(Image(IndBack),InPar.BackErrFunPar{:});
+        % Bug fix - sometimes background is empty/NaN
+        Tmp = InPar.BackErrFun(Image(IndBack),InPar.BackErrFunPar{:});
+        if isempty(Tmp)
+            AstC(Isim).(CatField)(Isrc,Col.BackErr) = NaN;
+        else
+            AstC(Isim).(CatField)(Isrc,Col.BackErr) = Tmp;
+        end
 
         if (isempty(InPar.Back))
             % User didnt supply background - use background as estimated from

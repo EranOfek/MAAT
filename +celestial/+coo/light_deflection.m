@@ -1,4 +1,4 @@
-function P1=light_deflection(P,Q,E);
+function P1=light_deflection(P,Q,E)
 %------------------------------------------------------------------------------
 % light_deflection function                                              ephem
 % Description: Calculate the observer-centric direction of a planet,

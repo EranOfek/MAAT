@@ -184,7 +184,10 @@ switch lower(InPar.Type)
                             ((InPar.f_rho.*(InPar.kappa./0.34).*InPar.Ms).^0.2 .* (v_sstar/10^8.5).^0.7) );  % [days]
         t_delta = 3*InPar.f_rho.^-0.1.*sqrt((InPar.kappa./0.34).*InPar.Ms)./(v_sstar/10^8.5);  % [days]
         % Opacity condition - Tph,RW>0.7eV: SW Eqs. 24
-        t_opac  = 7.4.*((InPar.Rs.*SolR./1e13)./(InPar.kappa./0.34)).^0.55;  % [days]
+%         t_opac  = 7.4.*((InPar.Rs.*SolR./1e13)./(InPar.kappa./0.34)).^0.55;  % [days]
+        % Opacity condition - Tph,RW>0.7ev, directly from eq. 4 (eq. 24 ignores the eps1 prefactor)
+        t_opac = (1.61/0.7*((v_sstar/10^8.5).^2./(InPar.f_rho.*(InPar.kappa./0.34).*InPar.Ms)).^eps1.*...
+                  ((InPar.Rs.*SolR./1e13)./(InPar.kappa./0.34)).^0.25                                     ).^(2./(1-4.*eps1));
         t_max   = t_tr/a;  % [days] - text below eq. 18
 
     case 'bsg'
@@ -201,8 +204,6 @@ switch lower(InPar.Type)
         
         T_phRW = 1.69 .* ( (v_sstar/10^8.5).^2 .* t_d.^2 ./ (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)) ).^ eps1 .* ...
             (InPar.Rs.*SolR./1e13).^0.25 ./ (InPar.kappa./0.34).^0.25 .* t_d.^-0.5;  % [eV]             
-%         T_phRW = 1.61 .* ( (v_sstar(:)/10^8.5).^2 .* t_d.^2 ./ (InPar.f_rho(:) .* InPar.Ms(:) .* (InPar.kappa(:)./0.34)) ).^ eps1 .* ...
-%             (InPar.Rs(:).*SolR./1e13).^0.25 ./ (InPar.kappa(:)./0.34).^0.25 .* t_d.^-0.5;  % [eV]             
         if isempty(InPar.Tcorr)
             Tcorr = 1.0;
         else
@@ -212,8 +213,6 @@ switch lower(InPar.Type)
         
         L_RW   = 2.1e42 .* ( (v_sstar/10^8.5) .* t_d.^2 ./ (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)) ).^ -eps2 .* ...
             (v_sstar/10^8.5).^2 .* (InPar.Rs.*SolR./1e13) ./ (InPar.kappa./0.34);  % [erg/s]
-%         L_RW   = 2e42 .* ( (v_sstar(:)/10^8.5) .* t_d.^2 ./ (InPar.f_rho(:) .* InPar.Ms(:) .* (InPar.kappa(:)./0.34)) ).^ -eps2 .* ...
-%             (v_sstar(:)/10^8.5).^2 .* (InPar.Rs(:).*SolR./1e13) ./ (InPar.kappa(:)./0.34);  % [erg/s]
         
         if true % Rc/R<<1
             Menv = InPar.f_rho.*(InPar.Ms)./(0.08+InPar.f_rho);
@@ -238,7 +237,10 @@ switch lower(InPar.Type)
                         
         t_delta = 3*InPar.f_rho.^-0.1.*sqrt((InPar.kappa./0.34).*InPar.Ms)./(v_sstar/10^8.5);  % [d]
         % Opacity condition - Tph,RW>0.7eV: SW Eqs. 24
-        t_opac  = 7.4.*((InPar.Rs.*SolR./1e13)./(InPar.kappa./0.34)).^0.55;  % [d]
+%        t_opac  = 7.4.*((InPar.Rs.*SolR./1e13)./(InPar.kappa./0.34)).^0.55;  % [d]
+        % Opacity condition - Tph,RW>0.7ev, directly from eq. 4 (eq. 24 ignores the eps1 prefactor)
+        t_opac = (1.69/0.7*((v_sstar/10^8.5).^2./(InPar.f_rho.*(InPar.kappa./0.34).*InPar.Ms)).^eps1.*...
+                  ((InPar.Rs.*SolR./1e13)./(InPar.kappa./0.34)).^0.25                                     ).^(2./(1-4.*eps1));
         t_max   = t_tr/a;  % [d] - text below eq. 18
                
 otherwise
@@ -264,22 +266,26 @@ if (nargout>3) && (~isempty(InPar.FiltFam) || ~isempty(InPar.Wave))
         end
         
         redshiftedTc = Tc./(1+InPar.redshift);
-        Spec = AstSpec.blackbody(redshiftedTc(:),WaveRange');
-%        Spec = AstSpec.blackbody(redshiftedTc,WaveRange');
+        Spec{1} = WaveRange;
+        [~,~,Spec{2}] = AstroUtil.spec.black_body(redshiftedTc(:),WaveRange');
         F  = SigmaB .* (redshiftedTc).^4;
 
         SpecFactor = L./(4.*pi.*(Dist.*Pc).^2)./F;
-        Spec=Spec.*SpecFactor(:);
+        Spec{2}=Spec{2}.*SpecFactor(:);
         clear F
 
-        Mag = AstSpec.synphot(Spec,Filter,[],InPar.FiltSys);
+        if any(InPar.Ebv>0)
+            Mag = AstroUtil.spec.synphot(Spec,Filter,[],InPar.FiltSys,[],InPar.Ebv,InPar.Rv,'photon');
+        else
+            Mag = AstroUtil.spec.synphot(Spec,Filter,[],InPar.FiltSys,[],[],[],'photon');
+        end
     else 
         [~,In]=AstroUtil.spec.black_body(Tc./(1+InPar.redshift),InPar.Wave).*(1+InPar.redshift).^4;
         Mag = convert.flux(In.*R.^2./(Dist.*Pc).^2,'cgs/Hz','AB',InPar.Wave,'A');
-    end
-    if (InPar.Ebv>0)
-        A = AstroUtil.spec.extinction(InPar.Ebv,InPar.FiltFam,InPar.FiltName,InPar.Rv);
-        Mag = Mag + A;
+        if any(InPar.Ebv>0)
+            A = AstroUtil.spec.extinction(InPar.Ebv,InPar.FiltFam,InPar.FiltName,InPar.Rv);
+            Mag = Mag + A;
+        end
     end
     Mag = reshape(Mag,S);
 else

@@ -26,7 +26,7 @@ classdef HDF5
     % Basic high level static methods: save, load
     methods (Static)
         % simple save array
-        function save(Data,FileName,VarName,Attrib)
+        function save(Data,FileName,VarName,Attrib,WriteMode)
             % save a new array into an HDF5 file dataset
             % Package: @HDF5
             % Description: A simple and fast save HDF5 for arrays
@@ -34,9 +34,12 @@ classdef HDF5
             %          - HDF5 file name to save.
             %          - HDF5 dataset name. Default is '/V'.
             %          - A two column cell array of attribute key,val.
+           
+            
             
             Def.VarName = '/V';
             Def.Attrib  = {};
+           
            
             if (nargin<4)
                 Attrib  = Def.Attrib;
@@ -141,6 +144,22 @@ classdef HDF5
             H5D.close(DSetID);
             H5F.close(FID);
             
+        end
+        
+        function writeatt(FileName,DatasetName,AttribCell)
+            % Write attributes into HDF5 file
+            % Input  : - FileName
+            %          - Dataset name
+            %          - Cell array of pairs of attributes: key,val,...
+            fileattrib(FileName,'+w');
+            
+            N = numel(AttribCell);
+            if ((N./2)~=floor(N./2))
+                error('Number of key,val attributes must be even');
+            end
+            for I=1:2:N-1
+                h5writeatt(FileName,DatasetName,AttribCell{I},AttribCell{I+1});
+            end
         end
         
         function Data=load_muti_datasets(FileName,VarNames)

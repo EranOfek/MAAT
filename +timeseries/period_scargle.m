@@ -24,7 +24,7 @@ function PS=period_scargle(Data,FreqVec,Norm)
 %--------------------------------------------------------------------------
 
 Def.Norm = 'Var';
-if (nargin==2),
+if (nargin==2)
    Norm = Def.Norm;
 end
 
@@ -37,10 +37,16 @@ Nf      = numel(FreqVec);
 M       = Data(:,Col.M) - mean(Data(:,Col.M));
 PS      = zeros(Nf,2);
 PS(:,1) = FreqVec;
-for FreqInd=1:1:Nf,
+for FreqInd=1:1:Nf
    Tau           = atan(sum(sin(4.*pi.*FreqVec(FreqInd).*T))./sum(cos(4.*pi.*FreqVec(FreqInd).*T)))./(4.*pi.*FreqVec(FreqInd));
-
-   PS(FreqInd,2) = abs(sum(M.*exp(-2.*pi.*1i.*(T-Tau).*FreqVec(FreqInd)))).^2./N;
+   
+   %Tmp = 2.*pi.*FreqVec(FreqInd).*(T-Tau);
+   %PS(FreqInd,2) = 0.5.*( sum(M.*cos(Tmp) ).^2./sum( cos(Tmp  ).^2 )  + ...
+   %                       sum(M.*sin(Tmp) ).^2./sum( sin(Tmp  ).^2 )    );
+                      
+   PS(FreqInd,2) = 0.5.*( sum(M.*cos(2.*pi.*FreqVec(FreqInd).*(T-Tau)) ).^2./sum( cos(2.*pi.*FreqVec(FreqInd).*(T-Tau)  ).^2 )  + ...
+                          sum(M.*sin(2.*pi.*FreqVec(FreqInd).*(T-Tau)) ).^2./sum( sin(2.*pi.*FreqVec(FreqInd).*(T-Tau)  ).^2 )    );
+                      
 end
 
 switch lower(Norm)

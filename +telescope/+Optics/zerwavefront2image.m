@@ -37,13 +37,13 @@ function [Image_NS,Image,SumY]=zerwavefront2image(n,m,Amp,VecX,VecY,Support,Over
 %     By : Eran O. Ofek                    Jan 2014
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % See also: zerwavefront2image_indiv.m, wavefront2image.m
-% Example: [Image_NS,Image,SumY]=zerwavefront2image;
+% Example: [Image_NS,Image,SumY]=telescope.Optics.zerwavefront2image;
 %          % To generate a realistic spackle image generated
 %          % by the atmosphere:
 %          % Note that the size of the seeing disk in this example is
 %          (D/r0)*OverSamp:
 %          J = (1:1:100); D=100; r0=5;
-%          [AmpC,J,C]=telescope.Optics.zer_cj_vatelescriance(100,'Nrand',1,'D',D,'r0',r0);
+%          [AmpC,J,C]=telescope.Optics.zer_cj_variance(100,'Nrand',1,'D',D,'r0',r0);
 %          [Image_NS,Image,SumY]=telescope.Optics.zerwavefront2image(J,[],C);
 %          pcolor(log10(Image)), shading interp; axis square, colorbar
 % Reliable: 2

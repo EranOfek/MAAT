@@ -1,4 +1,4 @@
-function [Mag,Flag,FiltEffWave]=synphot(Spec,FiltFam,FiltName,MagSys,Algo,Ebv,R)
+function [Mag,Flag,FiltEffWave]=synphot(Spec,FiltFam,FiltName,MagSys,Algo,Ebv,R,Device)
 % Synthetic photometry of spectrum
 % Package: AstroUtil.spec
 % Description: Calculate synthetic photometry of a spectrum.
@@ -21,6 +21,11 @@ function [Mag,Flag,FiltEffWave]=synphot(Spec,FiltFam,FiltName,MagSys,Algo,Ebv,R)
 %            This function is using the Cardelli et al. model implemented
 %            in extinction.m
 %          - R_v of extinction. Default is 3.08.
+%          - Device to be use:
+%               'Bol' - Bolometric device which measure the total energy
+%                       within the band. 
+%               'photon' - Photon Counting device which measure the number
+%                       of photons within the band
 % Output : - Synthetic magnitude.
 %          - The fraction of flux that was extrapolated in case of
 %            partial coverage between spectrum and filter.
@@ -39,16 +44,22 @@ InterpMethod = 'linear';
 Def.Algo = 'cos';
 Def.Ebv  = 0;
 Def.R    = 3.08;
+Def.Device = 'bol';
 if (nargin==4)
    Algo   = Def.Algo;
    Ebv    = Def.Ebv;
    R      = Def.R;
+   Device = Def.Device;
 elseif (nargin==5)
    Ebv    = Def.Ebv;
    R      = Def.R;
+   Device = Def.Device;
 elseif (nargin==6)
    R      = Def.R;
+   Device = Def.Device;
 elseif (nargin==7)
+   Device = Def.Device;
+elseif (nargin==8)
    % do nothing
 else
    error('Illegal number of input arguments');
@@ -56,6 +67,14 @@ end
 
 if (isempty(Algo))
    Algo = Def.Algo;
+end
+
+if (isempty(Ebv))
+    Ebv = Def.Ebv;
+end
+
+if (isempty(R))
+    R = Def.R;
 end
 
 if (ischar(FiltFam)==1)
@@ -77,7 +96,14 @@ if (iscell(Spec))
         error('MAAT:AstroUtils:spec:synphot:spec_wave_no_vector',...
             'Error. The first component of the Spec cell must be a vector.');
     else
-        if ismatrix(Spec{2})
+        if isvector(Spec{2})
+            if length(Spec{2})~=length(Spec{1})
+                error('MAAT:AstroUtils:spec:synphot:spec_wrong_elements',...
+                    'Error. The number of elements in the two components of the Spec cell must be in agreement with eachother.');
+            else
+                Spec{2}=Spec{2}(:);
+            end
+        elseif ismatrix(Spec{2})
             if size(Spec{2},1)~=length(Spec{1})
                 if size(Spec{2},2)==length(Spec{1})
                     Spec{2} = Spec{2}.';
@@ -86,11 +112,6 @@ if (iscell(Spec))
                         'Error. One of the two dimensions of the second component of the Spec cell must be in agreement with the number of elements of the first component.');
                 end
             end
-        elseif isvector(Spec{2})
-            if length(Spec{2})~=length(Spec{1})
-                error('MAAT:AstroUtils:spec:synphot:spec_wrong_elements',...
-                    'Error. The number of elements in the two components of the Spec cell must be in agreement with eachother.');
-            end
         else
             error('MAAT:AstroUtils:spec:synphot:spec_wrong_elements',...
                 'Error. Only matrix and vector are supported in the second component of the Spec cell.');
@@ -98,10 +119,15 @@ if (iscell(Spec))
     end
 end             
                   
-if (Ebv>0)
+if any(Ebv>0)
    % apply extinction
-   A = extinction(Ebv,Spec(:,1)./10000,[],R);
-   Spec(:,2) = Spec(:,2).*10.^(-0.4.*A);
+   if iscell(Spec)
+       A = AstroUtil.spec.extinction(shiftdim(Ebv,-1),Spec{1}(:)./10000,[],R);
+       Spec{2} = Spec{2}.*10.^(-0.4.*A);
+   else
+       A = AstroUtil.spec.extinction(Ebv,Spec(:,1)./10000,[],R);
+       Spec(:,2) = Spec(:,2).*10.^(-0.4.*A);
+   end
 end
 
 TranNorm = trapz(Tran(:,1),Tran(:,2));
@@ -117,15 +143,18 @@ switch lower(Algo)
         % Interp transminssion curve on Spec
         if iscell(Spec)
             [Spec,Tran]     = AstroUtil.spec.eq_sampling(Spec,Tran,Spec{1},InterpMethod);
+            if isvector(Spec{2})
+                Spec{2}=Spec{2}(:);
+            end
 %             I = find(~isnan(Tran(:,2)));
 %             Spec{1} = Spec{1}(I,:);
 %             Spec{2} = Spec{2}(I,:);
 %             Tran = Tran(I,:);
         else
             [Spec,Tran]     = AstroUtil.spec.eq_sampling(Spec,Tran,Spec(:,1),InterpMethod);
-%             I = find(~isnan(Tran(:,2)));
-%             Spec = Spec(I,:);
-%             Tran = Tran(I,:);
+            I = find(~isnan(Tran(:,2)));
+            Spec = Spec(I,:);
+            Tran = Tran(I,:);
         end
      case {'spec_on_curve','soc'}
         % Interp Spec on transminssion curve
@@ -169,17 +198,31 @@ switch lower(Algo)
  %           NormTran = 1;
             Fnu      = NaN;
         else
-            NormTran = trapz(Freq,Tran(:,2));
-            Fnu      = trapz(Freq,SpecFnu.*Tran(:,2))./NormTran;
-            %Flam     = convert_flux(Fnu,'cgs/Hz','cgs/A',FiltEffWave,'A');
+            switch lower(Device)
+                case 'bol'
+                    NormTran = trapz(Freq,Tran(:,2));
+                    Fnu      = trapz(Freq,SpecFnu.*Tran(:,2))./NormTran;
+                case'photon'
+                    NormTran = trapz(Freq,Tran(:,2)./Freq);
+                    Fnu      = trapz(Freq,SpecFnu.*Tran(:,2)./Freq)./NormTran;
+                otherwise
+                    error('Unknown Device option');
+            end
         end
         Mag      = -48.6 - 2.5.*log10(Fnu);
         
      case 'vega'
         load vega_spec.mat;
-        VegaF   = AstroUtil.spec.eq_sampling(vega_spec,Tran,Tran(:,1));
-%        Freq    = convert.energy('A','Hz',Tran(:,1));
-        Fvega   = trapz(Tran(:,1),Spec(:,2).*Tran(:,2)./VegaF(:,2));
+        switch lower(Device)
+            case 'bol'
+                VegaF   = AstroUtil.spec.eq_sampling(vega_spec,Tran,Tran(:,1));
+        %        Freq    = convert.energy('A','Hz',Tran(:,1));
+                Fvega   = trapz(Tran(:,1),Spec(:,2).*Tran(:,2)./VegaF(:,2));
+            case 'photon'
+                error('Number of photon formula for vega was not implemented');
+            otherwise
+                error('Unknown Device option');           
+        end
         Mag     = -2.5.*log10(Fvega);
 
      otherwise

@@ -35,69 +35,77 @@ FID = fopen(File,'r');
 Line = fgetl(FID);
 fclose(FID);
 
-ColCell = regexp(Line,',','split');
-Ncol    = numel(ColCell);
-Format  = '';
-for Icol=1:1:Ncol
-    Format = sprintf('%s %%s',Format);
-end
-Format = sprintf('%s\n',Format);
+if (isnumeric(Line) && Line==-1)
+    % empty out.tbl
+    Mat     = [];
+    ColCell = [];
+    ColDic  = [];
+    
+else
+    
+    ColCell = regexp(Line,',','split');
+    Ncol    = numel(ColCell);
+    Format  = '';
+    for Icol=1:1:Ncol
+        Format = sprintf('%s %%s',Format);
+    end
+    Format = sprintf('%s\n',Format);
 
-NewFile = sprintf('%s_1',File);
-system(sprintf('sed "s/%s/%s/g" %s > %s',InPar.EmptyVal,'NaN',File,NewFile));
+    NewFile = sprintf('%s_1',File);
+    system(sprintf('sed "s/%s/%s/g" %s > %s',InPar.EmptyVal,'NaN',File,NewFile));
 
-FID = fopen(NewFile,'r');
-C   = textscan(FID,Format,'HeaderLines',1,'Delimiter',','); %,'EmptyValue','null');
-fclose(FID);
+    FID = fopen(NewFile,'r');
+    C   = textscan(FID,Format,'HeaderLines',1,'Delimiter',','); %,'EmptyValue','null');
+    fclose(FID);
 
-ColDic = Util.struct.struct_def({'Col','UniqueStr'},1,0);
+    ColDic = Util.struct.struct_def({'Col','UniqueStr'},1,0);
 
-switch lower(InPar.OutType)
-    case 'mat'
-        Mat = nan(numel(C{1}),Ncol);
-        ColI = 0;
-        for Icol=1:1:Ncol
-            %C{Icol} = regexprep(C{Icol},InPar.EmptyVal,'NaN');
-            Val = str2double(C{Icol});
-            if (all(isnan(Val)))
-                % a string
-                ColI = ColI + 1;
-                ColDic(ColI).Col       = ColI;
-                ColDic(ColI).UniqueStr = unique(C{Icol});
-                Nus = numel(ColDic(ColI).UniqueStr);
-                for Ius=1:1:Nus
-                    C{Icol} = regexprep(C{Icol},ColDic(ColI).UniqueStr{Ius},sprintf('%d',Ius));
+    switch lower(InPar.OutType)
+        case 'mat'
+            Mat = nan(numel(C{1}),Ncol);
+            ColI = 0;
+            for Icol=1:1:Ncol
+                %C{Icol} = regexprep(C{Icol},InPar.EmptyVal,'NaN');
+                Val = str2double(C{Icol});
+                if (all(isnan(Val)))
+                    % a string
+                    ColI = ColI + 1;
+                    ColDic(ColI).Col       = ColI;
+                    ColDic(ColI).UniqueStr = unique(C{Icol});
+                    Nus = numel(ColDic(ColI).UniqueStr);
+                    for Ius=1:1:Nus
+                        C{Icol} = regexprep(C{Icol},ColDic(ColI).UniqueStr{Ius},sprintf('%d',Ius));
+                    end
+                end
+                Mat(:,Icol) = str2double(C{Icol});
+            end
+            % remove duplicate columns
+            if (InPar.RemDuplicate)
+                [ColCell,UniqueCol] = unique(ColCell);
+                Mat = Mat(:,UniqueCol);
+            end
+        case 'table'
+            for Icol=1:1:Ncol
+                %C{Icol} = regexprep(C{Icol},InPar.EmptyVal,'NaN');
+                Val = str2double(C{Icol});
+                if (all(isnan(Val)))
+                    % do nothing
+                else
+                    C{Icol} = str2double(C{Icol});
                 end
             end
-            Mat(:,Icol) = str2double(C{Icol});
-        end
-        % remove duplicate columns
-        if (InPar.RemDuplicate)
-            [ColCell,UniqueCol] = unique(ColCell);
-            Mat = Mat(:,UniqueCol);
-        end
-    case 'table'
-        for Icol=1:1:Ncol
-            %C{Icol} = regexprep(C{Icol},InPar.EmptyVal,'NaN');
-            Val = str2double(C{Icol});
-            if (all(isnan(Val)))
-                % do nothing
-            else
-                C{Icol} = str2double(C{Icol});
+
+            Mat = table(C{:});
+
+            % remove duplicate columns
+            if (InPar.RemDuplicate)
+                [ColCell,UniqueCol] = unique(ColCell);
+                Mat = Mat(:,UniqueCol);
             end
-        end
-        
-        Mat = table(C{:});
-        
-        % remove duplicate columns
-        if (InPar.RemDuplicate)
-            [ColCell,UniqueCol] = unique(ColCell);
-            Mat = Mat(:,UniqueCol);
-        end
-        Mat.Properties.VariableNames = ColCell;
-    otherwise
-        error('Unknown OutType option');
+            Mat.Properties.VariableNames = ColCell;
+        otherwise
+            error('Unknown OutType option');
+    end
+
 end
-    
-    
    

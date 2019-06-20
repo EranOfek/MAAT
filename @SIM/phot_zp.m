@@ -75,7 +75,7 @@ Flag = sum(MatchedArrary.SN>20,2)>=Summary.Nepoch.*InPar.FracAppear;
 %MatchedArrary.PEAKF_VALTOT>InPar.MaxPeakFlux;
 MatchedArrary.(InPar.MagColName)(MatchedArrary.PEAKF_VALTOT>InPar.MaxPeakFlux) = NaN;
 
-Res = rel_zp(MatchedArrary.(InPar.MagColName)(Flag,:),MatchedArrary.(InPar.MagErrColName)(Flag,:),InPar.RelZPPar{:});
+Res = ImUtil.Im.rel_zp(MatchedArrary.(InPar.MagColName)(Flag,:),MatchedArrary.(InPar.MagErrColName)(Flag,:),InPar.RelZPPar{:});
 TranZP = 10.^(-0.4.*Res.ZP);
 
 

@@ -28,7 +28,11 @@ for Ic=1:1:Nc
     if (ischar(Col))
         Col = colname2ind(AstC(Ic),Col);
     end
-    [AstC(Ic).Cat,SI]    = sortrows(real(AstC(Ic).Cat),Col);
+    if istable(AstC(Ic).Cat)
+        AstC(Ic).Cat         = sortrows(AstC(Ic).Cat,Col);
+    else
+        [AstC(Ic).Cat,SI]    = sortrows(real(AstC(Ic).Cat),Col);
+    end
     AstC(Ic).SortedBy    = ind2colname(AstC(Ic),Col);
     AstC(Ic).SortedByCol = colname2ind(AstC(Ic),Col);
 end

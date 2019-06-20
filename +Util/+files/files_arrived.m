@@ -19,8 +19,13 @@ while ~Arrived
     pause(0.2);
     Dir2 = Util.files.dir_cell(Files);
 
-    if (all(([Dir1.bytes] - [Dir2.bytes])==0))
-        Arrived = true;
+    try
+        if (all(([Dir1.bytes] - [Dir2.bytes])==0))
+            Arrived = true;
+        end
+    catch
+        fprintf('May be a problem Dir1 vs. Dir2');
+        pause(1);
     end
 
     Dir1 = Dir2;

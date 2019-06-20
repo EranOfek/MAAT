@@ -26,13 +26,15 @@ OutC.ColUnits = AstC(1).ColUnits;
 [SizeRow,SizeCol] = sizecat(AstC);
 Nrow = sum(SizeRow);
 Ncol = SizeCol(1);
-if (length(unique(SizeCol))~=1),
+if (length(unique(SizeCol(SizeCol~=0)  ))~=1)
     error('AstCat elements have different number of columns');
 end
 OutC.Cat = zeros(Nrow,Ncol);
 Line     = 0;
-for Icat=1:1:Ncat,
-    OutC.Cat((1:SizeRow(Icat))+Line,:) = AstC(Icat).Cat;
-    Line = SizeRow(Icat)+Line;
+for Icat=1:1:Ncat
+    if (~isempty(AstC(Icat).Cat))
+        OutC.Cat((1:SizeRow(Icat))+Line,:) = AstC(Icat).Cat;
+        Line = SizeRow(Icat)+Line;
+    end
 end
 

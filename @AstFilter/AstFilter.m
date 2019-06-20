@@ -20,6 +20,8 @@ classdef AstFilter
         min_wl
         max_wl
         eff_wl
+        pivot_wl
+        pivot_wl_photon
         half_width
         fwhm
         comments
@@ -27,7 +29,7 @@ classdef AstFilter
         UserData
     end
     
-    % class constractor method
+    % class constructor method
     methods
         function AF=AstFilter(N,M)
             % Description: AstFilter constructor method
@@ -627,13 +629,39 @@ classdef AstFilter
                 
                 % calculate eff_wl
                 AstF(If).eff_wl = nansum(AstF(If).nT(:,1).*AstF(If).nT(:,2))./nansum(AstF(If).nT(:,2));
+
+                % calclulate pivol_wl
+                ind = ~isnan(AstF(If).nT(:,2));
+                AstF(If).pivot_wl = sqrt(trapz(AstF(If).nT(ind,1),AstF(If).nT(ind,2))./...
+                                         trapz(AstF(If).nT(ind,1),AstF(If).nT(ind,2)./AstF(If).nT(ind,1).^2));
+                AstF(If).pivot_wl_photon = sqrt(trapz(AstF(If).nT(ind,1),AstF(If).nT(ind,2).*AstF(If).nT(ind,1))./...
+                                                trapz(AstF(If).nT(ind,1),AstF(If).nT(ind,2)./AstF(If).nT(ind,1)));
                 
                 % calculate filter half_width
                 % the width tranmit half the flux
                 Fnn = AstF(If).nT(~isnan(AstF(If).nT(:,2)),:);
-                CumSum = cumsum((Fnn(1:end-1,2)+eps).*diff(Fnn(:,1)));
-                AstF(If).half_width = interp1(CumSum+eps,Fnn(1:end-1,1),0.75) - ...
-                                      interp1(CumSum+eps,Fnn(1:end-1,1),0.25);
+                
+%                 CumSum = cumsum((Fnn(1:end-1,2)+eps).*diff(Fnn(:,1)));
+                CumTrapz = cumtrapz(Fnn(:,1),Fnn(:,2));
+                if abs(CumTrapz(end)-1)>(1e-5)
+                    warning('Filter #%d, %s %s is not normalized',If, AstF(If).family, AstF(If).band)
+                end
+%                 for i=2:length(CumSum)
+%                     if CumSum(i)<=CumSum(i-1)
+%                         CumSum(i)=CumSum(i)+eps+(CumSum(i-1)-CumSum(i));
+%                     end
+%                 end
+                for i=2:length(CumTrapz)
+                    if CumTrapz(i)<=CumTrapz(i-1)
+                        CumTrapz(i)=CumTrapz(i-1)+eps;
+                    end
+                end
+%                 AstF(If).half_width = interp1(CumSum+eps,Fnn(1:end-1,1),0.75) - ...
+%                                       interp1(CumSum+eps,Fnn(1:end-1,1),0.25)
+                AstF(If).half_width = interp1(CumTrapz,Fnn(:,1),0.75) - ...
+                                      interp1(CumTrapz,Fnn(:,1),0.25);
+
+
                                   
                 % calculate fwhm
                 % the width at which the transmission drops by 1/2 relative

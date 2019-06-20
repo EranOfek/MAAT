@@ -76,7 +76,7 @@ if isempty(Dec)
         [RA, Dec] = InPar.NameServer(Name);
         % output is in deg [J2000]
         InPar.InUnits   = 'deg';
-        InPar.InSys     = 'j2000';
+        InPar.InSys     = 'j2000.0';
         InPar.InEquinox = 'j2000';
         
     else

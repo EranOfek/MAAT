@@ -12,11 +12,12 @@ classdef FluxClass
     properties (SetAccess = public)
         Time
         TimeUnits    % cell of str or str - default is JD
-        Flux
-        FluxErr      % 
+        Flux         % [Flux] 
+        FluxErr       
+        Spec
         FluxUnits    % cell of str or str - default is AB mag
-        Wave
         WaveUnits    % cell of str or str - default is Ang
+        EffWl
         BandFamily   % cell of str or str, or ... 
         BandName     % cell of str or str
         Telescope
@@ -25,7 +26,7 @@ classdef FluxClass
     end
     
     properties (Hidden)
-        
+        Populated = false;
     end
 
     % constructor
@@ -42,10 +43,48 @@ classdef FluxClass
             %            property of the FluxClass, while value is the
             %            value by which it will be populated.
             % Output : - A populated FluxClass object.
+            % Example: S=FluxClass;
             
-            if (nargin==0)
-                Data = [];
-            end
+%             if (nargin==0)
+%                 Data = [];
+%             end
+%             
+%             Narg = numel(varargin);
+%             if (Narg./2)==floor(Narg./2)
+%                 % assume key,val
+%                 Data = [];
+%             else
+%                 % assume Daya,key,val
+%                 Data     = varargin{1};
+%                 varargin = varargin(2:end);
+%                 Narg     = Narg - 1;
+%             end
+%             
+%             for Iarg=1:2:Narg-1
+%                 if ~isprop(S,varargin{Iarg})
+%                     error('Input keyword %s is not a property of FluxClass',varargin{Iarg});
+%                 else
+%                     S.(varargin{Iarg}) = varargin{Iarg+1};
+%                 end
+%             end
+%             
+%             Ncol = size(Data,2);
+%             DefColumns = {'Time','Flux','FluxErr'};
+%             if Ncol>numel(DefColumns)
+%                 error('Number of input columns in first argument is larger than known default');
+%             end
+%             for Icol=1:1:Ncol
+%                 S.(DefColumns{Icol}) = Data(:,Icol);
+%             end
+            
+        end
+
+    end
+    
+    % add/delete data point
+    methods
+        function S=addData(S,varargin)
+            % add data point to FluxClass object
             
             Narg = numel(varargin);
             if (Narg./2)==floor(Narg./2)
@@ -58,26 +97,81 @@ classdef FluxClass
                 Narg     = Narg - 1;
             end
             
+            if (iscell(Data))
+                Ndata = numel(Data);
+            elseif (isnumeric(Data))
+                Ndata = size(Data,1);
+            else
+                error('Unknown Data format');
+            end
+               
+            Ind    = numel(S);
+            IndVec = (Ind+1:1:Ind+Ndata)';
+            
             for Iarg=1:2:Narg-1
                 if ~isprop(S,varargin{Iarg})
                     error('Input keyword %s is not a property of FluxClass',varargin{Iarg});
                 else
-                    S.(varargin{Iarg}) = varargin{Iarg+1};
+                    for Id=1:1:Ndata
+                        S(IndVec(Id)).(varargin{Iarg}) = varargin{Iarg+1};
+                        
+                    end
                 end
             end
             
-            Ncol = size(Data,2);
-            DefColumns = {'Time','Flux','FluxErr'};
-            if Ncol>numel(DefColumns)
-                error('Number of input columns in first argument is larger than known default');
-            end
-            for Icol=1:1:Ncol
-                S.(DefColumns{Icol}) = Data(:,Icol);
+            for Id=1:1:Ndata
+                S(IndVec(Id)).Populated = true;
             end
             
+            if (iscell(Data))
+                % assume data is spectrum
+                for Id=1:1:Ndata
+                    S(IndVec(Id)).Spec = Data{Id};
+                end
+            elseif (isnumeric(Data))
+                Ncol = size(Data,2);
+                DefColumns = {'Time','Flux','FluxErr'};
+                if Ncol>numel(DefColumns)
+                    error('Number of input columns in first argument is larger than known default');
+                end
+                for Id=1:1:Ndata
+                    for Icol=1:1:Ncol
+                        S(IndVec(Id)).(DefColumns{Icol}) = Data(Id,Icol);
+                    end
+                end
+            else
+                error('Unknown Data format');
+            end
+            
+            S    = S([S.Populated]);
+            
         end
-
+        
+        
     end
+    
+    % Prepare interpolated LC
+    methods
+        function S=populate_wave(S)
+            % populated wavelength if not exist
+            
+            Ns = numel(S);
+            for Is=1:1:Ns
+                if (isempty(S(Is).EffWl))
+                    F = AstFilter.get(S(Is).BandFamily,S(Is).BandName);
+                    S(Is).EffWl = F.eff_wl;
+                end
+            end
+        end
+        
+        
+        function prep_interpolant
+            
+        end
+        
+        
+    end
+    
     
     % get/set
     methods
@@ -192,16 +286,16 @@ classdef FluxClass
         end
         
         
-        function F=columnvec(F)
-            % convert properties to column vectors
-            
-            Fields = fields(F);
-            Nf     = numel(Fields);
-            for If=1:1:Nf
-                F.(Fields{If}) = F.(Fields{If})(:);
-            end
-            
-        end
+%         function F=columnvec(F)
+%             % convertproperties to column vectors
+%             
+%             Fields = fields(F);
+%             Nf     = numel(Fields);
+%             for If=1:1:Nf
+%                 F.(Fields{If}) = F.(Fields{If})(:);
+%             end
+%             
+%         end
         
         function F=sort_time(F)
             % sort FluxClass object by time
@@ -268,3 +362,5 @@ classdef FluxClass
   
   
 end
+
+            

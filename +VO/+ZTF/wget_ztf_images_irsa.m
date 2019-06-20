@@ -77,23 +77,31 @@ Cat=VO.ZTF.irsa_query_ztf_images(RA,Dec,'Where',InPar.Where,'Intersect',InPar.In
                                  'User',InPar.User,'Pass',InPar.Pass,...
                                  InPar.QueryPar{:});
                              
-Prop  = VO.ZTF.irsa_table2prop(Cat,'ImType',InPar.ImType,'Product',InPar.Product);      
-
-Links = VO.ZTF.irsa_image_link(Prop,InPar.constructPar{:});
-
-if (InPar.GetFiles)
-    switch lower(InPar.GetN)
-        case 'all'
-            LinksR = Links;
-        case 'first'
-            LinksR = Links{1};
-        case 'last'
-            LinksR = Links{end};
-        otherwise
-            error('Unknown GetN option');
-    end
-    
-    Files = www.pwget(LinksR,InPar.pwgetExtra,InPar.MaxGet,[],'wget');
+if isempty(Cat.Cat)
+   % If Cat is empty than exit
+   Files = [];
+   Links = [];
+   Prop  = [];
 else
-    Files = {};
+                             
+    Prop  = VO.ZTF.irsa_table2prop(Cat,'ImType',InPar.ImType,'Product',InPar.Product);      
+
+    Links = VO.ZTF.irsa_image_link(Prop,InPar.constructPar{:});
+
+    if (InPar.GetFiles)
+        switch lower(InPar.GetN)
+            case 'all'
+                LinksR = Links;
+            case 'first'
+                LinksR = Links{1};
+            case 'last'
+                LinksR = Links{end};
+            otherwise
+                error('Unknown GetN option');
+        end
+
+        Files = www.pwget(LinksR,InPar.pwgetExtra,InPar.MaxGet,[],'wget');
+    else
+        Files = {};
+    end
 end
