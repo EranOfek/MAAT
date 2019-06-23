@@ -64,8 +64,8 @@ end
 
 
 DefV.Table                = 'GALEX_GR6Plus7';
-DefV.CasJobsPath          = '~/matlab/bin/CasJobs/jar';
-DefV.ConfigFilePath       = '~/matlab/bin/CasJobs/jar/CasJobs.config';
+DefV.CasJobsPath          = '~/matlab/bin/CasJobs/GALEX';
+DefV.ConfigFilePath       = '~/matlab/bin/CasJobs/GALEX/CasJobs.config';
 DefV.FormatString         = [];
 DefV.OutType              = 'AstCat';
 DefV.SortBy               = [];

@@ -56,8 +56,8 @@ end
 
 DefV.Table                = 'PanSTARRS_DR1';
 DefV.Into                 = 'test';
-DefV.CasJobsPath          = '~/matlab/bin/CasJobs/jar';
-DefV.ConfigFilePath       = '~/matlab/bin/CasJobs/jar/CasJobs.config';
+DefV.CasJobsPath          = '~/matlab/bin/CasJobs/GALEX';
+DefV.ConfigFilePath       = '~/matlab/bin/CasJobs/GALEX/CasJobs.config';
 DefV.Extract              = true;
 DefV.BaseURL              = 'http://mastweb.stsci.edu/CasOutPut/CSV/';
 DefV.UserName             = 'EranOfek';

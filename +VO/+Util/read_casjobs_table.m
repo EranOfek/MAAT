@@ -19,7 +19,7 @@ function [Mat,ColCell,ColDic]=read_casjobs_table(File,varargin)
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Jan 2018
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: Mat=VO.Util.read_casjobs_table('sdss_dr14_spec.csv','OutType','table');
+% Example: [Mat,ColCell,Dic]=VO.Util.read_casjobs_table('sdss_dr14_spec.csv','OutType','table','Delimiter','|');
 % Reliable: 
 %--------------------------------------------------------------------------
 
@@ -28,6 +28,7 @@ function [Mat,ColCell,ColDic]=read_casjobs_table(File,varargin)
 DefV.OutType              = 'mat'; % 'mat' | 'table'
 DefV.EmptyVal             = 'null';
 DefV.RemDuplicate         = true;
+DefV.Delimiter            = ',';
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 
@@ -43,7 +44,7 @@ if (isnumeric(Line) && Line==-1)
     
 else
     
-    ColCell = regexp(Line,',','split');
+    ColCell = regexp(Line,sprintf('\\%s',InPar.Delimiter),'split');
     Ncol    = numel(ColCell);
     Format  = '';
     for Icol=1:1:Ncol
@@ -55,7 +56,7 @@ else
     system(sprintf('sed "s/%s/%s/g" %s > %s',InPar.EmptyVal,'NaN',File,NewFile));
 
     FID = fopen(NewFile,'r');
-    C   = textscan(FID,Format,'HeaderLines',1,'Delimiter',','); %,'EmptyValue','null');
+    C   = textscan(FID,Format,'HeaderLines',1,'Delimiter',InPar.Delimiter); %,'EmptyValue','null');
     fclose(FID);
 
     ColDic = Util.struct.struct_def({'Col','UniqueStr'},1,0);

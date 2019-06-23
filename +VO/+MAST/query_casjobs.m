@@ -73,8 +73,8 @@ end
 
 
 DefV.Table                = 'GALEX_GR6Plus7';
-DefV.CasJobsPath          = '~/matlab/bin/CasJobs/jar';
-DefV.ConfigFilePath       = '~/matlab/bin/CasJobs/jar/CasJobs.config';
+DefV.CasJobsPath          = '~/matlab/bin/CasJobs/GALEX';
+DefV.ConfigFilePath       = '~/matlab/bin/CasJobs/GALEX/CasJobs.config';
 DefV.FormatString         = [];
 DefV.OutType              = 'AstCat';
 DefV.SaveInTable          = false;
@@ -113,7 +113,7 @@ else
     PWD = pwd;
 
     cd(InPar.CasJobsPath);
-    SysCommand = sprintf('java -jar %s/casjobs.jar execute -t "%s" "%s"',InPar.CasJobsPath,InPar.Table,Query);
+    SysCommand = sprintf('java -jar %s/casjobs.jar execute -t "%s" "%s"',InPar.CasJobsPath,InPar.Table,Query)
 
     [Status,Result] = system(SysCommand);
     if (InPar.ShowResult)

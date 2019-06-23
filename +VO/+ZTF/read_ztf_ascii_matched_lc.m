@@ -29,7 +29,7 @@ function [Data,ColCell]=read_ztf_ascii_matched_lc(File,varargin)
 % Example: [Data,ColCell]=VO.ZTF.read_ztf_ascii_matched_lc(868);
 %          % example: convert all txt files tp HDF5 including statistical properties
 %          F=dir('field*.txt');
-%          for I=28:1:numel(F),
+%          for I=56:1:numel(F),
 %               I
 %              FI=str2double(F(I).name(6:11));
 %              FN=sprintf('ztfLCDR1_%06d.hdf5',FI)
@@ -98,6 +98,12 @@ while ~feof(FID)
     Nep = Header(3);
     LC = fscanf(FID,'%f %f %f %f %d\n',5.*Nep);
     
+    if (numel(Header)~=8)
+        Header(1)
+        Iobj
+        error('Nh~=8');
+    end
+    
     Data(Iobj).ID       = Header(2);
     Data(Iobj).Nep      = Nep;
     Data(Iobj).FilterID = Header(4);
@@ -109,11 +115,25 @@ while ~feof(FID)
     if (isempty(LC))
         Data(Iobj).LC = [];
         
-        FID = fopen('Problems.txt','a+');
-        fprintf(FID,'ID %d\n',Header(2));
-        fclose(FID);
+        FIDp = fopen('Problems.txt','a+');
+        fprintf(FIDp,'ID %d\n',Header(2));
+        fclose(FIDp);
     else
-        Data(Iobj).LC       = reshape(LC,Ncol,Nep);
+        try
+            Data(Iobj).LC       = reshape(LC,Ncol,Nep);
+        catch
+            Data(Iobj).LC = [];
+        
+            FIDp = fopen('Problems.txt','a+');
+            fprintf(FIDp,'ID %d\n',Header(2));
+            fclose(FIDp);
+
+        
+            size(LC)
+            Ncol
+            Nep
+            Iobj
+        end
     end
     if ~isempty(InPar.H5_FileName)
         if (Iobj==1)
