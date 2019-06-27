@@ -479,7 +479,7 @@ classdef ClassPSF
                         CurveGrowth(Rad,Ipsf) = Util.stat.sumnd(P{Ipsf}(MatR<=Rad));
                     end
                     
-                    Epsilon       = (1:1:numel(CurveGrowth)).*eps;
+                    Epsilon       = (1:1:numel(CurveGrowth)).*eps*1000;
                     RadHalf(Ipsf) = interp1(CurveGrowth.'+Epsilon,RadVec,0.5);
                 end
                 
