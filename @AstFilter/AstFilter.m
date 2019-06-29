@@ -682,11 +682,11 @@ classdef AstFilter
             % Input  : - AstFilter class.
             %          - Full path and file name in which to save the
             %            AstFilter object.
-            %            Default is '~/matlab/data/Filters/AstFilterCat.mat'
+            %            Default is '~/matlab/data/+cats/+spec/+filter/AstFilterCat.mat'
             % Outout : - AstFilter object saved.
             
             if (nargin<2),
-                FileName = sprintf('~%smatlab%sdata%sFilters%sAstFilterCat.mat',filesep,filesep,filesep,filesep);
+                FileName = sprintf('~%smatlab%sdata%s+cats%s+spec%s+filter%sAstFilterCat.mat',filesep,filesep,filesep,filesep,filesepc,filespec);
             end
             
             if (exist(FileName,'file')>0),
