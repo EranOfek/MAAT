@@ -17,11 +17,11 @@ function [PA]=parallactic_angle(varargin)
 %            If object in the zenith then NaN.
 % Tested : Matlab 5.3
 %     By : Eran O. Ofek                   October 2001
-%    URL : http://wise-obs.tau.ac.il/~eran/matlab.html
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Reliable: 1
 %------------------------------------------------------------------------------
 
-if (length(varargin)==3),
+if (length(varargin)==3)
    Coo = varargin{1};
    LST = varargin{2};
    Lat = varargin{3};

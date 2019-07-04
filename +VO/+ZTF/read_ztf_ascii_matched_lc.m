@@ -29,7 +29,7 @@ function [Data,ColCell]=read_ztf_ascii_matched_lc(File,varargin)
 % Example: [Data,ColCell]=VO.ZTF.read_ztf_ascii_matched_lc(868);
 %          % example: convert all txt files tp HDF5 including statistical properties
 %          F=dir('field*.txt');
-%          for I=56:1:numel(F),
+%          for I=235:1:numel(F),
 %               I
 %              FI=str2double(F(I).name(6:11));
 %              FN=sprintf('ztfLCDR1_%06d.hdf5',FI)
@@ -63,7 +63,12 @@ elseif (isnumeric(File))
 else
     error('First argument File name should be string or numeric');
 end
-    
+
+
+[~,No] = system(sprintf('grep "#" %s | wc -l',FileName));
+No = str2double(No);
+
+
 FID = fopen(FileName,'r');
 
 ColCell = {'HMJD','Mag','MagErr','ColorCoef','Flags'};
@@ -92,16 +97,29 @@ IndSave = 0;
 IobjLastSave = 1;
 
 
-while ~feof(FID)
-    Iobj = Iobj + 1;
+for Iobj=1:1:No
+    %Iobj = Iobj + 1;
     Header = fscanf(FID,'%s %ld %d %d %d %d %f %f\n',8);
     Nep = Header(3);
     LC = fscanf(FID,'%f %f %f %f %d\n',5.*Nep);
     
+    if (Header(1)==42)
+        Iobj
+        Header
+        FIDp = fopen('Problems.txt','a+');
+        fprintf(FIDp,'ID %d - likely end\n',Header(2));
+        fclose(FIDp);
+    end
+    
     if (numel(Header)~=8)
         Header(1)
         Iobj
-        error('Nh~=8');
+        %error('Nh~=8');
+        
+        FIDp = fopen('Problems.txt','a+');
+        fprintf(FIDp,'ID %d\n',Header(2));
+        fclose(FIDp);
+
     end
     
     Data(Iobj).ID       = Header(2);
@@ -137,7 +155,7 @@ while ~feof(FID)
     end
     if ~isempty(InPar.H5_FileName)
         if (Iobj==1)
-            h5create(InPar.H5_FileName,InPar.H5_DataSetLC,[Inf 5],'ChunkSize',[5 5]);
+            h5create(InPar.H5_FileName,InPar.H5_DataSetLC,[Inf 5],'ChunkSize',[1000 5]);
             HDF5.writeatt(InPar.H5_FileName,InPar.H5_DataSetLC,[ColCell',num2cell(1:1:numel(ColCell))']');
             
             Istart = 1;
@@ -146,9 +164,10 @@ while ~feof(FID)
 
         end
         
-        if (feof(FID) || Iobj./InPar.Nwrite==floor(Iobj./InPar.Nwrite))
+        
+        if (feof(FID) || Iobj==No || Iobj./InPar.Nwrite==floor(Iobj./InPar.Nwrite))
             % write to file
-            
+            Iobj
             IndSave = IndSave + 1;
             
             LC   = [Data(IobjLastSave:Iobj).LC]';
@@ -182,7 +201,8 @@ if ~isempty(InPar.H5_FileName)
     
 
     KeysInd = [ColCellInd', num2cell(1:1:numel(ColCellInd))'];
-    h5create(InPar.H5_FileName,InPar.H5_DataSetInd,size(IndAllLC));
+    size(IndAllLC)
+    h5create(InPar.H5_FileName,InPar.H5_DataSetInd,size(IndAllLC)); %ChunkSize
     h5write(InPar.H5_FileName,InPar.H5_DataSetInd,IndAllLC);
     HDF5.writeatt(InPar.H5_FileName,InPar.H5_DataSetInd,KeysInd');
     

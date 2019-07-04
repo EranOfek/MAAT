@@ -16,7 +16,6 @@ function OutC=merge(AstC)
 % Reliable: 2
 %--------------------------------------------------------------------------
 
-Rem0col  = true;
 
 Ncat = numel(AstC);
 OutC = AstCat;
@@ -31,12 +30,9 @@ if (length(unique(SizeCol(SizeCol~=0)  ))~=1)
     error('AstCat elements have different number of columns');
 end
 
+UnCol = unique(SizeCol);
+UnCol ~=0
 
-if (Rem0col)
-    Flag    = SizeCol~=0;
-    AstC    = AstC(Flag);
-    SizeCol = SizeCol(Flag);
-end
 
 
 OutC.Cat = zeros(Nrow,Ncol);

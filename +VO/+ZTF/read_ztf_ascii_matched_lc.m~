@@ -27,8 +27,14 @@ function [Data,ColCell]=read_ztf_ascii_matched_lc(File,varargin)
 %     By : Eran O. Ofek                    Jun 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: [Data,ColCell]=VO.ZTF.read_ztf_ascii_matched_lc(868);
+%          % example: convert all txt files tp HDF5 including statistical properties
 %          F=dir('field*.txt');
-%          for I=1:1:numel(F), F(I).
+%          for I=235:1:numel(F),
+%               I
+%              FI=str2double(F(I).name(6:11));
+%              FN=sprintf('ztfLCDR1_%06d.hdf5',FI)
+%              [~,ColCell]=VO.ZTF.read_ztf_ascii_matched_lc(FI,'H5_FileName',FN);
+%          end
 % Reliable: 2
 %--------------------------------------------------------------------------
 
@@ -57,7 +63,12 @@ elseif (isnumeric(File))
 else
     error('First argument File name should be string or numeric');
 end
-    
+
+
+[~,No] = system(sprintf('grep "#" %s | wc -l',FileName));
+No = str2double(No);
+
+
 FID = fopen(FileName,'r');
 
 ColCell = {'HMJD','Mag','MagErr','ColorCoef','Flags'};
@@ -86,11 +97,30 @@ IndSave = 0;
 IobjLastSave = 1;
 
 
-while ~feof(FID)
-    Iobj = Iobj + 1;
+for Iobj=1:1:No
+    %Iobj = Iobj + 1;
     Header = fscanf(FID,'%s %ld %d %d %d %d %f %f\n',8);
     Nep = Header(3);
     LC = fscanf(FID,'%f %f %f %f %d\n',5.*Nep);
+    
+    if (Header(1)==42)
+        Iobj
+        Header
+        FIDp = fopen('Problems.txt','a+');
+        fprintf(FIDp,'ID %d - likely end\n',Header(2));
+        fclose(FIDp);
+    end
+    
+    if (numel(Header)~=8)
+        Header(1)
+        Iobj
+        %error('Nh~=8');
+        
+        FIDp = fopen('Problems.txt','a+');
+        fprintf(FIDp,'ID %d\n',Header(2));
+        fclose(FIDp);
+
+    end
     
     Data(Iobj).ID       = Header(2);
     Data(Iobj).Nep      = Nep;
@@ -99,11 +129,33 @@ while ~feof(FID)
     Data(Iobj).RcID     = Header(6);  % readout channel ID (CCD/quad 0..63)
     Data(Iobj).RA       = Header(7);  % RA in ref
     Data(Iobj).Dec      = Header(8);
-    Data(Iobj).LC       = reshape(LC,Ncol,Nep);
     
+    if (isempty(LC))
+        Data(Iobj).LC = [];
+        
+        FIDp = fopen('Problems.txt','a+');
+        fprintf(FIDp,'ID %d\n',Header(2));
+        fclose(FIDp);
+    else
+        try
+            Data(Iobj).LC       = reshape(LC,Ncol,Nep);
+        catch
+            Data(Iobj).LC = [];
+        
+            FIDp = fopen('Problems.txt','a+');
+            fprintf(FIDp,'ID %d\n',Header(2));
+            fclose(FIDp);
+
+        
+            size(LC)
+            Ncol
+            Nep
+            Iobj
+        end
+    end
     if ~isempty(InPar.H5_FileName)
         if (Iobj==1)
-            h5create(InPar.H5_FileName,InPar.H5_DataSetLC,[Inf 5],'ChunkSize',[5 5]);
+            h5create(InPar.H5_FileName,InPar.H5_DataSetLC,[Inf 5],'ChunkSize',[1000 5]);
             HDF5.writeatt(InPar.H5_FileName,InPar.H5_DataSetLC,[ColCell',num2cell(1:1:numel(ColCell))']');
             
             Istart = 1;
@@ -148,7 +200,8 @@ if ~isempty(InPar.H5_FileName)
     
 
     KeysInd = [ColCellInd', num2cell(1:1:numel(ColCellInd))'];
-    h5create(InPar.H5_FileName,InPar.H5_DataSetInd,size(IndAllLC));
+    size(IndAllLC)
+    h5create(InPar.H5_FileName,InPar.H5_DataSetInd,size(IndAllLC)); %ChunkSize
     h5write(InPar.H5_FileName,InPar.H5_DataSetInd,IndAllLC);
     HDF5.writeatt(InPar.H5_FileName,InPar.H5_DataSetInd,KeysInd');
     
@@ -187,21 +240,22 @@ function IndAllLC=calc_prop(Data,Nlast,Col)
     
     %tic;
     parfor IobjP=1:1:Nobj
-        MeanMag(IobjP) = mean(Data(IobjP).LC(Col.Mag,:));
-        
-        StdMag(IobjP)  = std(Data(IobjP).LC(Col.Mag,:));
-      
-        RStdMag(IobjP) = Util.stat.rstd(Data(IobjP).LC(Col.Mag,:).');
-       
-        MaxMag(IobjP) = max(Data(IobjP).LC(Col.Mag,:)) - MeanMag(IobjP);
-        MinMag(IobjP) = MeanMag(IobjP) - min(Data(IobjP).LC(Col.Mag,:));
-        Chi2(IobjP)    = sum((Data(IobjP).LC(Col.Mag,:) - MeanMag(IobjP)).^2./Data(IobjP).LC(Col.MagErr,:).^2);
-        
-        
-        P = timeseries.period_normnl(Data(IobjP).LC( [Col.HMJD, Col.Mag],:).',FreqVec);
-        [MaxPower(IobjP),MaxInd] = max(P(:,2));
-        FreqMaxPower(IobjP) = FreqVec(MaxInd);
-        
+        if (~isempty(Data(IobjP).LC))
+            MeanMag(IobjP) = mean(Data(IobjP).LC(Col.Mag,:));
+
+            StdMag(IobjP)  = std(Data(IobjP).LC(Col.Mag,:));
+
+            RStdMag(IobjP) = Util.stat.rstd(Data(IobjP).LC(Col.Mag,:).');
+
+            MaxMag(IobjP) = max(Data(IobjP).LC(Col.Mag,:)) - MeanMag(IobjP);
+            MinMag(IobjP) = MeanMag(IobjP) - min(Data(IobjP).LC(Col.Mag,:));
+            Chi2(IobjP)    = sum((Data(IobjP).LC(Col.Mag,:) - MeanMag(IobjP)).^2./Data(IobjP).LC(Col.MagErr,:).^2);
+
+            P = timeseries.period_normnl(Data(IobjP).LC( [Col.HMJD, Col.Mag],:).',FreqVec);
+
+            [MaxPower(IobjP),MaxInd] = max(P(:,2));
+            FreqMaxPower(IobjP) = FreqVec(MaxInd);
+        end
     end
     %toc
     
