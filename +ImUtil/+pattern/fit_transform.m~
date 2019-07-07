@@ -2,9 +2,54 @@ function [Res]=fit_transform(Ref,Cat,TranC,varargin)
 % Fit astrometric transformation
 % Package: +ImUtil/+pattern
 % Description: 
-% Input  : - 
+% Input  : - Reference catalog in a matrix format.
+%            By default the X/Y (RA/Dec) coordinates are in columns 1,2,
+%            and the magnitude and color are in column 5,6 (See
+%            ColRefX,...).
+%          - Catalog to fit to the reference in a matrix format.
+%          - A transformation class (TranClass) object that defines the
+%            fitted transformation.
+%            Default is 'affine_tt_cheby2_4'.
 %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
+%            'ColRefX' - Column of X coordinate in Ref catalog.
+%                        Default is 1.
+%            'ColRefY' - Column of Y coordinate in Ref catalog.
+%                        Default is 2.
+%            'ColRefMag' - Column of magnitude in Ref catalog.
+%                        Default is 5.
+%            'ColRefColor' - Column of color in Ref catalog.
+%                        Default is 6.
+%            'ColCatX' - Column of X coordinate in catalog.
+%                        Default is 1.
+%            'ColCatY' - Column of Y coordinate in catalog.
+%                        Default is 2.
+%            'PixScale' - Pixel scale in arcsec/pix. Used for the rms
+%                        estimate in the image sub blocks. 
+%            'CooUnits' - Coordinate units. Default is 'deg'.
+%            'RefSelectFun' - Function handle to apply on the reference
+%                        catalog for selection of sources that will
+%                        participate in the fit.
+%                        Default is @(R,Par) R(:,Par)<19 & R(:,Par)>12;
+%            'RefSelectFunPar' - Cell array of parameters to pass to the
+%                        'RefSelectFun'. Default is {5}.
+%            'NormXY' - Normalization of the X/Y coordinates prior to the
+%                       fit. Default si 4096.
+%            'PolyMagDeg' - Max polynomial degree for magnitude fit.
+%                       Default is 3.
+%            'StepMag' - Magnitude bin size in rms vs. mag diagaram.
+%                      Default is 0.1 mag.
+%                      This is being used in order to estimate the rms as a
+%                      function of magnitude, which in turn is used as the
+%                      error estimate on the measurment in the second
+%                      iteration.
+%            'Niter' - Number of iterations.
+%            'SigClip'
+%            'MaxResid'
+%            'Plot'
+%            'ImSize'
+%            'BlockSize'
+%            'BufferSize'
 % Output : - 
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Jan 2018
@@ -41,7 +86,6 @@ DefV.Plot                 = false;
 DefV.ImSize               = []; %[2048 4096];  %X/Y
 DefV.BlockSize            = []; %[512 512];    %X/Y
 DefV.BufferSize           = 10;
-DefV.Plot                 = false;
 
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
@@ -50,6 +94,9 @@ if (~isempty(InPar.RefSelectFun))
     Flag = InPar.RefSelectFun(Ref,InPar.RefSelectFunPar{:});
     Ref  = Ref(Flag,:);
     Cat  = Cat(Flag,:);
+    
+else
+    Flag = true(size(Ref,1),1);    
 end
 
 RefX = Ref(:,InPar.ColRefX);
