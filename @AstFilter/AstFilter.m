@@ -239,6 +239,39 @@ classdef AstFilter
         
     end
     
+    
+    % construct filters
+    methods (Static)
+        
+        function AF=top_hat(L1,L2)
+            % construct a top hat filter between L1 and L2
+            % Input  : - Lower wavelngth (L1; scalar or a vector). If
+            %            vector than output is an array of AstFilter
+            %            objects.
+            %          - L2
+            % Output : - An AstFilter object
+            
+            
+            Nf = numel(L1);
+            AF = AstFilter(Nf,1);
+            for If=1:1:Nf
+                W = [L1(If)-0.01, linspace(L1(If),L2(If),10), L2(If)+0.01]';
+                T = zeros(size(W));
+                T(2:end-1) = 1;
+                AF(If).family = 'top_hat';
+                AF(If).band   = sprintf('f%05d',If);
+                AF(If).T      = [W,T];
+                AF(If).nT     = AF(If).T;
+                
+            end
+            AF        = AF.norm;
+            AF        = AF.pop_wl;
+        end
+        
+        
+    end
+    
+    
     %----------------------
     %--- plot functions ---
     %----------------------
