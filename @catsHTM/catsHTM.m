@@ -96,7 +96,7 @@ classdef catsHTM
             % Package: @catsHTM
             % Description: save catalog data in HDF5 file
             %              Given a matrix containing a catalog, save the
-            %              data in an HDF5 file. THe data will be saved
+            %              data in an HDF5 file. The data will be saved
             %              under two variable names in the HDF5 file.
             %              /<base>_Cat will contain the catalog, while
             %              /<base>_Ind will contain an index data.
