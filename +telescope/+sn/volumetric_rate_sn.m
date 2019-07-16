@@ -15,7 +15,7 @@ function [R,Mz,P]=volumetric_rate_sn(varargin)
 
 
 
-DefV.SFR                  = true;
+DefV.SFR                  = false;
 DefV.Omega                = 1;
 DefV.A                    = (2:0.3:8).'; %(0.3:0.3:8)';
 DefV.Sigma                = 1;
