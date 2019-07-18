@@ -302,7 +302,7 @@ classdef Kernel2
                 Rot = false;
             end
             Y  = CY + tand(Angle).*(X-CX);
-            for k=-round(Width/2/cosd(Angle)):1:round(Width/2/cosd(Angle))
+            for k=-fix(Width/2/cosd(Angle)):1:fix(Width/2/cosd(Angle))
             Ind = sub2ind([SizeY, SizeX],round(Y)+k,round(X));
             K(Ind) = 1;
             end
