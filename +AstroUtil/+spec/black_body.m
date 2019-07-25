@@ -75,6 +75,8 @@ switch lower(Type)
 
     %--- wavelength units ---
     % emittence [erg/sec/cm^2/cm(lambda)]
+    % the emittence is per 4\pi steradians
+    % this was tested by compaing the integral with the Stefan-Bolzman law
     Il = 2.*pi.*h.*c.^2.*Lam.^(-5) ./ (exp(h.*c./(Lam.*k.*T)));
     
     % Photon distribution law

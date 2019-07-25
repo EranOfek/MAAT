@@ -43,18 +43,13 @@ function [Res]=fit_transform(Ref,Cat,TranC,varargin)
 %                      function of magnitude, which in turn is used as the
 %                      error estimate on the measurment in the second
 %                      iteration.
-%            'Niter' - Number of extra iterations to perform after the
-%                      first fit. Default is 1.
-%            'SigClip' - Sigma clipping to apply after the basic iteration.
-%                      Default is 5.
-%            'MaxResid' - Maximum allowed residuals in pixels.
-%                      After the basic fit, larger residuals will be
-%                      removed.
-%                      Default is 0.1 pix.
-%            'Plot' -  Default is false.
-%            'ImSize' -  Default is [].
-%            'BlockSize' - Default is [].
-%            'BufferSize' Default is 10.
+%            'Niter' - Number of iterations.
+%            'SigClip'
+%            'MaxResid'
+%            'Plot'
+%            'ImSize'
+%            'BlockSize'
+%            'BufferSize'
 % Output : - 
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Jan 2018

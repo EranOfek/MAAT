@@ -254,22 +254,26 @@ for Isim=1:1:Nsim
     else
         % RefCat is not empty
         
-        % clean the GAIA catalog
-        switch lower(InPar.RefCat)
-            case 'gaiadr1'
-                % remove sources with excess noise >5 sigma and outside the
-                % mag range
-                InPar.RC_ColMag = 'MagG';   % override mag column
-                F = RefCat.(CatField)(:,8) < 80 & RefCat.(CatField)(:,5)> InPar.RefCatMagRange(1) & RefCat.(CatField)(:,5)< InPar.RefCatMagRange(2);
-                RefCat.(CatField) = RefCat.(CatField)(F,:);
-                
-            case 'gaiadr2'
-                MagG = col_get(RefCat,{InPar.RC_ColMag});
-                ExcessNoise = col_get(RefCat,{'ExcessNoise'});
-                F = ExcessNoise<InPar.MaxExcessNoise & MagG> InPar.RefCatMagRange(1) & MagG< InPar.RefCatMagRange(2);
-                RefCat.(CatField) = RefCat.(CatField)(F,:);
-                
-                
+        if isa(InPar.RefCat,'function_handle')
+            RefCat = InPar.RefCat;
+        else
+            % clean the GAIA catalog
+            switch lower(InPar.RefCat)
+                case 'gaiadr1'
+                    % remove sources with excess noise >5 sigma and outside the
+                    % mag range
+                    InPar.RC_ColMag = 'MagG';   % override mag column
+                    F = RefCat.(CatField)(:,8) < 80 & RefCat.(CatField)(:,5)> InPar.RefCatMagRange(1) & RefCat.(CatField)(:,5)< InPar.RefCatMagRange(2);
+                    RefCat.(CatField) = RefCat.(CatField)(F,:);
+
+                case 'gaiadr2'
+                    MagG = col_get(RefCat,{InPar.RC_ColMag});
+                    ExcessNoise = col_get(RefCat,{'ExcessNoise'});
+                    F = ExcessNoise<InPar.MaxExcessNoise & MagG> InPar.RefCatMagRange(1) & MagG< InPar.RefCatMagRange(2);
+                    RefCat.(CatField) = RefCat.(CatField)(F,:);
+
+
+            end
         end
         
         %---------------------------

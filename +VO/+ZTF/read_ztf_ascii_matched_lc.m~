@@ -164,9 +164,10 @@ for Iobj=1:1:No
 
         end
         
-        if (feof(FID) || Iobj./InPar.Nwrite==floor(Iobj./InPar.Nwrite))
+        
+        if (feof(FID) || Iobj==No || Iobj./InPar.Nwrite==floor(Iobj./InPar.Nwrite))
             % write to file
-            
+            Iobj
             IndSave = IndSave + 1;
             
             LC   = [Data(IobjLastSave:Iobj).LC]';
@@ -209,6 +210,74 @@ if ~isempty(InPar.H5_FileName)
     delete(gcp('nocreate'))
      
 end
+
+% prep HTM index file
+Nlevel = 9;
+[HTM,LevList]=celestial.htm.htm_build(Nlevel);
+Side = LevList(end).side;
+SearchRadius = (7.*sqrt(2)./2)./RAD + 0.5./RAD + Side;
+ZTF_Fields=cats.ZTF.ZTF_Fields;
+CCC = ZTF_Fields.Cat(:,[2 3 1]);
+CCC(:,1:2) = CCC(:,1:2)./RAD;
+CCC = sortrows(CCC,2);
+
+Files = dir('ztfLCDR1_*.hdf5');
+Tmp=regexp({Files.name},'_|\.','split');
+ListFields = nan(numel(Tmp),1);
+for It=1:1:numel(Tmp)
+    ListFields(It) = str2double(Tmp{It}{2});
+end
+    
+%%
+Iptr = LevList(end).ptr;
+Nptr = numel(Iptr);
+tic;
+for I=101:1:200
+    %Nptr
+    [FileName,DataName]=catsHTM.get_file_var_from_htmid('ztfSrcLCDR1',IndHTM);
+    Found = false;
+    if exist(FileName,'file')>0
+        h5I =h5info(FileName);
+        Found = any(strcmp(DataName,{h5I.Datasets.Name}));
+    end
+    if (~Found)
+        I
+    
+        Ind = Iptr(I);
+
+        [MeanCoo] = celestial.coo.cosined(mean(HTM(Ind).cosd,1));
+        Iztf = VO.search.search_sortedlat(CCC,MeanCoo(1),MeanCoo(2),SearchRadius);
+        FoundFields = CCC(Iztf,3);
+
+        ReadFields = intersect(ListFields,FoundFields);
+        Nrf = numel(ReadFields);
+        Data = zeros(0,NcolInd);
+        for Irf=1:1:Nrf
+            FileNameLC = sprintf('ztfLCDR1_%06d.hdf5',ReadFields(Irf));
+            Data = [Data; h5read(FileNameLC,'/IndAllLC')];
+
+        end
+
+        if ~isempty(Data)
+
+
+            Flag = celestial.htm.in_polysphere(Data(:,1:2),HTM(Ind).cosd);
+            Data = Data(Flag,:);
+
+            Data = sortrows(Data,2);
+
+            if ~isempty(Data)
+                catsHTM.save_cat(FileName,DataName,Data,2,1000);
+            end
+
+
+        end
+    end
+    
+end
+toc
+%%
+
 
 end % main function
 
