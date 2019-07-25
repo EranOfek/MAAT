@@ -495,8 +495,7 @@ for Isim=1:1:Nsim
                     % cross match the rotation using histogram of
                     % distances/angles
                     
-                    %Add a condition that the SubCat isn't empty, In the
-                    %case of empty SubCat - skip
+                    %Add a 
                     if any(any(SubCat(Isub).(CatField)))
                         ResRot = ImUtil.pattern.match_pattern_rot(SubCat(Isub).(CatField),RC.(CatField),...
                                                               'CatColX',ColXc,...
