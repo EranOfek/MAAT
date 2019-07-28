@@ -278,6 +278,12 @@ for I=201:1:Nptr
     
 end
 toc
+
+Msrc = catsHTM.get_nsrc('ztfSrcLCDR1');
+catsHTM.save_htm_ind(Nlevel,'ztfSrcLCDR1_htm.hdf5',[],ColCellInd,Nsrc(:,1:2));
+ColUnits={'RAD','RAD','','','','','','','','mag','mag','mag','mag','mag','','','1/day'};
+catsHTM.save_cat_colcell('ztfSrcLCDR1',ColCellInd,ColUnits)
+
 %%
 
 
