@@ -664,7 +664,7 @@ classdef ClassWCS
                 % number of coef/orders
                 N{Iaxis} = numel(CellCoef{Iaxis});
             
-                for I=1:N{1}
+                for I=1:N{Iaxis}
                     Orders  = CellOrder{Iaxis}(:,I);
                     % requirement also that r-comp is 0.
                     IndexPV = find(all(Tab{Iaxis}(1:2,:)==Orders) & Tab{Iaxis}(3,:)==0) - 1;
