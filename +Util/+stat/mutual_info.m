@@ -23,7 +23,8 @@ function MI=mutual_info(X,Y,varargin)
 DefV.XLim                = [];
 DefV.YLim                = [];
 DefV.NbinX               = 10;
-DefV.NbinY               = 10;     
+DefV.NbinY               = 10; 
+DefV.Kernel              = 'poisson';
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 if isempty(InPar.XLim)
@@ -42,6 +43,24 @@ Yedges = (InPar.YLim(1):Yrange./InPar.NbinY:InPar.YLim(2));
 
 Pxy = histcounts2(X,Y,Xedges,Yedges);
 Pxy = Pxy./sum(Pxy(:));
+
+% Kernel
+switch lower(InPar.Kernel)
+    case 'none'
+        % do nothing
+    case 'poisson'
+        % Poisson matched filter (Ofek & Zackay 2018)
+        [Ny,Nx] = size(Pxy);
+        GK = Kernel2.gauss(2,2,0,Nx,Ny); % Gaussian Kernel
+        PK = log(1+GK); % Poisson noise Gaussian Kernel
+        Pxy = ifft2(fft2(Pxy).*(fft2(PK)));
+        
+    otherwise
+        error('Unknown Kernel option');
+end
+
+
+
 Px  = sum(Pxy,1);
 Py  = sum(Pxy,2);
 

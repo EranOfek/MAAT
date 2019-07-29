@@ -29,6 +29,8 @@ function [Flux,Res]=calib_flux_sum(Flux,varargin)
 %            'FlagCS' - Flag indicating stars used for calibration.
 %            'rmsZP'  - rms of ZP (normalization) at each epoch, as
 %                       100measured from the mean-normalized calibrated stars.
+%            'rmsflux_selectPar' - Cell array of key,val parameters to pass
+%                       to timeseries.rmsflux_select.m.
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Jul 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
@@ -48,6 +50,7 @@ DefV.MaxRMS              = 0.1;
 DefV.QuantileRMS         = 0.5;
 DefV.Niter               = 3;
 DefV.StarsInBin          = 30;
+DefV.rmsflux_selectPar   = {};
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 [Nst,Nep] = size(Flux);
@@ -84,14 +87,19 @@ for Iter=1:1:InPar.Niter
 
     Q = quantile(StarsRelRMS,InPar.QuantileRMS);
     
-    % FFU
+    
+    
+
     % Select stars by removing outliers from the RMS vs. Flux diagram.
     %[SortedMeanFlux,SI] = sort(MeanFlux);
     %SortedRMS           = StarsRelRMS(SI);
     
+    [FlagRMS,ResS]=timeseries.rmsflux_select(MeanFlux,StarsRelRMS,InPar.rmsflux_selectPar{:}); %'Plot',true);
+    
+    
     
     if (Iter<InPar.Niter)
-        FlagCS   = FlagNN & StarsRelRMS<InPar.MaxRMS  & StarsRelRMS<Q;
+        FlagCS   = FlagNN & StarsRelRMS<InPar.MaxRMS  & StarsRelRMS<Q & FlagRMS;
         FluxCS   = Flux(FlagCS,:);
     end
 end

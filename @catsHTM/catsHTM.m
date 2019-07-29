@@ -1030,7 +1030,7 @@ classdef catsHTM
             DefV.ColCell               = {};
             DefV.ColRA                 = {'RA','ALPHAWIN_J2000'};
             DefV.ColDec                = {'Dec','DELTAWIN_J2000'};
-            DefV.CooUnits              = 'rad';
+            DefV.CooUnits              = 'rad';  % in the AstCat object
             DefV.ColDecHTM             = 2;
             DefV.ColRAHTM              = 1;
             
