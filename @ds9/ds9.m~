@@ -535,9 +535,7 @@ classdef ds9
                         
                         
                         Nkey = size(Images(Iim).Header,1);
-                        Bl   = cell(Nkey,1);
-                        [Bl{1:Nkey}] = deal(' ');
-                        Images(Iim).Header = [Images(Iim).Header(:,1:2),  Bl];
+                        Images(Iim).Header = [Images(Iim).Header(:,1:2), blank(Nkey,1)
                         FITS.write(Images(Iim).(ImageField),TmpName,'Header',Images(Iim).Header);
                     else
                         FITS.write(List{Iim},TmpName);

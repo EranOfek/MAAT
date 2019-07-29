@@ -1018,6 +1018,19 @@ classdef catsHTM
             %              catsHTM catalog.
             % Input  : - catsHTM catalog name (e.g., 'UCAC4').
             %          - An AstCat object with sources.
+            %          * Arbitrary number of key,val pairs:
+            %            'OutType' - Output catalog type {'mat'|'astcat'}.
+            %                       Default is 'AstCat'.
+            %            'SearchRadius' - Search radius. Default is 2.
+            %            'SearchRadiusUnits' - Search radius units.
+            %                       Default is 'arcsec'.
+            %            'ColCell' - Default is {}.
+            %            'ColRA' - Default is {'RA','ALPHAWIN_J2000'}.
+            %            'ColDec' - Default is {'Dec','DELTAWIN_J2000'}.
+            %            'CooUnits' - Input catalog coordinates units.
+            %                       Default is 'rad'.
+            %            'ColDecHTM' - Default is 2.
+            %            'ColRAHTM'  - Default is 1.
             % Output : -
             % Example: CatM=catsHTM.sources_match('GAIADR2',CoaddSim);
             

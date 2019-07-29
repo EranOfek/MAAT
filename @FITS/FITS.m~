@@ -1504,16 +1504,15 @@ classdef FITS
                             if (isempty(Header.(HeaderField){Inl,3}))
                                 Header.(HeaderField){Inl,3} = ' ';
                             end
-%                             Header.(HeaderField){Inl,:}
-%                             string(Header.(HeaderField){Inl,3})
-%                             regexprep(Header.(HeaderField){Inl,3},'\W&\S','')
+                            Header.(HeaderField){Inl,:}
+                            string(Header.(HeaderField){Inl,3})
                             % dela with non-standard keywords
                             if isempty(Header.(HeaderField){Inl,2})
                                 Header.(HeaderField){Inl,2} = ' ';
                             end
                             fits.writeKey(Fptr,Header.(HeaderField){Inl,1},...
                                                Header.(HeaderField){Inl,2},...
-                                               Header.(HeaderField){Inl,3});
+                                               regexprep(Header.(HeaderField){Inl,3}),'\W\s','');
                     end
                 end
             end
