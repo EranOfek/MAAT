@@ -62,18 +62,11 @@ Ntemplate = numel(InPar.Template);
 Nphot     = numel(Mag);
 
 
-if isempty(InPar.SynMag)
-    SynMag     = nan(Ntemplate,Nphot);
-    ExtrapFlag = nan(Ntemplate,Nphot);
-    for Iphot=1:1:Nphot
-        [SynMag(:,Iphot), ExtrapFlag(:,Iphot)] = synphot(InPar.Template,Family{Iphot},Band{Iphot},MagType{Iphot});
-    end
-else
-    SynMag = InPar.SynMag;
-    ExtrapFlag = InPar.ExtrapFlag;
-    if (isempty(ExtrapFlag))
-        ExtrapFlag = ones(size(SynMag));
-    end
+if (InPar.Sy
+SynMag     = nan(Ntemplate,Nphot);
+ExtrapFlag = nan(Ntemplate,Nphot);
+for Iphot=1:1:Nphot
+    [SynMag(:,Iphot), ExtrapFlag(:,Iphot)] = synphot(InPar.Template,Family{Iphot},Band{Iphot},MagType{Iphot});
 end
     
 Diff = (Mag.' - SynMag);

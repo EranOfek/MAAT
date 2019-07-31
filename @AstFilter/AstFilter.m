@@ -484,7 +484,7 @@ classdef AstFilter
             %            the .T and .nT fields.
             
             Nf = numel(AstF);
-            for If=1:1:Nf,
+            for If=1:1:Nf
                 AstF(If).nT = [W, interp1(AstF(If).nT(:,1),AstF(If).nT(:,2),W,varargin{:})];
                 AstF(If). T = [W, interp1(AstF(If).T(:,1), AstF(If).T(:,2), W,varargin{:})];
             end
@@ -547,7 +547,7 @@ classdef AstFilter
                 
                 % interpolate to new grid
                 AstF1(I) = interp(AstF1(If1),Wave);
-                if (nargout>1),
+                if (nargout>1)
                     AstF2(I) = interp(AstF2(If2),Wave);
                 end
             end
@@ -718,11 +718,11 @@ classdef AstFilter
             %            Default is '~/matlab/data/+cats/+spec/+filter/AstFilterCat.mat'
             % Outout : - AstFilter object saved.
             
-            if (nargin<2),
+            if (nargin<2)
                 FileName = sprintf('~%smatlab%sdata%s+cats%s+spec%s+filter%sAstFilterCat.mat',filesep,filesep,filesep,filesep,filesepc,filespec);
             end
             
-            if (exist(FileName,'file')>0),
+            if (exist(FileName,'file')>0)
                 FileNameOld = sprintf('%s.%s',FileName,date);
                 fprintf('old file name %s exist\n',FileName);
                 fprintf('old file name will be copied into %s\n',FileNameOld);

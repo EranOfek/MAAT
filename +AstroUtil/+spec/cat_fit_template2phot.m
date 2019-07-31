@@ -59,7 +59,8 @@ end
 
 
 
-
+SynMag     = [];
+ExtrapFlag = [];
 for Isrc=1:1:Nsrc
     PhotData = cell(sum(Nf),5);
     K = 0;
@@ -75,7 +76,8 @@ for Isrc=1:1:Nsrc
         end
     end
     
-    [Res(Isrc)]=AstroUtil.spec.fit_template2phot(PhotData);
+    % in the first time will calculate syn mag
+    [Res(Isrc),SynMag,ExtrapFlag]=AstroUtil.spec.fit_template2phot(PhotData,'SynMag',SynMag,'ExtrapFlag',ExtrapFlag);
     Isrc
     
     

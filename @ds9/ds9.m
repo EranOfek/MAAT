@@ -193,6 +193,9 @@ classdef ds9
             % Package: @ds9
             % Input  : null
             % Output : null
+            % Problems: The command ds9 is not recognized by the bash interpreter, try adding an alias
+            %           to the bash profile using ‘vim .bash_profile’ adding the following line to the
+            %           profile ‘alias ds9="open -a /Applications/SAOImageDS9.app/Contents/MacOS/ds9"
             % Example: ds9.open
             % Reliable: 2
             Wait = 3;  % s

@@ -34,7 +34,7 @@ function [Out,ParErr]=ls_conjgrad(H,Y,ErrY,Fun,varargin)
 %     By : Eran O. Ofek                    Nov 2013
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: X=[0:1:100]'; Y=5+0.1.*X+randn(size(X)); H=[ones(size(X)), X];
-%          Out=ls_conjgrad(H,Y,1,'pcg',1e-6,10)
+%          Out=Util.fit.ls_conjgrad(H,Y,1,'pcg',1e-6,10)
 % Reliable: 2
 %--------------------------------------------------------------------------
 

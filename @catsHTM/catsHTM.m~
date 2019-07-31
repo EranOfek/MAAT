@@ -1199,7 +1199,7 @@ classdef catsHTM
             %tic;
             First = true;
              for Ih=1:1:Nh
-                 %Ih
+                 Ih
 %                  if (Ih./1000)==floor(Ih./1000)
 %                     Ih
 %                     toc
@@ -1220,8 +1220,7 @@ classdef catsHTM
                         if (InPar.Concat)
                             CR = Fun(Cat,InPar.FunPar{:});
                             if (InPar.Verbose)
-                                fprintf('HTM index: %d    Number of objects: %d\n',Ih,size(CR,1));
-                            end
+                                fprintf('size(CR)
                             if (First)
                                 First = false;
                                 ConcatRes(1).Cat = CR.';
