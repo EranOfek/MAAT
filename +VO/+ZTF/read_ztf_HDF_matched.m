@@ -35,4 +35,4 @@ FileName = sprintf(FileName,FieldID);
 Ncol = numel(InPar.ColCell);
 
 Cat = HDF5.load(FileName,'/AllLC',[Lines(1) 1],[Lines(2)-Lines(1), Ncol]);
-
+ColCell = InPar.ColCell;
