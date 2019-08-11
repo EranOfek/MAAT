@@ -38,20 +38,20 @@ Def.BetaT = abs(-2:0.01:2).';
 %         Alpha,BaseMag
 Def.Pars  = [1, 18];
 
-if (nargin==0),
+if (nargin==0)
     Pars  = Def.Pars;
     BetaT = Def.BetaT;
-elseif (nargin==1),
+elseif (nargin==1)
     BetaT = Def.BetaT;
-elseif (nargin==2),
+elseif (nargin==2)
     % do nothing
 else
     error('Illegal number of input arguments');
 end
 
-if (isstruct(Pars)),
+if (isstruct(Pars))
     In = Pars;
-elseif (isnumeric(Pars)),
+elseif (isnumeric(Pars))
     In.Alpha   = Pars(:,1);
     In.BaseMag = Pars(:,2);
 else
@@ -65,6 +65,7 @@ Res.Mu = (U2 + 2)./(sqrt(U2).*sqrt(U2+4));  % Total Magnification
 
 BaseFlux = 1;
 Res.Flux = (1-In.Alpha).*BaseFlux  + In.Alpha.*BaseFlux.*Res.Mu;
+
 Mag = In.BaseMag-2.5.*log10(Res.Flux);
 
 Res.Mu1    = 0.5.*Res.Mu + 0.5;

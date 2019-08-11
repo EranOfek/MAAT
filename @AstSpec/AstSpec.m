@@ -2752,6 +2752,7 @@ classdef AstSpec < HEAD
         function [Mag,Flag,EffW]=synphot(AS,varargin)
             % Synthetic photometry on AstSpec class spectra.
             % Description: Synthetic photometry on AstSpec class spectra.
+            %              OBSOLETE: use synthetic_phot instead.
             % Input  : - AstSpec class object.
             %          * Additional arguments to pass to synphot.m
             % Output : - Vector of synthetic magnitude for each spectrum.
@@ -2774,6 +2775,35 @@ classdef AstSpec < HEAD
                 
             end
         end
+        
+        
+        function [Mag,Cover,Flux]=synthetic_phot(AS,varargin)
+            % Synthetic photometry on AstSpec class spectra.
+            % Input  : - AstSpec class object.
+            %          * Additional arguments to pass to synthetic_phot.m
+            % Output : - Vector of synthetic magnitude for each spectrum.
+            %          - Vector of the fraction of flux that was
+            %            extrapolated in case of partial coverage between
+            %            spectrum and filter. 0 - means no extrapolation.
+            %          - Vector of filter effective wavelength [Ang].
+            % Example: [Mag,Flag,EffW]=synthetic_phot(AS,'SDSS','r','AB');
+            
+            Ns   = numel(AS);
+            Mag  = zeros(Ns,1);
+            Flag = zeros(Ns,1);
+            EffW = zeros(Ns,1);
+            % convert Wavelength to ang:
+            AS = convert_wave(AS,'Ang');
+            
+            for Is=1:1:Ns
+                % for each spectrum
+                [Mag(Is),Flag(Is),EffW(Is)]=AstroUtil.spec.synthetic_phot([AS(Is).Wave, AS(Is).Int],varargin{:});
+                
+            end
+            
+            
+        end
+        
         
         function Spec=scale2mag(Spec,Mag,Family,Name,System)
             % Scale an AstCat object spectrum to have a specific synthetic magnitude

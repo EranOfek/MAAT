@@ -1,18 +1,20 @@
-function []=conv_vargauss(Spec,ResVec,varargin)
-% SHORT DESCRIPTION HERE
+function [VG]=conv_vargauss(Spec,ResVec,varargin)
+% Convolution with a Gaussian with a wavelngth dependent width
 % Package: AstroUtil
-% Description: 
+% Description: Convolution with a Gaussian with a wavelngth dependent
+%              width.
 % Input  : - A spectrum [Wavelength, Intensity]
 %          - A resolution vector, with the same length of the spectrum.
-
 %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
-%            'ResolutionType' - 'lambda' | 'R'
-% Output : - 
+%            'ResolutionType' - 'lambda' | 'R'. Default is 'R'.
+%            'InterpMethod'   - Default is 'cubic'
+%            'FilterSizeMaxSigma' - Default is 3.
+% Output : - Convolved spectrum.
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Jul 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: 
+% Example: [Conv]=AstroUtil.spec.conv_vargauss
 % Reliable: 
 %--------------------------------------------------------------------------
 
@@ -53,28 +55,51 @@ end
 
 
 
-%SWN=SigmaWave./max(SigmaWave);
-SWN = flip(min(SigmaWave)/SigmaWave);
-
-Factor = range(Wave)./sum(SWN);
-SigNew = max(SigmaWave)./Factor;
-NewRes = Factor.*SWN;
-NewWave = Wave(1) + [0; cumsum(NewRes)];
-NewInt  = interp1(Wave,Int,NewWave,InPar.InterpMethod,'extrap');
-
-
-% Gaussian Filter
-FilterSize = ceil(max(SigmaWave).*InPar.FilterSizeMaxSigma);
-
-X      = (-FilterSize:1:FilterSize)';
-Y      = exp(-X.^2./(2.*SigNew.^2))./sqrt(2.*pi.*SigNew.^2);
-
-Conv = conv(NewInt,Y,'same')
+% %SWN=SigmaWave./max(SigmaWave);
+% SWN = flip(min(SigmaWave)/SigmaWave);
+% 
+% Factor = range(Wave)./sum(SWN);
+% SigNew = max(SigmaWave)./Factor;
+% NewRes = Factor.*SWN;
+% 
+% NewWave = Wave(1) + [0; cumsum(NewRes)];
+% NewInt  = interp1(Wave,Int,NewWave,InPar.InterpMethod,'extrap');
+% 
+% 
+% % Gaussian Filter
+% FilterSize = ceil(max(SigmaWave).*InPar.FilterSizeMaxSigma);
+% 
+% X      = (-FilterSize:1:FilterSize)';
+% Y      = exp(-X.^2./(2.*SigNew.^2))./sqrt(2.*pi.*SigNew.^2);
+% 
+% Conv = conv(NewInt,Y,'same')
 
 
 
         
+SWN=SigmaWave./max(SigmaWave);
+Factor = range(Wave)./sum(SWN);
+SigNew = max(SigmaWave)./Factor;
+NewRes = Factor.*SWN;
+NewWave = Wave(1);
+i=1;
+while NewWave(i)<Wave(end)
+    y = interp1(Wave,NewRes,NewWave(i),'linear','extrap');
+    temp = NewWave(i) +y;
+    NewWave = [NewWave temp];
+    i=i+1;
+end
+NewRes = interp1(Wave,NewRes,NewWave,'linear','extrap');
+NewInt = interp1(Wave,Int,NewWave,'linear','extrap');
+% Gaussian Filter
+FilterSize = ceil(max(SigmaWave).*InPar.FilterSizeMaxSigma);
 
+X = (-FilterSize:1:FilterSize)';
+Y = exp(-X.^2./(2.*SigNew.^2))./sqrt(2.*pi.*SigNew.^2);
+
+Conv = conv(NewInt,Y,'same');
+VG = [NewWave.', Conv.'];
+ 
 
     
     

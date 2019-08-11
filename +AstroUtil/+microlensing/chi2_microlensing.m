@@ -24,7 +24,7 @@ function [Chi2]=chi2_microlensing(Par,LC,Ndr,Fun,varargin)
 % Output : - Chi^2
 % Tested : Matlab 7.0
 %     By : Eran O. Ofek                   October 2008
-%    URL : http://wise-obs.tau.ac.il/~eran/matlab.html
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
 %-------------------------------------------------------------------------
 
 import AstroUtil.microlensing.*

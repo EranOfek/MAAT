@@ -347,7 +347,7 @@ classdef catsHTM
             %          - Directory in which to write wget lists.
             %            Default is '' - i.e., current dir.
             % Example:
-            % catsHTM.create_catalog_lists4wget('/raid/eran/catsHTM');
+            % catsHTM.create_catalog_lists4wget('/data/euler/catsHTM','/home/eran/');
            
             if (nargin<2)
                 WriteDir = '';
