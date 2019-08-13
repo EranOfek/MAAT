@@ -19,7 +19,7 @@ ColCellField  = AstCat.ColCellField;
 ColUnitsField = AstCat.ColUnitsField;
 
 
-DefV.ObjectInd           = '499';
+DefV.ObjectInd           = '499';   % semicolumn telss horizon its a small body - e.g., '499;'
 DefV.StartJD             = 2451545.5;
 DefV.StopJD              = 2451555.5;
 DefV.DateFormat          = 'JD';
@@ -27,7 +27,7 @@ DefV.StepSize            = 1;
 DefV.StepSizeUnits       = 'd';
 DefV.OutputColumns       = '1,9,10,13,19,20,23,24';  % https://ssd.jpl.nasa.gov/horizons.cgi?s_tset=1#top
 DefV.OutCoo              = 'rad';
-DefV.CENTER              = '@sun'; %code for observer location. Earth -  '500', GAIA - '500@-139479'
+DefV.CENTER              = '@sun'; %code for observer location. Earth -  '500', GAIA - '500@-139479', '675' - Palomar
 DefV.WebOptions          = weboptions;
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 

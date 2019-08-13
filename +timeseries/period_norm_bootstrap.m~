@@ -1,0 +1,70 @@
+function []=period_norm_bootstrap(Data,FreqVec,Norm,SubMean,Nsim)
+% SHORT DESCRIPTION HERE
+% Package: timeseries
+% Description: 
+% Input  : - 
+%          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+%            where keyword are one of the followings:
+% Output : - 
+% License: GNU general public license version 3
+%     By : Eran O. Ofek                    Aug 2019
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: 
+% Reliable: 
+%--------------------------------------------------------------------------
+
+
+
+DefV. = 
+InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
+
+Def.Norm    = 'Var';
+Def.SubMean = true;
+Def.Nsim    = 100;
+if (nargin==2)
+    Norm    = Def.Norm;
+    SubMean = Def.SubMean;
+    Nsim    = Def.Nsim;
+elseif (nargin==3)
+    SubMean = Def.SubMean;
+    Nsim    = Def.Nsim;
+elseif (nargin==4)
+    Nsim    = Def.Nsim;
+else
+    % do nothing
+end
+
+Col.T = 1;
+Col.M = 2;
+T       = Data(:,Col.T);
+N       = numel(T);
+Nf      = numel(FreqVec);
+
+if (SubMean)
+    M       = Data(:,Col.M) - mean(Data(:,Col.M));
+else
+    M       = Data(:,Col.M);
+end
+
+% bootstrap M
+Iboot = randi(N,[N, Nsim]);
+
+
+
+
+PS      = zeros(Nf,2);
+PS(:,1) = FreqVec;
+for FreqInd=1:1:Nf
+   PS(FreqInd,2) = abs(sum(M.*exp(-2.*pi.*1i.*T.*FreqVec(FreqInd)))).^2./N;
+   
+end
+
+switch lower(Norm)
+ case 'amp'
+    % do nothing
+ case 'var'
+    PS(:,2) = PS(:,2)./var(M);
+ otherwise
+    error('Unknwon normalization option');
+end

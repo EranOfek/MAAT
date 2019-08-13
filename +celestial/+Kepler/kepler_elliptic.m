@@ -104,6 +104,7 @@ else
    M      = T;
 end
 
+
 E0 = pi.*ones(size(M));
 E1 = E0 + (M + Ecc.*sin(E0) - E0)./(1 - Ecc.*cos(E0));
 
@@ -141,7 +142,7 @@ Nu    = 2.*atan(TanVH);
 R = Q.*(1+Ecc)./(1+Ecc.*cos(Nu));
 
 
-A = Q./(1-Ecc);
+A   = Q./(1-Ecc);
 Vel = K.*sqrt(2).*sqrt(1./R - 1./(2.*A));
 
 %dNudt = N.*sqrt(1-Ecc.^2)./((1-Ecc.*cos(E)).^2);
