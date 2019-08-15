@@ -1,4 +1,4 @@
-function [Cat,ColCell]=read_ztf_HDF_matched(FieldID,Lines,varargin)
+function [Cat,ColCell,CatProp]=read_ztf_HDF_matched(FieldID,Lines,varargin)
 % Read ZTF matched light curves from local HDF5 light curve files.
 % Package: VO.ZTF
 % Description: Read ZTF matched light curves from local HDF5 light curve
@@ -34,5 +34,9 @@ FileName = sprintf(FileName,FieldID);
 
 Ncol = numel(InPar.ColCell);
 
-Cat = HDF5.load(FileName,'/AllLC',[Lines(1) 1],[Lines(2)-Lines(1), Ncol]);
+Cat = HDF5.load(FileName,'/AllLC',[Lines(1) 1],[Lines(2)-Lines(1)+1, Ncol]);
 ColCell = InPar.ColCell;
+
+if (nargout>2)
+    CatProp = HDF5.load(FileName,'/IndAllLC');
+end

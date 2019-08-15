@@ -227,7 +227,7 @@ DefV.Par_FlatLowNim     = 4;
 DefV.Par_FlatHighStd    = 0.03;
 DefV.Par_FlatLow        = 0.4;
 DefV.ReplaceKey         = {};
-DefV.AddKey             = {};
+DefV.AddKey             = {'IMTYPE','FLAT'};
 DefV.CoaddHeader        = true;
 
 %InPar = set_varargin_keyval(DefV,'n','use',varargin{:});
