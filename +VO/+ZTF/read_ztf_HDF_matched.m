@@ -20,6 +20,7 @@ function [Cat,ColCell,CatProp]=read_ztf_HDF_matched(FieldID,Lines,varargin)
 %     By : Eran O. Ofek                    Jul 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: Cat=VO.ZTF.read_ztf_HDF_matched(686,[1 100])
+%          Cat=VO.ZTF.read_ztf_HDF_matched(703,[38104798    38104901])
 % Reliable: 2
 %--------------------------------------------------------------------------
 

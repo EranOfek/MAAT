@@ -40,7 +40,7 @@ MatM = repmat(M,1,Nfreq);
 % The index of the point in the histograms
 IndHist = ceil(PhaseMatrix.*InPar.Nbin);
 
-BinStd  = nan(InPar.Nbin,Nfreq);
+BinVar  = nan(InPar.Nbin,Nfreq);
 BinMean = nan(InPar.Nbin,Nfreq);
 BinMed  = nan(InPar.Nbin,Nfreq);
 BinNpt  = nan(InPar.Nbin,Nfreq);
@@ -50,14 +50,14 @@ for Ibin=1:1:InPar.Nbin
     MatBins(IndHist==Ibin) = MatM(IndHist==Ibin);
     
     % calculate the properties in the current bin for all frequencies
-    BinStd  = nanstd(MatBins,0,1);
-    BinMean = nanmean(MatBins,1);
-    BinMed  = nanmedian(MatBins,1);
-    BinNpt  = sum(~isnan(MatBins),1);
+    BinVar(Ibin,:)  = nanvar(MatBins,0,1);
+    BinMean(Ibin,:) = nanmean(MatBins,1);
+    BinMed(Ibin,:)  = nanmedian(MatBins,1);
+    BinNpt(Ibin,:)  = sum(~isnan(MatBins),1);
     
 end
 
-VariancePerFrequency = sum(BinStd.^2,1);
+VariancePerFrequency = sum(BinVar,1);
 
 PS = [FreqVec.', VariancePerFrequency.'];
 
