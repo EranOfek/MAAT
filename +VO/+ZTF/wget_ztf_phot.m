@@ -1,16 +1,29 @@
-function [A]=wget_ztf_phot(RA,Dec,Band,varargin)
-% SHORT DESCRIPTION HERE
-% Package: VO
-% Description: 
-% Input  : - 
+function [Table,Str]=wget_ztf_phot(RA,Dec,Band,varargin)
+% wget photometry and astrometry of a source/s from IRSA database.
+% Package: VO.ZTF
+% Description: wget photometry and astrometry of a source/s from IRSA
+%              database.
+% Input  : - Vector of J2000.0 R.A. [default in deg].
+%          - Vector of J2000.0 Dec. [default in deg].
+%          - Vector of Band names in a cell array or a vector of numbers
+%            corresponding to band names.
+%            'g' - 1; 'r' - 2; 'i' - 3
 %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
-% Output : - 
+%            'CooUnits' - {'deg'|'rad'}. Default is 'deg'.
+%            'Radius'   - Search radius. Default is 5.
+%            'RadiusUnits'- Radius units. Default is 'arcsec'.
+%            'User'     - User name. See Util.files.read_user_pass_file
+%                         for options.
+%            'Pass'     - Password.
+%            More hidden parameters.
+% Output : - A table containing the ZTF photometry.
+%          - String containing the XML table.
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Sep 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: 
-% Reliable: 
+% Example: Str=VO.ZTF.wget_ztf_phot(298.0025,29.87147,1);
+% Reliable: 2
 %--------------------------------------------------------------------------
 
 BandDic={'g','r','i'};
@@ -24,13 +37,13 @@ DefV.wgetProg             = 'wget';   % 'wget' | 'curl'
 DefV.BaseURL              = 'https://irsa.ipac.caltech.edu';
 DefV.AccountURL           = '/account/signon/login.do';
 DefV.CookiesFile          = 'cookies.txt';
-
 DefV.Wait                 = 1;  % seconds
 DefV.email                = 'eran.ofek@weizmann.ac.il'; % note that in this service the e-mail is copuled to user/pass!
 DefV.BaseURL              = 'https://irsa.ipac.caltech.edu/cgi-bin/ZTF/nph_light_curves?';
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 RadiusDeg = convert.angular(InPar.RadiusUnits,'deg',InPar.Radius);
+
 RA    = convert.angular(InPar.CooUnits,'deg',RA);
 Dec   = convert.angular(InPar.CooUnits,'deg',Dec);
 
@@ -80,10 +93,10 @@ for I=1:1:N
     %CL = sprintf('wget --http-user=%s --http-passwd=%s -O %s "%s"',InPar.User,InPar.Pass,OutFile,URL);
     %[Stat,Res] = system(CL);
     %(URL)
-    A=webread((URL));
+    Str=webread((URL));
     
     pause(InPar.Wait);
 end
 
-%ColNames = regexp(A,'<FIELD name="(?<name>\w+)" datatype="(?<datatype>\w+)"','names');
-%Ncol = numel(ColNames)
+[Table] = VO.Util.read_votable(Str);
+
