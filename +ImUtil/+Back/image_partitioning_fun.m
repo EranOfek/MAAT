@@ -15,7 +15,11 @@ function [Val,X,Y,SubFun,Sub]=image_partitioning_fun(Image,BlockSize,Fun,varargi
 %          - Function handle to operate. Default is @nanmean.
 %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
-% Output : - Matrix of function values at the sub images locations.
+%            'FunAddPar' - Cell array of additional parameters to pass
+%                        to the function. Default is {}.
+%            'Buffer'    - Overlap between sub images. Default is 10.
+% Output : - A structure array (one element per output value from Fun) of
+%            matrices of function values at the sub images locations.
 %          - Matrix of X coordinates of sub images centers.
 %          - Matrix of Y coordinates of sub images centers.
 %          - A structure array of measured values.
@@ -34,6 +38,7 @@ end
 
 DefV.FunAddPar            = {};
 DefV.Buffer               = 10;
+DefV.SecondOutPar         = false;
 
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
@@ -58,15 +63,21 @@ end
     
 
 Nsub = numel(Sub);
-SubFun = Util.struct.struct_def({'Res'},size(Sub));
+SubFun = Util.struct.struct_def({'Res1','Res2'},size(Sub));
 for Isub=1:1:Nsub
     SubFun(Isub).Res = Fun(Sub(Isub).Im,InPar.FunAddPar{:});
 end
+Npar = numel(SubFun(Isub).Res);
 
-    
+
+ListCenter = [[Sub.CenterX].', [Sub.CenterY].'];    
 Nx = numel(unique(ListCenter(:,1)));
 Ny = size(ListCenter,1)./Nx;
 
-Val = reshape([SubFun.Res],Ny,Nx);
+Vec = [SubFun.Res];
+for Ipar=1:1:Npar
+    Val(Ipar).Val = reshape(Vec(Ipar:Npar:end),Ny,Nx);
+end
+
 X   = reshape([Sub.CenterX],Ny,Nx);
 Y   = reshape([Sub.CenterY],Ny,Nx);

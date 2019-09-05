@@ -23,6 +23,8 @@ function [Mode,StD]=mode_fit(Array,varargin)
 %                           INACTIVE.
 %            'BinSize'    - Bin size. If empty then will attempt to
 %                           calculate bin size. Default is empty.
+%            'JoinOut'    - Joining the Mode and Std into the first output
+%                           argument. Default is false.
 % Output : - Mode.
 %          - Fitted sigma.
 % License: GNU general public license version 3
@@ -40,6 +42,7 @@ SIGMA1 = 0.6827;
 DefV.ElementPerBin     = 100;
 DefV.TrimEdge2D        = 5;
 DefV.Percent           = [0.025 0.9];
+DefV.JoinOut           = false;
 DefV.Rem0              = true;
 DefV.Nbad              = 100;
 DefV.BinSize           = [];
@@ -56,85 +59,97 @@ else
     end
     Array = single(Array);
     
-    % remove NaNs
-    
-    % remove zeros
-    %Array = Array(Array~=0);
-    
-    if (isempty(InPar.BinSize))
-        Array      = sort(Array(:));
-        %Array      = sort(Array(~isnan(Array)));
-        Nel        = numel(Array);
-        Lower      = Array(ceil(Nel.*InPar.Percent(1)));
-        Upper      = Array(floor(Nel.*InPar.Percent(2)));
-
-        %Lower      = prctile(Array(:),InPar.Percent(1).*100);
-        %Upper      = prctile(Array(:),InPar.Percent(2).*100);
-        %Percentile = err_cl(Array(:),InPar.Percent);
-        BinSize = (Upper-Lower).*InPar.ElementPerBin./Nel;
-        
-        % there is no point to have resolution higher than
-        % the minmimum possible error on the mean:
-        MaxRes = 0.5.*sqrt((Upper-Lower).*0.5)./sqrt(Nel);
-        BinSize = max(BinSize,MaxRes);
-        
-    else
-        Lower      = min(Array(:));
-        Upper      = max(Array(:));
-        BinSize    = 1;
-        
-    end
-        
-    Edges   = (Lower-BinSize:BinSize:Upper+BinSize).';
-
-    if (InPar.Rem0)
-        Array = Array(Array(:)~=0);
-    end
-
-    % very slow
-    % tic;
-    % [N]=histc(Array(:),Edges);
-    % toc
-    
-    
-    %UA = unique(Array);
-    %if (numel(UA)==1),
-    if (range(Array)<(2.*BinSize))
-        warning('Image contains a single unique pixel value');
-        UA = unique(Array);
-        Mode = UA;
+    if numel(unique(Array))==1
+        Mode = Array(1);
         StD  = 0;
     else
-        [N]=histcounts(Array(:),Edges)';
         
-        Edges = Edges(1:end-1);
-        Edges = Edges + 0.5.*(Edges(2)-Edges(1));
-        %N = medfilt1(N,20);
 
-        %FlagGood = abs(N(2:end)-N(1:end-1))<InPar.Nbad;
-        %bar(Edges,N);
-        %plot(Edges,N)
-        %Res=fit_gauss1d(Edges(FlagGood),N(FlagGood),1);
-        
-        % remove highest point
-        [MaxN] = max(N);
-        Flag = N<MaxN;
-        Edges = Edges(Flag);
-        N     = N(Flag);
-        Res=Util.fit.fit_gauss1d(Edges,N,1);
-        if (Res.X0<min(Edges) || Res.X0>max(Edges))
-            warning('Best fit mode is out of range - set mode to max value and std to rstd');
-            [~,MaxI] = max(N);
-            %Mode = Edges(MaxI);
-            %StD  = sqrt(Mode);
-            
-            Mode = median(Array);
-            StD  = Util.stat.rstd(Array);
+        % remove NaNs
+
+        % remove zeros
+        %Array = Array(Array~=0);
+
+        if (isempty(InPar.BinSize))
+            Array      = sort(Array(:));
+            %Array      = sort(Array(~isnan(Array)));
+            Nel        = numel(Array);
+            Lower      = Array(ceil(Nel.*InPar.Percent(1)));
+            Upper      = Array(floor(Nel.*InPar.Percent(2)));
+
+            %Lower      = prctile(Array(:),InPar.Percent(1).*100);
+            %Upper      = prctile(Array(:),InPar.Percent(2).*100);
+            %Percentile = err_cl(Array(:),InPar.Percent);
+            BinSize = (Upper-Lower).*InPar.ElementPerBin./Nel;
+
+            % there is no point to have resolution higher than
+            % the minmimum possible error on the mean:
+            MaxRes = 0.5.*sqrt((Upper-Lower).*0.5)./sqrt(Nel);
+            BinSize = max(BinSize,MaxRes);
+
         else
-            %plot(Res.Resid)
-            %input('hi')
-            Mode = Res.X0;
-            StD  = Res.Sigma;
+            Lower      = min(Array(:));
+            Upper      = max(Array(:));
+            BinSize    = 1;
+
+        end
+
+        Edges   = (Lower-BinSize:BinSize:Upper+BinSize).';
+
+        if (InPar.Rem0)
+            Array = Array(Array(:)~=0);
+        end
+
+        % very slow
+        % tic;
+        % [N]=histc(Array(:),Edges);
+        % toc
+
+
+        %UA = unique(Array);
+        %if (numel(UA)==1),
+        if (range(Array)<(2.*BinSize))
+            warning('Image contains a single unique pixel value');
+            UA = unique(Array);
+            Mode = UA;
+            StD  = 0;
+        else
+            [N]=histcounts(Array(:),Edges)';
+
+            Edges = Edges(1:end-1);
+            Edges = Edges + 0.5.*(Edges(2)-Edges(1));
+            %N = medfilt1(N,20);
+
+            %FlagGood = abs(N(2:end)-N(1:end-1))<InPar.Nbad;
+            %bar(Edges,N);
+            %plot(Edges,N)
+            %Res=fit_gauss1d(Edges(FlagGood),N(FlagGood),1);
+
+            % remove highest point
+            [MaxN] = max(N);
+            Flag = N<MaxN;
+            Edges = Edges(Flag);
+            N     = N(Flag);
+            Res=Util.fit.fit_gauss1d(Edges,N,1);
+            if (Res.X0<min(Edges) || Res.X0>max(Edges))
+                warning('Best fit mode is out of range - set mode to max value and std to rstd');
+                [~,MaxI] = max(N);
+                %Mode = Edges(MaxI);
+                %StD  = sqrt(Mode);
+
+                Mode = median(Array);
+                StD  = Util.stat.rstd(Array);
+            else
+                %plot(Res.Resid)
+                %input('hi')
+                Mode = Res.X0;
+                StD  = Res.Sigma;
+            end
         end
     end
+end
+
+
+if (InPar.JoinOut)
+    Mode = [Mode, StD];
 end

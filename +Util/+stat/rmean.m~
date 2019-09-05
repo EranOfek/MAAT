@@ -34,14 +34,9 @@ end
 
 if ischar(Dim)
     % assume all
-    Mat = Mat(:);
-    SortedMat = sort(Mat);
-    N         = numel(Mat);
-
-else
-    SortedMat = sort(Mat,Dim);
-    N         = size(Mat,Dim);
-end
+    Ma
+SortedMat = sort(Mat,Dim);
+N         = size(Mat,Dim);
 
 Low  = ceil(N.*Range(1));
 High = floor(N.*(1-Range(2)));

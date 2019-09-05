@@ -266,6 +266,12 @@ classdef ClassWCS
                         if (any(isnan(CD(:))) && ~all(isnan(CD(:))))
                             CD(isnan(CD)) = 0;
                         end
+                        
+                        % treat cases in which only CDELT is provided
+                        if all(isnan(CD(:)))
+                            CD = diag(W(Ih).WCS.CDELT);
+                            
+                        end
 
 
 
