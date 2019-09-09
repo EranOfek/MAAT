@@ -1084,22 +1084,24 @@ classdef catsHTM
             CatM.Match  = nan(Nsrc,numel(ColCellH));
             CatM.Dist   = nan(Nsrc,1);
             CatM.Nmatch = zeros(Nsrc,1);
-            for Isrc=1:1:Nsrc
-                % search match for Cat.Cat(Isrc,:)
-                Ind = VO.search.search_sortedlat(CatH,RA(Isrc),Dec(Isrc),InPar.SearchRadius);
-            
-                if (~isempty(Ind))
-                    Dist = celestial.coo.sphere_dist_fast(RA(Isrc),Dec(Isrc),CatH(Ind,InPar.ColRAHTM),CatH(Ind,InPar.ColDecHTM));
-                    Nmatch = numel(Ind);
-                    if (Nmatch>1)
-                        [Dist,MinInd] = min(Dist);
-                        Ind = Ind(MinInd);
-                    end
-                        
-                    CatM.Match(Isrc,:) = CatH(Ind,:);
-                    CatM.Dist(Isrc)    = Dist;
-                    CatM.Nmatch(Isrc)  = Nmatch;
-                end                
+            if (~isempty(CatH))
+                for Isrc=1:1:Nsrc
+                    % search match for Cat.Cat(Isrc,:)
+                    Ind = VO.search.search_sortedlat(CatH,RA(Isrc),Dec(Isrc),InPar.SearchRadius);
+
+                    if (~isempty(Ind))
+                        Dist = celestial.coo.sphere_dist_fast(RA(Isrc),Dec(Isrc),CatH(Ind,InPar.ColRAHTM),CatH(Ind,InPar.ColDecHTM));
+                        Nmatch = numel(Ind);
+                        if (Nmatch>1)
+                            [Dist,MinInd] = min(Dist);
+                            Ind = Ind(MinInd);
+                        end
+
+                        CatM.Match(Isrc,:) = CatH(Ind,:);
+                        CatM.Dist(Isrc)    = Dist;
+                        CatM.Nmatch(Isrc)  = Nmatch;
+                    end                
+                end
             end
             CatM.ColCell = ColCellH;
             

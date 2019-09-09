@@ -22,6 +22,7 @@ function [Table,Str]=wget_ztf_phot(RA,Dec,Band,varargin)
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Sep 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Reference: https://irsa.ipac.caltech.edu/docs/program_interface/ztf_lightcurve_api.html
 % Example: Str=VO.ZTF.wget_ztf_phot(298.0025,29.87147,1);
 % Reliable: 2
 %--------------------------------------------------------------------------
@@ -31,7 +32,7 @@ BandDic={'g','r','i'};
 DefV.CooUnits             = 'deg';
 DefV.Radius               = 5;
 DefV.RadiusUnits          = 'arcsec';
-DefV.User                 = {'/home/eran/matlab/passwords/ztfForced_ipac_pass'}; 
+DefV.User                 = {'/home/eran/matlab/passwords/ztf_ipac_pass'}; 
 DefV.Pass                 = [];
 DefV.wgetProg             = 'wget';   % 'wget' | 'curl'
 DefV.BaseURL              = 'https://irsa.ipac.caltech.edu';
@@ -64,17 +65,23 @@ if (iscell(InPar.User))
 end
 
 % set up the IRSA cookies
-[Stat,Res]=VO.ZTF.irsa_set_cookies('CookiesFile',InPar.CookiesFile,...
-                                   'BaseURL',InPar.BaseURL,...
-                                   'AccountURL',InPar.AccountURL,...
-                                   'User',InPar.User,...
-                                   'Pass',InPar.Pass,...
-                                   'wgetProg',InPar.wgetProg);
-
+% [Stat,Res]=VO.ZTF.irsa_set_cookies('CookiesFile',InPar.CookiesFile,...
+%                                    'BaseURL',InPar.BaseURL,...
+%                                    'AccountURL',InPar.AccountURL,...
+%                                    'User',InPar.User,...
+%                                    'Pass',InPar.Pass,...
+%                                    'wgetProg',InPar.wgetProg);
+% 
 
 
 
 % https://irsa.ipac.caltech.edu/cgi-bin/ZTF/nph_light_curves?POS=CIRCLE%20298.0025%2029.87147%200.0014&BANDNAME=g
+%[~,RR] = system('wget https://irsa.ipac.caltech.edu/cgi-bin/ZTF/nph_light_curves?POS=CIRCLE%20298.0025%2029.87147%200.0014&BANDNAME=g');
+%[SS,RR] = system('wget https://irsa.ipac.caltech.edu/cgi-bin/ZTF/nph_light_curves?POS=CIRCLE 298.0025 29.87147 0.0014&BANDNAME=g');
+
+
+
+
 
 Spacer = '%20';
 
@@ -90,10 +97,20 @@ for I=1:1:N
     %Options = weboptions('UserName',InPar.User,'Password',InPar.Pass);
     %webread(URL,Options);
 
+    % OutFile = 'tmp.out';
     %CL = sprintf('wget --http-user=%s --http-passwd=%s -O %s "%s"',InPar.User,InPar.Pass,OutFile,URL);
-    %[Stat,Res] = system(CL);
+    TmpFile = tempname;
+    if isempty(InPar.User) || isempty(InPar.Pass)
+        CL = sprintf('wget --auth-no-challenge -O %s "%s"',InPar.User,InPar.Pass,TmpFile,URL);
+    else
+        CL = sprintf('wget --auth-no-challenge --http-user=%s --http-password=%s -O %s "%s"',InPar.User,InPar.Pass,TmpFile,URL);
+    end
+    [Stat,Res] = system(CL);
+    Str = Util.files.file2str(TmpFile,'str');
+    delete(TmpFile);
+    
     %(URL)
-    Str=webread((URL));
+    %Str=webread((URL));
     
     pause(InPar.Wait);
 end

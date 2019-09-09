@@ -42,33 +42,36 @@ Val  = regexp(Str,'<TD>(?<val>[\w\-\+\.]+)</TD>','names');
 Nval = numel(Val);
 Nline = Nval./Ncol;
 
-if (Nline~=floor(Nline))
-    error('likely problem in reading (e.g., special characters)');
-end
-V = reshape({Val.val},Ncol,Nline).';
-Table = cell2table(V);
-Table.Properties.VariableNames = {ColNames.name};
-for Icol=1:1:Ncol
-    Col = Table.Properties.VariableNames{Icol};
-    
-    switch lower(ColNames(Icol).datatype)
-        case {'double','float'}
-            Table.(Col) = str2double(Table.(Col));
-            
-        case {'char'}
-            % do nothing - already a string
-        case {'int','long'}
-            Table.(Col) = str2double(Table.(Col));
-        case 'unsignedbyte'
-            for Iline=1:1:Nline
-                Table.(Col){Iline} = Table.(Col){Iline}(3:end);
-            end
-            Table.(Col) = hex2dec(Table.(Col));
-            
-        otherwise
-            fprintf('Need to define a new datatype: %s\n',ColNames(Icol).datatype);
-            error('Unknown datatype');
+if (Nval==0)
+    Table = [];
+else
+    if (Nline~=floor(Nline))
+        error('likely problem in reading (e.g., special characters)');
     end
-end
-            
+    V = reshape({Val.val},Ncol,Nline).';
+    Table = cell2table(V);
+    Table.Properties.VariableNames = {ColNames.name};
+    for Icol=1:1:Ncol
+        Col = Table.Properties.VariableNames{Icol};
 
+        switch lower(ColNames(Icol).datatype)
+            case {'double','float'}
+                Table.(Col) = str2double(Table.(Col));
+
+            case {'char'}
+                % do nothing - already a string
+            case {'int','long'}
+                Table.(Col) = str2double(Table.(Col));
+            case 'unsignedbyte'
+                for Iline=1:1:Nline
+                    Table.(Col){Iline} = Table.(Col){Iline}(3:end);
+                end
+                Table.(Col) = hex2dec(Table.(Col));
+
+            otherwise
+                fprintf('Need to define a new datatype: %s\n',ColNames(Icol).datatype);
+                error('Unknown datatype');
+        end
+    end
+
+end
