@@ -41,7 +41,14 @@ end
 if (ischar(Date) || iscell(Date))
     %Date=date_str2vec(Date);
     Date = convert.str2date (Date);
-    Date = Date(:,[3 2 1 4 5 6]);
+    SizeD = size(Date,2);
+    if (SizeD==3)
+        Date = Date(:,[3 2 1]);
+    elseif (SizeD==6)
+        Date = Date(:,[3 2 1 4 5 6]);
+    else
+        error('unknown number of columns in date format - support 3 or 6');
+    end
 end
 %    Date = {Date};
 % end
