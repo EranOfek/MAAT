@@ -31,7 +31,7 @@ function [Sim,BiasSim]=bias_overscan(Sim,varargin)
 %                          This function should be of the form:
 %                          Fun(Matrix,Dim,OverSePar{:}).
 %                          E.g., @nanmean, @nanmedian, @rmean.
-%                          Default is @rmean.
+%                          Default is @nanmean.
 %            'OverSecPar' - Additional arguments to pass to the
 %                          OverSecMethod function.
 %                          Default is {}.

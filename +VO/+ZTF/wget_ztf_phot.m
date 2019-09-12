@@ -23,7 +23,7 @@ function [Table,Str]=wget_ztf_phot(RA,Dec,Band,varargin)
 %     By : Eran O. Ofek                    Sep 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Reference: https://irsa.ipac.caltech.edu/docs/program_interface/ztf_lightcurve_api.html
-% Example: Str=VO.ZTF.wget_ztf_phot(298.0025,29.87147,1);
+% Example: [Table,Str]=VO.ZTF.wget_ztf_phot(298.0025,29.87147,1);
 % Reliable: 2
 %--------------------------------------------------------------------------
 
@@ -41,6 +41,7 @@ DefV.CookiesFile          = 'cookies.txt';
 DefV.Wait                 = 1;  % seconds
 DefV.email                = 'eran.ofek@weizmann.ac.il'; % note that in this service the e-mail is copuled to user/pass!
 DefV.BaseURL              = 'https://irsa.ipac.caltech.edu/cgi-bin/ZTF/nph_light_curves?';
+DefV.FilterDic            = {'zg','zr','zi'};
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 RadiusDeg = convert.angular(InPar.RadiusUnits,'deg',InPar.Radius);
@@ -64,14 +65,18 @@ if (iscell(InPar.User))
     [InPar.User,InPar.Pass]=Util.files.read_user_pass_file(InPar.User{1});
 end
 
+%wget --save-cookies=cookies.txt "https://irsa.ipac.caltech.edu/account/signon/login.do?josso_cmd=login&josso_username=eran.ofek@weizmann.ac.il&josso_password=XXX"
+%wget --load-cookies=cookies.txt "https://irsa.ipac.caltech.edu/cgi-bin/ZTF/nph_light_curves?POS=CIRCLE+314.3880692+50.6085696+0.0028&BANDNAME=g&NOBS_MIN=3&TIME=58194.0+58735.0&BAD_CATFLAGS_MASK=32768&FORMAT=ipac_table" -O out.tbl
+
+
 % set up the IRSA cookies
-% [Stat,Res]=VO.ZTF.irsa_set_cookies('CookiesFile',InPar.CookiesFile,...
-%                                    'BaseURL',InPar.BaseURL,...
-%                                    'AccountURL',InPar.AccountURL,...
-%                                    'User',InPar.User,...
-%                                    'Pass',InPar.Pass,...
-%                                    'wgetProg',InPar.wgetProg);
-% 
+[Stat,Res]=VO.ZTF.irsa_set_cookies('CookiesFile',InPar.CookiesFile,...
+                                   'BaseURL',InPar.BaseURL,...
+                                   'AccountURL',InPar.AccountURL,...
+                                   'User',InPar.User,...
+                                   'Pass',InPar.Pass,...
+                                   'wgetProg',InPar.wgetProg);
+
 
 
 
@@ -97,14 +102,18 @@ for I=1:1:N
     %Options = weboptions('UserName',InPar.User,'Password',InPar.Pass);
     %webread(URL,Options);
 
+    %system('wget --load-cookies=cookies.txt "https://irsa.ipac.caltech.edu/cgi-bin/ZTF/nph_light_curves?POS=CIRCLE+314.3880692+50.6085696+0.0028&BANDNAME=g" -O out.tbl');
+    
+
     % OutFile = 'tmp.out';
     %CL = sprintf('wget --http-user=%s --http-passwd=%s -O %s "%s"',InPar.User,InPar.Pass,OutFile,URL);
     TmpFile = tempname;
     if isempty(InPar.User) || isempty(InPar.Pass)
-        CL = sprintf('wget --auth-no-challenge -O %s "%s"',InPar.User,InPar.Pass,TmpFile,URL);
+        CL = sprintf('wget --auth-no-challenge "%s" -O %s',InPar.User,InPar.Pass,URL,TmpFile);
     else
-        CL = sprintf('wget --auth-no-challenge --http-user=%s --http-password=%s -O %s "%s"',InPar.User,InPar.Pass,TmpFile,URL);
+        CL = sprintf('wget --load-cookies=%s "%s" -O %s',InPar.CookiesFile,URL,TmpFile);
     end
+    %CL
     [Stat,Res] = system(CL);
     Str = Util.files.file2str(TmpFile,'str');
     delete(TmpFile);
@@ -117,3 +126,13 @@ end
 
 [Table] = VO.Util.read_votable(Str);
 
+% populate filter code with filter number 
+if (~isempty(Table))
+    Nf = numel(InPar.FilterDic);
+    FilterCode = nan(size(Table,1),1);
+    for If=1:1:Nf
+        FF = strcmp(Table.filtercode,InPar.FilterDic{If});
+        FilterCode(FF) = If;
+    end
+    Table.filtercode = FilterCode;
+end
