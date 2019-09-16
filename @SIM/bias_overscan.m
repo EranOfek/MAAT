@@ -24,7 +24,7 @@ function [Sim,BiasSim]=bias_overscan(Sim,varargin)
 %            'OverSecDim'- The dimension over which to collapse the
 %                          overscan region: 'x'|'y'|'auto'.
 %                          The 'auto' option will attempt to find the
-%                          right dimension by usng the longest dimension.
+%                          right dimension by using the longest dimension.
 %                          Default is 'auto'.
 %            'OverSecMethod' - Function handle for the collapse of the
 %                          overscan region method.

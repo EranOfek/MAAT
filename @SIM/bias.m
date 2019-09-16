@@ -40,11 +40,11 @@ function [BiasSim,Summary,IsBias]=bias(Sim,varargin)
 %                          mean std bias level multiplied by this
 %                          parameter. Default is 3.
 %            'AnomPixPar' - Anomalous pixels definition [low, high].
-%                          Anomalous value pixelas are defined to be
+%                          Anomalous value pixels are defined to be
 %                          pixels which value is lower or higher than the
 %                          mean bias level +/- the parameter multiplied by
 %                          readnoise in ADU units.
-%                          Default is [4 4].
+%                          Default is [3.5 3.5].
 %            'FlarePixPar' - Flaring pixel definition. Number of sigmas
 %                          above std.
 %                          A flaring pixels is defined to have max/std
@@ -121,7 +121,7 @@ DefV.EstimatorRN        = @nanmedian;    % function to estimate RN from bias/std
 DefV.StdMethod          = @nanstd;
 DefV.Noise0PixPar       = 0.03;
 DefV.NoisyPixPar        = 3;
-DefV.AnomPixPar         = [4 4];
+DefV.AnomPixPar         = [3.5 3.5];
 DefV.FlarePixPar        = 10;
 DefV.BitType            = 'uint32';
 DefV.MaskDic            = @MASK.def_bitmask_pipeline;

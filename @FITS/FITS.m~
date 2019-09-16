@@ -2192,7 +2192,6 @@ classdef FITS
                 Table(Ilist) = FITS.read_table(List{Ilist});
                 Table(Ilist).(CatField) = Table(Ilist).(CatField)(:,ColOrder);
                 Table(Ilist).(CatField)(:,1) = 10.^(Table(Ilist).(CatField)(:,1));
-                Table(Ilist).(CatField)(:,2) = Table(Ilist).(CatField)(:,2).*Units;
                 Table(Ilist).ColCell = Table(Ilist).ColCell(ColOrder);
                 Table(Ilist).ColCell{1} = 'wavelength';
                 Table(Ilist) = colcell2col(Table(Ilist));
