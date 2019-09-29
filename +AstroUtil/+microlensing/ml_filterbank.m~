@@ -1,0 +1,46 @@
+function [F,Pars]=ml_filterbank(varargin)
+% SHORT DESCRIPTION HERE
+% Package: AstroUtil
+% Description: 
+% Input  : - 
+%          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+%            where keyword are one of the followings:
+% Output : - 
+% License: GNU general public license version 3
+%     By : Eran O. Ofek                    Sep 2019
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: [F,ParsML]=AstroUtil.microlensing.ml_filterbank
+% Reliable: 
+%--------------------------------------------------------------------------
+
+
+
+DefV.t                   = (-100:1:100).';
+DefV.VecBeta             = (0.1:0.05:1).^2.';
+DefV.VecV                = logspace(-3,-0.5,25).';
+DefV.OutMag              = true;
+InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
+
+NV = numel(InPar.VecV);
+NB = numel(InPar.VecBeta);
+Nt = numel(InPar.t);
+
+F = zeros(Nt,NV.*NB);
+Pars.VecBeta = zeros(1,NV.*NB);
+Pars.VecV    = zeros(1,NV.*NB);
+
+K = 0;
+for Iv=1:1:NV
+    for Ib=1:1:NB
+        K = K + 1;
+        [Mag,Res]=AstroUtil.microlensing.microlens_ps([0 InPar.VecBeta(Ib) InPar.VecV(Iv) 1 0],InPar.t);
+        if (InPar.OutMag)
+            F(:,K) = Res.Mu
+        else
+            F(:,K) = Res.Mu - 1;
+        end
+        Pars.VecBeta(K) = InPar.VecBeta(Ib);
+        Pars.VecV(K)    = InPar.VecV(Iv);
+    end
+end

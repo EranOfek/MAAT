@@ -20,7 +20,7 @@ DefV.BreakCol             = 'Dec';
 DefV.BreakStep            = 2./RAD;   % deg
 DefV.StepBuffer           = 0./RAD;
 DefV.CatUnits             = 'rad';
-DefV.SaveName             = 'GALEX2mEpochs_%s%02d_%s%02d.mat';
+DefV.SaveName             = 'GALEX2mCoadd_%s%02d_%s%02d.mat';
 DefV.SignM                = 'm';
 DefV.SignP                = '';
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
@@ -44,6 +44,7 @@ if (nargout>0)
     B = AstCat(Nzone-1,1);
 end
 for Izone=1:1:Nzone-1
+    Izone
     V1 = VecZone(Izone);
     V2 = VecZone(Izone+1);
     
@@ -51,9 +52,9 @@ for Izone=1:1:Nzone-1
            AC.(CatField)(:,Col)<(V2+InPar.StepBuffer);
        
     Tmp = row_select(AC,Flag);
-    if (nargout>0)
-        B(Izone) = Tmp;
-    end
+%     if (nargout>0)
+%         B(Izone) = Tmp;
+%     end
     % save the Tmp
     if ~isempty(InPar.SaveName)
         V1N = V1.*ConvF;

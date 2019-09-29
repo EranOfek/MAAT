@@ -16,8 +16,8 @@ function prep_generic_htm(varargin)
 
 RAD = 180./pi;
 
-DefV.CatName             = 'GALEX2mEpochs'; %'URAT1'; %'PS1ps';  %'NEDz'; %'GAIADR2'; %'HSCv2'; %'SAGE'; %'SWIREz'; %'SDSSoffset'; %'VSTkids';
-DefV.FileBaseName        = 'GALEX2mEpochs'; %'URAT1'; % 'ned'; %'GaiaDR2'; %'HSC'; %'SpitzerSAGE'; % 'swire'; %'MyTable'; %'kids';
+DefV.CatName             = 'GALEX2mCoadd'; %'URAT1'; %'PS1ps';  %'NEDz'; %'GAIADR2'; %'HSCv2'; %'SAGE'; %'SWIREz'; %'SDSSoffset'; %'VSTkids';
+DefV.FileBaseName        = 'GALEX2mCoadd'; %'URAT1'; % 'ned'; %'GaiaDR2'; %'HSC'; %'SpitzerSAGE'; % 'swire'; %'MyTable'; %'kids';
 DefV.FileExtName         = '.mat'; %'.fit'; %'h5'; %'txt';%'hdf5'; %'.mat'; %'.fit'; %'.mat'; %'.fit';
 DefV.FileSplit           = '_';
 DefV.FileType            = 'astcat'; %'fits'; %'hdf5'; %'ned'; %'hdf5'; %'astcat'; %'astcat'; 'fits'; %'mat'; %'fits';
