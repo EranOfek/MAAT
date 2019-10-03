@@ -4,7 +4,8 @@ function HelioEcLong=ecliptic2helioecliptic(Long,Date,Algo)
 % Description: Transform ecliptic longitude to Helio-ecliptic longitude.
 % Input  : - Ecliptic longitude [radians]. See convert_dms.m for
 %            additional options.
-%          - Date [Day Mounth Year FracDay]. See julday.m for options.
+%          - Date [Day Mounth Year FracDay], or JD column vector.
+%            See julday.m for options.
 %          - Solar longitude algorithm:
 %            'low' - low accuracy (0.01 deg). Default.
 % Output : - Helio-ecliptic longitude [radians].
@@ -16,13 +17,17 @@ function HelioEcLong=ecliptic2helioecliptic(Long,Date,Algo)
 %--------------------------------------------------------------------------
 
 Def.Algo = 'low';
-if (nargin==2),
+if (nargin==2)
     Algo = Def.Algo;
 end
 
 Long = celestial.coo.convertdms(Long,'gH','r');
 
-JD   = celestial.time.julday(Date);
+if (size(Date,2)==1)
+    JD = Date;
+else
+    JD   = celestial.time.julday(Date);
+end
 
 switch lower(Algo)
     case 'low'

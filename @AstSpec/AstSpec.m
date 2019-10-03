@@ -749,6 +749,7 @@ classdef AstSpec < HEAD
             % Tested : Matlab R2014a
             %     By : Ilan Sagiv                      Sep 2014
             %    URL : http://weizmann.ac.il/home/eofek/matlab/
+            % Reference: https://hst-docs.stsci.edu/display/WFC3IHB/9.7+Sky+Background#id-9.7SkyBackground-9.7.19.7.1ZodiacalLight,EarthShine,andLOW-SKY
             % Example: [F,V,Flux,Counts]=AstSpec.zodiac_bck(45./RAD,80./RAD,[],'LIM','NUV')
             % Reliable: NEED TO VERIFY zodi spec
             %--------------------------------------------------------------------------

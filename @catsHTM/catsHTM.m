@@ -1562,6 +1562,7 @@ classdef catsHTM
                         % return list of size of Cat1
                         [Match,Ind,IndCatMinDist] = VO.search.match_cats(Cat2,Cat1,'Radius',SearchRadius,'RadiusUnits','rad');
 
+
                         if (~isempty(InPar.QueryAllFun))
                             % execute InPar.QueryAllFun
                             %  QueryAllFun(Cat1,Ind,Cat2,varargin)

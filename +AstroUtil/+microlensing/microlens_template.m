@@ -25,7 +25,7 @@ end
 
 DefV.t0                   = (0:1:1000)';
 DefV.tE                   = logspace(-3,0,100);   % ER/day
-DefV.beta                 = 
+DefV.beta                 = (0.1:0.05:1).^2;
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 

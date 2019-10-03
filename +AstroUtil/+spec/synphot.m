@@ -2,7 +2,7 @@ function [Mag,Flag,FiltEffWave]=synphot(Spec,FiltFam,FiltName,MagSys,Algo,Ebv,R,
 % Synthetic photometry of spectrum
 % Package: AstroUtil.spec
 % Description: Calculate synthetic photometry of a spectrum
-%              OBSOLETE: use synthetic_phot.m instead.
+%              OBSOLETE: use AstroUtil.spec.synthetic_phot.m
 % Input  : - Spectrum [wavelength(Ang), Flux(F_{\lambda})].
 %          - Filter normalized transmission curve,
 %            or a string containing filter familiy name,

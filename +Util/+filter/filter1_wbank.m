@@ -1,4 +1,4 @@
-function [S]=filter1_wbank(V,F)
+function [S,Sflux,IsLocalMax]=filter1_wbank(V,F)
 % Filter a 1D data vector with a templates bank (multiple filters).
 % Package: Util.filter
 % Description: Filter a 1D data vector with a templates bank (multiple
@@ -53,5 +53,11 @@ F = padarray(F,PadSize2,0,'post');
 F = fftshift(F,1);
 
 S = ifft(fft(V,[],1).*conj(fft(F,[],1)));
-%S = S./(NormF2.*RStdV);
-S = S.*sqrt(RStdV)./(NormF2);
+Sflux = S./(NormF2.^2).*max(F);
+S = S./(NormF2.*RStdV);
+
+if (nargout>2)
+  IsLocalMax = islocalmax(S);
+end
+
+
