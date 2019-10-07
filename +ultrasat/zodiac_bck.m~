@@ -11,13 +11,23 @@ function [Spec]=zodiac_bck(RA,Dec,Date,varargin)
 %            'Wave' - Vector of wavelength [Ang] in which to calculate
 %                   spectrum. If empty, then use original data.
 %                   Default is empty.
-%            'OutType' - 
-% Output : - A s
+%            'OutType' - 'mat'|'astspec'. Default is 'mat'.
+%            '
+% Output : - A structure with the following fields:
+%            'RA'  - Vector of RA/long corresponding to spectra.
+%            'Dec' - Vector of Dec/latitude.
+%            'JD'  - Vectoe of JD.
+%            'Wave'- Vector of wavelength.
+%            'Spec'- A matrix in which each column is the zodi spectrum
+%                    in units of erg/cm^2/s/Ang/arcsec^2.
+%                    Or a vector of AstSpec objects with the spectra.
+%            'Mag' - Vector of magnitude in requested band.
+%            'MagV'- Vector of Vega V-band magnitudes.
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Oct 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: [Spec]=ultrasat.zodiac_bck(1,1,2451545)
-% Reliable: 
+% Reliable: 2
 %--------------------------------------------------------------------------
 
 

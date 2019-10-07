@@ -5,13 +5,23 @@ function [Spec]=zodiac_bck(RA,Dec,Date,varargin)
 %              at a given sky position.
 % Input  : - Vector of J2000.0 R.A., or longitude [radians].
 %          - Vector of J2000.0 Dec, or latitude [radians].
-%          - Date [D M Y F], or JD (column matrix).
+%          - Date [D M Y F], or JD (column matrix). Default is empty.
+%            If empty, then will force the Coordinate systemn to be
+%            helio-ecliptic ('hec').
 %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
 %            'Wave' - Vector of wavelength [Ang] in which to calculate
 %                   spectrum. If empty, then use original data.
 %                   Default is empty.
-%            'OutType' - 
+%            'OutType' - 'mat'|'astspec'. Default is 'mat'.
+%            'CooSys'  - Input coordinate system. Default is 'j2000.0'.
+%                        Options include 'hec' - heliocentric ecliptic,
+%                        'e','g', etc.
+%            'FilterFamily' - Default is 'SDSS'.
+%            'FilterName'   - Default is 'g'.
+%            'FilterSys'  - Default is 'AB'.
+%            'InterpMethodSpec' - Default is 'linear'.
+%            'InterpMethodCoo'  - Default is 'linear'.
 % Output : - A structure with the following fields:
 %            'RA'  - Vector of RA/long corresponding to spectra.
 %            'Dec' - Vector of Dec/latitude.
@@ -20,12 +30,13 @@ function [Spec]=zodiac_bck(RA,Dec,Date,varargin)
 %            'Spec'- A matrix in which each column is the zodi spectrum
 %                    in units of erg/cm^2/s/Ang/arcsec^2.
 %                    Or a vector of AstSpec objects with the spectra.
-%            'Mag' - 
+%            'Mag' - Vector of magnitude in requested band.
+%            'MagV'- Vector of Vega V-band magnitudes.
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Oct 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: [Spec]=ultrasat.zodiac_bck(1,1,2451545)
-% Reliable: 
+% Reliable: 2
 %--------------------------------------------------------------------------
 
 

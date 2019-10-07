@@ -391,7 +391,7 @@ classdef catsHTM
             % Load catalog stored in an HDF5 file
             % Package: @catsHTM
             % Description: Load catalog stored in an HDF5 file. Given a
-            %              and catalog in HDF5 file created by
+            %              a catalog in HDF5 file created by
             %              HDF5.save_cat, load the catalog. The catalog is
             %              sorted by one of the columns and it is possible
             %              to retrieve only line in some range. The search

@@ -17,10 +17,10 @@ RAD = 180./pi;
 CatField = AstCat.CatField;
 
 DefV.BreakCol             = 'Dec';
-DefV.BreakStep            = 2./RAD;   % deg
+DefV.BreakStep            = 1./RAD;   % deg
 DefV.StepBuffer           = 0./RAD;
 DefV.CatUnits             = 'rad';
-DefV.SaveName             = 'GALEX2mCoadd_%s%02d_%s%02d.mat';
+DefV.SaveName             = 'GALEX2mEpochs_%s%02d_%s%02d.mat';
 DefV.SignM                = 'm';
 DefV.SignP                = '';
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
