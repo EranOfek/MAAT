@@ -10,8 +10,7 @@ function [Cat,ColCell]=read_ztf_HDF_matched_coo(RA,Dec,Filter,varargin)
 %            'ColCell' - Output columns (cell array).
 %            'SearchRadius' - Search radius for source (arcsec).
 %                        Default is 2.
-% Output : - Light curve matrix.
-%          - Cell array of column names
+% Output : - 
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Oct 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
