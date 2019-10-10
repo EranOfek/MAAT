@@ -20,12 +20,12 @@ function [Val,Comment]=getkey(Head,Keyword,SpaceDel,Conv2Num)
 
 Def.SpaceDel = true;
 Def.Conv2Num = false;
-if (nargin==2),
+if (nargin==2)
     SpaceDel = Def.SpaceDel;
     Conv2Num = Def.Conv2Num;
-elseif (nargin==3),
+elseif (nargin==3)
     Conv2Num = Def.Conv2Num;
-elseif (nargin==4),
+elseif (nargin==4)
     % do nothing
 else
     error('Illegal number of input arguments: getkey(Head,Keyword,[SpaceDel,Conv2Num])');
@@ -36,10 +36,10 @@ HeaderField = 'Header';
 Nh      = numel(Head);
 Val     = cell(size(Head));
 Comment = cell(size(Head));
-for Ih=1:1:Nh,
-    if (~isempty(Head(Ih).(HeaderField))),
+for Ih=1:1:Nh
+    if (~isempty(Head(Ih).(HeaderField)))
         Flag = strcmp(Head(Ih).(HeaderField)(:,1),Keyword);
-        if (any(Flag)),
+        if (any(Flag))
             Val{Ih}     = Head(Ih).(HeaderField){Flag,2};
             Comment{Ih} = Head(Ih).(HeaderField){Flag,3};
         else
@@ -50,14 +50,14 @@ for Ih=1:1:Nh,
         Val{Ih}     = NaN;
         Comment{Ih} = NaN;
     end
-    if (ischar(Val{Ih}) && SpaceDel),
+    if (ischar(Val{Ih}) && SpaceDel)
         Val{Ih} = Util.string.spacedel(Val{Ih});
     end
     
     % attempt to convert to number
-    if (Conv2Num),
+    if (Conv2Num)
         Tmp = str2double(Val{Ih});
-        if (~isnan(Tmp)),
+        if (~isnan(Tmp))
             Val{Ih} = Tmp;
         end
     end

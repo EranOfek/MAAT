@@ -30,6 +30,8 @@ classdef HEAD1 %< WorldCooSys
 %         %mean1
 %         header
 %     end
+
+    % constructor
     methods
 
         %-------------------------
@@ -65,6 +67,7 @@ classdef HEAD1 %< WorldCooSys
             
         end
         
+        
     end
     
     % getters
@@ -91,11 +94,13 @@ classdef HEAD1 %< WorldCooSys
             
         end
         
+      
+        
     end
     
     
     
-    %--- Static methods ---
+    % Static methods: isHEAD, HeaderField
     methods (Static)
         
         function Ans=isHEAD(Obj)
@@ -115,6 +120,22 @@ classdef HEAD1 %< WorldCooSys
             % Input  : null
             % Output : Header field name
             Name = 'Header';
+        end
+        
+        function H=basic
+            % Construct a basic HEAD object populated with some fields
+            % Package: @HEAD
+            % Description: Construct a basic HEAD object populated with
+            %              some fields. This is used mainly for testing.
+            % Input  : null
+            % Output : - An HEAD object with some Header fields.
+            % Example: H=HEAD1.basic
+            % Reliable: 2
+           
+            H = HEAD1;
+            H.Header = {'EXPTIME',1,'';
+                        'TYPE','bias','';
+                        'FILTER','r',''};
         end
         
     end
@@ -191,7 +212,7 @@ classdef HEAD1 %< WorldCooSys
             %              search for a keyword name and return a cell
             %              array without the lines containing this keyword.
             % Input  : - A 3 columnn cell array [Key, Val, Comment].
-            %          - Keyword name.
+            %          - Keyword name, or a cell array of keyword names.
             %          - A flag indicating if to perform an exact name
             %            search (true). Default is true.
             %            If false, then use regexp.
@@ -315,6 +336,88 @@ classdef HEAD1 %< WorldCooSys
             
         end
         
+        % replace keyword name in cell header
+        function Cell=replaceKeyNameCell(Cell,OldKeyName,NewKeyName)
+            % Replace keyword name in cell header
+            % Package: @HEAD
+            % Description: Replace keyword name in cell header.
+            %              If keyword name is not found than skip the
+            %              replecment.
+            % Input  : - A 3 column cell array {keyname, value, comment}
+            %          - A string or a cell array of strings containing
+            %            the old keyword names to search in the header.
+            %          - Astring or a cell array of strings containing
+            %            new keyword names that will replace the old names.
+            %            This input should have the same 
+            %            number of keywords as the second input arguments.
+            % Output : - A cell array in which the keyword names were
+            %            replaced.
+            
+            Col = 1;
+            if ischar(OldKeyName)
+                OldKeyName = {OldKeyName};
+            end
+             if ischar(NewKeyName)
+                NewKeyName = {NewKeyName};
+             end
+            if numel(OldKeyName)~=numel(NewKeyName)
+                error('Number of new keywords names should be equal to old keyword names');
+            end
+            
+            Nkey = numel(NewKeyName);
+            for Ikey=1:1:Nkey
+                Ipos = find(strcmp(Cell(:,Col),OldKeyName{Ikey}));
+                if (~isempty(Ipos))
+                    Cell{Ipos,Col} = NewKeyName{Ikey};
+                end
+            end
+            
+            
+        end
+        
+        
+        % replace keyword value in cell header
+        function Cell=replaceKeyValCell(Cell,KeyName,KeyVal)
+            % Replace keyword value in cell header
+            % Package: @HEAD
+            % Description: Replace keyword value in cell header.
+            % Input  : - A 3 column cell array {keyname, value, comment}
+            %          - A string or a cell array of strings containing
+            %            the keyword names to search in the header,
+            %            and for which to replace the value.
+            %          - Keyword values. The same number of values as
+            %            keyword names.
+            %            This can be a scalar, a cell array or a vector.
+            % Output : - A cell array in which the keyword values were
+            %            replaced.
+            
+            Col = 1;
+            ColVal = 2;
+            if ischar(KeyName)
+                KeyName = {KeyName};
+            end
+            if ischar(KeyVal)
+                KeyVal = {KeyVal};
+            elseif isnumeric(KeyVal)
+                KeyVal = num2cell(KeyVal);
+            else
+                % do nothing
+            end
+            if numel(KeyName)~=numel(KeyVal)
+                error('Number of keywords names should be equal to number of values');
+            end
+            
+            Nkey = numel(KeyName);
+            for Ikey=1:1:Nkey
+                Ipos = find(strcmp(Cell(:,Col),KeyName{Ikey}));
+                if (~isempty(Ipos))
+                    Cell{Ipos,ColVal} = KeyVal{Ikey};
+                end
+            end
+            
+            
+        end
+            
         function [Cell]=fixColCell(Cell)
             % If a cell array contains two columns, add a third with ''
             % Package: @HEAD
@@ -334,12 +437,15 @@ classdef HEAD1 %< WorldCooSys
             else
                 error('Input cell array must have 2 or 3 columns');
             end
+            
                 
         end
+        
+        
      
     end
     
-    % isfield, isstruct
+    % override methods: isfield, isstruct, isempty
     methods 
         
         %--------------------------
@@ -354,18 +460,67 @@ classdef HEAD1 %< WorldCooSys
             % isstruct
             obj = true;  %isstruct(Sim) || isa(Sim,'SIM');
         end
+        
+        function Res=isempty(H)
+            % isempty override on HEAD object
+            % Package: @HEAD
+            % Description: Check if HEAD object isempty.
+            %              Return a logical for each HEAD object element.
+            %              The logical indicates if the Header field is
+            %              empty.
+            % Input  : - An HEAD object.
+            % Output : - A logical for each HEAD object element.
+            %            The logical indicates if the Header field is
+            %            empty.
+            % Example: R=isempty(H);
+            % Reliable: 2
+            
+            Res = false(size(H));
+            N = numel(H);
+            for I=1:1:N
+                Res(I) = isempty(H(I).Header);
+            end
+            
+        end
 
     end
     
-    % read data from header
+    % set/ get keyword data - read data from header
     methods
         % copy
         % delKey
         % uniqueKey
         % addKey
+        % replaceKeyName
         % replaceKeyVal
-        % getKeyVal
         % getKey
+        % getVal
+        % regexp
+        % regexprep
+        % lowerKey (previously lower_key)
+        % upperKey (previously upper_key)
+        % numKey (previously numkey)
+        % spacecel
+        % cell2struct
+        
+        % getkey
+        % mgetkey
+        %
+     
+        % find_groups
+        % iskeyval
+        % disp
+        % istype
+        % julday
+        % geodpos
+        % coo
+        % isarc
+        % isbias
+        % isdark
+        % isflat
+        % naxis
+        
+        
         
         function H=copy(H,C)
             % Populate an HEAD object elements with a Cell or HEAD object.
@@ -395,7 +550,7 @@ classdef HEAD1 %< WorldCooSys
                 if IsHEAD
                     H(I) = C;
                 else
-                    H(I).Header = C;
+                    H(I).Header = HEAD1.fixColCell(C);
                 end
             end
             
@@ -478,23 +633,267 @@ classdef HEAD1 %< WorldCooSys
             
         end
         
+        function H=replaceKeyName(H,OldKeyName,NewKeyName)
+            % Replace keyword name in HEAD object
+            % Package: @HEAD
+            % Description: Replace keyword name in all elements in an
+            %              HEAD object.
+            %              If keyword name is not found than skip the
+            %              replecment.
+            %              The replacment is applied for all HEAD elements.
+            % Input  : - AN HEAD object.
+            %          - A string or a cell array of strings containing
+            %            the old keyword names to search in the header.
+            %          - Astring or a cell array of strings containing
+            %            new keyword names that will replace the old names.
+            %            This input should have the same 
+            %            number of keywords as the second input arguments.
+            % Output : - An HEAD object with the new keyword names.
+            % Example: H1=replaceKeyName(H,{'a','RA'},{'DECDEG','RADEG'})
+            % REliable: 2
+            
+            Nh = numel(H);
+            for Ih=1:1:Nh
+                H(Ih).Header = HEAD1.replaceKeyNameCell(H(Ih).Header,OldKeyName,NewKeyName);
+            end
+        end
+            
+        function H=replaceKeyVal(H,KeyName,KeyVal)
+            % Replace keyword value in HEAD object
+            % Package: @HEAD
+            % Description: Replace keyword value in all elements in an
+            %              HEAD object.
+            %              If keyword name is not found than skip the
+            %              replecment.
+            %              The replacment is applied for all HEAD elements.
+            % Input  : - An HEAD object.
+            %          - A string or a cell array of strings containing
+            %            the keyword names to search in the header,
+            %            and for which to replace the values.
+            %          - Keyword values. The same number of values as
+            %            keyword names.
+            %            This can be a scalar, a cell array or a vector.
+            % Output : - An HEAD object with the new keyword names.
+            % Example: H1=replaceKeyVal(H,{'a','RA'},{'best',102.12})
+            % REliable: 2
+            
+            Nh = numel(H);
+            for Ih=1:1:Nh
+                H(Ih).Header = HEAD1.replaceKeyValCell(H(Ih).Header,KeyName,KeyVal);
+            end
+            
+            
+        end
         
-        % GOT HERE
-        function Out=getKey(Head,KeyName,OnlyValue,varargin)
+        function Out=getKey(Head,KeyName,varargin)
             % Get keyword value from object header
             % Package: HEAD
             % Input  : - HEAD object
-            %          - A string containing a single keyword name.
+            %          - Keyword name, or a cell array of keyword names.
+            %          - A flag indicating if to perform an exact name
+            %            search (true). Default is true.
+            %            If false, then use regexp.
+            %          - Column in the cell array in which to perform the
+            %            search. Default is 1 (i.e., the keyword column).
+            %            Note that if 2 is used, than this may fail if the
+            %            some values are numeric.
+            %          - If more than one keyword was matched, this is the
+            %            number of first keywords/values to return.
+            %            If Inf, then retun all keywords.
+            %            Default is Inf.
+            % Output : - An HEAD object containing only lines containing
+            %            the requested keywords.
             
             N = numel(Head);
             % for each element in object 
             for I=1:1:N
-                Out(I).Header = HEAD1.getKeyCell(Head(I).Header,varargin{:});
-                
-                
+                Out(I).Header = HEAD1.getKeyCell(Head(I).Header,KeyName,varargin{:});
             end
             
         end
+        
+        function Out=regexp(H,Col,varargin)
+            % Execture regexp on single element HEAD object
+            % Package: @HEAD
+            % Description: Execute regexp.m on one of the columns of an HEAD object
+            %                with a single element.
+            % Input  : - A a single element HEAD object.
+            %          - Column index on which to execute regexp.m (1|2|3).
+            %          * Additional arguments to pass to regexp.m, ...,EXPRESSION,...
+            % Output : - The output of regexp.m
+            % License: GNU general public license version 3
+            % Tested : Matlab R2015b
+            %     By : Eran O. Ofek                    Apr 2016
+            %    URL : http://weizmann.ac.il/home/eofek/matlab/
+            % Example: regexp(Head,1,'A_\d+_\d+')
+            % Reliable: 2
+
+            if numel(H)>1
+                error('Input must be a single element HEAD object');
+            end
+                        
+            Out = regexp(H.Header(:,Col),varargin{:});
+        end
+        
+        function H=regexprep(H,Col,varargin)
+            % Execture regexprep on single element HEAD object
+            % Package: @HEAD
+            % Description: Execute regexprep.m on one of the columns of an
+            %              HEAD object.
+            % Input  : - An HEAD object.
+            %          - Column index on which to execute regexp.m (1|2|3).
+            %          * Additional arguments to pass to regexprep.m,
+            %            ...,EXPRESSION,...
+            % Output : - An HEAD object with the replaced strings.
+            % License: GNU general public license version 3
+            % Tested : Matlab R2015b
+            %     By : Eran O. Ofek                    Apr 2016
+            %    URL : http://weizmann.ac.il/home/eofek/matlab/
+            % Example: regexprep(Head,1,'A','B')
+            % Reliable: 2
+
+            N = numel(H);
+            for I=1:1:N
+                H(I).Header(:,Col) = regexprep(H(I).Header(:,Col),varargin{:});
+            end
+        end
+        
+        function H=lowerKey(H)
+            % Convert all keyword names to lower case
+            % Package: @HEAD
+            % Description: Convert all keyword names to lower case
+            % Input  : - An HEAD object
+            % Output : - An HEAD object in which the key names are lower
+            %            case.
+            % License: GNU general public license version 3
+            % Tested : Matlab R2015b
+            %     By : Eran O. Ofek                    Mar 2016
+            %    URL : http://weizmann.ac.il/home/eofek/matlab/
+            % Example: Head=lowerKey(Head)
+            % Reliable: 2
+            
+            Col = 1;
+            for I=1:1:numel(H)
+                H(I).Header(:,Col) = lower(H(I).Header(:,Col));
+            end
+            
+        end
+        
+        function H=upperKey(H)
+            % Convert all keyword names to upper case
+            % Package: @HEAD
+            % Description: Convert all keyword names to upper case
+            % Input  : - An HEAD object
+            % Output : - An HEAD object in which the key names are upper
+            %            case.
+            % License: GNU general public license version 3
+            % Tested : Matlab R2015b
+            %     By : Eran O. Ofek                    Mar 2016
+            %    URL : http://weizmann.ac.il/home/eofek/matlab/
+            % Example: Head=upperKey(Head)
+            % Reliable: 2
+            
+            Col = 1;
+            for I=1:1:numel(H)
+                H(I).Header(:,Col) = upper(H(I).Header(:,Col));
+            end
+            
+        end
+            
+        function Num=numKey(H)
+            % Count the number of keywords in HAED object
+            % Package: @HEAD
+            % Description: Count the number of keywords in HAED object
+            % Input  : - An HEAD object
+            % Output : - An array in which each element contains the number
+            %            of keywords in each HEAD element.
+            % Example: numKey(H)
+            % Reliable: 2
+            Num = zeros(size(H));
+            N = numel(H);
+            for I=1:1:N
+                Num(I) = size(H.Header,1);
+            end
+            
+        end
+        
+        function H=spacedel(H,Type,Col)
+            % Deleted spaces from all character values
+            % Package: @HEAD
+            % Description: Delete spaces from all values in an HEAD object.
+            %              Can deal with all spaces, leading of trailing.
+            % Input  : - An HEAD object.
+            %          - Space removal option:
+            %            'all' - remove all spaces.
+            %            'trail' - remove trailing spaces.
+            %            'leadtrial' - remove leading and trailing spaces.
+            %                          Default.
+            %            'lead' - Remove leading spaces.
+            %          - Header column on which to oerate.
+            %            Default is 2 (i.e., Values column).
+            % Output : - An HEAD object.
+            % Example: H=spacedel(H)
+            % Reliable: 2
+           
+            if nargin<3
+                Col = 2;
+                if nargin<2
+                    Type = 'leadtrail';
+                end
+            end
+            
+            N = numel(H);
+            for I=1:1:N
+                Flag = cellfun(@ischar,H(I).Header(:,Col)); % char values
+                
+                switch lower(Type)
+                    case 'all'
+                        H(I).Header(Flag,Col) = Util.string.spacedel(H(I).Header(Flag,Col));
+                    case 'trail'
+                        H(I).Header(Flag,Col) = deblank(H(I).Header(Flag,Col));
+                    case 'leadtrail'
+                        H(I).Header(Flag,Col) = strip(H(I).Header(Flag,Col),'both');
+                    case 'lead'
+                        H(I).Header(Flag,Col) = strip(H(I).Header(Flag,Col),'left');
+                    otherwise
+                        error('Unknown Typr option');
+                end
+            end
+            
+        end
+        
+        function S=cell2struct(H,Unique)
+            % Convert the Header fields in HEAD object to structure
+            % Package: @HEAD
+            % Description: Convert the Header fields in HEAD object to
+            %              structure array in which the field name is the
+            %              keyword name and the field value is the keyword
+            %              value. Optionally run uniqueKey on the HEAD
+            %              object.
+            % Input  : - An HEAD object.
+            %          - A logical falg indicating if to run uniqueKey on
+            %            the HEAD object prior to conversion to structure.
+            %            Default is true.
+            % Output : - A structure in which the field names are the
+            %            keywords.
+            % Example: cell2struct(HEAD1.basic)
+            % Relible: 2
+            
+            
+            if (nargin<2)
+                Unique = true;
+            end
+            
+            if Unique
+                H = uniqueKey(H);
+            end
+            N = numel(H);
+            for I=1:1:N
+                S(I) = cell2struct(H(I).Header(:,2),H(I).Header(:,1));
+            end
+            
+        end
+        
     end
     
     
