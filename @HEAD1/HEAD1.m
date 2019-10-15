@@ -46,17 +46,26 @@ classdef HEAD1 %< WorldCooSys
             % Input  : * Arbitrary number of number of elements in each
             %            dimension. Deafult is 1,1
             % Output : - An HEAD object
+            % Example: HEAD(2,3,2)
+            %          HEAD([2,3,2])
+            %          HEAD(2)
+            %          HEAD
             
             if (numel(varargin)==0)
                 varargin{1} = 1;
                 varargin{2} = 1;
             elseif (numel(varargin)==1)
-                varargin{2} = 1;
+                
+                if numel(varargin{1})>1
+                    varargin = num2cell(varargin{1});
+                else
+                    varargin{2} = 1;
+                end
             else
                 % do nothing
             end
-            
             Dim = cell2mat(varargin);
+            
             Nel = prod(Dim);
             
             for I=1:1:Nel
@@ -73,7 +82,7 @@ classdef HEAD1 %< WorldCooSys
     % getters
     methods
         function H=get.Header(Head)
-            % getter for Header from HEAD object
+            % getter for cell Header from an HEAD object
             % Package: @HEAD
             % Input  : - An HEAD object
             % Output : - If the HEAD object contains a single element, than
@@ -94,7 +103,42 @@ classdef HEAD1 %< WorldCooSys
             
         end
         
-      
+        function S=get.Keys(H)
+            % getter for struct Header from an HEAD object
+            % Package: @HEAD
+            % Description: Populate the Keys field in an HEAD object and
+            %              return the structure array of header keywords
+            %              and their values.
+            % Input  : - An HEAD object
+            % Output : - Structure array of keywords and their values.
+            % By : Eran O. Ofek
+            % Example: H=HEAD.basic; H(1).Keys, H(1).Keys.TYPE
+            % Reliable: 2
+            
+            
+            N = numel(H);
+            for I=1:1:N
+                if isempty(H(I).Keys)
+                    H(I).Keys = cell2struct(H(I));
+                end
+                S(I) = H(I).Keys;
+            end
+            
+        end
+        
+%         function H=set.Keys(H,Val)
+%             %
+%             Val
+%             if isstruct(Val)
+%                 % assign new values into the cell header
+%                 Val
+%                 
+%                 H.Header = HEAD1.struct2cell(H.Keys);
+%             else
+%                 warning('You asigned a non structure object into Keys');
+%             end
+%             
+%         end
         
     end
     
@@ -151,7 +195,7 @@ classdef HEAD1 %< WorldCooSys
             %              search for a keyword name and return its value
             %              and comment.
             % Input  : - A 3 columnn cell array [Key, Val, Comment].
-            %          - Keyword name.
+            %          - Keyword name, or a cell array of keyword names.
             %          - A flag indicating if to perform an exact name
             %            search (true). Default is true.
             %            If false, then use regexp.
@@ -161,14 +205,18 @@ classdef HEAD1 %< WorldCooSys
             %            some values are numeric.
             %          - If more than one keyword was matched, this is the
             %            number of first keywords/values to return.
-            %            If Inf, then retun all keywords.
+            %            If Inf, then retun all lines containing the
+            %            keyword name.
             %            Default is Inf.
             % Output : - A 3 column cell array with only the lines that
             %            satisfy the search.
             %          - Line indices in the input cell that satisfy the
             %            search criteria.
             % By: Eran O. Ofek
-            % Example: [SubCell]=getKeyCell(Cell)
+            % Example: H=HEAD1.basic; [SubCell]=HEAD1.getKeyCell(H.Header,{'TYPE','B'})
+            %          H=HEAD1.basic; [SubCell]=HEAD1.getKeyCell(H.Header,{'TYP','EXP'},false)
+            %          H=HEAD1.basic;
+            %          [SubCell]=HEAD1.getKeyCell([H.Header;H.Header],{'TYP','EXP'},false,1,1)
             % Reliable: 2
             
             if (nargin<5)
@@ -202,6 +250,122 @@ classdef HEAD1 %< WorldCooSys
             end
             SubCell = Cell(FlagI,:);
                     
+        end
+        
+        function [SubCell]=getFilledKeyCell(Cell,Key,FillVal,ReturnI,Col)
+            % get key from an header in a cell format, NaN if not exist
+            % Package: @HEAD
+            % Description: Given a 3 column cell array [Key, Val, Comment]
+            %              search for exact keyword name and return one
+            %              line for each searched keyword. Value is NaN is
+            %              keyword doesn't exist.
+            %              If more than one keyword exist then select only
+            %              one.
+            %              For non exact matching without fill values use:
+            %              HEAD.getKeyCell.m
+            % Input  : - A 3 columnn cell array [Key, Val, Comment].
+            %          - Keyword name, or a cell array of keyword names.
+            %          - Value to populate the keyword value in case the
+            %            keyword doesn't exist. Default is NaN.
+            %          - If more than one keyword was matched, this is the
+            %            index of the keywords/values to return.
+            %            (in anycase only one line will be returned).
+            %            Inf will return the last keyword.
+            %            Default is 1.
+            %          - Column in the cell array in which to perform the
+            %            search. Default is 1 (i.e., the keyword column).
+            %            Note that if 2 is used, than this may fail if the
+            %            some values are numeric.
+            % Output : - A 3 column cell array with only the lines that
+            %            satisfy the search.
+            % By: Eran O. Ofek
+            % Example: H=HEAD1.basic;
+            %          [SubCell]=HEAD1.getFilledKeyCell(H.Header,{'TYPE','B'},NaN)
+            %          [SubCell]=HEAD1.getFilledKeyCell([H.Header;H.Header],{'TYPE','B'},NaN,2)
+            % Reliable: 2
+            
+            if (nargin<5)
+                Col = 1;
+                if (nargin<4)
+                    ReturnI = 1;
+                    if (nargin<3)
+                        FillVal = NaN;
+                    end
+                end
+            end
+            
+            if (ischar(Key))
+                Key = {Key};
+            end
+            Nkey = numel(Key);
+            % for each keyword name
+            SubCell = cell(Nkey,3);
+            SubCell(:,1) = Key(:);
+            for Ikey=1:1:Nkey
+                % use exact name search
+                Flag  = strcmp(Cell(:,Col),Key{Ikey});
+                FlagI = find(Flag);
+                if (numel(FlagI)<ReturnI)
+                    ReturnI = numel(FlagI);
+                end
+                if isempty(FlagI)
+                    SubCell{Ikey,2} = FillVal;
+                    SubCell{Ikey,3} = '';
+                else
+                    FlagI = FlagI(ReturnI);
+                    SubCell(Ikey,2:3) = Cell(FlagI,2:3);
+                end
+            end
+                   
+        end
+        
+        function [IsExist,Counter]=isKeyExistCell(Cell,Key,Exact,Col)
+            % Check (and count) if a keyword name exist in a cell header
+            % Package: @HEAD
+            % Description: Check if keyword name exist in a cell header,
+            %              and also count the number of appearnces for each
+            %              keyword. Can either use exact match or regular
+            %              exprssions.
+            % Input  : - A cell header {Keyword, Value, Comment}
+            %          - A keyword string or a cell array of keyword
+            %            strings to search.
+            %          - A flag indicating if to perform exact match (true)
+            %            or regular exprssion matching (false).
+            %          - Column index in the cell header on which to
+            %            perfoprm the search. Default is 1.
+            % Output : - A row vector of logical indicating if each keyword
+            %            exist in the header.
+            %          - A row vector of counters of the number of
+            %            appearnces of each keyword in the header.
+            % Example: H=HEAD1.basic;
+            %          [IsExist,Counter]=HEAD1.isKeyExistCell([H.Header;H.Header],{'TYPE','N','EXPTI'},false)
+            
+            if nargin<4
+                Col = 1;
+                if nargin<3
+                    Exact = true;
+                end
+            end
+            
+            
+            if ischar(Key)
+                Key = {Key};
+            end
+            Nkey = numel(Key);
+            IsExist = false(1,Nkey);
+            Counter = zeros(1,Nkey);
+            for Ikey=1:1:Nkey
+                if Exact
+                    Flag = strcmp(Cell(:,Col),Key{Ikey});
+                else
+                    Flag = regexp(Cell(:,Col),Key{Ikey},'match');
+                    Flag = ~Util.cell.isempty_cell(Flag);
+                end
+                IsExist(Ikey) = any(Flag);
+                Counter(Ikey) = sum(Flag);
+            end
+                    
+            
         end
         
         % delete key from cell header
@@ -375,7 +539,6 @@ classdef HEAD1 %< WorldCooSys
             
         end
         
-        
         % replace keyword value in cell header
         function Cell=replaceKeyValCell(Cell,KeyName,KeyVal)
             % Replace keyword value in cell header
@@ -441,8 +604,50 @@ classdef HEAD1 %< WorldCooSys
                 
         end
         
+        function Cell=struct2cell(S)
+            % Convert a structure into a 3 column cell header
+            % Package: @HEAD
+            % Description: Convert a single-element structure into a 3
+            %              column cell header.
+            %              For conversion of a structure array, use the
+            %              HEAD.struct2head static method.
+            % Input  : - A structure.
+            % Output : - A 3 column cell array {Keyword, Value, Comment},
+            %            where the Keywords are taken from the structure
+            %            field names, and the values are taken from the
+            %            field values.
+            % Example: HEAD1.struct2cell(S)
+            % Reliable: 2
         
-     
+            if numel(S)>1
+                error('HEAD.struct2cell works on a single element structure - use HEAD.struct2head');
+            end
+            FN = fieldnames(S);
+            Cell = HEAD1.fixColCell([FN(:), struct2cell(S)]);
+            
+        end
+        
+        function H=struct2head(S)
+            % Convert a structure array into an HEAD object
+            % Package: @HEAD
+            % Description: Convert a structure array into an HEAD object
+            % Input  : - A structure array.
+            % Output : - An HEAD object. Each element in the structure
+            %            array corresponds to an element in the HEAD object.
+            %            Each field/value in the structure corresponds to
+            %            a line in the cell header.
+            % Example: H2=HEAD1.struct2head([S;S])
+            % Reliable: 2
+            
+            H = HEAD1(size(S));
+            N = numel(S);
+            for I=1:1:N
+                H(I).Header = HEAD1.struct2cell(S(I));
+            end
+            
+            
+        end
+        
     end
     
     % override methods: isfield, isstruct, isempty
@@ -487,6 +692,7 @@ classdef HEAD1 %< WorldCooSys
     
     % set/ get keyword data - read data from header
     methods
+        % disp
         % copy
         % delKey
         % uniqueKey
@@ -495,25 +701,29 @@ classdef HEAD1 %< WorldCooSys
         % replaceKeyVal
         % getKey
         % getVal
-        % regexp
-        % regexprep
+        % regexp (like old)
+        % regexprep (like old)
         % lowerKey (previously lower_key)
         % upperKey (previously upper_key)
         % numKey (previously numkey)
-        % spacecel
-        % cell2struct
+        % spacedel (new)
+        % val2num (new)
+        % cell2struct (new)
+        % isKeyExist (new)
+        % getVal_select (previously getkey_fromlist)
+        % mgetkey (like old)
+        % isKeyVal (previoisly iskeyval)
         
-        % getkey
-        % mgetkey
-        %
+        
+        % getkey  - obsolete
+        % iskeyval - obsolete
      
         % find_groups
-        % iskeyval
-        % disp
         % istype
         % julday
         % geodpos
         % coo
+        % wcs
         % isarc
         % isbias
         % isdark
@@ -521,6 +731,35 @@ classdef HEAD1 %< WorldCooSys
         % naxis
         
         
+        function disp(H,UseDisp)
+            % display HEAD object Header keywords, values, and comments.
+            % Package: @HEAD1
+            % Description: Display HEAD object Header keywords, values,
+            %              and comments. If multiple elements, then display
+            %              all headers.
+            % Input  : - An HEAD object.
+            %          - A logical flag indicating if to use the disp
+            %            command (true), or just the variable name without
+            %            ";" (false).
+            %            Default is true.
+            % Output * null
+            % Example: H=HEAD1.basic; disp(H), disp(H,false)
+            % Relauble: 2
+            
+            if nargin<2
+                UseDisp = true;
+            end
+            
+            Nh = numel(H);
+            for Ih=1:1:Nh
+                if UseDisp
+                    disp(H(Ih).Header)
+                else
+                    H(Ih).Header
+                end
+            end
+            
+        end
         
         function H=copy(H,C)
             % Populate an HEAD object elements with a Cell or HEAD object.
@@ -688,6 +927,11 @@ classdef HEAD1 %< WorldCooSys
         function Out=getKey(Head,KeyName,varargin)
             % Get keyword value from object header
             % Package: HEAD
+            % Description: Search keyeod names in an HEAD object and return
+            %              a new HEAD object with the requested keywords.
+            %              The search can be exact or by using regular
+            %              expression. Use getFilledKey in order to return
+            %              filled values for non-existing keywords.
             % Input  : - HEAD object
             %          - Keyword name, or a cell array of keyword names.
             %          - A flag indicating if to perform an exact name
@@ -703,12 +947,113 @@ classdef HEAD1 %< WorldCooSys
             %            Default is Inf.
             % Output : - An HEAD object containing only lines containing
             %            the requested keywords.
+            % Example: H=HEAD1.basic; K=getKey(H,'TYPE')
             
             N = numel(Head);
             % for each element in object 
+            Out = HEAD1(size(Head));
             for I=1:1:N
                 Out(I).Header = HEAD1.getKeyCell(Head(I).Header,KeyName,varargin{:});
             end
+            
+        end
+        
+        function Out=getFilledKey(Head,KeyName,varargin)
+            % Get filled keyword value from object header
+            % Package: HEAD
+            % Description: Perform exact keyeod name search in an HEAD
+            %              object and return
+            %              a new HEAD object with the requested keywords,
+            %              and filled values in case the keyword doesn't
+            %              exist. Use getKey for not filled/non exact
+            %              search.
+            % Input  : - HEAD object
+            %          - Keyword name, or a cell array of keyword names.
+            %          - Value to populate the keyword value in case the
+            %            keyword doesn't exist. Default is NaN.
+            %          - If more than one keyword was matched, this is the
+            %            index of the keywords/values to return.
+            %            (in anycase only one line will be returned).
+            %            Inf will return the last keyword.
+            %            Default is 1.
+            %          - Column in the cell array in which to perform the
+            %            search. Default is 1 (i.e., the keyword column).
+            %            Note that if 2 is used, than this may fail if the
+            %            some values are numeric.
+            % Output : - An HEAD object with the lines containing the
+            %            searched keywords. The number of lines always
+            %            equal to the number of searched keywords and
+            %            appears in the same order. If the keywords doesn't
+            %            exist in the header than a filled value is
+            %            returned.
+            % Example: H=HEAD1.basic; K=getFilledKey(H,'TYPE')
+            %          K=getFilledKey(H,{'TYPE','B'})
+            
+            N = numel(Head);
+            % for each element in object 
+            Out = HEAD1(size(Head));
+            for I=1:1:N
+                Out(I).Header = HEAD1.getFilledKeyCell(Head(I).Header,KeyName,varargin{:});
+            end
+            
+        end
+      
+        function [CellVal,SubHead] = mgetkey(Head,KeyName,SpaceDel,Conv2Num)
+            % Get the value of multiple keywords from a multi-elemet HEAD
+            % Package: @HEAD
+            % Description: Get the value of a multiple keywords from a
+            %              mult-element HEAD object. Keywords that doesn't
+            %              exist will be replaced with NaN. The output is a
+            %              cell arraey of size Number HEAD elements by
+            %              Number of keywords.
+            %              Optionaly delete spaces from strings and convert
+            %              string to numbers if possible.
+            % Input  : - An HEAD object.
+            %          - A string or a cell array of string of keyword
+            %            names.
+            %          - A logical indicating if to delete leading and
+            %            trailing spaces. Default is true.
+            %            implemented using HEAD/spacedel.
+            %          - A logical indicating if to convert strings to
+            %            numbers if possible. Default is false.
+            %            Implemented using HEAD/val2num
+            % Output : - A cell array of size Number HEAD elements by
+            %            Number of keywords, containing the requested
+            %            keyword values. NaN if keyword doesn't exist.
+            %          - An Haed  object with the requested keywords only,
+            %            and missing keywords filled by NaN values.
+            % Example: H=HEAD1.basic; mgetkey([H;H],{'TYPE','B'})
+            % Reliable: 2
+            
+            Col = 2;
+            
+            if nargin<4
+                Conv2Num = false;
+                if nargin<3
+                    SpaceDel = true;
+                end
+            end
+            
+            if ischar(KeyName)
+                KeyName = {KeyName};
+            end
+            
+            SubHead = getFilledKey(Head,KeyName,NaN,1,1);
+            if SpaceDel
+                SubHead = spacedel(SubHead,'leadtrail');
+            end
+            
+            if (Conv2Num)
+                SubHead = val2num(SubHead);
+            end
+            
+            Nkey = numel(KeyName);
+            Nh   = numel(SubHead);
+            CellVal = cell(Nh,Nkey);
+            for Ih=1:1:Nh
+                CellVal(Ih,:) = SubHead(Ih).Header(:,Col).';
+            end
+            
             
         end
         
@@ -862,6 +1207,31 @@ classdef HEAD1 %< WorldCooSys
             
         end
         
+        function H=val2num(H)
+            % Convert values in HEAD object to numeric if possible
+            % Package: @HEAD
+            % Description: Convert values in HEAD object from strings to
+            %              numeric if possible.
+            % Input  : - An HEAD object.
+            % Output : - An HEAD object in which a numeric values in
+            %            strings are converted to numbers.
+            %            A string like 'NaN' will not be converted to NaN.
+            % Example: H=HEAD1.basic; H=val2num(H);
+            % Reliable: 2 
+            
+            
+            Nh = numel(H);
+            for Ih=1:1:Nh
+                FlagStr = cellfun(@ischar,H(Ih).Header(:,2));
+                NumVal  = cellfun(@str2double,H(Ih).Header(:,2));
+                Flag    = ~isnan(NumVal) & FlagStr;
+                H(Ih).Header{Flag,2} = NumVal(Flag);
+            end
+                
+            
+            
+        end
+        
         function S=cell2struct(H,Unique)
             % Convert the Header fields in HEAD object to structure
             % Package: @HEAD
@@ -893,6 +1263,175 @@ classdef HEAD1 %< WorldCooSys
             end
             
         end
+        
+        function [Out] = getVal_select(H,KeyList,SelectMethod)
+            % Select the (first) existing header line out of many keywords
+            % Package: @HEAD
+            % Description: Given an HEAD object and a list of keywords
+            %              select only one available keyword (e.g., the
+            %              first available keyword). This function is
+            %              useful when the exact name of keywprd is
+            %              unknown.
+            % Input  : - An HEAD object.
+            %          - A cell array (or a single string) or keywords to
+            %            test. E.g., {'TYPE','IMTYPE','IMGTYPE'}.
+            %          - Keyword selsection option:
+            %            'first' - select the first keyword available out
+            %                      of the keyword list (second input 
+            %                      argument), by their order in the list
+            %                      (rather than order in the header).
+            %            'last'  - Like first but for the 'last' keyword.
+            % Output : - An HEAD object with only one line in the Header of
+            %            each HEAD element (i.e., the selected keyword).
+            % Example: H=HEAD1.basic; O=getVal_select([H,H],{'YY','IMTYPE','TYPE'});
+            % Reliable: 2
+            
+            if (nargin<3)
+                SelectMethod = 'first';
+            end
+            
+            N  = numel(H);
+            Out = getKey(H,KeyList);
+            for I=1:1:N
+                if ~isempty(Out(I).Header)
+                    switch lower(SelectMethod)
+                        case 'first'
+                            Out(I).Header = Out(I).Header(1,:);
+                        case 'last'
+                            Out(I).Header = Out(I).Header(end,:);
+                        otherwise
+                    end
+                end
+            end
+            
+            
+        end
+        
+        function [IsExist,Counter] = isKeyExist(H,Key,varargin)
+            % Check (and count) if a keyword name exist in an HEAD object
+            % Package: @HEAD
+            % Description: Check if keyword name exist in an HEAD object,
+            %              and also count the number of appearnces for each
+            %              keyword. Can either use exact match or regular
+            %              exprssions.
+            % Input  : - A cell header {Keyword, Value, Comment}
+            %          - A keyword string or a cell array of keyword
+            %            strings to search.
+            %          - A flag indicating if to perform exact match (true)
+            %            or regular exprssion matching (false).
+            %          - Column index in the cell header on which to
+            %            perfoprm the search. Default is 1.
+            % Output : - A matrix of logicals indicating if each keyword
+            %            exist in the header.
+            %            Rows represents different HEAD elements, while
+            %            columns repesents different keywords.
+            %          - A matrix of counters of the number of
+            %            appearnces of each keyword in the header.
+            %            Rows represents different HEAD elements, while
+            %            columns repesents different keywords.
+            % Example: H=HEAD1.basic;
+            %          [IsExist,Counter]=isKeyExist([H;H],{'TYPE','N','EXPTI'},false)
+            
+            if ischar(Key)
+                Key = {Key};
+            end
+            Nkey = numel(Key);
+            
+            Nh = numel(H);
+            IsExist = false(Nh,Nkey);
+            Counter = zeros(Nh,Nkey);
+            for Ih=1:1:Nh
+                [IsExist(Ih,:),Counter(Ih,:)] = HEAD1.isKeyExistCell(H(Ih).Header,Key,varargin{:});
+            end
+            
+        end
+        
+        function IsEqual=isKeyVal(H,Key,Val,FillVal)
+            % Compare the keyword values in HEAD object with some vcalues
+            % Package: @HEAD
+            % Descrption: Given an HEAD object, keyword names, and vlaues,
+            %             search for the keword names in the headers and
+            %             compare their values with the function input
+            %             values (3rd input argument). Return a matrix of
+            %             logicals. The number of rows equal to the number
+            %             of elements in the HEAD object and the number of
+            %             columns equal to the number of keyword names. The
+            %             matrix is poulated with true, where the keyword
+            %             value equal to the input value.
+            %             Note the comparison is extended to NaNs and
+            %             empties.
+            % Input  : - An HEAD object.
+            %          - String of a keyword name, or a cell array of
+            %            strings of keyword names.
+            %          - Cell array of string/numeric values, or vector of
+            %            numeric values. The number of values corresponds
+            %            to the number of keyword names. Each value is
+            %            compared with the keyword value in the header.
+            %          - Fill value in case the keyword name doesn't exist.
+            %            Default is NaN.
+            % Output : - A matrix of logicals.
+            %            The number of rows equal to the number
+            %             of elements in the HEAD object and the number of
+            %             columns equal to the number of keyword names. The
+            %             matrix is poulated with true, where the keyword
+            %             value equal to the input value.
+            % Example: H=HEAD1.basic; IE=isKeyVal(H,'TYPE','bias')
+            %          IE=isKeyVal([H;H],{'TYPE','EXPTIME'},{'bias','a'})
+            %          IE=isKeyVal([H;H],{'TYPE','EXPTIME'},[1 1])      
+            
+            if nargin<4
+                FillVal = NaN;
+            end
+            
+            Col = 2;
+            if ischar(Key)
+                Key = {Key};
+            end
+            
+            if iscell(Val)
+                % do nothingg
+            elseif ischar(Val)
+                Val = {Val};
+            elseif isnumeric(Val)
+                Val = num2cell(Val);
+            else
+                error('Val (3rd) argument must be numeric, char, or cell of char/numeric');
+            end
+            
+            H = getFilledKey(H,Key,FillVal);
+            
+            Nkey = numel(Key);
+            Nh   = numel(H);
+            IsEqual = false(Nh,Nkey);
+            for Ih=1:1:Nh
+                for Ikey=1:1:Nkey
+                    if ischar(H(Ih).Header{Ikey,Col}) && ischar(Val{Ikey})
+                        IsEqual(Ih,Ikey) = strcmp(H(Ih).Header{Ikey,Col},Val{Ikey});
+                    elseif isnumeric(H(Ih).Header{Ikey,Col}) && isnumeric(Val{Ikey})
+                        if isempty(H(Ih).Header{Ikey,Col}) || isempty(Val{Ikey})
+                            if isempty(H(Ih).Header{Ikey,Col}) && isempty(Val{Ikey})
+                                % treat empties
+                                IsEqual(Ih,Ikey) = true;
+                            else
+                                IsEqual(Ih,Ikey) = false;
+                            end
+                        elseif isnan(H(Ih).Header{Ikey,Col}) && isnan(Val{Ikey})
+                            % treat NaNs
+                            IsEqual(Ih,Ikey) = true;
+                        else
+                            IsEqual(Ih,Ikey) = H(Ih).Header{Ikey,Col} == Val{Ikey};
+                        end
+                    else
+                        % KeyVal and Val are not of the same type
+                        IsEqual(Ih,Ikey) = false;
+                    end
+                end
+            end
+                         
+             
+        end
+        
+       
         
     end
     

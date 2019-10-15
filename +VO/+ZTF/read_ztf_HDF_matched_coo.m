@@ -24,7 +24,7 @@ if (nargin<3)
     Filter = 1;
 end
 
-DefV.ColCell            = {'HMJD','Mag','MagErr','ColorCoef','Flags','Field','RcID'};
+DefV.ColCell            = {'HMJD','Mag','MagErr','ColorCoef','Flags','Field','RcID','Isrc'};
 DefV.SearchRadius       = 2;  % arcsec
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
@@ -46,7 +46,7 @@ Cat  = zeros(0,Ncol);
 for Isrc=1:1:Nsrc
     CatLC = VO.ZTF.read_ztf_HDF_matched(CatSrc(Isrc,Col.Field),CatSrc(Isrc,[Col.I1, Col.I2]));
     Ns  = size(CatLC,1);
-    CatLC = [CatLC, ones(Ns,1).*CatSrc(Isrc,[Col.Field, Col.RcID])];
+    CatLC = [CatLC, ones(Ns,1).*CatSrc(Isrc,[Col.Field, Col.RcID]), ones(Ns,1).*Isrc];
     Cat   = [Cat; CatLC];
 end
 ColCell = InPar.ColCell;
