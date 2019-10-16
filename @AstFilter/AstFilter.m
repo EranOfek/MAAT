@@ -686,13 +686,14 @@ classdef AstFilter
 %                 end
                 for i=2:length(CumTrapz)
                     if CumTrapz(i)<=CumTrapz(i-1)
-                        CumTrapz(i)=CumTrapz(i-1)+eps;
+                        CumTrapz(i)=CumTrapz(i-1)+10.*eps;
                     end
                 end
 %                 AstF(If).half_width = interp1(CumSum+eps,Fnn(1:end-1,1),0.75) - ...
 %                                       interp1(CumSum+eps,Fnn(1:end-1,1),0.25)
-                AstF(If).half_width = interp1(CumTrapz,Fnn(:,1),0.75) - ...
-                                      interp1(CumTrapz,Fnn(:,1),0.25);
+                CumTrapz = CumTrapz + 10000.*eps.*(1:1:numel(CumTrapz)).';
+                AstF(If).half_width = interp1(CumTrapz./max(CumTrapz),Fnn(:,1),0.75) - ...
+                                      interp1(CumTrapz./max(CumTrapz),Fnn(:,1),0.25);
 
 
                                   
