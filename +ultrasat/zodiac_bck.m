@@ -75,8 +75,13 @@ end
 
 switch lower(InPar.CooSys)
     case 'hec'
+        if isempty(Date)
+            error('When using the Helio-Ecliptic coordinate system - Dtae/time must be provided');
+        end
+        
         Long = RA;
         Lat  = Dec;
+        
     otherwise
         Coo = celestial.coo.coco([RA, Dec],InPar.CooSys,'e');
         Long = Coo(:,1);

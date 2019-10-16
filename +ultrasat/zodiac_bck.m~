@@ -5,14 +5,23 @@ function [Spec]=zodiac_bck(RA,Dec,Date,varargin)
 %              at a given sky position.
 % Input  : - Vector of J2000.0 R.A., or longitude [radians].
 %          - Vector of J2000.0 Dec, or latitude [radians].
-%          - Date [D M Y F], or JD (column matrix).
+%          - Date [D M Y F], or JD (column matrix). Default is empty.
+%            If empty, then will force the Coordinate systemn to be
+%            helio-ecliptic ('hec').
 %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
 %            'Wave' - Vector of wavelength [Ang] in which to calculate
 %                   spectrum. If empty, then use original data.
 %                   Default is empty.
 %            'OutType' - 'mat'|'astspec'. Default is 'mat'.
-%            '
+%            'CooSys'  - Input coordinate system. Default is 'j2000.0'.
+%                        Options include 'hec' - heliocentric ecliptic,
+%                        'e','g', etc.
+%            'FilterFamily' - Default is 'SDSS'.
+%            'FilterName'   - Default is 'g'.
+%            'FilterSys'  - Default is 'AB'.
+%            'InterpMethodSpec' - Default is 'linear'.
+%            'InterpMethodCoo'  - Default is 'linear'.
 % Output : - A structure with the following fields:
 %            'RA'  - Vector of RA/long corresponding to spectra.
 %            'Dec' - Vector of Dec/latitude.
@@ -68,6 +77,8 @@ switch lower(InPar.CooSys)
     case 'hec'
         Long = RA;
         Lat  = Dec;
+        if isempty(Date)
+            error('Dtae/time mus
     otherwise
         Coo = celestial.coo.coco([RA, Dec],InPar.CooSys,'e');
         Long = Coo(:,1);

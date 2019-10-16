@@ -8,11 +8,8 @@ function [Ind,FlagUnique]=search_sortedlat_multi(Cat,Long,Lat,Radius)
 %          - Longitude [radians] to search.
 %          - Latitude [radians] to search.
 %          - Radius [radians] to search.
-% Output : - A strucure array in which the number of elements equal to the
-%            number of searched coordinates (Lat), and with the following
-%            fields:
-%            'Ind' - Vector of indices of matched sources.
-%            'Nmatch' - Number of matched sources.
+% Output : - A strucure array in which the number of Indices of the entries in the input [Lon, Lat] catalog which
+%            are found within Radius of Long,Lat.
 %          - A logical vector of length equal to the number of searched
 %            coordinates (Lat) which flag the first unique source.
 %     By : Eran O. Ofek                    Feb 2017
