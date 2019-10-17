@@ -6,6 +6,8 @@ function [Spec]=zodiac_bck(RA,Dec,Date,varargin)
 % Input  : - Vector of J2000.0 R.A., or longitude [radians].
 %          - Vector of J2000.0 Dec, or latitude [radians].
 %          - Date [D M Y F], or JD (column matrix). Default is empty.
+%            If empty, then will force the Coordinate systemn to be
+%            helio-ecliptic ('hec').
 %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
 %            'Wave' - Vector of wavelength [Ang] in which to calculate
@@ -33,9 +35,7 @@ function [Spec]=zodiac_bck(RA,Dec,Date,varargin)
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Oct 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: [Spec]=ultrasat.zodiac_bck(1,1,2451545);
- %         [Spec]=ultrasat.zodiac_bck(1,1,2451545,'CooSys','g')
- %         [Spec]=ultrasat.zodiac_bck(1,1,[],'CooSys','hec')
+% Example: [Spec]=ultrasat.zodiac_bck(1,1,2451545)
 % Reliable: 2
 %--------------------------------------------------------------------------
 
@@ -62,33 +62,34 @@ Dec  = Dec.*ones(Ncol,1);
 
 
 
+if isempty(Date)
+    % If the date is not given then force the coordinate system to be hec
+    % set System to helio-eclptic
+    InPar.CooSys = 'hec';
+    warning('Date is empty - CooSys was forced to hec');
+end
 
 switch lower(InPar.CooSys)
     case 'hec'
         % Helio-ecliptic coordinates
         % doesn't requires time
         
-        if ~isempty(Date)
-            error('When using the Helio-Ecliptic coordinate system - Date/time must be empty');
-        end
-          
+        if isempty(Date)
+            error('When using the non-Helio-Ecliptic coordinate system - Date/time must be provided');
+        else
+            if ~isempty(Date)
+                if (size(Date,2)==1)
+                    %Date = Date;
+                else
+                    Date = celestial.time.julday(Date);
+                end
+            end
+            
+        
         Long = RA;
         Lat  = Dec;
         
     otherwise
-        % non hec coordinates
-        % time must be provided
-        if isempty(Date)
-            error('When using the non-Helio-Ecliptic coordinate system - Date/time must be provided');
-        else
-            if (size(Date,2)==1)
-                %Date = Date;
-            else
-                Date = celestial.time.julday(Date);
-            end
-            
-        end
-        
         Coo = celestial.coo.coco([RA, Dec],InPar.CooSys,'e');
         Long = Coo(:,1);
         Lat  = Coo(:,2);

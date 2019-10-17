@@ -79,7 +79,7 @@ classdef HEAD1 %< WorldCooSys
         
     end
     
-    % getters
+    % getters/setters
     methods
         function H=get.Header(Head)
             % getter for cell Header from an HEAD object
@@ -144,7 +144,7 @@ classdef HEAD1 %< WorldCooSys
     
     
     
-    % Static methods: isHEAD, HeaderField
+    % Static methods: isHEAD, HeaderField, basic
     methods (Static)
         
         function Ans=isHEAD(Obj)
@@ -179,7 +179,10 @@ classdef HEAD1 %< WorldCooSys
             H = HEAD1;
             H.Header = {'EXPTIME',1,'';
                         'TYPE','bias','';
-                        'FILTER','r',''};
+                        'FILTER','r','';
+                        'NAXES',2,'';
+                        'NAXIS1',1024,'';
+                        'NAXIS2',2048,''};
         end
         
     end
@@ -250,7 +253,7 @@ classdef HEAD1 %< WorldCooSys
             end
             SubCell = Cell(FlagI,:);
                     
-        end
+        end  % end getKeyCell function
         
         function [SubCell]=getFilledKeyCell(Cell,Key,FillVal,ReturnI,Col)
             % get key from an header in a cell format, NaN if not exist
@@ -650,6 +653,14 @@ classdef HEAD1 %< WorldCooSys
         
     end
     
+    % dictionaries
+%     methods (Static)
+%         function Dict=dictionary
+%             % get keywords dictionary
+%         end
+%     end  % end methods
+    
+    
     % override methods: isfield, isstruct, isempty
     methods 
         
@@ -690,46 +701,22 @@ classdef HEAD1 %< WorldCooSys
 
     end
     
+    
+    
     % set/ get keyword data - read data from header
+    % disp
+    % copy
+    % delKey, uniqueKey, addKey, replaceKeyName, eplaceKeyVal
+    % getKey, getVal_best (previously getkey_fromlist), mgetkey (like old)
+    % regexp (like old), regexprep (like old)
+    % lowerKey (previously lower_key), upperKey (previously upper_key)
+    % numKey (previously numkey)
+    % spacedel (new), val2num (new)
+    % cell2struct (new)
+    % isKeyExist (new), isKeyVal (previoisly iskeyval)
+    % getkey  - obsolete
+    % iskeyval - obsolete
     methods
-        % disp
-        % copy
-        % delKey
-        % uniqueKey
-        % addKey
-        % replaceKeyName
-        % replaceKeyVal
-        % getKey
-        % getVal
-        % regexp (like old)
-        % regexprep (like old)
-        % lowerKey (previously lower_key)
-        % upperKey (previously upper_key)
-        % numKey (previously numkey)
-        % spacedel (new)
-        % val2num (new)
-        % cell2struct (new)
-        % isKeyExist (new)
-        % getVal_select (previously getkey_fromlist)
-        % mgetkey (like old)
-        % isKeyVal (previoisly iskeyval)
-        
-        
-        % getkey  - obsolete
-        % iskeyval - obsolete
-     
-        % find_groups
-        % istype
-        % julday
-        % geodpos
-        % coo
-        % wcs
-        % isarc
-        % isbias
-        % isdark
-        % isflat
-        % naxis
-        
         
         function disp(H,UseDisp)
             % display HEAD object Header keywords, values, and comments.
@@ -956,7 +943,7 @@ classdef HEAD1 %< WorldCooSys
                 Out(I).Header = HEAD1.getKeyCell(Head(I).Header,KeyName,varargin{:});
             end
             
-        end
+        end  % end getKey function
         
         function Out=getFilledKey(Head,KeyName,varargin)
             % Get filled keyword value from object header
@@ -1264,7 +1251,7 @@ classdef HEAD1 %< WorldCooSys
             
         end
         
-        function [Out] = getVal_select(H,KeyList,SelectMethod)
+        function [Out] = getVal_best(H,KeyList,SelectMethod)
             % Select the (first) existing header line out of many keywords
             % Package: @HEAD
             % Description: Given an HEAD object and a list of keywords
@@ -1431,11 +1418,86 @@ classdef HEAD1 %< WorldCooSys
              
         end
         
-       
+
+    end  % methods
+    
+    
         
-    end
     
+    % find_groups
+    % istype
+    % julday
+    % geodpos
+    % coo
+    % wcs
+    % isarc
+    % isbias
+    % isdark
+    % isflat
     
+    % get/set special keywords
+    % naxis
+    methods
+        function Naxis=naxis(H)
+            % Get naxis realted keywords from HEAD object.
+            % Package: @HEAD
+            % Description: Get the value of the NAXIS1, NAXIS2,... keywords
+            %              from an HEAD object.
+            % Input  : - An HEAD object.
+            % Output : - A matrix of NAXIS value keywords. each line corresponds to
+            %            on HEAD element (or e.g., a SIM image). The number of columns
+            %            is equal to the maximum NAXIS value, and the columns
+            %            corresponds to NAXIS1, NAXIS2, etc. NaN for
+            %            non-existing values.
+            % License: GNU general public license version 3
+            % Tested : Matlab R2015b
+            %     By : Eran O. Ofek                    Mar 2016
+            %    URL : http://weizmann.ac.il/home/eofek/matlab/
+            % Example: ImSize=naxis(S)
+            % Reliable: 2
+
+            ColName = 1;
+            ColVal  = 2;
+            SubH = getKey(H,'NAXIS\w+',false); % non exact keyword search
+            Nkey = numKey(SubH);  % number of keywords in each element
+            
+            Nh       = numel(SubH);
+            Naxis    = nan(Nh,max(Nkey));
+            for Ih=1:1:Nh
+                for Ikey=1:1:Nkey(Ih)
+                    DimIndex = str2double(SubH(Ih).Header{Ikey,ColName}(6:end));
+                    Naxis(Ih,DimIndex) = SubH(Ih).Header{Ikey,ColVal};
+                end
+            end
+            
+
+        end
+        
+%         function [RA,Dec,Equinox]=getCoo(H,varargin)
+%             %
+%             
+%         end
+%         
+%         function [Long,Lat,Height]=getObsCoo(H,varargin)
+%             %
+%             
+%         end
+%         
+%         function [JD,ISO]=julday(H,varargin)
+%             %
+%             
+%         end
+%         
+%         
+%         function ImType=getType(H,varargin)
+%             
+%         end
+        
+        
+            
+        
+    end  % methods
+        
 end
 
             

@@ -5,8 +5,8 @@ function [ZodiVmag]=zodiac_bck_V(Long,Lat,Date,varargin)
 % Input  : - Either Ecliptic longitude or Helio-ecliptic longitude
 %            (i.e., L - L_sun) in radians
 %            (see convertdm.m for additional options).
-%            If date is not given, this is assumed to be Helio-ecliptic
-%            longitude.
+
+%            By default this should be the Helio-ecliptic longitude.
 %          - Ecliptic latitude [radians].
 %            (see convertdm.m for additional options).
 %          - Date [D M Y] or JD at which to calculate the Helio-ecliptic
