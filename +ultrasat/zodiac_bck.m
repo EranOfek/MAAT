@@ -109,7 +109,11 @@ Ncol = max(Ncol,numel(Date(:)));
 
 Spec.RA   = RA(:).'.*ones(1,Ncol);
 Spec.Dec  = Dec(:).'.*ones(1,Ncol);
-Spec.JD   = Date(:).'.*ones(1,Ncol);
+if isempty(Date)
+    Spec.JD = [];
+else
+    Spec.JD   = Date(:).'.*ones(1,Ncol);
+end
 Spec.Wave = SpecZ(:,1);
 Spec.Spec = SpecZ(:,2).*[CorrFactor(:).'];
 MagBand   = AstroUtil.spec.synphot(SpecZ,InPar.FilterFamily,InPar.FilterName,InPar.FilterSys);
