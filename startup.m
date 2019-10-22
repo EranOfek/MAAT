@@ -29,6 +29,10 @@ format short g
 rng('shuffle');
 
 
+% env variables
+setenv('mpDB_dir','/euler/eran/work/AsteroidsEphemDB');
+
+
 
 % Set the location of the functions and catalogs directories
 %--- EDIT these lines ---

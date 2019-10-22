@@ -184,7 +184,240 @@ classdef HEAD1 %< WorldCooSys
                         'NAXIS1',1024,'';
                         'NAXIS2',2048,''};
         end
+       
+        function [Dict,Val]=dictSearch(Dict,Key,Exact)
+            % Search string in a dictionary of strings
+            % Package: @HEAD
+            % Description: Search string in a dictionary of strings. The
+            %              dictionary is a structure array in which the
+            %              "Key" field indicate a string and the "Synonym"
+            %              field contains a cell array of synonyms. The
+            %              synonyms may be a regular expressions.
+            % Input  : - Dictionary structure array.
+            %            E.g., D(1).Key='TYPE';
+            %                  D(2).Synonym={'TYPE','\w*[tT][yY][pP][eE]'};
+            %          - Keyword name to search.
+            %            The keyword is first searched in the .Key fields,
+            %            and if not found it is searched in the .Synonym
+            %            fields.
+            %          - A logical indicating if to use exact search
+            %            (true), or regular exprssions (false.
+            %            Default is true.
+            % Output : - A structure array of dictionary items that were 
+            %            found.
+            %          - The the Dictionary '.Key' string that was found.
+            %            If more then one were found than this is the
+            %            first. Return empty if nothing was found.
+            % Example: D=HEAD1.dictKey; Dv=HEAD1.dictValType;
+            %          HEAD1.dictSearch(D,'TYPE')
+            %          HEAD1.dictSearch(D,'IMTYPE')
+            %          HEAD1.dictSearch(Dv,'superbias',false)
+            % Reliable: 2
+            
+            if nargin<3
+                Exact = true;
+            end
+            
+            if Exact
+                Ikey = find(strcmp(Key,{Dict.Key}));
+            else
+                Tmp = regexp({Dict.Key},Key,'match');
+                Ikey = find(~Util.cell.isempty_cell(Tmp));
+            end
+
+            if isempty(Ikey)
+                % Search Key in Dict.Synonym
+                Ndict = numel(Dict);
+                Ikey = [];
+                for Idict=1:1:Ndict
+                    if Exact
+                        if any(strcmp(Key,Dict(Idict).Synonym))
+                            Ikey = [Ikey; Idict];
+                        end
+                    else
+                        %Tmp = regexp(Dict(Idict).Synonym,Key,'match');
+                        Tmp = regexp(Key,Dict(Idict).Synonym,'match');
+                        if any(~Util.cell.isempty_cell(Tmp))
+                            Ikey = [Ikey; Idict];
+                        end
+                    end
+                end
+                if isempty(Ikey)
+                    Dict = [];
+                else
+                    Dict = Dict(Ikey);
+                end
+            else
+                Dict = Dict(Ikey);
+            end
+            if isempty(Dict)
+                Val = [];
+            else
+                Val = Dict(1).Key;
+            end
+            
+            
+        end % end dictSearch function
         
+        function [Dict,Val]=dictKey(Key,Exact)
+            % Keywords synomyms dictionaty
+            % Package: @HEAD
+            % Description: Dictionary of synonyms for keyword names.
+            %              Each keyword may have a list of synomyms.
+            %              In case the keyword doesn't exist, the synonym
+            %              may replace the keyword. The order of synonyms
+            %              have meaning, where the first one is more
+            %              likely.
+            % Input  : - Optional Keyweord name to search in dictionary.
+            %            Default is empty. If empty, then return entire
+            %            dictionary.
+            %          - Flag indicating if to perform exact search (true)
+            %            or regexp search (false).
+            %            Default is true.
+            % Output : - Structure array of 'Key' and 'Synonym'.
+            %          - The the Dictionary '.Key' string that was found.
+            %            If more then one were found than this is the
+            %            first. Return empty if nothing was found.
+            % Example: Dict = HEAD1.dictKey;
+            %          Dict = HEAD1.dictKey('EXPTIM',false);
+            %          Dict = HEAD1.dictKey('AEXPTI',false);
+            %          Dict = HEAD1.dictKey('EXPTIME')
+            % Reliable: 2
+            
+            if nargin<2
+                Exact = true;
+                if nargin<1
+                    Key = [];
+                end
+            end
+            
+            I = 0;
+            I = I + 1;
+            Dict(I).Key     = 'EXPTIME';
+            Dict(I).Synonym = {'AEXPTIME','EXPTIME','EXPOSURE'};
+            I = I + 1;
+            Dict(I).Key     = 'RA';
+            Dict(I).Synonym = {'RA','RADEG','RIGHTASC','JRA','RASEX','TELRA','OBJRA'};
+            I = I + 1;
+            Dict(I).Key     = 'DEC';
+            Dict(I).Synonym = {'DEC','DECDEG','DECLINAT','JDEC','TELDEC','OBJDEC'};
+            I = I + 1;
+            Dict(I).Key     = 'HA';
+            Dict(I).Synonym = {'HA','HOURANG'};
+            I = I + 1;
+            Dict(I).Key     = 'TYPE';
+            Dict(I).Synonym = {'TYPE','OBSTYPE','IMTYPE','IMGTYPE','IMGTYP'};
+            I = I + 1;
+            Dict(I).Key     = 'OBSLON';
+            Dict(I).Synonym = {'OBSLON','OBSLONG','LONG','LON'};
+            I = I + 1;
+            Dict(I).Key     = 'OBSLAT';
+            Dict(I).Synonym = {'OBSLAT','OBSLAT','LAT'};
+            I = I + 1;
+            Dict(I).Key     = 'EQUINOX';
+            Dict(I).Synonym = {'EQUINOX','EQUIN','EPOCH'};
+            I = I + 1;
+            Dict(I).Key     = 'READNOI';
+            Dict(I).Synonym = {'READNOI','READNOIS','READNO','RN'};
+            I = I + 1;
+            Dict(I).Key     = 'FILTER';
+            Dict(I).Synonym = {'FILTER','FILTERID','FILTERSL','FILTER1','FILT'};
+            I = I + 1;
+            Dict(I).Key     = 'FILTER2';
+            Dict(I).Synonym = {'FILTER2','FILTERID2','FILTERSL2','FILTER1','FILT2'};
+            I = I + 1;
+            Dict(I).Key     = 'JD';
+            Dict(I).Synonym = {'JD','OBSJD','MIDJD','JDMID'};
+            I = I + 1;
+            Dict(I).Key     = 'MJD';
+            Dict(I).Synonym = {'MJD','OBSMJD','MIDMJD','MJDMID'};
+            I = I + 1;
+            Dict(I).Key     = 'UTC-OBS';
+            Dict(I).Synonym = {'UTC-OBS','UTC','DATE-OBS','DATE','ISODATE','DATEISO'};
+            
+            
+            % Searck Key in Dict.Key
+            if ~isempty(Key)
+                [Dict,Val]=HEAD1.dictSearch(Dict,Key,Exact);
+            else
+                if nargout>1
+                    error('Can not return searched value when keyword search is not provided');
+                end
+            end
+            
+
+        end % end dictKey function
+        
+        function [Dict,Val]=dictValType(Key,Exact)
+            % dictionary of TYPE keyword values (e.g., bias, flat,...)
+            % Package: @HEAD
+            % Description: Dictionary of TYPE keyword values. The
+            %              dictionary is a structure array in which the
+            %              "Key" field indicate a string and the "Synonym"
+            %              field contains a cell array of synonyms. The
+            %              synonyms may be a regular expressions.
+            % Input  : - Optional Keyweord name to search in dictionary.
+            %            Default is empty. If empty, then return entire
+            %            dictionary.
+            %          - Flag indicating if to perform exact search (true)
+            %            or regexp search (false).
+            %            Default is false.
+            % Output : - A dictionary strcture array there were found.
+            %            The
+            %            dictionary is a structure array in which the
+            %            "Key" field indicate a string and the "Synonym"
+            %            field contains a cell array of synonyms. The
+            %            synonyms may be a regular expressions.
+            %          - The the Dictionary '.Key' string that was found.
+            %            If more then one were found than this is the
+            %            first. Return empty if nothing was found.
+            % Example: Dict=HEAD1.dictValType
+            %          Dict=HEAD1.dictValType('superflat',false)
+            %          Dict=HEAD1.dictValType('superflat',true); % return empty
+            %          Dict=HEAD1.dictValType('Flat');
+            % Reliable: 2
+            
+            if nargin<2
+                Exact = false;
+                if nargin<1
+                    Key = [];
+                end
+            end
+            
+            I = 0;
+            I = I + 1;
+            Dict(I).Key     = 'bias';
+            Dict(I).Synonym = {'\w*[bB][iI][aA][sS]\w*'};
+            I = I + 1;
+            Dict(I).Key     = 'flat';
+            Dict(I).Synonym = {'\w*[fF][lL][aA][tT]\w*'};
+            I = I + 1;
+            Dict(I).Key     = 'dark';
+            Dict(I).Synonym = {'\w*[dD][aA][rR][kK]\w*'};
+            I = I + 1;
+            Dict(I).Key     = 'science';
+            Dict(I).Synonym = {'\w*[sC][cC][iI][eE][nN][cC][eE]\w*','\w*[oO][bB][jJ][eE][cC][tT]\w*'};
+            I = I + 1;
+            Dict(I).Key     = 'weight';
+            Dict(I).Synonym = {'\w*[wW][eE][iI][gG][hH][tT]\w*'};
+            I = I + 1;
+            Dict(I).Key     = 'fringe';
+            Dict(I).Synonym = {'\w*[fF][rR][iI][nN][gG][eE]\w*'};
+            I = I + 1;
+            Dict(I).Key     = 'coadd';
+            Dict(I).Synonym = {'\w*[cC][oO][aA][dD][dD]\w*'};
+            
+            % Searck Key in Dict.Key
+            if ~isempty(Key)
+                [Dict,Val]=HEAD1.dictSearch(Dict,Key,Exact);
+             else
+                if nargout>1
+                    error('Can not return searched value when keyword search is not provided');
+                end
+            end
+            
+            
+        end
     end
     
     % static methods for cell header
@@ -287,10 +520,11 @@ classdef HEAD1 %< WorldCooSys
             %          [SubCell]=HEAD1.getFilledKeyCell([H.Header;H.Header],{'TYPE','B'},NaN,2)
             % Reliable: 2
             
+            Def.ReturnI = 1;
             if (nargin<5)
                 Col = 1;
                 if (nargin<4)
-                    ReturnI = 1;
+                    ReturnI = Def.ReturnI;
                     if (nargin<3)
                         FillVal = NaN;
                     end
@@ -305,11 +539,14 @@ classdef HEAD1 %< WorldCooSys
             SubCell = cell(Nkey,3);
             SubCell(:,1) = Key(:);
             for Ikey=1:1:Nkey
+                
                 % use exact name search
                 Flag  = strcmp(Cell(:,Col),Key{Ikey});
                 FlagI = find(Flag);
                 if (numel(FlagI)<ReturnI)
                     ReturnI = numel(FlagI);
+                else
+                    ReturnI = Def.ReturnI;
                 end
                 if isempty(FlagI)
                     SubCell{Ikey,2} = FillVal;
@@ -1251,34 +1488,82 @@ classdef HEAD1 %< WorldCooSys
             
         end
         
-        function [Out] = getVal_best(H,KeyList,SelectMethod)
+        function [Val,Out] = getVal_best(H,KeyList,SelectMethod,ExactDict,FillVal)
             % Select the (first) existing header line out of many keywords
             % Package: @HEAD
             % Description: Given an HEAD object and a list of keywords
             %              select only one available keyword (e.g., the
             %              first available keyword). This function is
             %              useful when the exact name of keywprd is
-            %              unknown.
+            %              unknown. The list of keywords is a cell array of
+            %              strings. However, if a single string is given
+            %              then the function search for this string in the
+            %              dictKey dictionary function that return a cell
+            %              array of synonsyms.
             % Input  : - An HEAD object.
             %          - A cell array (or a single string) or keywords to
             %            test. E.g., {'TYPE','IMTYPE','IMGTYPE'}.
+            %            Alternatively this can be a string (e.g., 'TYPE').
+            %            In this case, then will use the HEAD.dictKey
+            %            command to retrieve the list of synonyms to this
+            %            keywords, and these synonyms will be used as a
+            %            KeyList.
             %          - Keyword selsection option:
             %            'first' - select the first keyword available out
             %                      of the keyword list (second input 
             %                      argument), by their order in the list
             %                      (rather than order in the header).
             %            'last'  - Like first but for the 'last' keyword.
-            % Output : - An HEAD object with only one line in the Header of
+            %          - A logical indicating if to use exact search (true)
+            %            when the dictionary is used. Default is true.
+            %          - Fill value in the cell array output.
+            %            Default is NaN.
+            % Output : - A cell array of keyword values. The size of the
+            %            cell array is equal to the size of the HEAD
+            %            object. Each cell element contains a keyword value
+            %            (string or numeric). If the keyword doesn't exist,
+            %            then the corresponding cell element contains the
+            %            fill value.
+            %          - An HEAD object with only one line in the Header of
             %            each HEAD element (i.e., the selected keyword).
-            % Example: H=HEAD1.basic; O=getVal_select([H,H],{'YY','IMTYPE','TYPE'});
+            %            If Keyword not found then return an empty header.
+            % Example: H=HEAD1.basic;
+            %          [V,O]=getVal_best([H,H],{'YY','IMTYPE','TYPE'});
+            %          [V,O]=getVal_best([H,H],'TYPE'); % in this option the
+            %                                   dictionary replaces 'TYPE' with a cell array
+            %                                   {'TYPE','OBSTYPE',...}.
+            %          [V,O]=getVal_best(H,'RA');
+            %          [V,O]=getVal_best(H,{'JRA'}); % return empty
+            %          [V,O]=getVal_best(H,'RA');
+            %          [V,O]=getVal_best(H,'JRA'); % returns the RA keyword
             % Reliable: 2
             
-            if (nargin<3)
-                SelectMethod = 'first';
+            ColVal = 2;
+            if nargin<5
+                FillVal = NaN;
+                if nargin<4
+                    ExactDict = true;
+                    if nargin<3
+                        SelectMethod = 'first';
+                    end
+                end
+            end
+            
+            if ischar(KeyList)
+                Dict = HEAD1.dictKey(KeyList,ExactDict);
+                if isempty(Dict)
+                    error('Key: %s was not found in dictionary',KeyList);
+                end
+                
+                if isempty(KeyList)
+                    error('Key: %s was not found in dictionary',KeyList);
+                end
+                KeyList = Dict(1).Synonym;
             end
             
             N  = numel(H);
             Out = getKey(H,KeyList);
+            Val = cell(size(H));
             for I=1:1:N
                 if ~isempty(Out(I).Header)
                     switch lower(SelectMethod)
@@ -1288,6 +1573,11 @@ classdef HEAD1 %< WorldCooSys
                             Out(I).Header = Out(I).Header(end,:);
                         otherwise
                     end
+                    Val{I} = Out(I).Header{1,ColVal};
+                    
+                else
+                    % fill value only for Val cell array
+                    Val{I} = FillVal;
                 end
             end
             
@@ -1418,6 +1708,7 @@ classdef HEAD1 %< WorldCooSys
              
         end
         
+        
 
     end  % methods
     
@@ -1436,7 +1727,8 @@ classdef HEAD1 %< WorldCooSys
     % isflat
     
     % get/set special keywords
-    % naxis
+    % naxis, getCoo
+    % getType, isType, isbias
     methods
         function Naxis=naxis(H)
             % Get naxis realted keywords from HEAD object.
@@ -1473,11 +1765,97 @@ classdef HEAD1 %< WorldCooSys
 
         end
         
-%         function [RA,Dec,Equinox]=getCoo(H,varargin)
-%             %
-%             
-%         end
-%         
+        function [RA,Dec,Equinox]=getCoo(H,varargin)
+            % get RA/Dec/Equinox from HEAD object and convert to deg
+            % Package: @HEAD
+            % Description: Search for RA/DEC/EQUINOX keywords in HEAD
+            %              object. Of they does not exist then return NaN.
+            %              If they are numeric then return as is.
+            %              If RA/DEC are strings then assume they are in
+            %              sexagesimal format and convert to degrees.
+            %              If EQUINOX is string then it checks if the first
+            %              character is J (Julian) or B (Besselian) and
+            %              convert to Julian years. If J or B are not
+            %              indicated then assume "J".
+            % Input  : - An HEAD object.
+            %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+            %            where keyword are one of the followings:
+            %            'KeyRA' - R.A. keyword name. If string
+            %                      then will use the dictKey and getVal_best
+            %                      functions to find possible aliases.
+            %                      If cell array of strings then look for
+            %                      the first keyword that appaers in the
+            %                      Header.
+            %                      Default is 'RA'.
+            %            'KeyDec' - Like 'KeyRA', but for the J2000.0
+            %                      Declination. Default is 'DEC'.
+            %            'KeyEquinox' - Like 'KeyRA', but for the
+            %                      Equinox. Default is 'EQUINOX'.
+            % Output : - A numeric array of R.A. (likely in
+            %            degrees). The size of the array is as the size of
+            %            the HEAD object.
+            %          - A numeric array of Dec.
+            %          - A numeric array of Equinox. Likely in Julian
+            %            years.
+            % Example: [RA,Dec,Equinox]=getCoo(H)
+            % Reliable: 2
+            
+            ColVal = 2;
+            
+            DefV.KeyRA                = 'RA';
+            DefV.KeyDec               = 'DEC';
+            DefV.KeyEquinox           = 'EQUINOX';
+            
+            InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
+            
+            Val_RA      = getVal_best(H,InPar.KeyRA);
+            Val_Dec     = getVal_best(H,InPar.KeyDec);
+            Val_Equinox = getVal_best(H,InPar.KeyEquinox);
+            
+            % convert RA to requested units
+            Nh = numel(H);
+            RA      = nan(size(H));
+            Dec     = nan(size(H));
+            Equinox = nan(size(H));
+            for Ih=1:1:Nh
+                if isnumeric(Val_RA{Ih})
+                    RA(Ih) = Val_RA{Ih};
+                elseif ischar(Val_RA{Ih})
+                    RA(Ih)  = celestial.coo.convertdms(Val_RA{Ih},'gH','d');
+                else
+                    error('Unknown RA value type');
+                end
+                
+                if isnumeric(Val_Dec{Ih})
+                    Dec(Ih) = Val_Dec{Ih};
+                elseif ischar(Val_Dec{Ih})
+                    Dec(Ih)  = celestial.coo.convertdms(Val_Dec{Ih},'gD','d');
+                else
+                    error('Unknown RA value type');
+                end
+            
+                if isnumeric(Val_Equinox{Ih})
+                    Equinox(Ih) = Val_Equinox{Ih};
+                elseif ischar(Val_Equinox{Ih})
+                    switch lower(Val_Equinox{Ih}(1))
+                        case 'j'
+                            Equinox(Ih) = str2double(Val_Equinox{Ih}(2:end));
+                        case 'b'
+                            Equinox(Ih) = str2double(Val_Equinox{Ih}(2:end));
+                            % convert to julian years
+                            Equinox(Ih) = convert.time(Val_Equinox{Ih}, upper(Val_Equinox{Ih}(1)),'J');
+                        otherwise
+                            % assuming Equnox is in Julian years
+                            Equinox(Ih) = str2double(Val_Equinox{Ih});
+                    end
+                else
+                    error('Unknown RA value type');
+                end
+            end
+                
+        end
+%          
 %         function [Long,Lat,Height]=getObsCoo(H,varargin)
 %             %
 %             
@@ -1489,10 +1867,95 @@ classdef HEAD1 %< WorldCooSys
 %         end
 %         
 %         
-%         function ImType=getType(H,varargin)
-%             
-%         end
+        function [ValTrans,ValType]=getType(H)
+            % Read synonymous TYPE keyword and translate using dictionary
+            % Package: @HEAD
+            % Description: Read the TYPE keyword (or synnymous keyword)
+            %              and translate using dictValType dictionary.
+            % Input  : - An HEAD object
+            % Output : - A cell array of the translated TYPE values.
+            %            The size of the cell array is identical to the
+            %            size of the HEAD object.
+            %            Each element contains the TYPE keyword value
+            %            translated using HEAD1.dictValType.
+            %            For example: 'bias10' value will be translated to
+            %            'bias'.
+            %          - A cell array of the TYPE values (not translated).
+            % Example: H=HEAD1.basic; ImType=getType([H;H])
+            % Reliable: 2
+            
+            ValType      = getVal_best(H,'TYPE');
+            ValTrans     = cell(size(ValType));
+            Nh = numel(H);
+            for Ih=1:1:Nh
+                [~,ValTrans{Ih}] = HEAD1.dictValType(ValType{Ih},false);
+            end
+                 
+             
+            
+        end  % end getType function
         
+        function [IsType,TypeValTrans]=isType(H,TypeVal)
+            % Is TYPE or synonymous keyword in HEAD object equal value
+            % Package: @HEAD
+            % Description: Check if TYPE or one of its synonymous keyword 
+            %              (as defined in in HEAD1.dictKey) in an HEAD
+            %              object equal some value. The comparison to the
+            %              value is done against synonyms in the
+            %              HEAD.dictValType function.
+            % Inpput  : - An HEAD object.
+            %           - User input TYPE value (e.g., 'bias').
+            %             Legal type values are
+            %             listed in HEAD1.dictValType.Key.
+            %             The function will return an error if the TYPE
+            %             value does not appear in HEAD1.dictValType.
+            % Output : - A matrix of logical indicating the the TYPE value
+            %            equal the use input TYPE value.
+            %          - A cell array of the translated TYPE values.
+            %            The size of the cell array is identical to the
+            %            size of the HEAD object.
+            %            Each element contains the TYPE keyword value
+            %            translated using HEAD1.dictValType.
+            %            For example: 'bias10' value will be translated to
+            %            'bias'.
+            % Example: H=HEAD1.basic; isType(H,'bias')
+            % Reliable:
+            
+            TypeValTrans = getType(H);
+            
+            % check if user TypeVal (TYPE value) is in the dictionary
+            DV = HEAD1.dictValType;
+            if ~any(strcmp({DV.Key},TypeVal))
+                error('TypeVal:%s is not found in dictionary',TypeVal);
+            end
+            IsType = strcmp(TypeValTrans,TypeVal);
+            
+            
+        end  % end isType function
+        
+        function Ans=isbias(H,BiasVal)
+            % Check if HEAD object TYPE keyword is bias or synonymous
+            % Package: @HEAD
+            % Description: Check if HEAD object TYPE keyword is bias or
+            %              synonymo of bias. The TYPE keyword is selected
+            %              using the dictKey function, while the bias value
+            %              is selected using the dictValType function.
+            % Input  : - An HEAD object.
+            %          - The keyword value in the HEAD1.dictValType
+            %            function indicating a bias image.
+            %            Default is 'bias'.
+            % Output : - A matrix of logical indicating if each one of the
+            %            HEAD object elements TYPE is consistent with bias.
+            % Example: H=HEAD1.basic; Ans=isbias(H)
+            % Reliable: 2
+            
+            if nargin<2
+                BiasVal = 'bias';
+            end
+            
+            Ans = isType(H,BiasVal);
+            
+        end
         
             
         

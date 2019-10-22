@@ -13,13 +13,17 @@ classdef mpDB < handle
 %     By : Eran O. Ofek                    Oct 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Reliable: 2
-%--------------------------------------------------------------------------
 
-%     properties
-%         mpDB_dir = ''; 
-%         
-%         
-%     end
+
+    properties
+       PolyYear = []; 
+    
+        %mpDB_dir = ''; 
+        DB       = [];  % Table [ID, Name, AstType, Y1, Y2, Obj1, Obj2]
+        PolyDB   = [];
+        
+        
+    end
 % 
 %     % Constructor
 %     methods
@@ -37,13 +41,30 @@ classdef mpDB < handle
 %     end % end methods
 %     
 
+    % getter/setter
+    methods
+        function H=get.PolyDB(H)
+            %
+            
+            if isempty(H.PolyYear)
+                error('In order to populate the DB first set the PolyYear');
+            end
+            
+            if isempty(H.PolyDB)
+                H.PolyDB = celestial.mpDB.load_all_poly(H.PolyYear);
+            end
+            
+        end
+        
+    end
 
-    % mpDB
+    % mpDB / aux function
     methods (Static)
         function Dir=getenvDir
             % get AsteroidsEphemDB files directory from env. var.
             % Package: +celestial/@mpDB
             % Output : - String of directory
+            % Example: celestial.mpDB.getenvDir
             
             Dir = getenv('mpDB_dir');
         end % end getenvDir function
@@ -52,17 +73,41 @@ classdef mpDB < handle
             % set AsteroidsEphemDB files directory in env. var. 'mpDB_dir'
             % Package: +celestial/@mpDB
             % Input : - String of directory
+            %           Default is '/euler/eran/work/AsteroidsEphemDB'
+            % Example: celestial.mpDB.setenvDir
+            
+            if nargin<1
+                Dir = '/euler/eran/work/AsteroidsEphemDB';
+            end
             
             setenv('mpDB_dir',Dir);
         end % end setenvDir function
         
-        function [FileName,DataSet,Data]=loadEphemFile(ID,AstType,Type,Year)
+        function Out=astType2index(In)
+            % AstType file 'n','u','c','p', to index and vise versa.
+            % Package: +celestial/@mpDB
+            % Input  : - A character, or an index.
+            % Output : - Index or character.
+            % Example: celestial.mpDB.astType2index('c')
+            %          celestial.mpDB.astType2index(3)
+            
+            Str = 'nucp';
+            
+            if ischar(In)
+                Out = strfind(Str,In);
+            else
+                Out = Str(In);
+            end
+            
+        end
+        
+        function [FileName,DataSet,Data]=loadEphemFile(ID,Type,Year)
             % Construct Ephem file name and load data
             % Package: +celestial/@mpDB
             % Description:
-            % Input  : - ID [StartYear, EndYear, StartObj, EndObj]
-            %          - AstType: 'n', 'u', 'c'. Default is 'n'.
-            %            n - numbered asteroids, u- unnumbered, c-comets
+            % Input  : - ID [AstTypeIndex, StartYear, EndYear, StartObj, EndObj]
+            %            where AstTypeIndex is the index corresponding to
+            %            'nucp' (see astType2index.m).
             %          - Dataset type:
             %            'poly' - polynomial approximation of RA/Dec
             %            'ephem' - Full epehmerides. (Default).
@@ -73,21 +118,20 @@ classdef mpDB < handle
             %          - Dataset name.
             %          - Data.
             % Example:
-            % [FileName,DataSet,Data]=celestial.mpDB.loadEphemFile([2017 2020 363001 364000],'ephem')
+            % [FileName,DataSet,Data]=celestial.mpDB.loadEphemFile([1 2017 2020 363001 364000],'ephem');
             % Reliable: 2
             
-            if (nargin<3)
+            if (nargin<2)
                 Type = 'ephem';
-                if nargin<2
-                    AstType = 'n';
-                end
             end
             
             Dir      = celestial.mpDB.getenvDir;
             % File name example
             % AstEphem_2017_2020_363001_364000.hdf5
             
-            FileName = sprintf('%s%sAstEphem_%s_%04d_%04d_%06d_%06d.hdf5',Dir,filesep,AstType,ID);
+            AstType = celestial.mpDB.astType2index(ID(1));
+            
+            FileName = sprintf('%s%sAstEphem_%s_%04d_%04d_%06d_%06d.hdf5',Dir,filesep,AstType,ID(2:end));
             switch lower(Type)
                 case 'poly'
                     if nargin<3
@@ -107,34 +151,129 @@ classdef mpDB < handle
             
         end % end function loadEphemFile
         
-        function Cat=createEphemCatalog
-            %
+        function EphemCatalog=createEphemCatalog(varargin)
+            % Generate a catalog of AstEphem files in the mpDB_dir
+            % Package: +celestial/@mpDB
+            % Description: Generate a catalog of AstEphem files in the
+            %              mpDB_dir directory.
+            %              The ID vector contains:
+            %              [AstType, YearStart, YearEnd, Nstart, Nend]
+            % Input  : * Arbitrary number of pairs of arguments: ...,keyword,value,...
+            %            where keyword are one of the followings:
+            %            'BaseFileName' - Default is 'AstEphem_[nucp]_\w+.hdf5'.
+            %            'Save'         - File name in which to save the
+            %                             catalog. If empty, then do  not
+            %                             save. Default is
+            %                             'EphemCatalog.mat'.
+            % Output : - Structure array of all identified files, with the
+            %            following fields:
+            %            'ID' - The ID vector contains:
+            %                   [AstType, YearStart, YearEnd, Nstart, Nend]
+            %            'FileName' - File name.
             % Example: Cat=celestial.mpDB.createEphemCatalog
+            % Reliable: 2
+            
+            
+            DefV.BaseFileName         = 'AstEphem_[nucp]_\w+.hdf5';
+            DefV.Save                 = 'EphemCatalog.mat';
+            InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
             
             Dir      = celestial.mpDB.getenvDir;
             Files    = dir(sprintf('%s%s*.hdf5',Dir,filesep));
+            Tmp      = regexp({Files.name},InPar.BaseFileName,'match');
+            Flag     = ~Util.cell.isempty_cell(Tmp);
+            Files    = Files(Flag);
+            
             Nf = numel(Files);
-            Cat = Util.struct.struct_def({'ID'},Nf,1);
+            EphemCatalog = Util.struct.struct_def({'ID'},Nf,1);
             for If=1:1:Nf
-                Cat(If).FileName = Files(If).name;
+                EphemCatalog(If).FileName = Files(If).name;
                 
                 [~,File,Ext]=fileparts(Files(If).name);
                 
                 switch lower(Ext)
                     case '.hdf5'
                         Tmp = regexp(File,'_','split');
-                        Year1 = str2double(Tmp{2});
-                        Year2 = str2double(Tmp{3});
-                        Obj1  = str2double(Tmp{4});
-                        Obj2  = str2double(Tmp{5});
+                        AstType = Tmp{2};
+                        Year1 = str2double(Tmp{3});
+                        Year2 = str2double(Tmp{4});
+                        Obj1  = str2double(Tmp{5});
+                        Obj2  = str2double(Tmp{6});
                         
-                        Cat(If).ID   = [Year1; Year2; Obj1; Obj2];
+                        ATIndex = celestial.mpDB.astType2index(AstType);
+                        
+                        EphemCatalog(If).ID   = [ATIndex; Year1; Year2; Obj1; Obj2];
                     otherwise
                         error('Was suppose to select only hdf5 files');
                 end
             end
             
+            if ~isempty(InPar.Save)
+                PWD = pwd;
+                cd(Dir);
+                save(InPar.Save,'EphemCatalog','-v7.3');
+                cd(PWD);
+            end
+            
         end % end createEphemCatalog function
+        
+        
+    end % methods
+    
+    % mpDB / read functions
+    methods (Static)
+        function PolyS=load_all_poly(Year,varargin)
+            % Load the 10th deg polynomial of MP coordinates for one tear. 
+            % Package: +celestial/@mpDB
+            % Description: Load the 10th deg polynomial of MP coordinates
+            %              for one tear.
+            % Input  : - Year for which the polynomials are relevant.
+            %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+            %            where keyword are one of the followings:
+            %            'EphemCatalog' - EphemCatalog as input, in this
+            %                      case the PolyS will not be loaded.
+            % Output : - A structure containing the following fields:
+            %            'CD1' - A mtaritx of polynomials representing the
+            %                    1st cosine direction. Line per asteroid,
+            %                    10 columns.
+            %            'CD2' - A mtaritx of polynomials representing the
+            %                    2nd cosine direction.
+            %            'CD3' - A mtaritx of polynomials representing the
+            %                    3rd cosine direction.
+            %            'MaxDist' - Maximal deviation between the
+            %                    polynomial representation and the true
+            %                    position of the asteroid. [Radians].
+            % Example: PolyS=celestial.mpDB.load_all_poly(2017);
+            % Reliable: 2
+            
+            
+            DefV.EphemCatalog         = [];
+            InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
+            if isempty(InPar.EphemCatalog)
+                % Generate EphemCatalog
+                EphemCatalog = celestial.mpDB.createEphemCatalog('Save',[]);
+            else
+                EphemCatalog = InPar.EphemCatalog;
+            end
+            
+            Nf = numel(EphemCatalog);
+            for If=1:1:Nf
+                [~,~,Data]=celestial.mpDB.loadEphemFile(EphemCatalog(If).ID.','poly',Year);
+                if (If==1)
+                    AllData = Data;
+                else
+                    AllData = [AllData; Data];
+                end
+            end
+            
+            PolyS.CD1     = AllData(:,1:10);
+            PolyS.CD2     = AllData(:,11:20);
+            PolyS.CD3     = AllData(:,21:30);
+            PolyS.MaxDist = AllData(:,31);
+            
+        end
         
     end % methods
     
