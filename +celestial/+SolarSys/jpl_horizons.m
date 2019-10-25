@@ -19,7 +19,7 @@ ColCellField  = AstCat.ColCellField;
 ColUnitsField = AstCat.ColUnitsField;
 
 
-DefV.ObjectInd           = '499';   % semicolumn telss horizon its a small body - e.g., '499;'
+DefV.ObjectInd           = '499;';   % semicolumn telss horizon its a small body - e.g., '499;'
 DefV.StartJD             = 2451545.5;
 DefV.StopJD              = 2451555.5;
 DefV.DateFormat          = 'JD';

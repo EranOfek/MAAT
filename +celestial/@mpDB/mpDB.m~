@@ -104,11 +104,9 @@ classdef mpDB < handle
     
     methods (Static)
         function generateAllAstEphemFiles(varargin)
-            % generate all AstEphem files
-            % Package: +celestial/@mpDB
-            % Description: generate all AstEphem files, including
-            %              the ObjReferenceFile.mat file.
-            % Example: celestial.mpDB.generateAllAstEphemFiles('ObjType',2)
+            %
+            
+            % Example: generateAllAstEphemFiles('ObjType',3)
             
             DefV.ObjType              = [1,2,3];
             InPar = InArg.populate_keyval(DefV,varargin,mfilename);
@@ -124,14 +122,13 @@ classdef mpDB < handle
             AstIndex(F2) = (1:1:sum(F2))';
             AstIndex(F3) = (1:1:sum(F3))';
             
+            
             % save objects reference file
             ObjReferenceFile = table(DataObj.Number,DataObj.Name,DataObj.ObjType,AstIndex);
             ObjReferenceFile.Properties.VariableNames={'Number','Name','ObjType','ObjIndex'};
-            save -v7.3 ObjReferenceFile.mat ObjReferenceFile
             
             Ntype = numel(InPar.ObjType);
             for Itype=1:1:Ntype
-                
                 Flag     = DataObj.ObjType == InPar.ObjType(Itype);
                 
                 FileType = celestial.mpDB.astType2index(InPar.ObjType(Itype));
@@ -155,7 +152,7 @@ classdef mpDB < handle
                         error('Unknown FileType option');
                 end
                
-                celestial.mpDB.generateAstEphemFiles('ObjectNames',ObjName,'AstIndex',AstIndex(Flag),'FileType',FileType);
+                generateAstEphemFiles('ObjectNames',ObjName,'AstIndex',AstIndex(Flag),'FileType',);
 
                 
                 
@@ -194,7 +191,6 @@ classdef mpDB < handle
             %            'NinFile' - Default is 1000.
             % Example:
             % celestial.mpDB.generateAstEphemFiles('ObjectNames',(1:1:10),'AstIndex',(1:1:10),'NinFile',5);
-            % celestial.mpDB.generateAstEphemFiles('ObjectNames',(541001:1:541132),'AstIndex',(541001:1:541132),'NinFile',1000);
 
             
             
@@ -211,7 +207,7 @@ classdef mpDB < handle
             DefV.PauseAfterError      = 300;  % s
             
             
-            DefV.NinFile              = 1000;
+            DefV.NinFile              = 10;
             
             DefV.BaseFileName         = 'AstEphem_[nucp]_\w+.hdf5';
             DefV.Save                 = 'EphemCatalog.mat';
@@ -231,20 +227,15 @@ classdef mpDB < handle
             for Iobj=1:1:Nobj
                 if K==0
                     Istart = Iobj;
-                    AstIndex1 = InPar.AstIndex(Istart);
-                    
                 end
-                AstIndex2 = InPar.AstIndex(Iobj);
                 K = K + 1;
                 if (iscell(InPar.ObjectNames))
-                    Object = InPar.ObjectNames{Iobj};
+                    Object = Inpar.ObjectNames{Iobj};
                 elseif (isnumeric(InPar.ObjectNames))
                     Object = sprintf('%d;',InPar.ObjectNames(Iobj));
                 else
                     error('Unknown ObjectNames format');
                 end
-                
-                Object
                 
                 [Cat]=celestial.mpDB.jpl_generate_1obj_ephem('ObjName',Object,...
                             'AstIndex',InPar.AstIndex(Iobj),...
@@ -272,7 +263,7 @@ classdef mpDB < handle
                     CatM = merge(Cat);
                     CatM.Cat = real(CatM.Cat);
 
-                    FileName = sprintf('AstEphem_%s_%04d_%04d_%06d_%06d.hdf5',InPar.FileType,InPar.YearStart,InPar.YearEnd, AstIndex1  , AstIndex2);
+                    FileName = sprintf('AstEphem_%s_%04d_%04d_%06d_%06d.hdf5',InPar.FileType,InPar.YearStart,InPar.YearEnd,Istart,Iobj);
                     delete(FileName);
                     VarName  = sprintf('/Ephem');
                     Attrib = [Cat(1).ColCell', num2cell(1:1:numel(Cat(1).ColCell))'];

@@ -93,11 +93,17 @@ classdef HEAD1 %< WorldCooSys
             
             
             N = numel(Head);
+            % first update Header according to Key structure
+            % need to limit infinite recusion / BUG
+            % Head = updateHeader_fromStruct(Head);
+            
             if (N==1)
                 H = Head.Header;
+                
             else
                 for I=1:1:N
                     H{I} = Head(I).Header;
+                    
                 end
             end
             
@@ -182,7 +188,8 @@ classdef HEAD1 %< WorldCooSys
                         'FILTER','r','';
                         'NAXES',2,'';
                         'NAXIS1',1024,'';
-                        'NAXIS2',2048,''};
+                        'NAXIS2',2048,'';
+                        'UTC-OBS','2000-01-01T00:00:00.0','date'};
         end
        
         function [Dict,Val]=dictSearch(Dict,Key,Exact)
@@ -314,6 +321,9 @@ classdef HEAD1 %< WorldCooSys
             Dict(I).Key     = 'OBSLAT';
             Dict(I).Synonym = {'OBSLAT','OBSLAT','LAT'};
             I = I + 1;
+            Dict(I).Key     = 'HEIGHT';
+            Dict(I).Synonym = {'HEIGHT','OBSHEIGH'};
+            I = I + 1;
             Dict(I).Key     = 'EQUINOX';
             Dict(I).Synonym = {'EQUINOX','EQUIN','EPOCH'};
             I = I + 1;
@@ -327,13 +337,24 @@ classdef HEAD1 %< WorldCooSys
             Dict(I).Synonym = {'FILTER2','FILTERID2','FILTERSL2','FILTER1','FILT2'};
             I = I + 1;
             Dict(I).Key     = 'JD';
-            Dict(I).Synonym = {'JD','OBSJD','MIDJD','JDMID'};
+            Dict(I).Synonym = {'JD','OBSJD'};
+            I = I + 1;
+            Dict(I).Key     = 'MIDJD';
+            Dict(I).Synonym = {'MIDJD','JDMID'};
             I = I + 1;
             Dict(I).Key     = 'MJD';
-            Dict(I).Synonym = {'MJD','OBSMJD','MIDMJD','MJDMID'};
+            Dict(I).Synonym = {'MJD','OBSMJD'};
+            I = I + 1;
+            Dict(I).Key     = 'MIDMJD';
+            Dict(I).Synonym = {'MIDMJD','MJDMID'};
             I = I + 1;
             Dict(I).Key     = 'UTC-OBS';
-            Dict(I).Synonym = {'UTC-OBS','UTC','DATE-OBS','DATE','ISODATE','DATEISO'};
+            Dict(I).Synonym = {'UTC-OBS','UTC_OBS','UTCOBS',...
+                               'UTC',...
+                               'DATE-OBS','DATE_OBS','DATEOBS',...
+                               'OBS-DATE','OBS_DATE','OBSDATE',...
+                               'TIME-OBS','TIME_OBS','TIMEOBS',...
+                               'DATE','ISODATE','DATEISO'};
             
             
             % Searck Key in Dict.Key
@@ -888,6 +909,102 @@ classdef HEAD1 %< WorldCooSys
             
         end
         
+        function C=conv2numCell(C,KeepAsStr)
+            % Attempt to convert all elements in a cell array to numeric
+            % Package: @HEAD
+            % Description: Attempt to convert all elements in a cell array
+            %              to numeric.
+            % Input  : - A cell array.
+            %          - A logical flag indicating if to keep strings as
+            %            strings (true), or to replace them with NaNs
+            %            (false). Default is true.
+            % Output : - A cell array, with numeric values.
+            % Example: HEAD1.conv2numCell({'1','NaN',NaN,'-Inf',11,'aa'})
+            
+            if nargin<2
+                KeepAsStr = true;
+            end
+           
+            N = numel(C);
+            for I=1:1:N
+                if ischar(C{I})
+                    if strcmpi(C{I},'nan')
+                        C{I} = NaN;
+                    else
+                        Tmp = str2double(C{I});
+                        if isnan(Tmp)
+                            if ~KeepAsStr
+                                C = NaN;
+                            end
+                        else
+                            C{I} = Tmp;
+                        end
+                    end
+                end
+            end
+            
+        end
+        
+        function C=replace_iligal_charCell(C,Col)
+            % replace iligal characters in keyword names (e.g. '-').
+            % Package: @HEAD
+            % Description: Given a 3 column cell array. Replace iligal
+            %              characters in the first column.
+            %              List of illigal characters:
+            %              '-' replace with '_'
+            % Input  : - A 3 columns cell array
+            %          - Column index in which to replace characaters.
+            %            Default is 1.
+            % Output : - A 3 column cell array.
+            % Example: H=HEAD1.basic; H=H.addKey({'UTC-OBS','2009'});
+            %          HEAD1.replace_iligal_charCell(H.Header)
+            % Reliable: 2
+            
+            if nargin<2
+                Col = 1;
+            end
+            
+            C(:,Col) = regexprep(C(:,Col),'-','_');
+            
+        end
+        
+        function C=updateCell_fromStruct(S,C)
+            % update cell header by adding elements in struct not in header
+            % Package: @HEAD
+            % Description: Given a 3 column cell array (i.e., cell header)
+            %              and a structure with keywords and values.
+            %              First make sure all the header keywords have no
+            %              iligal characters. Then look for fields in the
+            %              structure that are not in the cell header and
+            %              add them to the cell header.
+            % Input  : - A structure.
+            %          - A cell header.
+            % Output : - An updated cell header.
+            % Example: C=HEAD1.updateCell_fromStruct(S,C)
+            
+            Col = 1;
+            FN   = fieldnames(S);
+            Nfs  = numel(FN);  % number of fields in struct
+            Nkey = size(C,1);
+            if (Nfs==Nkey)
+                % assume there is no need to update
+            elseif (Nfs<Nkey)
+                error('Bug: Nfs<Nkey');
+            else
+                % Nfs>Nkey
+                % Look for new Key values that donot appear in Header
+                Cl = HEAD1.replace_iligal_charCell(C);
+                [NewKey, NewKeyInd] = setdiff(FN,Cl(:,Col));
+                SC        = struct2cell(S);
+                NewHeader = [NewKey(:), SC(NewKeyInd)];
+                NewHeader = HEAD1.fixColCell(NewHeader);
+                C         = [C; NewHeader];
+                
+            end
+                    
+            
+            
+        end
     end
     
     % dictionaries
@@ -943,6 +1060,7 @@ classdef HEAD1 %< WorldCooSys
     % set/ get keyword data - read data from header
     % disp
     % copy
+    % updateHeader_fromStruct
     % delKey, uniqueKey, addKey, replaceKeyName, eplaceKeyVal
     % getKey, getVal_best (previously getkey_fromlist), mgetkey (like old)
     % regexp (like old), regexprep (like old)
@@ -1018,6 +1136,26 @@ classdef HEAD1 %< WorldCooSys
             end
             
             
+        end
+        
+        function H=updateHeader_fromStruct(H)
+            % update Header in HEAD object from Keys structure
+            % Package: @HEAD
+            % Description: Given an HEAD object, in each element look for
+            %              keywords in the "Keys" property structure that
+            %              do not appear in the "Header" property cell, and
+            %              add them to the "Header" property cell array.
+            % Input  : - An HEAD object.
+            % Output : - An updated HEAD object.
+            % Example: H=HEAD1.basic; H.Keys.A = 1; H1=[H,H];
+            %          H2=updateHeader_fromStruct(H1)
+            % Reliable: 2
+            
+            Nh = numel(H);
+            for Ih=1:1:Nh
+                H(Ih).Header = HEAD1.updateCell_fromStruct(H(Ih).Keys,H(Ih).Header);
+            end
+        
         end
         
         function H=delKey(H,KeyName,Exact)
@@ -1456,6 +1594,32 @@ classdef HEAD1 %< WorldCooSys
             
         end
         
+        function H=replace_iligal_char(H,Col)
+            % replace iligal characters in keyword names (e.g. '-').
+            % Package: @HEAD
+            % Description: Given an HEAD object. Replace iligal
+            %              characters in the first column.
+            %              List of illigal characters:
+            %              '-' replace with '_'
+            % Input  : - An HEAD object.
+            %          - Column index in which to replace characaters.
+            %            Default is 1.
+            % Output : - An HEAD object.
+            % Example: H=HEAD1.basic; H=H.addKey({'UTC-OBS','2009'});
+            %          H=replace_iligal_char(H)
+            % Reliable: 2
+            
+            if nargin<2
+                Col = 1;
+            end
+            
+            Nh = numel(H);
+            for Ih=1:1:Nh
+                H(Ih).Header = HEAD1.replace_iligal_charCell(H(Ih).Header,Col);
+            end            
+            
+        end % end replace_iligal_char function
+        
         function S=cell2struct(H,Unique)
             % Convert the Header fields in HEAD object to structure
             % Package: @HEAD
@@ -1464,6 +1628,8 @@ classdef HEAD1 %< WorldCooSys
             %              keyword name and the field value is the keyword
             %              value. Optionally run uniqueKey on the HEAD
             %              object.
+            %              Before the conversion the function replace
+            %              iligal characters in the keyword names.
             % Input  : - An HEAD object.
             %          - A logical falg indicating if to run uniqueKey on
             %            the HEAD object prior to conversion to structure.
@@ -1481,8 +1647,10 @@ classdef HEAD1 %< WorldCooSys
             if Unique
                 H = uniqueKey(H);
             end
+           
             N = numel(H);
             for I=1:1:N
+                H(I).Header = HEAD1.replace_iligal_charCell(H(I).Header);
                 S(I) = cell2struct(H(I).Header(:,2),H(I).Header(:,1));
             end
             
@@ -1539,6 +1707,8 @@ classdef HEAD1 %< WorldCooSys
             % Reliable: 2
             
             ColVal = 2;
+            %if nargin<6
+            %    Conv2Num = true;
             if nargin<5
                 FillVal = NaN;
                 if nargin<4
@@ -1548,6 +1718,8 @@ classdef HEAD1 %< WorldCooSys
                     end
                 end
             end
+            %end
+            
             
             if ischar(KeyList)
                 Dict = HEAD1.dictKey(KeyList,ExactDict);
@@ -1578,6 +1750,10 @@ classdef HEAD1 %< WorldCooSys
                 else
                     % fill value only for Val cell array
                     Val{I} = FillVal;
+%                     if Conv2Num && ischar(Val{I})
+%                         Val{I} = str2double(Val{I});
+%                     end
+                        
                 end
             end
             
@@ -1713,22 +1889,10 @@ classdef HEAD1 %< WorldCooSys
     end  % methods
     
     
-        
-    
-    % find_groups
-    % istype
-    % julday
-    % geodpos
-    % coo
-    % wcs
-    % isarc
-    % isbias
-    % isdark
-    % isflat
-    
     % get/set special keywords
-    % naxis, getCoo
-    % getType, isType, isbias
+    % naxis, getCoo, getObsCoo, julday
+    % find_groups
+    % getType, isType, isbias, isflat, isdark, isarc
     methods
         function Naxis=naxis(H)
             % Get naxis realted keywords from HEAD object.
@@ -1763,6 +1927,46 @@ classdef HEAD1 %< WorldCooSys
             end
             
 
+        end
+        
+        % find_groups
+        function Groups=find_groups(Head,Keys,DelSpace)
+            % group headers by unique keyword values
+            % Package: @HEAD
+            % Description: Find groups of headers which have keywords with
+            %              identical values. Given an HEAD object with
+            %              multiple elements and a list of keywords, find
+            %              unique groups defined as having the same keyword
+            %              values. For example, images which were taken
+            %              with the same filter and same exposure time.
+            %              This function use the
+            %              Util.cell.cell_find_groups.m function.
+            % Input  : - An HEAD object.
+            %          - Cell array of keywords by which to find groups.
+            %          - Delete spaces from strings prior to comparison
+            %            {true|false}.
+            %            Default is true.
+            % Output : - Structure of groups. Each structure represent a group of rows
+            %            in the input cell array which have equal values.
+            %            The structure contains the following fields:
+            %            .Conntent  - Cell array of values define the group.
+            %            .ptr       - The indices of the rows that belong to the
+            %                         group.
+            % See also: cell_find_groups.m
+            % License: GNU general public license version 3
+            % Tested : Matlab R2015b
+            %     By : Eran O. Ofek                    Mar 2016
+            %    URL : http://weizmann.ac.il/home/eofek/matlab/
+            % Example: Groups=find_groups(Sim,{'EXPTIME','FILTER'});
+            %          Groups=find_groups(lower_key(Sim),{'exptime','filter'});
+            % Reliable: 2
+
+            Cell = mgetkey(Head,Keys);
+
+            % find groups:
+            Groups = Util.cell.cell_find_groups(Cell,DelSpace);
+
+            
         end
         
         function [RA,Dec,Equinox]=getCoo(H,varargin)
@@ -1855,18 +2059,107 @@ classdef HEAD1 %< WorldCooSys
             end
                 
         end
-%          
-%         function [Long,Lat,Height]=getObsCoo(H,varargin)
-%             %
-%             
-%         end
-%         
-%         function [JD,ISO]=julday(H,varargin)
-%             %
-%             
-%         end
-%         
-%         
+          
+        function [Long,Lat,Height]=getObsCoo(H,varargin)
+            % Get observatory geodetic coordinates from HEAD object
+            % Package: @HEAD
+            % Description: Get observatory geodetic coordinates from HEAD
+            %              object. Observatory long/lat/height are searched
+            %              using getVal_best and dictKey dictionary.
+            % Input  : - An HEAD object.
+            %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+            %            where keyword are one of the followings:
+            %            'KeyLong' - Observatory longitude dictionary
+            %                       leyword. Default is 'OBSLON'.
+            %            'KeyLat'  - Observatory latitude dictionary
+            %                       leyword. Default is 'OBSLAT'.
+            %            'KeyHeight'- Observatory height dictionary
+            %                       leyword. Default is 'HEIGHT'.
+            % Output : - Matrix of observatory longitude. Each element
+            %            corresponds to HEAD object element.
+            %            NaN if value not found, or the value is a string
+            %            and can not converted to numeric.
+            %          - Matrix of observatory latitude.
+            %          - Matrix of observatory height.
+            % Example: getObsCoo(H)
+             
+            ColVal = 2;
+            
+            DefV.KeyLong              = 'OBSLON';
+            DefV.KeyLat               = 'OBSLAT';
+            DefV.KeyHeight            = 'HEIGHT';
+            
+            InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
+            
+            Long      = getVal_best(H,InPar.KeyLong);
+            Lat       = getVal_best(H,InPar.KeyLat);
+            Height    = getVal_best(H,InPar.KeyHeight);
+            
+            % convert to numeric values - strings to NaN
+            Long   = HEAD1.conv2numCell(Long,false);
+            Lat    = HEAD1.conv2numCell(Lat,false);
+            Height = HEAD1.conv2numCell(Height,false);
+            
+        end
+        
+        function [MidJD,ExpTime]=julday(H)
+            % Calculate mid exposure JD and ExpTime for HEAD object
+            % Package: @HEAD
+            % Description: Given an HEAD object calculate the mid exposure
+            %              Julian day (JD) and exposure time for each
+            %              header. The JD is calculated by attempting
+            %              reading various time related keywords starting
+            %              with JD, MJD, UTC-OBS etc.
+            % Input  : - An HEAD object.
+            % Outout : - Matrix of mid exposure time JD, for each HEAD
+            %            element. NaN if can not calvulate JD.
+            %          - Matrix of exposure times (usually seconds), for
+            %            each HEAD element. NaN if not found.
+            % Example: H=HEAD1.basic; [JD,E]=julday(H)
+            SEC_IN_DAY = 86400;
+            
+            
+            
+            ExpTime      = getVal_best(H,'EXPTIME');  % s
+            JD           = getVal_best(H,'JD');  % day
+            MIDJD        = getVal_best(H,'MIDJD');  % day
+            MJD          = getVal_best(H,'MJD');  % day
+            MIDMJD       = getVal_best(H,'MIDMJD');  % day
+            Date         = getVal_best(H,'UTC-OBS');  % day
+            
+            
+            MidJD = nan(size(Date));
+            for I=1:1:numel(Date)
+
+                if ~isnan(MIDJD{I})
+                    MidJD(I) = MIDJD{I};
+                else
+                    if ~isnan(MIDMJD{I})
+                        MidJD(I) = convert.time(MIDMJD{I},'MJD','JD');
+                    else
+                       if ~isnan(JD{I})
+                           MidJD(I) = JD{I} + 0.5.*ExpTime{I}./SEC_IN_DAY;
+                       else
+                           if ~isnan(MJD{I})
+                               MidJD(I) = convert.time(MJD{I},'MJD','JD') + 0.5.*ExpTime{I}./SEC_IN_DAY;
+                           else
+                               if ~isnan(Date{I})
+                                   % convert date to JD
+                                   MidJD(I) = celestial.time.julday(Date{I}) + 0.5.*ExpTime{I}./SEC_IN_DAY;
+                               else
+                                   % error - can not read date/JD...
+                                   MidJD(I) = MIDJD{I};  % NaN
+                               end
+                           end
+                       end
+                    end
+                end
+            end
+            
+            
+        end
+        
         function [ValTrans,ValType]=getType(H)
             % Read synonymous TYPE keyword and translate using dictionary
             % Package: @HEAD
@@ -1933,7 +2226,7 @@ classdef HEAD1 %< WorldCooSys
             
         end  % end isType function
         
-        function Ans=isbias(H,BiasVal)
+        function Ans=isbias(H,Val)
             % Check if HEAD object TYPE keyword is bias or synonymous
             % Package: @HEAD
             % Description: Check if HEAD object TYPE keyword is bias or
@@ -1950,17 +2243,92 @@ classdef HEAD1 %< WorldCooSys
             % Reliable: 2
             
             if nargin<2
-                BiasVal = 'bias';
+                Val = 'bias';
             end
             
-            Ans = isType(H,BiasVal);
+            Ans = isType(H,Val);
             
         end
         
+        function Ans=isflat(H,Val)
+            % Check if HEAD object TYPE keyword is flat or synonymous
+            % Package: @HEAD
+            % Description: Check if HEAD object TYPE keyword is flat or
+            %              synonymous of flat. The TYPE keyword is selected
+            %              using the dictKey function, while the flat value
+            %              is selected using the dictValType function.
+            % Input  : - An HEAD object.
+            %          - The keyword value in the HEAD1.dictValType
+            %            function indicating a flat image.
+            %            Default is 'flat'.
+            % Output : - A matrix of logical indicating if each one of the
+            %            HEAD object elements TYPE is consistent with flat.
+            % Example: H=HEAD1.basic; Ans=isflat(H)
+            % Reliable: 2
             
+            if nargin<2
+                Val = 'flat';
+            end
+            
+            Ans = isType(H,Val);
+            
+        end
+            
+        function Ans=isdark(H,Val)
+            % Check if HEAD object TYPE keyword is dark or synonymous
+            % Package: @HEAD
+            % Description: Check if HEAD object TYPE keyword is dark or
+            %              synonymous of dark. The TYPE keyword is selected
+            %              using the dictKey function, while the dark value
+            %              is selected using the dictValType function.
+            % Input  : - An HEAD object.
+            %          - The keyword value in the HEAD1.dictValType
+            %            function indicating a dark image.
+            %            Default is 'dark'.
+            % Output : - A matrix of logical indicating if each one of the
+            %            HEAD object elements TYPE is consistent with dark.
+            % Example: H=HEAD1.basic; Ans=isdark(H)
+            % Reliable: 2
+            
+            if nargin<2
+                Val = 'dark';
+            end
+            
+            Ans = isType(H,Val);
+            
+        end
+        
+        function Ans=isarc(H,Val)
+            % Check if HEAD object TYPE keyword is arc or synonymous
+            % Package: @HEAD
+            % Description: Check if HEAD object TYPE keyword is arc or
+            %              synonymous of arc. The TYPE keyword is selected
+            %              using the dictKey function, while the arc value
+            %              is selected using the dictValType function.
+            % Input  : - An HEAD object.
+            %          - The keyword value in the HEAD1.dictValType
+            %            function indicating a arc image.
+            %            Default is 'arc'.
+            % Output : - A matrix of logical indicating if each one of the
+            %            HEAD object elements TYPE is consistent with arc.
+            % Example: H=HEAD1.basic; Ans=isarc(H)
+            % Reliable: 2
+            
+            if nargin<2
+                Val = 'arc';
+            end
+            
+            Ans = isType(H,Val);
+            
+        end
         
     end  % methods
         
+    
+    % WCS related methods
+    methods
+        
+    end % end methods
 end
 
             
