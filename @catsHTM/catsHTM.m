@@ -1031,7 +1031,7 @@ classdef catsHTM
             %                       Default is 'rad'.
             %            'ColDecHTM' - Default is 2.
             %            'ColRAHTM'  - Default is 1.
-            % Output : -
+            % Output : - A matched catalog.
             % Example: CatM=catsHTM.sources_match('GAIADR2',CoaddSim);
             
             CatField     = AstCat.CatField;

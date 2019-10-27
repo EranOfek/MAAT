@@ -65,6 +65,8 @@ DefV.RC_ColDec          = 'Dec';
 DefV.RC_ColMag          = 'Mag_G'; %'MagModel'; %'ModelMag';
 DefV.RC_ColColor        = 'Mag_BP-Mag_RP';
 DefV.ApplyPM            = true; %true; %true;
+%Logical for applying parallax correction (barycentric)
+DefV.ApplyParallax      = false;
 DefV.RC_ColPM_RA        = 'PMRA';
 DefV.RC_ColPM_Dec       = 'PMDec';
 DefV.RC_ColPlx          = 'Plx';
@@ -128,8 +130,6 @@ DefV.Plot               = false;
 DefV.MaxExcessNoise     = 10;
 %threshold for proper motion errors(GAIA)
 DefV.MaxPMerr           = [];
-%Logical for applying parallax correction (barycentric)
-DefV.ApplyParallax      = false;
 
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 

@@ -139,7 +139,7 @@ classdef HEAD1 %< WorldCooSys
 %                 % assign new values into the cell header
 %                 Val
 %                 
-%                 H.Header = HEAD1.struct2cell(H.Keys);
+%                 H.Header = HEAD1.stvruct2cell(H.Keys);
 %             else
 %                 warning('You asigned a non structure object into Keys');
 %             end
@@ -183,13 +183,19 @@ classdef HEAD1 %< WorldCooSys
             % Reliable: 2
            
             H = HEAD1;
-            H.Header = {'EXPTIME',1,'';
+            H.Header = {'SIMPLE',true','does file conform to the Standard?';
+                        'BSCALE',1.0,'linear factor in scaling equation';
+                        'BZERO',0.0,'zero point in scaling equation';
+                        'BUNIT','DN','physical units of the array values';
+                        'BITPIX',32,'';
+                        'EXPTIME',1,'';
                         'TYPE','bias','';
                         'FILTER','r','';
-                        'NAXES',2,'';
+                        'NAXIS',2,'';
                         'NAXIS1',1024,'';
                         'NAXIS2',2048,'';
-                        'UTC-OBS','2000-01-01T00:00:00.0','date'};
+                        'UTC-OBS','2000-01-01T00:00:00.0','date';
+                        'END','',''};
         end
        
         function [Dict,Val]=dictSearch(Dict,Key,Exact)
@@ -718,7 +724,8 @@ classdef HEAD1 %< WorldCooSys
             % Input  : - A 2/3 columnn cell array [Key, Val, Comment].
             %          - A 2/3 columnn cell array [Key, Val, Comment].
             %          - Location in which to add the 2nd cell to the 1st
-            %            cell. Inf for adding at the end, 0 for adding
+            %            cell. Inf for adding at the end (but before the
+            %            END keyword), 0 for adding
             %            at the begining. Default is Inf.
             % Output : - A 3 column cell array of the combined two arrays.
             % By: Eran O. Ofek
@@ -752,7 +759,11 @@ classdef HEAD1 %< WorldCooSys
             
             if Location==Inf || Location>Nrow1
                 % concat Cell2 at end of Cell1
-                Cell = [Cell1;Cell2];
+                if strcmp(Cell1{end,1},'END')
+                    Cell = [Cell1(1:end-1,:); Cell2; Cell1(end,:)];
+                else
+                    Cell = [Cell1;Cell2];
+                end
             elseif Location==0
                 Cell = [Cell2;Cell1];
             else
@@ -1005,6 +1016,7 @@ classdef HEAD1 %< WorldCooSys
             
             
         end
+        
     end
     
     % dictionaries
@@ -1071,6 +1083,7 @@ classdef HEAD1 %< WorldCooSys
     % isKeyExist (new), isKeyVal (previoisly iskeyval)
     % getkey  - obsolete
     % iskeyval - obsolete
+    % add_end
     methods
         
         function disp(H,UseDisp)
@@ -1210,7 +1223,8 @@ classdef HEAD1 %< WorldCooSys
             %          - A single-element HEAD object or a 2 or 3 columns
             %            cell array of {keyword, value, comment}.
             %          - Location in which to add the keywords.
-            %            Inf for adding at the end, 0 for adding
+            %            Inf for adding at the end (but before the END
+            %            keyword), 0 for adding
             %            at the begining. Default is Inf.
             % Output : - AN HEAD object.
             % Example: addKey(H,H(1))
@@ -1884,7 +1898,36 @@ classdef HEAD1 %< WorldCooSys
              
         end
         
-        
+        function H=add_end(H)
+            % Add END keyword at the end of heaer
+            % Package: @HEAD
+            % Description: Add END keyword at the end of each header in an
+            %              HEAD object. If the END keyword appears in the
+            %              middle of an header it will be removed.
+            % Input  : - An HEAD object.
+            % Output : - An HEAD object.
+            % Example: H=HEAD1.basic; H=add_end(H)
+            % Reliable: 2
+            
+            Nh = numel(H);
+            for Ih=1:1:Nh
+                switch H(Ih).Header{end,1}
+                    case 'END'
+                        % end appear in end of header do nothing
+                    otherwise
+                        % add end
+                        H(Ih).Header{end+1,1} = 'END';
+                end
+                
+                % verify there is no end in the middle of the header
+                Flag = [strcmp(H(Ih).Header(1:end-1,1),'END'); false];
+                if any(Flag)
+                    H(Ih).Header = H(Ih).Header(~Flag,:);
+                end
+                
+            end
+            
+        end
 
     end  % methods
     

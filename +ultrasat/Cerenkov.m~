@@ -76,12 +76,19 @@ fC=max(0,1-1/n^2 ./bm.^2);
 gEE=spline(Ek,1 ./dEdX,em);
 %lE=(2/3)*(em.^(3/2)-Em^(3/2)).*(em<=1) + (em-1+2/3*(1-Em^(3/2))).*(em>1);
 intg=gEE.*Fm.*fC; 
-Lnorm=2*pi/137/rho/1e-4*spline(em,intg,1);
-int=intg*diff(ee')/spline(em,intg,1);
+Lnorm=2*pi/137/rho/1e-4*spline(em,intg,1)
+int=intg*diff(ee')/spline(em,intg,1)
 Cint=[0 cumsum(intg.*diff(ee))]/(intg*diff(ee'));
 L1mu=int*Lnorm % at lambda=1mu
-I1mu = L1mu/2/pi/n^2;   % intensity at 1 micron ?
+L1mu/2/pi/n^2
 
+
+intg=gEE.*Fm.*fC; 
+Lnorm=2.*pi./137./rho./1e-4.*spline(em,intg,1);
+int=intg.*diff(ee.')./spline(em,intg,1);
+Cint=[0 cumsum(intg.*diff(ee))]./(intg*diff(ee'));
+L1mu=int.*Lnorm % at lambda=1mu
+%L1mu/2/pi/n^2
 
 figure;
 the=acos(1/n ./be);
@@ -119,4 +126,3 @@ axis([0.2 1 1e-2 2])
 xlabel('\theta'); ylabel('I(<\theta)/I, E_e [MeV]')
 
 
-%Spec = 
