@@ -162,8 +162,6 @@ switch lower(InPar.Type)
         
         L_RW   = 2e42 .* ( (v_sstar/10^8.5) .* t_d.^2 ./ (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)) ).^ -eps2 .* ...
             (v_sstar/10^8.5).^2 .* (InPar.Rs.*SolR./1e13) ./ (InPar.kappa./0.34);  % [erg/s]
-%         L_RW   = 2e42 .* ( (v_sstar(:).'/10^8.5) .* t_d.^2 ./ (InPar.f_rho(:).' .* InPar.Ms(:).' .* (InPar.kappa./0.34)) ).^ -eps2 .* ...
-%             (v_sstar(:).'/10^8.5).^2 .* (InPar.Rs(:).'.*SolR./1e13) ./ (InPar.kappa(:).'./0.34);  % [erg/s]
 
         % f_rho = (Menv/Mc)^0.5 for R = 3/2; Mej=M=Menv+Mc:
         Menv = (InPar.f_rho).^2./(1+(InPar.f_rho).^2).*InPar.Ms;
