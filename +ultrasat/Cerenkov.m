@@ -1,21 +1,46 @@
-function Res=Cerenkov(Material,Plot)
+function Res=Cerenkov(Material,FluxOption,Plot)
+% Calculate the Cerenkov spectrum generated in a lens
+% Package: telescope.Optics
+% Description: Calculate the Cerenkov spectrum generated in a lens.
 
-
+% Input  : - Material, default is 'sio2'.
+%          - FluxOption:
+%               DailyMin_MeanFlux: 
+%               DailyMax_MeanFlux: 
+%               DailyMin_95flux: 
+%               DailyMax_95flux:  - Default.
+%               DailyMax_50flux: 
+%               DailyMax_75flux: 
+%               DailyMin_50flux: 
+%               DailyMin_75flux: 
+%          - Plot. Default is false.
+%
+%          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+%            where keyword are one of the followings:
+%            'T' - Temperature [C]. Default is 20.
+%            'Material' - Options are:
+%                         'SiO2' (fused silica) default.
+% Output : - Wavelength [Ang].
+%          - Refraction index
+% License: GNU general public license version 3
+%     By : Eran O. Ofek                    Oct 2019
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: Res=ultrasat.Cerenkov
 %%
 
-if nargin<2
+if nargin<3
     Plot = false;
-    if nargin<1
-        Material = 'silica';   % sapphire
+    if nargin<2
+        FluxOption = 'DailyMax_95flux';
+        if nargin<1
+            Material = 'silica';   % sapphire
+        end
     end
 end
 
 
-
 %see X-UV-updated note for derivations
-global Silica
-Silica=1
+
 switch lower(Material)
     case {'silica','sio2'}
         
@@ -40,21 +65,24 @@ Ee=[0.001 0.05 0.25 0.7 2.5 8];   % Electron energy [MeV]
 %AE9_daily_electron_flux
 %AE9_dailymax_electron_flux
 
-Fmat = ultrasat.geostat_electrons_spec_flux;
+[Fmat,ColCell] = ultrasat.geostat_electrons_spec_flux;
+Col = cell2struct(num2cell(1:1:numel(ColCell)),ColCell,2);
 
 Ee1=Fmat(:,1);
-F1=Fmat(:,5);
+F1=Fmat(:,Col.(FluxOption));
 
 %Compare Yossi's data with my read-off
-figure;
-loglog(Ee,F,Ee1,Fmat(:,2:5),'k')
-axis([1e-2 10 10 1e9]);
-grid
+if Plot
+    figure;
+    loglog(Ee,F,Ee1,Fmat(:,2:5),'k')
+    axis([1e-2 10 10 1e9]);
+    grid
+end
 ee=10 .^[log10(0.04):.01:log10(8)];  % energies in which to interpolate
 Fe=spline(Ee1,F1,ee);
 %pause
 %Calculate dEdX
-[Ek,dEdX]=ultrasat.dEdX_calc;
+[Ek,dEdX]=ultrasat.dEdX_calc(Material,Plot);
 %ultrasat.dEdX_calc
 %pause
 
@@ -83,7 +111,7 @@ intg=gEE.*Fm.*fC;
 Lnorm=2*pi/137/rho/1e-4*spline(em,intg,1);
 int=intg*diff(ee')/spline(em,intg,1);
 Cint=[0 cumsum(intg.*diff(ee))]/(intg*diff(ee'));
-L1mu=int*Lnorm % at lambda=1mu
+L1mu=int*Lnorm; % at lambda=1mu
 IC1mu = L1mu/2/pi/n^2;   % intensity at 1 micron ?
 
 if Plot
@@ -103,7 +131,7 @@ if Plot
 end
 
 %Cerenkov I in -z direction, assuming all 
-thM=acos(1/n)
+thM=acos(1/n);
 th=thM*10 .^[-2:.01:0];
 ik=1:length(th)-1; thm=(th(ik)+th(ik+1))/2;
 bth=1/n ./cos(thm); gth=1 ./sqrt(1-bth.^2); eth=0.511*(gth-1);
@@ -114,18 +142,20 @@ gEE=spline(Ek,1 ./dEdX,eth);
 %grid
 %pause
 int_qC=spline(ee,Fe,eth)/spline(ee,Fe,1).*(gth.*bth).^3.*sin(thm).^3 .*gEE/spline(eth,gEE,1);
-figure;
-qCth=(int_qC)*diff(th')
-ICnorm=0.511*n/137/1e-4*spline(ee,Fe,1)*1/rho*spline(eth,gEE,1)
-IC1mu_v2 = qCth*ICnorm/n^2
+
+qCth=(int_qC)*diff(th');
+ICnorm=0.511*n/137/1e-4*spline(ee,Fe,1)*1/rho*spline(eth,gEE,1);
+IC1mu_v2 = qCth*ICnorm/n^2;
 ICth=[0 cumsum(int_qC.*diff(th))]/qCth;
+
 if Plot
+    figure;
     loglog(th,ICth,thm,eth,'k',th,(th./thM).^4,'b--'); grid
     axis([0.2 1 1e-2 2])
     xlabel('\theta'); ylabel('I(<\theta)/I, E_e [MeV]')
 end
 
-[IC1mu, IC1mu_v2]
+%[IC1mu, IC1mu_v2]
 
 
 % as a function of lambda
@@ -159,7 +189,7 @@ for In=1:1:Nn
     Lnorm=2*pi/137/rho/(Lam(In).*1e-8)*spline(em,intg,1);
     int=intg*diff(ee')/spline(em,intg,1);
     Cint=[0 cumsum(intg.*diff(ee))]/(intg*diff(ee'));
-    L1mu=int*Lnorm % at lambda=1mu
+    L1mu=int*Lnorm; % at lambda=1mu
     IC1mu(In) = L1mu/2/pi/n(In)^2;   % intensity at 1 micron ?
     
 end
