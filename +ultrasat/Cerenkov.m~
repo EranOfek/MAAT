@@ -1,20 +1,23 @@
-function Cerenkov(Material)
+function Cerenkov(Material,Plot)
 
+
+% Example: ultrasat.Cernekov
 %%
 
-
-
-
-if nargin<1
-    Material = 'silica';   % sapphire
+if nargin<2
+    Plot = false;
+    if nargin<1
+        Material = 'silica';   % sapphire
+    end
 end
+
 
 
 %see X-UV-updated note for derivations
 global Silica
 Silica=1
 switch lower(Material)
-    case 'silica'
+    case {'silica','sio2'}
         
         %if Silica %SiO2
         n=1.5;
@@ -41,6 +44,7 @@ Fmat = ultrasat.geostat_electrons_spec_flux;
 
 Ee1=Fmat(:,1);
 F1=Fmat(:,5);
+
 %Compare Yossi's data with my read-off
 figure;
 loglog(Ee,F,Ee1,Fmat(:,2:5),'k')
@@ -57,7 +61,7 @@ Fe=spline(Ee1,F1,ee);
 %Cerenkov L per unit area and wavelength
 bM=1./n;
 gM=1./sqrt(1-bM.^2);
-EM=(gM-1).*0.511
+EM=(gM-1).*0.511;
 ij=1:length(ee)-1; 
 em=(ee(ij)+ee(ij+1))./2;
 gm=1+em./.511;
@@ -69,40 +73,34 @@ Fm=spline(ee,Fe,em);
 %loglog(em,j.*em,ee,Fe); grid
 %pause
 %jn=j/spline(em,j,1);
-fC=max(0,1-1/n^2 ./bm.^2);
+fC=max(0,1-1./n.^2 ./bm.^2);
 
 % Ek and dEdX are from dEdX_calc
 
 gEE=spline(Ek,1 ./dEdX,em);
 %lE=(2/3)*(em.^(3/2)-Em^(3/2)).*(em<=1) + (em-1+2/3*(1-Em^(3/2))).*(em>1);
 intg=gEE.*Fm.*fC; 
-Lnorm=2*pi/137/rho/1e-4*spline(em,intg,1)
-int=intg*diff(ee')/spline(em,intg,1)
+Lnorm=2*pi/137/rho/1e-4*spline(em,intg,1);
+int=intg*diff(ee')/spline(em,intg,1);
 Cint=[0 cumsum(intg.*diff(ee))]/(intg*diff(ee'));
 L1mu=int*Lnorm % at lambda=1mu
-L1mu/2/pi/n^2
+IC1mu = L1mu/2/pi/n^2;   % intensity at 1 micron ?
 
+if Plot
+    figure;
+    the=acos(1/n ./be);
 
-intg=gEE.*Fm.*fC; 
-Lnorm=2.*pi./137./rho./1e-4.*spline(em,intg,1);
-int=intg.*diff(ee.')./spline(em,intg,1);
-Cint=[0 cumsum(intg.*diff(ee))]./(intg*diff(ee'));
-L1mu=int.*Lnorm % at lambda=1mu
-%L1mu/2/pi/n^2
+    FlagReal = imag(the)==0;
 
-figure;
-the=acos(1/n ./be);
-
-FlagReal = imag(the)==0;
-
-loglog(ee(FlagReal),Cint(FlagReal));
-hold on;
-loglog(ee(FlagReal),the(FlagReal));
-grid
-axis([0.1 3 1e-2 1])
-xlabel('E [MeV]'); ylabel('I(<E)/I, \theta')
-%qC=(int_qC)*diff(ee')
-%pause
+    loglog(ee(FlagReal),Cint(FlagReal));
+    hold on;
+    loglog(ee(FlagReal),the(FlagReal));
+    grid
+    axis([0.1 3 1e-2 1])
+    xlabel('E [MeV]'); ylabel('I(<E)/I, \theta')
+    %qC=(int_qC)*diff(ee')
+    %pause
+end
 
 %Cerenkov I in -z direction, assuming all 
 thM=acos(1/n)
@@ -119,10 +117,52 @@ int_qC=spline(ee,Fe,eth)/spline(ee,Fe,1).*(gth.*bth).^3.*sin(thm).^3 .*gEE/splin
 figure;
 qCth=(int_qC)*diff(th')
 ICnorm=0.511*n/137/1e-4*spline(ee,Fe,1)*1/rho*spline(eth,gEE,1)
-qCth*ICnorm/n^2
+IC1mu_v2 = qCth*ICnorm/n^2
 ICth=[0 cumsum(int_qC.*diff(th))]/qCth;
-loglog(th,ICth,thm,eth,'k',th,(th./thM).^4,'b--'); grid
-axis([0.2 1 1e-2 2])
-xlabel('\theta'); ylabel('I(<\theta)/I, E_e [MeV]')
+if Plot
+    loglog(th,ICth,thm,eth,'k',th,(th./thM).^4,'b--'); grid
+    axis([0.2 1 1e-2 2])
+    xlabel('\theta'); ylabel('I(<\theta)/I, E_e [MeV]')
+end
+
+[IC1mu, IC1mu_v2]
 
 
+% as a function of lambda
+[Lam,n]=telescope.Optics.refraction_index('Material','SiO2');
+Nn = numel(n);
+IC1mu = nan(Nn,1);
+for In=1:1:Nn
+
+    %Cerenkov L per unit area and wavelength
+    bM=1./n(In);
+    gM=1./sqrt(1-bM.^2);
+    EM=(gM-1).*0.511;
+    ij=1:length(ee)-1; 
+    em=(ee(ij)+ee(ij+1))./2;
+    gm=1+em./.511;
+    bm=sqrt(1-1 ./gm.^2); 
+    ge=1+ee./.511;
+    be=sqrt(1-1 ./ge.^2); 
+    Fm=spline(ee,Fe,em);
+    %j=-diff(Fe)./diff(ee)/pi; 
+    %loglog(em,j.*em,ee,Fe); grid
+    %pause
+    %jn=j/spline(em,j,1);
+    fC=max(0,1-1./n(In).^2 ./bm.^2);
+
+    % Ek and dEdX are from dEdX_calc
+
+    gEE=spline(Ek,1 ./dEdX,em);
+    %lE=(2/3)*(em.^(3/2)-Em^(3/2)).*(em<=1) + (em-1+2/3*(1-Em^(3/2))).*(em>1);
+    intg=gEE.*Fm.*fC; 
+    Lnorm=2*pi/137/rho/(Lam(In).*1e-8)*spline(em,intg,1);
+    int=intg*diff(ee')/spline(em,intg,1);
+    Cint=[0 cumsum(intg.*diff(ee))]/(intg*diff(ee'));
+    L1mu=int*Lnorm % at lambda=1mu
+    IC1mu(In) = L1mu/2/pi/n^2;   % intensity at 1 micron ?
+    
+end
+
+
+%Spec = 

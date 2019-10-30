@@ -10,7 +10,7 @@ function [Prop,PS]=plot_inspect_lc(LC,varargin)
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Sep 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: 
+% Example: [Prop,PS]=plot_inspect_lc(LC)
 % Reliable: 
 %--------------------------------------------------------------------------
 

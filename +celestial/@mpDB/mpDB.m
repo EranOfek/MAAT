@@ -125,8 +125,8 @@ classdef mpDB < handle
             AstIndex(F3) = (1:1:sum(F3))';
             
             % save objects reference file
-            ObjReferenceFile = table(DataObj.Number,DataObj.Name,DataObj.ObjType,AstIndex);
-            ObjReferenceFile.Properties.VariableNames={'Number','Name','ObjType','ObjIndex'};
+            ObjReferenceFile = table(DataObj.Number,DataObj.Name,DataObj.ObjType,AstIndex,true(size(AstIndex)));
+            ObjReferenceFile.Properties.VariableNames={'Number','Name','ObjType','ObjIndex','Status'};
             save -v7.3 ObjReferenceFile.mat ObjReferenceFile
             
             Ntype = numel(InPar.ObjType);
@@ -227,14 +227,18 @@ classdef mpDB < handle
             end
             
             Nobj = numel(InPar.ObjectNames);
+            Nobj = 60274
+            
             K = 0;
-            for Iobj=1:1:Nobj
+            for Iobj=60001:1:Nobj
                 if K==0
                     Istart = Iobj;
                     AstIndex1 = InPar.AstIndex(Istart);
                     
                 end
                 AstIndex2 = InPar.AstIndex(Iobj);
+                
+
                 K = K + 1;
                 if (iscell(InPar.ObjectNames))
                     Object = InPar.ObjectNames{Iobj};
@@ -243,9 +247,10 @@ classdef mpDB < handle
                 else
                     error('Unknown ObjectNames format');
                 end
-                
+
+                Iobj
                 Object
-                
+
                 [Cat]=celestial.mpDB.jpl_generate_1obj_ephem('ObjName',Object,...
                             'AstIndex',InPar.AstIndex(Iobj),...
                             'YearStart',InPar.YearStart,...
@@ -255,13 +260,14 @@ classdef mpDB < handle
                             'CENTER',InPar.CENTER,...
                             'TimeBuffer',InPar.TimeBuffer,...
                             'PauseAfterError',InPar.PauseAfterError);
-                        
+
+                 
                  PolyDB=celestial.mpDB.fit_poly2cat(Cat,'YearStart',InPar.YearStart,...
                             'YearEnd',InPar.YearEnd',...
                             'TimeBuffer',InPar.TimeBuffer);
-                        
-                        
-                 
+
+
+
                 if (Iobj./InPar.NinFile)==floor(Iobj./InPar.NinFile) || Iobj==Nobj
 
                     SizeCat = sizecat(Cat);
@@ -302,9 +308,7 @@ classdef mpDB < handle
                     K = 0;
                 end
 
-
-                        
-                        
+                  
             end
                 
             
@@ -371,9 +375,11 @@ classdef mpDB < handle
                 toc
             catch
                 pause(InPar.PauseAfterError);
+                
                 tic
                 [Cat(K)]=celestial.SolarSys.jpl_horizons('StartJD',StartJD,'StopJD',StopJD,'ObjectInd',Object,'CENTER',InPar.CENTER,'StepSizeUnits',InPar.StepSizeUnits,'StepSize',InPar.StepSize);
                 toc
+               
             end
 
             if isempty(Cat(K).Cat)
