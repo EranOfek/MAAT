@@ -227,10 +227,10 @@ classdef mpDB < handle
             end
             
             Nobj = numel(InPar.ObjectNames);
-            Nobj = 60274
+            %Nobj = 60274
             
             K = 0;
-            for Iobj=60001:1:Nobj
+            for Iobj=60275:1:Nobj
                 if K==0
                     Istart = Iobj;
                     AstIndex1 = InPar.AstIndex(Istart);

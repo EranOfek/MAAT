@@ -20,8 +20,11 @@ function Res=Cerenkov(Material,FluxOption,Plot)
 %            'T' - Temperature [C]. Default is 20.
 %            'Material' - Options are:
 %                         'SiO2' (fused silica) default.
-% Output : - Wavelength [Ang].
-%          - Refraction index
+% Output : - A structure containing the following fields:
+%            'Lam' - Wavelength [Ang].
+%            'Int' - Intensity of Cerenkov radaition generated in the lens.
+%                    Units: [count/cm^2/s/sr/micron]
+%            'n'   - Refraction index at wavelength.
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Oct 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
