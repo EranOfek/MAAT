@@ -104,9 +104,11 @@ classdef mpDB < handle
     
     methods (Static)
         function generateAllAstEphemFiles(varargin)
-            %
-            
-            % Example: generateAllAstEphemFiles('ObjType',3)
+            % generate all AstEphem files
+            % Package: +celestial/@mpDB
+            % Description: generate all AstEphem files, including
+            %              the ObjReferenceFile.mat file.
+            % Example: celestial.mpDB.generateAllAstEphemFiles('ObjType',2)
             
             DefV.ObjType              = [1,2,3];
             InPar = InArg.populate_keyval(DefV,varargin,mfilename);
@@ -122,13 +124,14 @@ classdef mpDB < handle
             AstIndex(F2) = (1:1:sum(F2))';
             AstIndex(F3) = (1:1:sum(F3))';
             
-            
             % save objects reference file
-            ObjReferenceFile = table(DataObj.Number,DataObj.Name,DataObj.ObjType,AstIndex);
-            ObjReferenceFile.Properties.VariableNames={'Number','Name','ObjType','ObjIndex'};
+            ObjReferenceFile = table(DataObj.Number,DataObj.Name,DataObj.ObjType,AstIndex,true(size(AstIndex)));
+            ObjReferenceFile.Properties.VariableNames={'Number','Name','ObjType','ObjIndex','Status'};
+            save -v7.3 ObjReferenceFile.mat ObjReferenceFile
             
             Ntype = numel(InPar.ObjType);
             for Itype=1:1:Ntype
+                
                 Flag     = DataObj.ObjType == InPar.ObjType(Itype);
                 
                 FileType = celestial.mpDB.astType2index(InPar.ObjType(Itype));
@@ -152,7 +155,7 @@ classdef mpDB < handle
                         error('Unknown FileType option');
                 end
                
-                generateAstEphemFiles('ObjectNames',ObjName,'AstIndex',AstIndex(Flag),'FileType',);
+                celestial.mpDB.generateAstEphemFiles('ObjectNames',ObjName,'AstIndex',AstIndex(Flag),'FileType',FileType);
 
                 
                 
@@ -191,6 +194,7 @@ classdef mpDB < handle
             %            'NinFile' - Default is 1000.
             % Example:
             % celestial.mpDB.generateAstEphemFiles('ObjectNames',(1:1:10),'AstIndex',(1:1:10),'NinFile',5);
+            % celestial.mpDB.generateAstEphemFiles('ObjectNames',(541001:1:541132),'AstIndex',(541001:1:541132),'NinFile',1000);
 
             
             
@@ -207,7 +211,7 @@ classdef mpDB < handle
             DefV.PauseAfterError      = 300;  % s
             
             
-            DefV.NinFile              = 10;
+            DefV.NinFile              = 1000;
             
             DefV.BaseFileName         = 'AstEphem_[nucp]_\w+.hdf5';
             DefV.Save                 = 'EphemCatalog.mat';
@@ -223,21 +227,31 @@ classdef mpDB < handle
             end
             
             Nobj = numel(InPar.ObjectNames);
+            %Nobj = 60274
+            
             K = 0;
-            for Iobj=1:1:Nobj
+            for Iobj=60270:1:Nobj
                 if K==0
                     Istart = Iobj;
+                    AstIndex1 = InPar.AstIndex(Istart);
+                    
                 end
+                AstIndex2 = InPar.AstIndex(Iobj);
+                
+
                 K = K + 1;
                 if (iscell(InPar.ObjectNames))
-                    Object = Inpar.ObjectNames{Iobj};
+                    Object = InPar.ObjectNames{Iobj};
                 elseif (isnumeric(InPar.ObjectNames))
                     Object = sprintf('%d;',InPar.ObjectNames(Iobj));
                 else
                     error('Unknown ObjectNames format');
                 end
-                
-                [Cat]=celestial.mpDB.jpl_generate_1obj_ephem('ObjName',Object,...
+
+                Iobj
+                Object
+
+                [Cat(K)]=celestial.mpDB.jpl_generate_1obj_ephem('ObjName',Object,...
                             'AstIndex',InPar.AstIndex(Iobj),...
                             'YearStart',InPar.YearStart,...
                             'YearEnd',InPar.YearEnd',...
@@ -246,13 +260,17 @@ classdef mpDB < handle
                             'CENTER',InPar.CENTER,...
                             'TimeBuffer',InPar.TimeBuffer,...
                             'PauseAfterError',InPar.PauseAfterError);
-                        
-                 PolyDB=celestial.mpDB.fit_poly2cat(Cat,'YearStart',InPar.YearStart,...
-                            'YearEnd',InPar.YearEnd',...
-                            'TimeBuffer',InPar.TimeBuffer);
-                        
-                        
+
                  
+                 if (isempty(Cat.Cat))
+                     PolyDB = [];
+                 else
+                     PolyDB=celestial.mpDB.fit_proly2cat(Cat,'YearStart',InPar.YearStart,...
+                                'YearEnd',InPar.YearEnd',...
+                                'TimeBuffer',InPar.TimeBuffer);
+                 end
+
+
                 if (Iobj./InPar.NinFile)==floor(Iobj./InPar.NinFile) || Iobj==Nobj
 
                     SizeCat = sizecat(Cat);
@@ -263,7 +281,7 @@ classdef mpDB < handle
                     CatM = merge(Cat);
                     CatM.Cat = real(CatM.Cat);
 
-                    FileName = sprintf('AstEphem_%s_%04d_%04d_%06d_%06d.hdf5',InPar.FileType,InPar.YearStart,InPar.YearEnd,Istart,Iobj);
+                    FileName = sprintf('AstEphem_%s_%04d_%04d_%06d_%06d.hdf5',InPar.FileType,InPar.YearStart,InPar.YearEnd, AstIndex1  , AstIndex2);
                     delete(FileName);
                     VarName  = sprintf('/Ephem');
                     Attrib = [Cat(1).ColCell', num2cell(1:1:numel(Cat(1).ColCell))'];
@@ -293,9 +311,7 @@ classdef mpDB < handle
                     K = 0;
                 end
 
-
-                        
-                        
+                  
             end
                 
             
@@ -362,40 +378,46 @@ classdef mpDB < handle
                 toc
             catch
                 pause(InPar.PauseAfterError);
+                
                 tic
                 [Cat(K)]=celestial.SolarSys.jpl_horizons('StartJD',StartJD,'StopJD',StopJD,'ObjectInd',Object,'CENTER',InPar.CENTER,'StepSizeUnits',InPar.StepSizeUnits,'StepSize',InPar.StepSize);
                 toc
-            end
-
-            if isempty(Cat(K).Cat)
-                Object
-                error('empty Cat');
+               
             end
 
             pause(1);
+            
+            if isempty(Cat(K).Cat)
+               Object
+               warning('empty Cat');
+               
+            else
 
-            % add column
-            Nep = size(Cat(K).Cat,1);
-            Cat(K).Cat = [ones(Nep,1).*InPar.AstIndex, Cat(K).Cat];
-            Cat(K).ColCell = ['AstIndex', Cat(K).ColCell];
-            Cat(K).ColUnits = ["", Cat(K).ColUnits];
-            Cat(K) = colcell2col(Cat(K));
+            
 
-            % select column
-            Cat(K) = col_select(Cat(K),{'AstIndex','JD','RA','Dec','APmag','r','rdot','Delta','Deltadot','SubObsTargetAng','TrailLeadSun','SubTargetObsAng'});
+                % add column
+                Nep = size(Cat(K).Cat,1);
+                Cat(K).Cat = [ones(Nep,1).*InPar.AstIndex, Cat(K).Cat];
+                Cat(K).ColCell = ['AstIndex', Cat(K).ColCell];
+                Cat(K).ColUnits = ["", Cat(K).ColUnits];
+                Cat(K) = colcell2col(Cat(K));
 
-            % add angular rate column
-            Col = Cat(K).Col;
-            D = celestial.coo.sphere_dist_fast(Cat(K).Cat(1:end-1,Col.RA),...
-                                           Cat(K).Cat(1:end-1,Col.Dec),...
-                                           Cat(K).Cat(2:end,Col.RA),...
-                                           Cat(K).Cat(2:end,Col.Dec));
-            D = [D; D(end)];
-            Cat(K).Cat = [Cat(K).Cat, D];
-            Cat(K).ColCell = [Cat(K).ColCell, "RateDay"];
-            Cat(K).ColUnits = [Cat(K).ColUnits, "rad/day"];
-            Cat(K) = colcell2col(Cat(K));
-            Col = Cat(K).Col;
+                % select column
+                Cat(K) = col_select(Cat(K),{'AstIndex','JD','RA','Dec','APmag','r','rdot','Delta','Deltadot','SubObsTargetAng','TrailLeadSun','SubTargetObsAng'});
+
+                % add angular rate column
+                Col = Cat(K).Col;
+                D = celestial.coo.sphere_dist_fast(Cat(K).Cat(1:end-1,Col.RA),...
+                                               Cat(K).Cat(1:end-1,Col.Dec),...
+                                               Cat(K).Cat(2:end,Col.RA),...
+                                               Cat(K).Cat(2:end,Col.Dec));
+                D = [D; D(end)];
+                Cat(K).Cat = [Cat(K).Cat, D];
+                Cat(K).ColCell = [Cat(K).ColCell, "RateDay"];
+                Cat(K).ColUnits = [Cat(K).ColUnits, "rad/day"];
+                Cat(K) = colcell2col(Cat(K));
+                Col = Cat(K).Col;
+            end
 
         end
             

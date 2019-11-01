@@ -227,13 +227,15 @@ classdef mpDB < handle
             end
             
             Nobj = numel(InPar.ObjectNames);
-            %Nobj = 60274
+            %Nobj = 541132
             
             K = 0;
-            for Iobj=60275:1:Nobj
+            for Iobj=1:1:Nobj
                 if K==0
                     Istart = Iobj;
                     AstIndex1 = InPar.AstIndex(Istart);
+                    
+                    Cat = AstCat;
                     
                 end
                 AstIndex2 = InPar.AstIndex(Iobj);
@@ -251,7 +253,7 @@ classdef mpDB < handle
                 Iobj
                 Object
 
-                [Cat]=celestial.mpDB.jpl_generate_1obj_ephem('ObjName',Object,...
+                [Cat(K)]=celestial.mpDB.jpl_generate_1obj_ephem('ObjName',Object,...
                             'AstIndex',InPar.AstIndex(Iobj),...
                             'YearStart',InPar.YearStart,...
                             'YearEnd',InPar.YearEnd',...
@@ -262,12 +264,13 @@ classdef mpDB < handle
                             'PauseAfterError',InPar.PauseAfterError);
 
                  
-                 PolyDB=celestial.mpDB.fit_poly2cat(Cat,'YearStart',InPar.YearStart,...
+                 
+                 PolyDB(K,:)=celestial.mpDB.fit_poly2cat(Cat(K),'YearStart',InPar.YearStart,...
                             'YearEnd',InPar.YearEnd',...
                             'TimeBuffer',InPar.TimeBuffer);
 
 
-
+                        
                 if (Iobj./InPar.NinFile)==floor(Iobj./InPar.NinFile) || Iobj==Nobj
 
                     SizeCat = sizecat(Cat);
@@ -382,35 +385,39 @@ classdef mpDB < handle
                
             end
 
-            if isempty(Cat(K).Cat)
-                Object
-                error('empty Cat');
-            end
-
             pause(1);
+            
+            if isempty(Cat(K).Cat)
+               Object
+               warning('empty Cat');
+               
+            else
 
-            % add column
-            Nep = size(Cat(K).Cat,1);
-            Cat(K).Cat = [ones(Nep,1).*InPar.AstIndex, Cat(K).Cat];
-            Cat(K).ColCell = ['AstIndex', Cat(K).ColCell];
-            Cat(K).ColUnits = ["", Cat(K).ColUnits];
-            Cat(K) = colcell2col(Cat(K));
+            
 
-            % select column
-            Cat(K) = col_select(Cat(K),{'AstIndex','JD','RA','Dec','APmag','r','rdot','Delta','Deltadot','SubObsTargetAng','TrailLeadSun','SubTargetObsAng'});
+                % add column
+                Nep = size(Cat(K).Cat,1);
+                Cat(K).Cat = [ones(Nep,1).*InPar.AstIndex, Cat(K).Cat];
+                Cat(K).ColCell = ['AstIndex', Cat(K).ColCell];
+                Cat(K).ColUnits = ["", Cat(K).ColUnits];
+                Cat(K) = colcell2col(Cat(K));
 
-            % add angular rate column
-            Col = Cat(K).Col;
-            D = celestial.coo.sphere_dist_fast(Cat(K).Cat(1:end-1,Col.RA),...
-                                           Cat(K).Cat(1:end-1,Col.Dec),...
-                                           Cat(K).Cat(2:end,Col.RA),...
-                                           Cat(K).Cat(2:end,Col.Dec));
-            D = [D; D(end)];
-            Cat(K).Cat = [Cat(K).Cat, D];
-            Cat(K).ColCell = [Cat(K).ColCell, "RateDay"];
-            Cat(K).ColUnits = [Cat(K).ColUnits, "rad/day"];
-            Cat(K) = colcell2col(Cat(K));
-            Col = Cat(K).Col;
+                % select column
+                Cat(K) = col_select(Cat(K),{'AstIndex','JD','RA','Dec','APmag','r','rdot','Delta','Deltadot','SubObsTargetAng','TrailLeadSun','SubTargetObsAng'});
+
+                % add angular rate column
+                Col = Cat(K).Col;
+                D = celestial.coo.sphere_dist_fast(Cat(K).Cat(1:end-1,Col.RA),...
+                                               Cat(K).Cat(1:end-1,Col.Dec),...
+                                               Cat(K).Cat(2:end,Col.RA),...
+                                               Cat(K).Cat(2:end,Col.Dec));
+                D = [D; D(end)];
+                Cat(K).Cat = [Cat(K).Cat, D];
+                Cat(K).ColCell = [Cat(K).ColCell, "RateDay"];
+                Cat(K).ColUnits = [Cat(K).ColUnits, "rad/day"];
+                Cat(K) = colcell2col(Cat(K));
+                Col = Cat(K).Col;
+            end
 
         end
             
@@ -444,9 +451,6 @@ classdef mpDB < handle
 
             DefV.YearStart            = 2017;
             DefV.YearEnd              = 2021;
-%             DefV.StepSize             = 8;
-%             DefV.StepSizeUnits        = 'h';
-%             DefV.CENTER               = '675';  % Palomar
             DefV.TimeBuffer           = 3;   % days
             DefV.PolyOrder            = 9;
             InPar = InArg.populate_keyval(DefV,varargin,mfilename);
@@ -466,42 +470,49 @@ classdef mpDB < handle
          
             PolyDB = Util.struct.struct_def({'MaxD','ParCX','ParCY','ParCZ'},1,Nyears);
 
-
             K = 1;
-            % fit polynomial to asteroid motion per year
-            for Iyears=1:1:Nyears
-                RefTime = celestial.time.julday([1 1 Years(Iyears)]);
-                RefYear = 365.25;
+            if ~isempty(Cat.Cat)
+                
+                % fit polynomial to asteroid motion per year
+                for Iyears=1:1:Nyears
+                    RefTime = celestial.time.julday([1 1 Years(Iyears)]);
+                    RefYear = 365.25;
 
-                Ftime = Cat(K).Cat(:,Col.JD)>=(celestial.time.julday([1 1 Years(Iyears)])-TimeBuffer) & ...
-                        Cat(K).Cat(:,Col.JD)<=(celestial.time.julday([31 12 Years(Iyears)])+TimeBuffer);
-                [CX,CY,CZ] = celestial.coo.coo2cosined(Cat(K).Cat(Ftime,Col.RA), Cat(K).Cat(Ftime,Col.Dec));
+                    Ftime = Cat(K).Cat(:,Col.JD)>=(celestial.time.julday([1 1 Years(Iyears)])-TimeBuffer) & ...
+                            Cat(K).Cat(:,Col.JD)<=(celestial.time.julday([31 12 Years(Iyears)])+TimeBuffer);
+                    [CX,CY,CZ] = celestial.coo.coo2cosined(Cat(K).Cat(Ftime,Col.RA), Cat(K).Cat(Ftime,Col.Dec));
 
-                Time = (Cat(K).Cat(Ftime,Col.JD) - RefTime)./RefYear;
+                    Time = (Cat(K).Cat(Ftime,Col.JD) - RefTime)./RefYear;
 
-                ParCX  = polyfit(Time,CX,PolyOrder);
-                ParCY  = polyfit(Time,CY,PolyOrder);
-                ParCZ  = polyfit(Time,CZ,PolyOrder);
+                    ParCX  = polyfit(Time,CX,PolyOrder);
+                    ParCY  = polyfit(Time,CY,PolyOrder);
+                    ParCZ  = polyfit(Time,CZ,PolyOrder);
 
-                PredCX = polyval(ParCX,Time);
-                PredCY = polyval(ParCY,Time);
-                PredCZ = polyval(ParCZ,Time);
-                [PredRA,PredDec] = celestial.coo.cosined2coo(PredCX,PredCY,PredCZ);
+                    PredCX = polyval(ParCX,Time);
+                    PredCY = polyval(ParCY,Time);
+                    PredCZ = polyval(ParCZ,Time);
+                    [PredRA,PredDec] = celestial.coo.cosined2coo(PredCX,PredCY,PredCZ);
 
-                D = celestial.coo.sphere_dist_fast(Cat(K).Cat(Ftime,Col.RA), Cat(K).Cat(Ftime,Col.Dec),...
-                                                   PredRA, PredDec);
-                MaxD = max(D); 
-                PolyDB(K,Iyears).MaxD  = MaxD;  %.*RAD
-                PolyDB(K,Iyears).ParCX = ParCX.';
-                PolyDB(K,Iyears).ParCY = ParCY.';
-                PolyDB(K,Iyears).ParCZ = ParCZ.';
+                    D = celestial.coo.sphere_dist_fast(Cat(K).Cat(Ftime,Col.RA), Cat(K).Cat(Ftime,Col.Dec),...
+                                                       PredRA, PredDec);
+                    MaxD = max(D); 
+                    PolyDB(K,Iyears).MaxD  = MaxD;  %.*RAD
+                    PolyDB(K,Iyears).ParCX = ParCX.';
+                    PolyDB(K,Iyears).ParCY = ParCY.';
+                    PolyDB(K,Iyears).ParCZ = ParCZ.';
 
+                end
+            else
+                % empty Cat
+                for Iyears=1:1:Nyears
+                    PolyDB(K,Iyears).MaxD  = NaN;  %.*RAD
+                    PolyDB(K,Iyears).ParCX = nan(InPar.PolyOrder+1,1);
+                    PolyDB(K,Iyears).ParCY = nan(InPar.PolyOrder+1,1);
+                    PolyDB(K,Iyears).ParCZ = nan(InPar.PolyOrder+1,1);
+                end
+                
             end
 
-
-
-    
-    
         end
         
         function [FileName,DataSet,Data]=loadEphemFile(ID,Type,Year)

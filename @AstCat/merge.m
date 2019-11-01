@@ -41,6 +41,8 @@ end
 
 OutC.Cat = zeros(Nrow,Ncol);
 Line     = 0;
+Ncat = numel(AstC);
+
 for Icat=1:1:Ncat
     if (~isempty(AstC(Icat).Cat))
         OutC.Cat((1:SizeRow(Icat))+Line,:) = AstC(Icat).Cat;

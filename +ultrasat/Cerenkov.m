@@ -2,7 +2,6 @@ function Res=Cerenkov(Material,FluxOption,Plot)
 % Calculate the Cerenkov spectrum generated in a lens
 % Package: telescope.Optics
 % Description: Calculate the Cerenkov spectrum generated in a lens.
-
 % Input  : - Material, default is 'sio2'.
 %          - FluxOption:
 %               DailyMin_MeanFlux: 
@@ -165,6 +164,8 @@ end
 [Lam,n]=telescope.Optics.refraction_index('Material','SiO2');
 Nn = numel(n);
 IC1mu = nan(Nn,1);
+L1mu = nan(Nn,1);
+
 for In=1:1:Nn
 
     %Cerenkov L per unit area and wavelength
@@ -189,16 +190,18 @@ for In=1:1:Nn
     gEE=spline(Ek,1 ./dEdX,em);
     %lE=(2/3)*(em.^(3/2)-Em^(3/2)).*(em<=1) + (em-1+2/3*(1-Em^(3/2))).*(em>1);
     intg=gEE.*Fm.*fC; 
-    Lnorm=2*pi/137/rho/(Lam(In).*1e-8)*spline(em,intg,1);
+    Lnorm=2*pi/137/rho/(Lam(In).*1e-8)*spline(em,intg,1);  % per micron
+    Lnorm= Lnorm./(Lam(In)./1e4);   % wavelength is normalized to 1 micron
     int=intg*diff(ee')/spline(em,intg,1);
     Cint=[0 cumsum(intg.*diff(ee))]/(intg*diff(ee'));
-    L1mu=int*Lnorm; % at lambda=1mu
-    IC1mu(In) = L1mu/2/pi/n(In)^2;   % intensity at 1 micron ?
+    L1mu(In)  = int*Lnorm; % at lambda=1mu
+    IC1mu(In) = L1mu(In)/2/pi/n(In)^2;   % intensity at 1 micron ?
     
 end
 
 Res.Lam = Lam;
 Res.Int = IC1mu;
 Res.n   = n;
+Res.Lum = L1mu;
 
 %Spec = 
