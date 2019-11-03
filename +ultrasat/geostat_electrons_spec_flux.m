@@ -8,6 +8,7 @@ function [Out,ColCell]=geostat_electrons_spec_flux(varargin)
 %            'Source' - Default is 'AE9' model.
 %            'OutType' - 'AstCat' | 'mat'. Default is 'mat'.
 % Output : - Matrix or AstCat object containin spectra.
+%            [counts(>E)/cm^2/s]
 %          - ColCell
 % License: GNU general public license version 3
 %     By : Yossi Shvartzvald               Oct 2019

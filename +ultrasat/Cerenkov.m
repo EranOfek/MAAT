@@ -24,10 +24,14 @@ function Res=Cerenkov(Material,FluxOption,Plot)
 %            'Int' - Intensity of Cerenkov radaition generated in the lens.
 %                    Units: [count/cm^2/s/sr/micron]
 %            'n'   - Refraction index at wavelength.
+%          - A structure containing the following fields:
+%            'E' - Electrons energy.
+%            'F' - Electrons integrated flux with energy (>E)
+%                  [counts(>E)/cm^2/s].
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Oct 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: Res=ultrasat.Cerenkov
+% Example: [Res,ResEl]=ultrasat.Cerenkov
 %%
 
 if nargin<3
@@ -72,6 +76,9 @@ Col = cell2struct(num2cell(1:1:numel(ColCell)),ColCell,2);
 
 Ee1=Fmat(:,1);
 F1=Fmat(:,Col.(FluxOption));
+
+ResEl.E = Ee1;
+ResEl.F = F1;
 
 %Compare Yossi's data with my read-off
 if Plot
@@ -157,7 +164,8 @@ if Plot
     xlabel('\theta'); ylabel('I(<\theta)/I, E_e [MeV]')
 end
 
-%[IC1mu, IC1mu_v2]
+%[IC1mu, IC1mu_v2
+
 
 
 % as a function of lambda
@@ -190,8 +198,12 @@ for In=1:1:Nn
     gEE=spline(Ek,1 ./dEdX,em);
     %lE=(2/3)*(em.^(3/2)-Em^(3/2)).*(em<=1) + (em-1+2/3*(1-Em^(3/2))).*(em>1);
     intg=gEE.*Fm.*fC; 
-    Lnorm=2*pi/137/rho/(Lam(In).*1e-8)*spline(em,intg,1);  % per micron
-    Lnorm= Lnorm./(Lam(In)./1e4);   % wavelength is normalized to 1 micron
+   % Lnorm=2*pi/137/rho/(Lam(In).*1e-8)*spline(em,intg,1);  % per micron
+   % Lnorm= Lnorm./(Lam(In)./1e4);   % wavelength is normalized to 1 micron
+    
+    Lnorm=2*pi/137/rho/( (1e-8.*Lam(In)).^2)*spline(em,intg,1); % count/cm^2/s/cm(wave)
+    Lnorm=Lnorm.*1e-4;  % count/cm^2/s/micron(wave)
+    
     int=intg*diff(ee')/spline(em,intg,1);
     Cint=[0 cumsum(intg.*diff(ee))]/(intg*diff(ee'));
     L1mu(In)  = int*Lnorm; % at lambda=1mu

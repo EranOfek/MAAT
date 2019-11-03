@@ -1,4 +1,4 @@
-function [Prop]=ztf_filename2prop(FileName)
+function [Prop]=ztf_filename2prop(FileName,varargin)
 % Extract information from ZTF file name
 % Package: +VO/+ZTF
 % Description: Extract information and image properties from ZTF file name.
@@ -22,8 +22,9 @@ function [Prop]=ztf_filename2prop(FileName)
 %--------------------------------------------------------------------------
 
 
-%DefV. = 
-%InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+DefV.FilterList           = {'zg','zr','zi'};
+InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
 
 if ~iscell(FileName)
     FileName = {FileName};
@@ -31,7 +32,7 @@ end
 Nfile = numel(FileName);
 
 
-Prop = Util.struct.struct_def({'FileType','Field','Filter','CCDID','QuadID','Year','Month','Day','Frac','JD'},Nfile,1);
+Prop = Util.struct.struct_def({'FileType','Field','Filter','FilterInd','CCDID','QuadID','Year','Month','Day','Frac','JD'},Nfile,1);
 for Ifile=1:1:Nfile
     Tmp = regexp(FileName{Ifile},'_','split');
     switch lower(Tmp{end})
@@ -39,6 +40,7 @@ for Ifile=1:1:Nfile
             Prop(Ifile).FileType = 'psfcat';
             Prop(Ifile).Field    = str2double(Tmp{3});
             Prop(Ifile).Filter   = Tmp{4};
+            Prop(Ifile).FilterInd= find(strcmp(Prop(Ifile).Filter ,InPar.FilterList));
             Prop(Ifile).CCDID    = str2double(Tmp{5}(2:3));
             Prop(Ifile).QuadID   = str2double(Tmp{7}(2));
             Date    = datevec(Tmp{2},'yyyymmdd');

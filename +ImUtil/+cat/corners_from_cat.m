@@ -27,7 +27,7 @@ function [Res]=corners_from_cat(Cat,varargin)
 % Reliable: 
 %--------------------------------------------------------------------------
 
-DefV.CCDSEC               = [1 3172 1 3172];
+DefV.CCDSEC               = [1 3080 1 3072];
 DefV.Units                = 'rad';
 DefV.ColRA                = 1;
 DefV.ColDec               = 2;
