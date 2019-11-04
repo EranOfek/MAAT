@@ -19,7 +19,7 @@ function [Ek,dEdX]=dEdX_calc(Material,Plot)
 if nargin<2
     Plot = true;
     if nargin<1
-        Material = 'silica';   % sapphire
+        Material = 'si02_suprasil_2a'; %'silica';   % sapphire
     end
 end
 
@@ -85,7 +85,7 @@ dEdXAl=dEdX;
 
 
 switch lower(Material)
-    case {'sio2','silica'}
+    case {'sio2','silica','si02_suprasil_2a'}
         %if Silica %SiO2
         dEdX=28/(2*16+28)*dEdXSi+2*16/(2*16+28)*dEdXO;
     case 'sapphire'

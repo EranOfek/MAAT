@@ -1,4 +1,4 @@
-function Res=Cerenkov(Material,FluxOption,Plot)
+function [Res,ResEl]=Cerenkov(Material,FluxOption,Plot)
 % Calculate the Cerenkov spectrum generated in a lens
 % Package: telescope.Optics
 % Description: Calculate the Cerenkov spectrum generated in a lens.
@@ -39,7 +39,7 @@ if nargin<3
     if nargin<2
         FluxOption = 'DailyMax_95flux';
         if nargin<1
-            Material = 'silica';   % sapphire
+            Material = 'si02_suprasil_2a'; %'silica';   % sapphire
         end
     end
 end
@@ -48,7 +48,7 @@ end
 %see X-UV-updated note for derivations
 
 switch lower(Material)
-    case {'silica','sio2'}
+    case {'silica','sio2','si02_suprasil_2a'}
         
         %if Silica %SiO2
         n=1.5;
@@ -169,7 +169,7 @@ end
 
 
 % as a function of lambda
-[Lam,n]=telescope.Optics.refraction_index('Material','SiO2');
+[Lam,n]=telescope.Optics.refraction_index('Material',Material);
 Nn = numel(n);
 IC1mu = nan(Nn,1);
 L1mu = nan(Nn,1);
