@@ -8,7 +8,7 @@ function [OutX,OutY] = apply_tranclass_INV(TranC,X,Y,varargin)
 %          - Accuracy for convergence. Default is 1e-3.
 % Output : - A vector of inverse transformed X coordinates
 %          - A vector of inverse transformed Y coordinates
-DefV.Thresh = 1e-3;
+DefV.Thresh = 1e-8;
 DefV.SolverType = 'fsolve';   % 'fsolve' | 'olditer'
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 Thresh=InPar.Thresh;
