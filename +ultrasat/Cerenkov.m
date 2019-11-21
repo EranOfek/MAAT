@@ -2,7 +2,7 @@ function [Res,ResEl]=Cerenkov(Material,FluxOption,Plot)
 % Calculate the Cerenkov spectrum generated in a lens
 % Package: telescope.Optics
 % Description: Calculate the Cerenkov spectrum generated in a lens.
-% Input  : - Material, default is 'sio2'.
+% Input  : - Material, default is 'si02_suprasil_2a'.
 %          - FluxOption:
 %               DailyMin_MeanFlux: 
 %               DailyMax_MeanFlux: 

@@ -1201,6 +1201,7 @@ classdef catsHTM
             %tic;
             First = true;
              for Ih=1:1:Nh
+                 %Nh
                  %Ih
 %                  if (Ih./1000)==floor(Ih./1000)
 %                     Ih
@@ -1589,6 +1590,7 @@ classdef catsHTM
                             % execute InPar.QueryFun
                             % QueryFun can select specific sources (by some
                             % attributes) from the matched Cat1 and Cat2
+%InPar.QueryFunPar{1} = Ihtm1;
 
                             FlagSelected       = InPar.QueryFun(Cat1,Cat2matched,InPar.QueryFunPar{:});
                             % what to do with FlagSelected?

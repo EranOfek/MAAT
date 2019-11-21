@@ -253,18 +253,6 @@ classdef Kernel2
         % box
         function K=box(varargin)
             % Box kernel
-            % Package: @Kernel2
-            % Input  : - Box X size.
-            %          - Box Y size.
-            %          - Stamp X size.
-            %          - Stamp Y size.
-            % Output : - A box kernel located at the stamp center.
-            % License: GNU general public license version 3
-            % Tested : Matlab R2015b
-            %     By : Eran O. Ofek                    Nov 2019
-            %    URL : http://weizmann.ac.il/home/eofek/matlab/
-            % Example: K = Kernel2.box;
-            % Reliable: 2
             
             %        BoxX, BoxY, SizeX SizeY 
             DefPar = [11, 11 111, 111];
@@ -275,13 +263,7 @@ classdef Kernel2
             SizeX  = Par(3);
             SizeY  = Par(4);
             
-            K = zeros(SizeY,SizeX);
-            Y1 = round((SizeY - BoxY).*0.5);
-            Y2 = Y1 + BoxY;
-            X1 = round((SizeX - BoxX).*0.5);
-            X2 = X1 + BoxX;
             
-            K(Y1:Y2,X1:X2) = 1;
             
             
         end % end box function
