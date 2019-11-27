@@ -32,9 +32,6 @@ function [Res,ResEl]=Cerenkov(varargin)
 % Example: [Res,ResEl]=ultrasat.Cerenkov
 %%
 
-RAD = 180./pi;
-
-
 DefV.Material             = 'si02_suprasil_2a';
 DefV.FluxOption           = 'DailyMax_95flux';
 DefV.Plot                 = false;
@@ -213,11 +210,8 @@ end
 
 Res.Lam = Lam;
 Res.Int = IC1mu;
-Res.Int_Units   = 'count/cm^2/s/sr/micron';
-Res.IntAA       = Res.Int./1e4./((RAD.*3600).^2);  % count/cm^2/s/arcsec^2/Ang
-Res.IntAA_Units = 'count/cm^2/s/arcsec^2/Ang';
-Res.IntFA       = convert.flux(Res.IntAA,'ph/A','cgs/A',Res.Lam,'A');
-Res.IntFA_Units = 'erg/cm^2/s/arcsec^2/Ang';
+Res.IntUnits = '
+Res.Int = Res.Int./1e4./((RAD.*3600).^2);  % count/cm^2/s/arcsec^2/Ang
 Res.n   = n;
 Res.Lum = L1mu;
 

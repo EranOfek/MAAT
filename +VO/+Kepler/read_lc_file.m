@@ -13,8 +13,6 @@ function [LC,Head]=read_lc_file(FileName)
 % Reliable: 2 
 %------------------------------------------------------------------------------
 
-
-
 Head = FITS.get_head(FileName);
 
 LC   = FITS.read_table(FileName,'HDUnum',2);
