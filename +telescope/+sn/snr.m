@@ -47,7 +47,12 @@ DefV.InterpMethod         = 'linear';
 %problem with target spec normalization 
 %changing temp - and result doesn't make sense
 
-InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+if (numel(varargin)==1)
+    % assume input is a structure (like DefV)
+    InPar = varargin{1};
+else
+    InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+end
 
 PixScale  = InPar.PixSize.*1e-4./InPar.FL .*RAD.*3600;
 

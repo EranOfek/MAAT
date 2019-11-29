@@ -20,7 +20,7 @@ function [Rate,zLim,LimMag,SN]=event_rate(varargin)
 RAD = 180./pi;
 
 DefV.EventAbsMag          = -14.8 + 0.2;
-DefV.HostAbsMag           = -19;
+DefV.HostAbsMag           = -21; %-19;
 DefV.Rate                 = 3e-5;   % event /Mpc^3/yr
 
 DefV.SN                   = 5;

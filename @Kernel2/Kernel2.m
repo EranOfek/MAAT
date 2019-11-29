@@ -116,6 +116,7 @@ classdef Kernel2
             %              Functional form: e^(-k*r^(1/n))
             % Input  : - Sersic k parameter. Default is 1.
             %          - sersic n parameter. Default is 4 (de Vaucouleurs)
+            %          - Half light radius (Re). Default is 2.
             %          - Stamp size in X direction. Default is 21.
             %          - Stamp Size in Y direction. Default is 21.
             % Output : - A sersic kernel located at the stamp center.
@@ -131,13 +132,14 @@ classdef Kernel2
             %--------------------------------------------------------------------------
 
             %         Radius SizeX SizeY
-            DefPar = [1, 4, 21, 21];
+            DefPar = [1, 4, 2, 21, 21];
             Nvar   = numel(varargin);
             Par    = [varargin{:}, DefPar(Nvar+1:end)];
             SerK   = Par(1);
             SerN   = Par(2);
-            SizeX  = Par(3);
-            SizeY  = Par(4);
+            Re     = Par(3);
+            SizeX  = Par(4);
+            SizeY  = Par(5);
 
             [MatX,MatY] = meshgrid((1:1:SizeX),(1:1:SizeY));
             %X0   = SizeX.*0.5;
@@ -149,7 +151,7 @@ classdef Kernel2
             MatY = MatY - Y0;
             MatR2=MatX.^2 + MatY.^2;
 
-            K = exp(-SerK.*sqrt(MatR2).^(1./SerN));
+            K = exp(-SerK.*sqrt(MatR2./Re).^(1./SerN));
             K = K./sum(K(:));
 
         end % function sersic
