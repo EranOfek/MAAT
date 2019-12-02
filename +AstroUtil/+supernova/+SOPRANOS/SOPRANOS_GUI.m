@@ -1075,7 +1075,7 @@ function BackgroundValue_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of BackgroundValue as text
 %        str2double(get(hObject,'String')) returns contents of BackgroundValue as a double
 iband = handles.BandNumber.Value;
-hObject.SOPRANO.UserData.data.bands{iband}.background = str2num(hObject.String);
+handles.SOPRANOS.UserData.data.bands{iband}.background = str2num(hObject.String);
 
 
 % --- Executes on button press in RunGrid.
@@ -1702,7 +1702,6 @@ function PeakNumber_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of PeakNumber as text
 %        str2double(get(hObject,'String')) returns contents of PeakNumber as a double
 
-
 % --- Executes during object creation, after setting all properties.
 function PeakNumber_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to PeakNumber (see GCBO)
@@ -1723,6 +1722,8 @@ function BG_sigma_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of BG_sigma as text
 %        str2double(get(hObject,'String')) returns contents of BG_sigma as a double
+iband = handles.BandNumber.Value;
+handles.SOPRANOS.UserData.data.bands{iband}.bg.sigma = str2num(hObject.String);
 
 
 % --- Executes during object creation, after setting all properties.
