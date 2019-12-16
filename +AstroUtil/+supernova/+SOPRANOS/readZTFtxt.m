@@ -34,15 +34,21 @@ end
 %	column8: categorical (%C)
 %   column9: categorical (%C)
 % For more information, see the TEXTSCAN documentation.
+headerSpec = '%s%s%s%s%s%s%s%s%s%[^\n\r]';
 formatSpec = '%f%f%f%f%f%f%f%C%C%[^\n\r]';
 
 %% Open the text file.
 fileID = fopen(filename,'r');
 
+%% Read headers of data according to the header format.
+headerArray = textscan(fileID, headerSpec, 1, 'Delimiter', delimiter, 'EndofLine', '\r\n');
+frewind(fileID);
+
 %% Read columns of data according to the format.
 % This call is based on the structure of the file used to generate this
 % code. If an error occurs for a different file, try regenerating the code
 % from the Import Tool.
+
 dataArray = textscan(fileID, formatSpec, endRow(1)-startRow(1)+1, 'Delimiter', delimiter, 'TextType', 'string', 'HeaderLines', startRow(1)-1, 'ReturnOnError', false, 'EndOfLine', '\r\n');
 for block=2:length(startRow)
     frewind(fileID);
@@ -62,5 +68,6 @@ fclose(fileID);
 % script.
 
 %% Create output variable
-data = table(dataArray{1:end-1}, 'VariableNames', {'jd','mag','magerr','flux','fluxerr','absmag','absmagerr','filter','instr'});
-
+% data = table(dataArray{1:end-1}, 'VariableNames', {'jd','mag','magerr','flux','fluxerr','absmag','absmagerr','filter','instr'});
+for i=1:length(headerArray),header{i}=headerArray{i}{1};end
+data = table(dataArray{1:end-1}, 'VariableNames',header(1:end-1));

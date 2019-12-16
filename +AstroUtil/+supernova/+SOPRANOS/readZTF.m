@@ -1,5 +1,5 @@
 function ZTFtable = readZTF(filename, startRow, endRow)
-% read ZTF data file as exprted from ZTF marshal
+% read ZTF data file as exported from ZTF marshal
 % Package: AstroUtil.supernove.SOPRANOS
 % Description: read ZTF data file
 % Input  : - file name

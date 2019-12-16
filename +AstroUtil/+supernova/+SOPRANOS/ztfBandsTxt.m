@@ -35,29 +35,29 @@ for ifilter=1:length(filters)
             switch instr
                 case "P48+ZTF"
                     switch filter
-                        case 'r_p48'
+                        case {'r_p48','r'}
                             bands{iband}.filterObj=AstFilter.get('ZTF','r');
-                        case 'g_p48'
+                        case {'g_p48', 'g'}
                             bands{iband}.filterObj=AstFilter.get('ZTF','g');
-                        case 'i_p48'
+                        case {'i_p48','i'}
                             bands{iband}.filterObj=AstFilter.get('ZTF','i');
                         otherwise
                             fprintf('unknown filter %s for P48',filter);
                     end
                 case "P60+SEDM"
                       switch lower(filter)
-                        case 'r_sdss'
+                        case {'r_sdss','r'}
                             bands{iband}.filterObj=AstFilter.get('SDSS','r');
-                        case 'g_sdss'
+                        case {'g_sdss','g'}
                             bands{iband}.filterObj=AstFilter.get('SDSS','g');
-                        case 'i_sdss'
+                        case {'i_sdss','i'}
                             bands{iband}.filterObj=AstFilter.get('SDSS','i');
-                        case 'u_sdss'
+                        case {'u_sdss','u'}
                             bands{iband}.filterObj=AstFilter.get('SDSS','u');
                         otherwise
                             fprintf('unknown filter %s for P60',filter);
                       end
-                case "SWIFT+UVOT"
+                case {"SWIFT+UVOT","Swift+UVOT"}
                     switch filter
                         case 'UVW1'
                             bands{iband}.filterObj=AstFilter.get('Swift/UVOT','UVW1');
@@ -65,11 +65,11 @@ for ifilter=1:length(filters)
                             bands{iband}.filterObj=AstFilter.get('Swift/UVOT','UVW2');
                         case 'UVM2'
                             bands{iband}.filterObj=AstFilter.get('Swift/UVOT','UVM2');
-                        case 'u_swift'
+                        case {'u_swift','U'}
                             bands{iband}.filterObj=AstFilter.get('Swift/UVOT','U');
-                        case 'b_swift'
+                        case {'b_swift','B'}
                             bands{iband}.filterObj=AstFilter.get('Swift/UVOT','B');
-                        case 'v_swift'
+                        case {'v_swift','V'}
                             bands{iband}.filterObj=AstFilter.get('Swift/UVOT','V');
                         otherwise
                             fprintf('unknown filter %s for Swift/UVOT',filter);
