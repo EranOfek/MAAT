@@ -150,8 +150,6 @@ switch lower(InPar.Type)
         eps1 = 0.027; eps2 = 0.086; 
         T_phRW = 1.61 .* ( (v_sstar/10^8.5).^2 .* t_d.^2 ./ (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)) ).^ eps1 .* ...
             (InPar.Rs.*SolR./1e13).^0.25 ./ (InPar.kappa./0.34).^0.25 .* t_d.^-0.5;  % [eV]
-%         T_phRW = 1.61 .* ( (v_sstar(:).'/10^8.5).^2 .* t_d.^2 ./ (InPar.f_rho(:).' .* InPar.Ms(:).' .* (InPar.kappa(:).'./0.34)) ).^ eps1 .* ...
-%             (InPar.Rs(:).'.*SolR./1e13).^0.25 ./ (InPar.kappa(:).'./0.34).^0.25 .* t_d.^-0.5;  % [eV]
          
         if isempty(InPar.Tcorr)
             Tcorr = 1.1;
