@@ -985,7 +985,7 @@ classdef convert
             %--------------------------------------------------------------------------
 
             if (ischar(String))
-                String = {String};
+                String = mat2cell(String,ones(size(String,1),1));
             end
             if (size(String,1)==1)
                 String = String.';
