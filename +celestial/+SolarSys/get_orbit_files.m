@@ -137,7 +137,7 @@ Data2.T      = Data2.Epoch - Data2.M./n;
 %--- read orbital elements of comets ---
 FID=fopen('ELEMENTS.COMET_1','r');
 %C=textscan(FID,'%38c %f %f %f %f %f %f %f %12c','Headerlines',2);
-C=textscan(FID,'%43c %f %f %f %f %f %f %f','Headerlines',2);
+C=textscan(FID,'%40c %f %f %f %f %f %f %f','Headerlines',2);
 fclose(FID);
 C{1}=cellstr(C{1});                                                       
 %C{9}=cellstr(C{9});

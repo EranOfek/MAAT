@@ -60,7 +60,7 @@ Def.Support  = 'circ';
 Def.OverSamp = 2;  % in lambda/d units...
 Def.Norm     = 'sum';
 
-if (nargin==0),
+if (nargin==0)
     n       = Def.n;
     m       = Def.m;
     Amp     = Def.Amp;
@@ -69,7 +69,7 @@ if (nargin==0),
     Support = Def.Support;
     OverSamp= Def.OverSamp;
     Norm    = Def.Norm;
-elseif (nargin==1),
+elseif (nargin==1)
     m       = Def.m;
     Amp     = Def.Amp;
     VecX    = Def.VecX;
@@ -77,53 +77,53 @@ elseif (nargin==1),
     Support = Def.Support;
     OverSamp= Def.OverSamp;   
     Norm    = Def.Norm;    
-elseif (nargin==2),
+elseif (nargin==2)
     Amp     = Def.Amp;
     VecX    = Def.VecX;
     VecY    = Def.VecY;
     Support = Def.Support;
     OverSamp= Def.OverSamp;
     Norm    = Def.Norm;
-elseif (nargin==3),
+elseif (nargin==3)
     VecX    = Def.VecX;
     VecY    = Def.VecY;
     Support = Def.Support;
     OverSamp= Def.OverSamp;
     Norm    = Def.Norm;
-elseif (nargin==4),
+elseif (nargin==4)
     VecY    = Def.VecY;
     Support = Def.Support;
     OverSamp= Def.OverSamp;
     Norm    = Def.Norm;
-elseif (nargin==5),
+elseif (nargin==5)
     Support = Def.Support;
     OverSamp= Def.OverSamp;
     Norm    = Def.Norm;
-elseif (nargin==6),
+elseif (nargin==6)
     OverSamp= Def.OverSamp;
     Norm    = Def.Norm;
-elseif (nargin==7),
+elseif (nargin==7)
     Norm    = Def.Norm;
-elseif (nargin==8),
+elseif (nargin==8)
     % do nothing
 else
     error('Illegal number of input arguments');
 end
 
-if (isempty(Amp)),
+if (isempty(Amp))
     Amp = ones(size(n));
 end
 
-if (isempty(VecX)),
+if (isempty(VecX))
     VecX = Def.VecX;
 end
-if (isempty(VecY)),
+if (isempty(VecY))
     VecY = Def.VecY;
 end
-if (isempty(Support)),
+if (isempty(Support))
     Support = Def.Support;
 end
-if (isempty(Norm)),
+if (isempty(Norm))
     Norm = Def.Norm;
 end
 
@@ -131,17 +131,17 @@ end
 
 
 
-if (numel(VecX)==1),
+if (numel(VecX)==1)
     % assume that VecX contains the number of steps
     VecX = (-1:2./(VecX-1):1).';
 end
-if (numel(VecY)==1),
+if (numel(VecY)==1)
     % assume that VecY contains the number of steps
     VecY = (-1:2./(VecY-1):1).';
 end
 
 
-if (ischar(Amp)),
+if (ischar(Amp))
     switch lower(Amp)
         case 'rand'
         otherwise
@@ -151,7 +151,7 @@ end
 
 [MatX,MatY] = meshgrid(VecX,VecY);
 
-if (ischar(Support)),
+if (ischar(Support))
     switch lower(Support)
         case 'circ'
             MatR        = sqrt(MatX.^2 + MatY.^2);
@@ -177,7 +177,7 @@ SumY(isnan(SumY)) = 0;
 FFT_NS   = fft2(Support.*exp(-1i.*SumY),OverSamp.*Size(1),OverSamp.*Size(2) );
 Image_NS = abs(FFT_NS).^2;
 %Image = abs(fftshift(fftshift(fft2(Support.*exp(-i.*SumY),OverSamp.*Size(1),OverSamp.*Size(2) ), 1),2)).^2;
-if (nargout>1),
+if (nargout>1)
     Image    = abs(fftshift(fftshift(FFT_NS, 1),2)).^2;
 end
 
@@ -187,7 +187,7 @@ switch lower(Norm)
     case 'sum'
         Norm     = sum(Image_NS(:));
         Image_NS = Image_NS./Norm;
-        if (nargout>1),
+        if (nargout>1)
             Image    = Image./Norm;
         end
     otherwise

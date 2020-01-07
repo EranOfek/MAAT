@@ -1,4 +1,4 @@
-function [Ind,FlagUnique]=search_sortedlat_multi(Cat,Long,Lat,Radius)
+function [Ind,FlagUnique]=search_sortedlat_multi(Cat,Long,Lat,Radius,FlagUnique)
 % Search a single long/lat in a catalog sorted by latitude
 % Package: VO.search
 % Description: A low level function for a single cone search
@@ -8,6 +8,8 @@ function [Ind,FlagUnique]=search_sortedlat_multi(Cat,Long,Lat,Radius)
 %          - Longitude [radians] to search.
 %          - Latitude [radians] to search.
 %          - Radius [radians] to search.
+%          - A vector of false with the length of the catalog,
+%            after first iteration provide the output.
 % Output : - A strucure array in which the number of elements equal to the
 %            number of searched coordinates (Lat), and with the following
 %            fields:
@@ -20,6 +22,10 @@ function [Ind,FlagUnique]=search_sortedlat_multi(Cat,Long,Lat,Radius)
 % Example: Cat=sortrows(rand(10000,2),2);
 %          Ind=VO.search.search_sortedlat(Cat,0.5,0.5,0.01)
 % Reliable: 2
+
+if (nargin<5)
+    FlagUnique = false(size(Cat,1),1);
+end
 
 Col.Lon = 1;
 Col.Lat = 2;
@@ -42,7 +48,6 @@ Ilow     = Ilowhigh(:,1);
 Ihigh    = min(Ncat,Ilowhigh(:,2)+1); % add 1 because of the way mfind_bin works
 
 Ind = Util.struct.struct_def({'Ind','Nmatch'},Nlat,1);
-FlagUnique = false(Nlat,1);
 for I=1:1:Nlat
     Dist  = celestial.coo.sphere_dist_fast(Long(I),Lat(I), Cat(Ilow(I):Ihigh(I),Col.Lon), Cat(Ilow(I):Ihigh(I),Col.Lat));
     Ind(I).Ind    = Ilow(I)-1+find(Dist <= Radius);

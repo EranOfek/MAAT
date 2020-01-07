@@ -73,6 +73,7 @@ if (Direction=='h')
 
    OutCoo = [Az, Alt];
 elseif (Direction=='e')
+   % horizontal to equatorial
    Az     = InCoo(:,1);
    Alt    = InCoo(:,2);
    Lat    = TopoPos(:,2);

@@ -19,12 +19,12 @@ function [Rate,zLim,LimMag,SN]=event_rate(varargin)
 
 RAD = 180./pi;
 
-DefV.EventAbsMag          = -14.8 + 0.2;
-DefV.HostAbsMag           = -21; %-19;
+DefV.EventAbsMag          = -14; %-14.8 + 0.2;
+DefV.HostAbsMag           = -14; %-19;
 DefV.Rate                 = 3e-5;   % event /Mpc^3/yr
 
 DefV.SN                   = 5;
-DefV.FWHM                 = 12;     % FWHM [arcsec]
+DefV.FWHM                 = 15;     % FWHM [arcsec]
 DefV.PSFeff               = 0.8;    % PSF efficiency
 DefV.Aper                 = 33;     % [cm]
 DefV.FL                   = 36;     % [cm]
@@ -72,7 +72,7 @@ PsfEffAreaPix = PsfEffAreaAS./(PixScale.^2);
 
 SkyFOV = (InPar.DetSize./InPar.FL).^2./(4.*pi);
 
-%SkyFOV = 180./(4.*pi.*RAD.^2);
+SkyFOV = 180./(4.*pi.*RAD.^2);
 
 %        -14.8 (10)       -17.3 (236)
 %        -13.5 (1.7)      -15.4 (21)

@@ -230,7 +230,7 @@ classdef mpDB < handle
             %Nobj = 541132
             
             K = 0;
-            for Iobj=60001:1:Nobj
+            for Iobj=1:1:Nobj
                 if K==0
                     Istart = Iobj;
                     AstIndex1 = InPar.AstIndex(Istart);

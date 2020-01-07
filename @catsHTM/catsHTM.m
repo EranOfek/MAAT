@@ -1626,7 +1626,7 @@ classdef catsHTM
     
     % plots
     methods (Static)
-        function H=plot_density(CatName,varargin)
+        function [H,Table]=plot_density(CatName,varargin)
             % Plot a catsHTM catalog surface density
             % Package: @catsHTM
             % Description: Plot a catsHTM catalog surface density in

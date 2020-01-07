@@ -10,14 +10,21 @@ function [SN]=snr(varargin)
 %     By : Eran O. Ofek                    Nov 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: [SN]=telescope.sn.snr
-% Reliable: 
+% Reliable: 2
 %--------------------------------------------------------------------------
 
 RAD = 180./pi;
 
+DefPar.ULTRASAT           = {'FWHM',12,'PSFeff',0.8,'Aper',33,'FL',36,'PixSize',9.5,...
+    'RN',3.5,'StrayLight',3.5.^2,'DC',1e-2,'Gain',2,'WC',160000,'ExpTime',300,'Nim',3,...
+    'ClearAper',0.75,'Trans',1,'Reflection',1,'QE',1,'TargetSpec',2e4,...
+    'BackSpec',@telescope.sn.back_comp,'BackCompFunPar',{},'Ebv',0.02,...
+    'Filter','Req4m3','FilterFamily','ULTRASAT','MagSys','AB'};
+   
 
 DefV.SN                   = 5;
 DefV.Mag                  = 22.0;
+DefV.Name                 = {};     % override all pthe parameters provided in the list
 DefV.FWHM                 = 12;     % FWHM [arcsec]
 DefV.PSFeff               = 0.8;    % PSF efficiency
 DefV.Aper                 = 33;     % [cm]
@@ -27,13 +34,14 @@ DefV.RN                   = 3.5;    % [e-]
 DefV.StrayLight           = 3.5.^2; % [e-]  per image/pix
 DefV.DC                   = 1e-2;   % [e-/pix/s]
 DefV.Gain                 = 2;      % [e-/ADU]
+DefV.WC                   = 160000; % [e-] well capacity
 DefV.ExpTime              = 300;    % [s]
 DefV.Nim                  = 3;
-DefV.ClearAper            = 0.75;
-DefV.Trans                = 1; %0.99.^8 .* 0.99.^4;
+DefV.ClearAper            = 0.69; %0.75;
+DefV.Trans                = 0.8./0.87; %1; %0.99.^8 .* 0.99.^4;
 DefV.Reflection           = 1; %0.96;
 DefV.QE                   = 1; %0.7;
-DefV.TargetSpec           = 2e4;    % if given override Mag
+DefV.TargetSpec           = 2e4; %3e3; %2e4;    % if given override Mag
 DefV.BackSpec             = @telescope.sn.back_comp;    % per arcsec^2 | handle | AstSpec | matrix
 DefV.BackCompFunPar       = {};
 DefV.Ebv                  = 0.02;
@@ -54,7 +62,14 @@ else
     InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 end
 
-PixScale  = InPar.PixSize.*1e-4./InPar.FL .*RAD.*3600;
+if (~isempty(InPar.Name))
+    Pars = DefPar.(InPar.Name);
+    for I=1:2:(numel(Pars)-1)
+        InPar.(Pars{I}) = Pars{I+1};
+    end
+end
+
+PixScale  = InPar.PixSize.*1e-4./InPar.FL .*RAD.*3600;   % [arcsec]
 
 SN.PsfEffAreaAS  = 4.*pi.*(InPar.FWHM./2.35).^2;
 SN.PsfEffAreaPix = SN.PsfEffAreaAS./(PixScale.^2);
@@ -195,7 +210,7 @@ end
 TargetSpecPh = [TargetSpec(:,1), convert.flux(TargetSpec(:,2),'cgs/A','ph/A',TargetSpec(:,1),'A')];
 BackSpecPh   = [BackSpec(:,1),   convert.flux(BackSpec(:,2),  'cgs/A','ph/A',BackSpec(:,1),  'A')];   % per arcsec^2
 
-
+SN.Wave   = InPar.Wave;
 SN.Signal = InPar.PSFeff.* InPar.Nim.*TargetSpecPh(:,2).*Trans(:,2).*AperArea.*InPar.ExpTime;  % [ph/ExpTime/Aper]
 SN.Back   = InPar.Nim.* 4.*pi.*(InPar.FWHM./2.35).^2.*Trans(:,2).*BackSpecPh(:,2).*AperArea.*InPar.ExpTime;   % [ph/ExpTime/Aper]
 
@@ -214,7 +229,7 @@ FlagG = ~isnan(SN.Signal);
 SN.IntSignal = trapz(InPar.Wave(FlagG), SN.Signal(FlagG));
 SN.IntBack   = trapz(InPar.Wave(FlagG), SN.Back(FlagG));    % effective back per PSF
 SN.IntBackAS = trapz(InPar.Wave(FlagG),BackAS(FlagG));      % background per sq arcsec
-
+SN.IntSignalAS = SN.IntSignal./SN.PsfEffAreaAS;             % mean surface count of signal over its area
 
 SN.TotalVar  = SN.IntBack + SN.IntRN2 + SN.IntDC + SN.IntGain + SN.IntStrayLight; 
 
@@ -228,7 +243,13 @@ SN.FracVar.StraLight = SN.IntStrayLight./SN.TotalVar;
 
 LimSignal       = InPar.SN.*sqrt(SN.TotalVar)./SN.IntSignal;
 SN.LimMag       = InPar.Mag - 2.5.*log10(LimSignal);
+SN.ZP           = SN.LimMag + 2.5.*log10(SN.IntSignal);
 
-
-
+% saturation limit
+% approximate fraction of light within central pixel of PSF
+SaturationFactor = PixScale.^2./(2.*pi.*(InPar.FWHM./2.35).^2);
+% number of electrons for saturated source (after background removal)
+SaturationNe     = InPar.WC./SaturationFactor - SN.IntBackAS.*PixScale.^2;
+% saturation limit
+SN.SatLimit      = SN.ZP - 2.5.*log10(SaturationNe);
 
