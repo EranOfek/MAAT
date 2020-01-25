@@ -1,4 +1,4 @@
-function [L,Tc,R,t_d,Mag,t_min,t_max,t_opac,t_tr,t_delta]=sn_cooling_sw(Time,varargin)
+function [L,Tc,R,t_d,Mag,t_min,t_max,t_opac,t_tr,t_delta,R_BO]=sn_cooling_sw(Time,varargin)
 %--------------------------------------------------------------------------
 % sn_cooling_sw function                                           General
 % Description: Calculate the shock cooling light curve (following the
@@ -67,6 +67,8 @@ function [L,Tc,R,t_d,Mag,t_min,t_max,t_opac,t_tr,t_delta]=sn_cooling_sw(Time,var
 %                            breaks (delta ~ 0.1) and the emmision becomes
 %                            dependent in the envelope density profile.
 %                            The time is given in rest frame.
+%          - R_BO [cm]     - An upper limit for the photosphere radius
+%                            when the model is not valid before t_min. 
 %
 % Comment: The funtion support calculation for multiple cases in one call. 
 %          Input parameters on the same dimension are considered as a set
@@ -256,8 +258,8 @@ otherwise
     error('Unknown Progenitor option');
 end
 
-R_SW    = sqrt(L./(4.*pi.*SigmaB.*Tc.^4));      %[cm]
-R      = InPar.Rs.*SolR./(Tcorr.^2) + min(R_SW,v_BO.*t_d.*86400./Tcorr.^2); %[cm]
+R    = sqrt(L./(4.*pi.*SigmaB.*Tc.^4));      %[cm]
+R_BO = InPar.Rs.*SolR./(Tcorr.^2) + min(R_SW,v_BO.*t_d.*86400./Tcorr.^2); %[cm]
 
 if (nargout>3) && (~isempty(InPar.FiltFam) || ~isempty(InPar.Wave))
     Pc = constant.pc;
