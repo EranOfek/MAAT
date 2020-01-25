@@ -259,7 +259,7 @@ otherwise
 end
 
 R    = sqrt(L./(4.*pi.*SigmaB.*Tc.^4));      %[cm]
-R_BO = InPar.Rs.*SolR./(Tcorr.^2) + min(R_SW,v_BO.*t_d.*86400./Tcorr.^2); %[cm]
+R_BO = InPar.Rs.*SolR./(Tcorr.^2) + min(R,v_BO.*t_d.*86400./Tcorr.^2); %[cm]
 
 if (nargout>3) && (~isempty(InPar.FiltFam) || ~isempty(InPar.Wave))
     Pc = constant.pc;
