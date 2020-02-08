@@ -1,4 +1,4 @@
-function plotGrid(filename,mintpoints,peakNumber)
+function plotGrid(filename,mintpoints,peakNumber,filter)
 % Plot the likelihood grid calculated by calcGrid
 % Package: AstroUtil.supernove.SOPRANOS
 % Description: Plot the likelihood grid calculated by calcGrid.
@@ -7,6 +7,8 @@ function plotGrid(filename,mintpoints,peakNumber)
 %                 constraint).
 %          - peakNumber for plotting the marginal distribution in case of
 %                 multiple peak solution (default is 1)
+%          - External filter for valid models - a logical table with the
+%                 same size of the grid in the grid file.
 % Output : - Figures and text plotted to the command line.
 %               
 % See also: AstroUtil.supernova.SOPRANOS.readZTFtxt
@@ -18,6 +20,11 @@ function plotGrid(filename,mintpoints,peakNumber)
 %--------------------------------------------------------------------------
 
 if nargin==2
+    peakNumber = 1;
+end
+if nargin<4
+    filter=true;
+elseif isempty(peakNumber)
     peakNumber = 1;
 end
 gridfile = matfile(filename);
@@ -38,19 +45,31 @@ if nargin==1
 end
 valid = cell2mat(gridfile.NTransient(1,1))>=mintpoints(1);
 for iband = 2:length(gridfile.NTransient),valid=valid&cell2mat(gridfile.NTransient(1,iband))>=mintpoints(iband);end
+valid = valid&filter;
 
 valid = valid&(gridfile.points>6);
 PDFmap(~valid)=0;
 
+VecRs   = gridfile.VecRs;
+VecVs   = gridfile.VecVs;
+Vect0   = gridfile.Vect0;
+VecMs   = gridfile.VecMs;
+VecFrho = gridfile.VecFrho;
+VecEbv  = gridfile.VecEbv;
+
 if length(gridfile.VecFrho)>1
-    PDF_Rv = squeeze(trapz(gridfile.Vect0,trapz(gridfile.VecMs,trapz(log10(gridfile.VecFrho),trapz(gridfile.VecEbv,PDFmap,6),5),4),1));
+%    PDF_Rv = squeeze(trapz(gridfile.Vect0,trapz(gridfile.VecMs,trapz(log10(gridfile.VecFrho),trapz(gridfile.VecEbv,PDFmap,6),5),4),1));
+    PDF_Rv = squeeze(trapz(Vect0,trapz(VecMs,trapz(log10(VecFrho),trapz(VecEbv,PDFmap,6),5),4),1));
 else
-    PDF_Rv = squeeze(trapz(gridfile.Vect0,trapz(gridfile.VecMs,trapz(gridfile.VecEbv,PDFmap,6),4),1));
+%    PDF_Rv = squeeze(trapz(gridfile.Vect0,trapz(gridfile.VecMs,trapz(gridfile.VecEbv,PDFmap,6),4),1));
+    PDF_Rv = squeeze(trapz(Vect0,trapz(VecMs,trapz(VecEbv,PDFmap,6),4),1));
 end
 
 valid_Rv = squeeze(any(any(any(any(valid,6),5),4),1));
-[hPDF,Vs,Rs,iVs,iRs]=plotPDF(PDF_Rv, valid_Rv, gridfile.VecVs, gridfile.VecRs);
-[hCDF,~,~,SigmaVs,SigmaRs,VsPDF,RsPDF] = plotCDF(PDF_Rv, valid_Rv, gridfile.VecVs, gridfile.VecRs);
+% [hPDF,Vs,Rs,iVs,iRs]=plotPDF(PDF_Rv, valid_Rv, gridfile.VecVs, gridfile.VecRs);
+% [hCDF,~,~,SigmaVs,SigmaRs,VsPDF,RsPDF] = plotCDF(PDF_Rv, valid_Rv, gridfile.VecVs, gridfile.VecRs);
+[hPDF,Vs,Rs,iVs,iRs]=plotPDF(PDF_Rv, valid_Rv, VecVs, VecRs);
+[hCDF,~,~,SigmaVs,SigmaRs,VsPDF,RsPDF] = plotCDF(PDF_Rv, valid_Rv, VecVs, VecRs);
 marginalizedPDF=squeeze(PDFmap(:,iRs,iVs,:,:,:));
 [val, imax] = max(marginalizedPDF(:));
 if length(gridfile.VecFrho)>1
@@ -59,16 +78,19 @@ else
     [it0,iMs,iEbv] = ind2sub(size(marginalizedPDF),imax);
     ifrho = 1;
 end
-t0 = gridfile.Vect0(it0,1);
-Ms = gridfile.VecMs(iMs,1);
-frho = gridfile.VecFrho(ifrho,1);
-Ebv = gridfile.VecEbv(iEbv,1);
+% t0 = gridfile.Vect0(it0,1);
+% Ms = gridfile.VecMs(iMs,1);
+% frho = gridfile.VecFrho(ifrho,1);
+% Ebv = gridfile.VecEbv(iEbv,1);
+t0 = Vect0(it0);
+Ms = VecMs(iMs);
+frho = VecFrho(ifrho);
+Ebv = VecEbv(iEbv);
 
 % find all secondary peaks higher the 1% then the absoulte peak.
-PDF_Rv(PDF_Rv<0.01*val)=0;
+PDF_Rv(PDF_Rv<0.01*max(PDF_Rv(:)))=0;
 
 [iRs_peaks,iVs_peaks]=ind2sub(size(PDF_Rv),find(imregionalmax(PDF_Rv,8)));
-VecRs = gridfile.VecRs; VecVs = gridfile.VecVs;
 Rs_peaks = VecRs(iRs_peaks,1);
 Vs_peaks = VecVs(iVs_peaks,1);
 for ipeak = 1:length(Rs_peaks)
@@ -80,46 +102,62 @@ for ipeak = 1:length(Rs_peaks)
         [it0,iMs,iEbv] = ind2sub(size(marginalizedPDF),imax);
         ifrho = 1;
     end
-    t0_peaks(ipeak) = gridfile.Vect0(it0,1);
-    Ms_peaks(ipeak) = gridfile.VecMs(iMs,1);
-    frho_peaks(ipeak) = gridfile.VecFrho(ifrho,1);
-    Ebv_peaks(ipeak) = gridfile.VecEbv(iEbv,1);
+%     t0_peaks(ipeak) = gridfile.Vect0(it0,1);
+%     Ms_peaks(ipeak) = gridfile.VecMs(iMs,1);
+%     frho_peaks(ipeak) = gridfile.VecFrho(ifrho,1);
+%     Ebv_peaks(ipeak) = gridfile.VecEbv(iEbv,1);
+    t0_peaks(ipeak) = Vect0(it0);
+    Ms_peaks(ipeak) = VecMs(iMs);
+    frho_peaks(ipeak) = VecFrho(ifrho);
+    Ebv_peaks(ipeak) = VecEbv(iEbv);
+
     chi2_peaks(ipeak) = gridfile.chi2(it0,iRs,iVs,iMs,ifrho,iEbv);
     dof_peaks(ipeak) = gridfile.points(it0,iRs,iVs,iMs,ifrho,iEbv)-nparams;
 end
 
-marginalizedPDF = squeeze(trapz(gridfile.VecVs/10^8.5,trapz(gridfile.VecRs,PDFmap,2),3));
-[ht0, t0PDF, Sigmat0] = plotMargProbt0(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, [], t0);
-[hMs, MsPDF, SigmaMs] = plotMargProbMs(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, [],Ms);
-[hEbv, EbvPDF, SigmaEbv] = plotMargProbEbv(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, [], Ebv);
+% marginalizedPDF = squeeze(trapz(gridfile.VecVs/10^8.5,trapz(gridfile.VecRs,PDFmap,2),3));
+% [ht0, t0PDF, Sigmat0] = plotMargProbt0(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, [], t0);
+% [hMs, MsPDF, SigmaMs] = plotMargProbMs(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, [],Ms);
+% [hEbv, EbvPDF, SigmaEbv] = plotMargProbEbv(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, [], Ebv);
+marginalizedPDF = squeeze(trapz(VecVs/10^8.5,trapz(VecRs,PDFmap,2),3));
+[ht0, t0PDF, Sigmat0] = plotMargProbt0(marginalizedPDF, VecMs, VecEbv, log10(VecFrho), Vect0, [], t0);
+[hMs, MsPDF, SigmaMs] = plotMargProbMs(marginalizedPDF, VecMs, VecEbv, log10(VecFrho), Vect0, [],Ms);
+[hEbv, EbvPDF, SigmaEbv] = plotMargProbEbv(marginalizedPDF, VecMs, VecEbv, log10(VecFrho), Vect0, [], Ebv);
 if length(gridfile.VecFrho)>1
-    [hfrho, frhoPDF, SigmaFrho] = plotMargProbFrho(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, gridfile.VecFrho, gridfile.Vect0, [], frho);
+%     [hfrho, frhoPDF, SigmaFrho] = plotMargProbFrho(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, gridfile.VecFrho, gridfile.Vect0, [], frho);
+    [hfrho, frhoPDF, SigmaFrho] = plotMargProbFrho(marginalizedPDF, VecMs, VecEbv, VecFrho, Vect0, [], frho);
 else
     SigmaFrho = [0 0];
 end
 
-for ipeak = 1:length(Rs_peaks)
-    [RssigmaM(ipeak),~,RssigmaP(ipeak)]=oneSigmaMove(gridfile.VecRs,RsPDF,Rs_peaks(ipeak));
+for ipeak = 1:length(iRs_peaks)
+%     [RssigmaM(ipeak),~,RssigmaP(ipeak)]=oneSigmaMove(gridfile.VecRs,RsPDF,Rs_peaks(ipeak));
+    [RssigmaM(ipeak),~,RssigmaP(ipeak)]=oneSigmaMove(VecRs,RsPDF,Rs_peaks(ipeak));
     RssigmaM(ipeak) = Rs_peaks(ipeak) - RssigmaM(ipeak);
     RssigmaP(ipeak) = RssigmaP(ipeak) - Rs_peaks(ipeak);
 
-    [VssigmaM(ipeak),~,VssigmaP(ipeak)]=oneSigmaMove(gridfile.VecVs/10^8.5,VsPDF,Vs_peaks(ipeak)/10^8.5);
+%    [VssigmaM(ipeak),~,VssigmaP(ipeak)]=oneSigmaMove(gridfile.VecVs/10^8.5,VsPDF,Vs_peaks(ipeak)/10^8.5);
+    [VssigmaM(ipeak),~,VssigmaP(ipeak)]=oneSigmaMove(VecVs/10^8.5,VsPDF,Vs_peaks(ipeak)/10^8.5);
     VssigmaM(ipeak) = Vs_peaks(ipeak)/10^8.5 - VssigmaM(ipeak);
     VssigmaP(ipeak) = VssigmaP(ipeak) - Vs_peaks(ipeak)/10^8.5;
     
-    [t0sigmaM(ipeak),~,t0sigmaP(ipeak)]=oneSigmaMove(gridfile.Vect0,t0PDF,t0_peaks(ipeak));
+%    [t0sigmaM(ipeak),~,t0sigmaP(ipeak)]=oneSigmaMove(gridfile.Vect0,t0PDF,t0_peaks(ipeak));
+    [t0sigmaM(ipeak),~,t0sigmaP(ipeak)]=oneSigmaMove(Vect0,t0PDF,t0_peaks(ipeak));
     t0sigmaM(ipeak) = t0_peaks(ipeak) - t0sigmaM(ipeak);
     chi2values(ipeak).all.t0sigmaP = t0sigmaP(ipeak) - t0_peaks(ipeak);
 
-    [MssigmaM(ipeak),~,MssigmaP(ipeak)]=oneSigmaMove(gridfile.VecMs,MsPDF,Ms_peaks(ipeak));
+%    [MssigmaM(ipeak),~,MssigmaP(ipeak)]=oneSigmaMove(gridfile.VecMs,MsPDF,Ms_peaks(ipeak));
+    [MssigmaM(ipeak),~,MssigmaP(ipeak)]=oneSigmaMove(VecMs,MsPDF,Ms_peaks(ipeak));
     MssigmaM(ipeak) = Ms_peaks(ipeak) - MssigmaM(ipeak);
     MssigmaP(ipeak) = MssigmaP(ipeak) - Ms_peaks(ipeak);
 
-    [EbvsigmaM(ipeak),~,EbvsigmaP(ipeak)]=oneSigmaMove(gridfile.VecEbv,EbvPDF,Ebv_peaks(ipeak));
+%    [EbvsigmaM(ipeak),~,EbvsigmaP(ipeak)]=oneSigmaMove(gridfile.VecEbv,EbvPDF,Ebv_peaks(ipeak));
+    [EbvsigmaM(ipeak),~,EbvsigmaP(ipeak)]=oneSigmaMove(VecEbv,EbvPDF,Ebv_peaks(ipeak));
     EbvsigmaM(ipeak) = Ebv_peaks(ipeak) - EbvsigmaM(ipeak);
     EbvsigmaP(ipeak) = EbvsigmaP(ipeak) - Ebv_peaks(ipeak);
 
-    [frhosigmaM(ipeak),~,frhosigmaP(ipeak)]=oneSigmaMove(log10(gridfile.VecFrho),frhoPDF,log10(frho_peaks(ipeak)));    
+%    [frhosigmaM(ipeak),~,frhosigmaP(ipeak)]=oneSigmaMove(log10(gridfile.VecFrho),frhoPDF,log10(frho_peaks(ipeak)));    
+    [frhosigmaM(ipeak),~,frhosigmaP(ipeak)]=oneSigmaMove(log10(VecFrho),frhoPDF,log10(frho_peaks(ipeak)));    
     frhosigmaM(ipeak) = frho_peaks(ipeak)- 10^frhosigmaM(ipeak);
     frhosigmaP(ipeak) = 10^frhosigmaP(ipeak) - frho_peaks(ipeak);
     
@@ -223,7 +261,7 @@ end
 
 if ~exist(results_fname,'file')
     save fmax_input filename Vs_peaks Rs_peaks bg results_fname mintpoints
-    [Rs_peaks, Vs_peaks/10^8.5]
+    [Rs_peaks, Vs_peaks/10^8.5];
     !screen -dmS findMaximum nice -n 19 matlab -nodisplay -nosplash -nodesktop -r "load('fmax_input.mat');[Vs, Rs, Ms, Ebv, Rv,  Vect0, PDFt0, t0, chi2values] = findMaximum(filename,Vs_peaks,Rs_peaks,bg,mintpoints);save(results_fname, 'Vs', 'Rs', 'Ms', 'Ebv', 'Rv', 'Vect0', 'PDFt0', 't0', 'chi2values');exit" &
     return
 else
