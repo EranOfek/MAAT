@@ -12,13 +12,14 @@ function [varargout]=fminsearch_my(Fun,varargin)
 %            In this case Y=Fun(X,Par1,Par2,...).
 %          * Additional parameters as defined in fminsearch.m
 %            See fminsaerch.m for details.
+%            For example, the first parameter is the guess parameter.
 % Output : * The output parameters returned by fminsearch.m 
 % Tested : Matlab 2011b
 %     By : Eran O. Ofek                    Apr 2013
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: Fun = @(X,A)(X-A).^2
-%          [X,Fval]=fminsearch_my({Fun,2},0.7);
-%          [X,Fv,E,O]=fminsearch_my(@sin,0.7);
+%          [X,Fval]=Util.fit.fminsearch_my({Fun,2},0.7);
+%          [X,Fv,E,O]=Util.fit.fminsearch_my(@sin,0.7);
 % Reliable: 2
 %------------------------------------------------------------------------------
 
@@ -35,7 +36,7 @@ varargout = cell(nargout,1);
 
 
    function Y=call_fun(X)
-   Y = feval(CallFun,X,FunPar{:});
+        Y = feval(CallFun,X,FunPar{:});
    end
 
 end

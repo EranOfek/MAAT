@@ -45,7 +45,6 @@ if InPar.Plot
     figure(1);
     cla;
     plot.errorxy(LC);
-    plot.invy;
 
     % power spectrum
     figure(2);
@@ -75,23 +74,20 @@ while Cont
         hold on;
 
         plot.errorxy(B,'FaceColor','k','EdgeColor','k')
-        plot.invy;
     end
     
 
     % select another period
     R = input('select another period (n) or continue [Y/n]','s');
     switch lower(R)
-        case 'y'
+        case 'n'
             fprintf('Click on power spectrum to select another peak');
             [x,y]=ginput(1);
             [~,Ipeak] = min(abs(x-Peaks.Freq));
             
-            if InPar.Plot
-                figure(2);
-                delete(Hp);
-                Hp = plot(Peaks.Freq(Ipeak),Peaks.PS(Ipeak),'ro');
-            end
+            figure(2);
+            delete(Hp);
+            Hp = plot(Peaks.Freq(Ipeak),Peaks.PS(Ipeak),'ro');
             
             Cont = true;
         otherwise
@@ -101,10 +97,8 @@ while Cont
 end
 
 Prop.PS  = PS;
-Prop.Peaks = Peaks;
 Prop.PSw = PSw;
 Prop.FLC = FLC;
-Prop.FLCB= B;
 Prop.PeakFreq  = Peaks.Freq(Ipeak);
 Prop.PeakPower = Peaks.PS(Ipeak);
 

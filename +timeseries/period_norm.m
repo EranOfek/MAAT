@@ -51,6 +51,8 @@ end
 switch lower(Norm)
  case 'amp'
     % do nothing
+ case 'no'
+    PS(:,2) = PS(:,2).*N;
  case 'var'
     PS(:,2) = PS(:,2)./var(M);
  otherwise

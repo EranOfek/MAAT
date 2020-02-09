@@ -1244,7 +1244,7 @@ classdef catsHTM
         end
         
         
-        function [ColCell]=serial_search_x(CatName,Fun,varargin)
+        function [ColCell,ConCat]=serial_search_x(CatName,Fun,varargin)
             % Execute a function on entire HDF5/HTM catalog
             % Package: @catsHTM
             % Description: Execute a function on entire HDF5/HTM catalog.
@@ -1276,6 +1276,7 @@ classdef catsHTM
             %            'SearchRadiusUnits' - Default is 'arcsec'.
             % Output : - Cell array of column names in catalog.
             % Example: catsHTM.serial_search_x('GAIADR2',[],'FunX',@search_allml,'Xmatch',true)
+            %          [~,ConCat]=catsHTM.serial_search_x('LAMOSTDR6',[],'FunX',@search_duplicate,'Xmatch',true)
             % Reliable: 2
             
             DefV.Istart                = 1;
@@ -1327,6 +1328,7 @@ classdef catsHTM
             
             
             tic;
+            ConCat = [];
              for Ih=InPar.Istart:1:Nh
                  %Ih
                  if (Ih./1000)==floor(Ih./1000)
@@ -1384,7 +1386,7 @@ classdef catsHTM
                             % cross match Cat1 and Cat2
                             %[Match,Ind,IndCatMinDist] = VO.search.match_cats(Cat2,Cat1,'Radius',SearchRadius,'RadiusUnits','rad');
 
-                            InPar.FunX(Cat,Cat2,ColCell,InPar.FunXPar{:});
+                            ConCat=InPar.FunX(Cat,Cat2,ConCat,ColCell,InPar.FunXPar{:});
                             
                         end
                         
@@ -1448,6 +1450,7 @@ classdef catsHTM
             
             DefV.SearchRadius         = 2;  % [arcsec]
             DefV.SearchRadiusUnits    = 'arcsec';
+            DefV.SelfMatch            = false;
             DefV.QueryAllFun          = [];
             DefV.QueryAllFunPar       = {};
             DefV.QueryFun             = [];
@@ -1563,6 +1566,16 @@ classdef catsHTM
                         % return list of size of Cat1
                         [Match,Ind,IndCatMinDist] = VO.search.match_cats(Cat2,Cat1,'Radius',SearchRadius,'RadiusUnits','rad');
 
+                        % self match
+                        % match Cat1 with itself
+                        if (InPar.SelfMatch)
+                            [MatchS,IndS,IndCatMinDistS] = VO.search.match_cats(Cat2,Cat2,'Radius',SearchRadius,'RadiusUnits','rad');
+                            % adding column to Cat2 with number of
+                            % additional sources in the search radius
+                            Cat2 = [Cat2, MatchS.Nfound-1];
+                        end
+                            
+                            
 
                         if (~isempty(InPar.QueryAllFun))
                             % execute InPar.QueryAllFun
@@ -1592,7 +1605,7 @@ classdef catsHTM
                             % attributes) from the matched Cat1 and Cat2
 %InPar.QueryFunPar{1} = Ihtm1;
 
-                            FlagSelected       = InPar.QueryFun(Cat1,Cat2matched,InPar.QueryFunPar{:});
+                            FlagSelected       = InPar.QueryFun(Cat1,Cat2matched,Ihtm1,InPar.QueryFunPar{:});
                             % what to do with FlagSelected?
                             Cat1        = Cat1(FlagSelected,:);
                             Cat2matched = Cat2matched(FlagSelected,:);

@@ -20,7 +20,7 @@ function [Ind,FlagUnique]=search_sortedlat_multi(Cat,Long,Lat,Radius,FlagUnique)
 %     By : Eran O. Ofek                    Feb 2017
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: Cat=sortrows(rand(10000,2),2);
-%          Ind=VO.search.search_sortedlat(Cat,0.5,0.5,0.01)
+%          Ind=VO.search.search_sortedlat_multi(Cat,0.5,0.5,0.01)
 % Reliable: 2
 
 if (nargin<5)
