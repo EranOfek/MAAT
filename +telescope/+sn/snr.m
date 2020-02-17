@@ -235,6 +235,7 @@ SN.TotalVar  = SN.IntBack + SN.IntRN2 + SN.IntDC + SN.IntGain + SN.IntStrayLight
 
 SN.Mag          = InPar.Mag;
 SN.SNR          = SN.IntSignal./sqrt(SN.TotalVar);
+SN.SNRm         = SN.IntSignal./sqrt(SN.TotalVar+SN.IntSignal);  % S/N for measurment
 SN.FracVar.Back = SN.IntBack./SN.TotalVar;
 SN.FracVar.RN   = SN.IntRN2./SN.TotalVar;
 SN.FracVar.DC   = SN.IntDC./SN.TotalVar;
@@ -243,7 +244,7 @@ SN.FracVar.StraLight = SN.IntStrayLight./SN.TotalVar;
 
 LimSignal       = InPar.SN.*sqrt(SN.TotalVar)./SN.IntSignal;
 SN.LimMag       = InPar.Mag - 2.5.*log10(LimSignal);
-SN.ZP           = SN.LimMag + 2.5.*log10(SN.IntSignal);
+SN.ZP           = SN.Mag + 2.5.*log10(SN.IntSignal);
 
 % saturation limit
 % approximate fraction of light within central pixel of PSF
