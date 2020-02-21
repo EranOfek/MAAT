@@ -9,8 +9,10 @@ function [URL,Spec,ColCell]=wget_sdss_spec(ID,varargin)
 %            'OutType' - Options: 'AstCat' | 'cellmat' | 'AstSpec'
 %                        Default is 'AstCat'.
 %            'Format' - Default is 'fits'.
+%            'Survey' - 'boss' | ['eboss'] | 'sdss'
+%            'DR'     - Default is 'dr16'.
 %            'SpecType' - 'lite' | 'full'. Default is 'lite'.
-%            'ReductionVer' - Default is 'v5_10_0'.
+%            'Run2D'    - Reduction version. Default is 'v5_10_0'.
 %            'SaveFile' - Save FITS file to local disk.
 %                         Default is true.
 %            'UseLink'  - Which link to use for file retrieval.
@@ -28,16 +30,19 @@ function [URL,Spec,ColCell]=wget_sdss_spec(ID,varargin)
 %            'SpecLink'  - Direct link to spectra retrival.
 %            'FileName'  - File name.
 % License: GNU general public license version 3
+% Reference: https://dr16.sdss.org/optical/spectrum/view/data/access
 %     By : Eran O. Ofek                    Sep 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: [URL]=VO.SDSS.wget_sdss_spec([4055 55359 596])
+% Example: [URL,Spec,ColCell]=VO.SDSS.wget_sdss_spec([4055 55359 596])
 % Reliable: 2
 %--------------------------------------------------------------------------
 
 DefV.OutType              = 'AstCat';
 DefV.Format               = 'fits';
 DefV.SpecType             = 'lite'; % 'lite | 'full'
-DefV.ReductionVer         = 'v5_10_0';
+DefV.Run2D                = 'v5_10_0';
+DefV.DR                   = 'dr16';
+DefV.Survey               = 'eboss'; % 
 DefV.SaveFile             = true;
 DefV.UseLink              = 'link';   % 'link' | 'api'
 DefV.WgetOption           = 'pwget';  % 'pwget' | 'websave'
@@ -74,14 +79,14 @@ FiberID = ID(:,3);
 N = numel(PlateID);
 for I=1:1:N
     % create viewr link:
-    URL(I).SpecView = sprintf('https://dr15.sdss.org/optical/spectrum/view?plateid=%d&mjd=%d&fiberid=%d',...
-        PlateID(I),MJD(I),FiberID(I));
+    URL(I).SpecView = sprintf('https://%s.sdss.org/optical/spectrum/view?plateid=%d&mjd=%d&fiberid=%d',...
+        InPar.DR,PlateID(I),MJD(I),FiberID(I));
     % create API link:
-    URL(I).SpecAPI  = sprintf('https://dr15.sdss.org/optical/spectrum/view/data/format=%s/spec=%s?plateid=%d&mjd=%d&fiberid=%d',...
-        InPar.Format,InPar.SpecType,PlateID(I),MJD(I),FiberID(I));
+    URL(I).SpecAPI  = sprintf('https://%s.sdss.org/optical/spectrum/view/data/format=%s/spec=%s?plateid=%d&mjd=%d&fiberid=%d',...
+        InPar.DR,InPar.Format,InPar.SpecType,PlateID(I),MJD(I),FiberID(I));
     % Create direct link:
-    URL(I).SpecLink = sprintf('https://dr15.sdss.org/sas/dr15/eboss/spectro/redux/%s/spectra/%s/%04d/spec-%04d-%d-%04d.fits',...
-        InPar.ReductionVer,InPar.SpecType,PlateID(I),PlateID(I),MJD(I),FiberID(I));
+    URL(I).SpecLink = sprintf('https://%s.sdss.org/sas/%s/%s/spectro/redux/%s/spectra/%s/%04d/spec-%04d-%d-%04d.fits',...
+        InPar.DR,InPar.DR, InPar.Survey,  InPar.Run2D,InPar.SpecType,PlateID(I),PlateID(I),MJD(I),FiberID(I));
 
     URL(I).FileName = sprintf('spec-%04d-%d-%04d.fits',...
         PlateID(I),MJD(I),FiberID(I));

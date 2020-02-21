@@ -34,7 +34,7 @@ if (length(JD)==1)
    JD = JD.*ones(N,1);
 end
 
-if (length(TopoPos(:,1))==1)
+if (numel(TopoPos(:,1))==1)
    TopoPos = ones(N,1)*TopoPos;
 end
 

@@ -216,8 +216,8 @@ SN.Back   = InPar.Nim.* 4.*pi.*(InPar.FWHM./2.35).^2.*Trans(:,2).*BackSpecPh(:,2
 
 SN.IntRN2    = InPar.Nim.* InPar.RN.^2.* SN.PsfEffAreaPix;
 SN.IntDC     = InPar.Nim.* InPar.DC.*InPar.ExpTime .* SN.PsfEffAreaPix;
-SN.IntGain   = InPar.Nim.* InPar.Gain.*0.3;
-SN.IntStrayLight = InPar.Nim.*InPar.StrayLight;
+SN.IntGain   = InPar.Nim.* InPar.Gain.*0.3  .* SN.PsfEffAreaPix;
+SN.IntStrayLight = InPar.Nim.*InPar.StrayLight .* SN.PsfEffAreaPix;
 
 % spectrum of total noise components
 
@@ -250,7 +250,7 @@ SN.ZP           = SN.Mag + 2.5.*log10(SN.IntSignal);
 % approximate fraction of light within central pixel of PSF
 SaturationFactor = PixScale.^2./(2.*pi.*(InPar.FWHM./2.35).^2);
 % number of electrons for saturated source (after background removal)
-SaturationNe     = InPar.WC./SaturationFactor - SN.IntBackAS.*PixScale.^2;
+SaturationNe     = InPar.WC.*InPar.Nim./SaturationFactor - SN.IntBackAS.*PixScale.^2;
 % saturation limit
 SN.SatLimit      = SN.ZP - 2.5.*log10(SaturationNe);
 
