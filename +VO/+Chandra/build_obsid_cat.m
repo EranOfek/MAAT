@@ -5,6 +5,7 @@ function Cat=build_obsid_cat(varargin)
 %              over the entire Chandra image archive.
 % Input  : * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
+%            'AO'      - AO to download. Default is 'ao01'.
 %            'GetInfo' - Get information [JD, RA, Dec] for each ObsID
 %                        in addition to the OBSID and its location
 %                        {true|false}. Default is true.
@@ -16,110 +17,112 @@ function Cat=build_obsid_cat(varargin)
 %                        If empty, then do not save.
 %                        Default is '~/matlab/data/+cats/+X/'.
 %           'SaveName' - File name in which to save the catalog.
-%                        Default is 'ChandraObs.mat'.
+%                        Default is 'ChandraObs_%s.mat', where %s is the AO.
 % Output : - Structure array or AstCat object of all the Chandra observations.
 % Tested : Matlab R2014a
 %     By : Eran O. Ofek                    Jan 2015
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: Cat=VO.Chandra.build_obsid_cat;
+% Example: Cat=VO.Chandra.build_obsid_cat('ao','ao10');
 % Reliable: 2
 %--------------------------------------------------------------------------
 
+RAD = 180./pi;
 
-ArchiveURL = 'ftp://legacy.gsfc.nasa.gov/chandra/data/science/';
-
+DefV.AO       = 'ao01';
 DefV.GetInfo  = true;
 DefV.Verbose  = true;
 DefV.OutType  = 'AstCat';
 DefV.SaveDir  = '~/matlab/data/+cats/+X/';
-DevV.SaveName = 'ChandraObs.mat';
+DefV.SaveName = 'ChandraObs_%s.mat';  % with AO
+DefV.ArchiveURL = 'https://cxc.cfa.harvard.edu/cdaftp/science/';
 
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 
-% search directories for ObsID
-AOpage = urlread(ArchiveURL);
-AllAO  = regexp(AOpage,'(?<AO>ao\d\d)','tokens');
-Nao    = numel(AllAO);
-Ind    = 0;
-
+Key2read = {'RA_NOM','DEC_NOM','ROLL_NOM','EXPOSURE','INSTRUME','GRATING','OBS_MODE','DATAMODE','OBSERVER','OBJECT','DATE-OBS','DATE-END','TSTART','TSTOP','MJDREF'};
+Nkey = numel(Key2read);
+    
+ArchiveURL_AO = sprintf('%s%s/',InPar.ArchiveURL,InPar.AO);
 
 % search directories for ObsID
-ListAO = www.ftp_dir_list(ArchiveURL,false);
-Nao  = numel(ListAO);
-for Iao=1:1:Nao
-    ArchiveURLao = ListAO(Iao).URL;
-    ListCat      = www.ftp_dir_list(ArchiveURLao,false);
-    Ncat    = numel(ListCat);
-    for Icat=1:1:Ncat
-        %[Iao,Icat]
-        ArchiveURLcat = ListCat(Icat).URL;
-        ListObs       = www.ftp_dir_list(ArchiveURLcat,false);
-        Tmp = regexp({ListObs.URL},'/','split');
-        Nt  = numel(Tmp);
-        for It=1:1:Nt
-            Ind = Ind + 1;
-            Cat(Ind).ObsID = str2double(Tmp{It}{end-1});
-            Cat(Ind).URL   = ListObs(It).URL;
+[ListURL,IsDir,FileNames]=www.r_files_url(ArchiveURL_AO);
+Nlist = numel(ListURL);
+%Tmp = regexp(LL,'https://cxc.cfa.harvard.edu/cdaftp/science/(?<dir>.+)','names');
+%MatchStr = sprintf('%s.+evt2.fits.+',ArchiveURL);
+MatchStr = sprintf('%s.*oif.fits.*',ArchiveURL_AO);
 
-            if (InPar.GetInfo)
-                % read information from oif.fits file
-                Furl = sprintf('%soif.fits',ListObs(It).URL);
-                if (InPar.Verbose)
-                    fprintf('Reading file: %s\n',Furl);
-                end
-                OIF = urlread(Furl,'Timeout',30);
-                Ik  = strfind(OIF,'DATE-OBS=');
-                if (~isempty(Ik))
-                    Cat(Ind).StartJD = celestial.time.julday(OIF(Ik(1)+11:Ik(1)+29));
-                end
-                Ik  = strfind(OIF,'DATE-END=');
-                if (~isempty(Ik))
-                    Cat(Ind).EndJD = celestial.time.julday(OIF(Ik(1)+11:Ik(1)+29));
-                end
-                Ik  = strfind(OIF,'INSTRUME=');
-                if (~isempty(Ik))
-                    Cat(Ind).Instrum = OIF(Ik(1)+11:Ik(1)+18);
-                end
-                Ik  = strfind(OIF,'RA_NOM  =');
-                if (~isempty(Ik))
-                    Cat(Ind).RA = str2double(OIF(Ik(1)+11:Ik(1)+30));
-                end
-                Ik  = strfind(OIF,'DEC_NOM =');
-                if (~isempty(Ik))
-                    Cat(Ind).Dec = str2double(OIF(Ik(1)+11:Ik(1)+30));
-                end
-                Ik  = strfind(OIF,'EXPOSURE=');
-                if (~isempty(Ik))
-                    Cat(Ind).ExpTime = str2double(OIF(Ik(1)+11:Ik(1)+30));
-                end
-            end
-            
-            if (InPar.Verbose)
-                fprintf('ObsID=%d   %d  %d\n',Cat(Ind).ObsID,Iao,Icat);
-            end
-        end
+%regexp(ListURL,'https://cxc.cfa.harvard.edu/cdaftp/science/.+evt2.fits.+','match')
+Tmp = regexp(ListURL,MatchStr,'match');
+FlagEvt = ~Util.cell.isempty_cell(Tmp);
+ListEvt = ListURL(FlagEvt);
+Nevt    = numel(ListEvt);
+
+for Ievt=1:1:Nevt
+    [Ievt, Nevt]
+    Evt2url = ListEvt{Ievt};
+    Tmp = regexp(Evt2url,'/','split');
+    EvtFileName = Tmp{end};
+    Data(Ievt).AO    = Tmp{end-3};
+    Data(Ievt).Cat   = Tmp{end-2};
+    Data(Ievt).ObsID = str2double(Tmp{end-1});
+    Data(Ievt).oif_url = Evt2url;
+    Data(Ievt).url     = Evt2url(1:end-8);
+    
+    try
+        www.pwget({Evt2url});
+    catch
+        pause(120);
+        www.pwget({Evt2url});
     end
+    
+    H = FITS.get_head(EvtFileName,2);
+    delete(EvtFileName)
+    
+    for Ikey=1:1:Nkey
+        
+        FlagK = strcmp(H.Header(:,1),Key2read{Ikey});
+        Val   = H.Header{FlagK,2};
+        if ~isempty(strfind(Key2read{Ikey},'DATE'))
+            Val = celestial.time.julday(Val);
+        end
+        % store data ins tructure
+        KeyTmp = regexprep(Key2read{Ikey},'-','');
+        Data(Ievt).(KeyTmp) = Val;
+    end
+    
+    
+    if (InPar.Verbose)
+        fprintf('ObsID=%d   %d  %d\n',Data(Ievt).ObsID);
+    end
+
 end    
+
 
 switch lower(InPar.OutType)
     case 'struct'
         % do nothing
-    case 'AstCat'
-        RAD = 180./pi;
-        Table = table([Cat.ObsID]',{Cat.URL}',[Cat.StartJD]',[Cat.EndJD]',Util.string.spacedel({Cat.Instrum})',[Cat.RA]'./RAD,[Cat.Dec]'./RAD,[Cat.ExpTime]');
+    case 'astcat'
+        Table = table([Data.RA_NOM].'./RAD,[Data.DEC_NOM].'./RAD,[Data.ROLL_NOM].',...
+              [Data.ObsID].',{Data.AO}.',{Data.Cat}.',{Data.url}.',...
+              [Data.EXPOSURE].',[Data.DATEOBS].',...
+              Util.string.spacedel({Data.INSTRUME}).',Util.string.spacedel({Data.GRATING}).',...
+              Util.string.spacedel({Data.OBS_MODE}).',Util.string.spacedel({Data.DATAMODE}).',...
+              Util.string.spacedel({Data.OBJECT}).',Util.string.spacedel({Data.OBSERVER}).');
+        
+        ColCell = {'RA','Dec','Roll','ObsID','AO','Cat','URL','ExpTime','JD','Instrument','Grating',...
+                   'ObsMode','DataMode','Object','Observer'};
+        ColUnits = {'rad','rad','deg','','','','','s','JD','','','','','',''};
+        Table.Properties.VariableNames =  ColCell ;
+        Table.Properties.VariableUnits = ColUnits;
+          
         Cat = AstCat;
         Cat.Cat = Table;
-        Cat.ColCell = {'ObsID','URL','StartJD','EndJD','Instrum','RA','Dec','ExpTime'};
-        Cat.ColUnits = {'','','JD','JD','','rad','rad','s'};
+        Cat.ColCell = ColCell;
+        Cat.ColUnits = ColUnits;
         Cat = colcell2col(Cat);
         Cat = sortrows(Cat,'Dec');
-        Cat.Name = 'Catalog of Chandra observations';
         Cat.Version = date;
-        Cat.Source  = 'VO.Chandra.build_obsid_cat';
-        Cat.Cat.Properties.VariableNames = Cat.ColCell;
-        Cat.Cat.Properties.VariableUnits = Cat.ColUnits;
-        
+        Cat.Source  = sprintf('VO.Chandra.build_obsid_cat AO=%s',InPar.AO);
         
     otherwise
         error('Unknown OutType option');
@@ -130,6 +133,7 @@ if (~isempty(InPar.SaveDir))
     PWD = pwd;
     cd(InPar.SaveDir)
     ChandraObs = Cat;
-    save(InPar.SaveName,'ChandraObs','-v7.3');
+    SaveName = sprintf(InPar.SaveName,InPar.AO);
+    save(SaveName,'ChandraObs','-v7.3');
     cd(PWD);
 end

@@ -52,7 +52,7 @@ function [DistRA,DistDec,Aux]=convert2equatorial(Long,Lat,varargin)
 %          celestial.coo.convert2equatorial('12:00:00','+20:00:00');
 %          celestial.coo.convert2equatorial('M31');
 %          celestial.coo.convert2equatorial('9804;',[],'NameServer','jpl')
-% Reliable: 
+% Reliable: 2
 %--------------------------------------------------------------------------
 
 RAD = 180./pi;

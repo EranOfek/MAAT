@@ -33,8 +33,9 @@ URL = sprintf('http://simbad.u-strasbg.fr/simbad/sim-basic?Ident=%s&submit=SIMBA
 %Str = urlread(URL);
 Str = webread(URL);
 
+%Coo    = regexp(Str,'ICRS.*J2000.*TT*{1,15}(?<RA>\d\d\s\d\d\s\d\d\.\d\d\d)\s(?<Dec>[+-]\d\d\s\d\d\s\d\d\.\d\d).*<A HREF=','names');
 %Coo    = regexp(Str,'ICRS.*J2000.*TT.{1,5}(?<RA>\d\d\s\d\d\s\d\d\.\d\d\d)\s(?<Dec>[+-]\d\d\s\d\d\s\d\d\.\d\d).*<A HREF=','names');
-Coo    = regexp(Str,sprintf('%s.{1,150}TT.{1,5}(?<RA>\\d\\d\\s\\d\\d\\s\\d\\d\\.\\d{0,7})\\s(?<Dec>[+-]\\d\\d\\s\\d\\d\\s\\d\\d\\.\\d{0,6}).*<A HREF=',CooType),'names');
+Coo    = regexp(Str,sprintf('%s.{1,300}TT.{1,5}(?<RA>\\d\\d\\s\\d\\d\\s\\d\\d\\.\\d{0,12})\\s(?<Dec>[+-]\\d\\d\\s\\d\\d\\s\\d\\d\\.\\d{0,11}).*<A HREF=',CooType),'names');
 if (any(size(Coo) == 0))
     RA  = NaN;
     Dec = NaN;
