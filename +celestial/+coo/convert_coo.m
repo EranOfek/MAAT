@@ -103,6 +103,9 @@ switch lower(InCooType)
         RotM1 = celestial.coo.rotm_coo('E',2451545.5);
     case {'h','a'}
         % convert to J2000
+        if isempty(ObsCoo)
+            error('when converting to/from AzAlt ObsCoo must be provided');
+        end
         EqCoo = celestial.coo.horiz_coo([Long(:), Lat(:)],JD,ObsCoo,'e');
         Long  = EqCoo(:,1);
         Lat   = EqCoo(:,2);
@@ -141,6 +144,9 @@ switch lower(OutCooType)
         RotM2 = celestial.coo.rotm_coo('e',2451545.5);
      case {'h','a'}
         % convert to horizontal
+        if isempty(ObsCoo)
+            error('when converting to/from AzAlt ObsCoo must be provided');
+        end
         EqCoo = celestial.coo.horiz_coo([Long(:), Lat(:)],JD,ObsCoo(1:2),'h');
         Long  = EqCoo(:,1);
         Lat   = EqCoo(:,2);
