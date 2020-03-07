@@ -1422,10 +1422,13 @@ function Export_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 f = figure;
-Plot = handles.Plot.UserData.params;
-f.Name = sprintf('%s %s model %s Rs=%4.0f Vs*,8.5=%4.2f Ms=%4.1f frho=%5.3f t0=%8.2f Ebv=%4.2f',...
-    handles.SOPRANOS.UserData.data.snname, Plot.model, Plot.prog, Plot.Rs, Plot.Vs/10^8.5, Plot.Ms, Plot.frho, Plot.t0, Plot.Ebv);
-
+if isempty(handles.Plot.UserData)
+    f.Name = handles.SOPRANOS.UserData.data.snname;
+else
+    Plot = handles.Plot.UserData.params;
+    f.Name = sprintf('%s %s model %s Rs=%4.0f Vs*,8.5=%4.2f Ms=%4.1f frho=%5.3f t0=%8.2f Ebv=%4.2f',...
+        handles.SOPRANOS.UserData.data.snname, Plot.model, Plot.prog, Plot.Rs, Plot.Vs/10^8.5, Plot.Ms, Plot.frho, Plot.t0, Plot.Ebv);
+end
 Naxes = length(handles.Graphs.UserData);
 if Naxes == 0
     return
