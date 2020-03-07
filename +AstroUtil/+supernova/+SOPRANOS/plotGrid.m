@@ -144,7 +144,7 @@ for ipeak = 1:length(iRs_peaks)
 %    [t0sigmaM(ipeak),~,t0sigmaP(ipeak)]=oneSigmaMove(gridfile.Vect0,t0PDF,t0_peaks(ipeak));
     [t0sigmaM(ipeak),~,t0sigmaP(ipeak)]=oneSigmaMove(Vect0,t0PDF,t0_peaks(ipeak));
     t0sigmaM(ipeak) = t0_peaks(ipeak) - t0sigmaM(ipeak);
-    chi2values(ipeak).all.t0sigmaP = t0sigmaP(ipeak) - t0_peaks(ipeak);
+    t0sigmaP(ipeak) = t0sigmaP(ipeak) - t0_peaks(ipeak);
 
 %    [MssigmaM(ipeak),~,MssigmaP(ipeak)]=oneSigmaMove(gridfile.VecMs,MsPDF,Ms_peaks(ipeak));
     [MssigmaM(ipeak),~,MssigmaP(ipeak)]=oneSigmaMove(VecMs,MsPDF,Ms_peaks(ipeak));
@@ -261,8 +261,11 @@ end
 
 if ~exist(results_fname,'file')
     save fmax_input filename Vs_peaks Rs_peaks bg results_fname mintpoints
-    [Rs_peaks, Vs_peaks/10^8.5];
-    !screen -dmS findMaximum nice -n 19 matlab -nodisplay -nosplash -nodesktop -r "load('fmax_input.mat');[Vs, Rs, Ms, Ebv, Rv,  Vect0, PDFt0, t0, chi2values] = findMaximum(filename,Vs_peaks,Rs_peaks,bg,mintpoints);save(results_fname, 'Vs', 'Rs', 'Ms', 'Ebv', 'Rv', 'Vect0', 'PDFt0', 't0', 'chi2values');exit" &
+    if isunix
+        !screen -dmS findMaximum nice -n 19 matlab -nodisplay -nosplash -nodesktop -r "load('fmax_input.mat');[Vs, Rs, Ms, Ebv, Rv,  Vect0, PDFt0, t0, chi2values] = AstroUtil.supernova.SOPRANOS.findMaximum(filename,Vs_peaks,Rs_peaks,bg,mintpoints);save(results_fname, 'Vs', 'Rs', 'Ms', 'Ebv', 'Rv', 'Vect0', 'PDFt0', 't0', 'chi2values');exit" &
+    elseif ispc
+        !start /BELOWNORMAL matlab -nosplash -nodesktop -minimize -r "load('fmax_input.mat');[Vs, Rs, Ms, Ebv, Rv,  Vect0, PDFt0, t0, chi2values] = AstroUtil.supernova.SOPRANOS.findMaximum(filename,Vs_peaks,Rs_peaks,bg,mintpoints);save(results_fname, 'Vs', 'Rs', 'Ms', 'Ebv', 'Rv', 'Vect0', 'PDFt0', 't0', 'chi2values');exit" -logfile "calcGrid.log"
+    end
     return
 else
     load(results_fname);
