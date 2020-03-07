@@ -1,4 +1,4 @@
-function calcGrid(sn_name,Vect0,VecEbv,model,ModelError,BGbands)
+function calcGrid(sn_name,Vect0,model,ModelError,BGbands,bg)
 % Calculate chi2/dof grid
 % Package: AstroUtil.supernove.SOPRANOS
 % Description: Calculate chi2/dof grid for a SN light curve against a
@@ -29,10 +29,10 @@ function calcGrid(sn_name,Vect0,VecEbv,model,ModelError,BGbands)
 % Example: AstroUtil.supernova.SOPRANOS.calcGrid('PTF12gnt',
 % Reliable: 2
 %--------------------------------------------------------------------------
-if nargin==4
+if nargin==3
     BGbands = [];
     ModelError = 0;
-elseif nargin==5
+elseif nargin==4
     BGbands = [];
 end
 
@@ -41,7 +41,7 @@ LCs  = matfile(sprintf('%s_%s_LCs.mat', sn_name, model));
 gridfile = matfile(sprintf('%s_%s_grid', sn_name, model),'Writable',true);
 
 Ebv = AstroUtil.spec.sky_ebv(data.RArad ,data.decRad);
-if (LCs.VecEbv(1)>Ebv)||(LCs.VecEbv(end)<Ebv)
+if (LCs.VecEbv(1,1)>Ebv)||(LCs.VecEbv(end,1)<Ebv)
     warning('The local galaxy Ebv is outside VecEbv');
 end
 
@@ -149,7 +149,8 @@ for iband=1:length(bands)
         for iEbv=1:NEbv
             maxdiff=zeros(length(LC.MJD),1);
             fprintf('%d,',iEbv);
-            loopfile = matfile(sprintf('%s_iEbv%d.mat',sn_name,iEbv),'Writable',true);
+            loopfileName = sprintf('%s_iEbv%d.mat',sn_name,iEbv);
+%            loopfile = matfile(loopfileName,'Writable',true);
             LTcgrid = cell2mat(LCs.Flux(1,iband));
             LTcgrid = LTcgrid(:,:,iEbv).';
             W.F = griddedInterpolant({LCs.vecL,LCs.vecTc},LTcgrid);
@@ -199,23 +200,25 @@ for iband=1:length(bands)
                 BGt = 0;
             end
             parfor iRs = 1:Nr
-                valid = (c.Value.tobs(:,it0)>=t_BO(:,iRs,:,:,:)) & (c.Value.tobs(:,it0)<=t_max(:,iRs,:,:,:));
+%             for iRs = 1:Nr
+%                 valid = (c.Value.tobs(:,it0)>=t_BO(:,iRs,:,:,:)) & (c.Value.tobs(:,it0)<=t_max(:,iRs,:,:,:));
+                valid = (W.tobs(:,it0)>=t_BO(:,iRs,:,:,:)) & (W.tobs(:,it0)<=t_max(:,iRs,:,:,:));
                 if ismember(iband,BGbands)
-                    BGi = single(sum(~outliers.*valid.*(FluxPnt-Flux(:,iRs,:,:,:))./FluxErr.^2,1)./sum(~outliers.*valid.*FluxErr.^-2,1));
-%                     k=6;
-%                     sigma2 = single(sum(~outliers.*valid.*FluxErr.^-2,1));
-%                     OminE  = single(sum(~outliers.*valid.*(FluxPnt-Flux(:,iRs,:,:,:))./FluxErr.^2,1));        
-%                     OminE2 = single(sum(~outliers.*valid.*(FluxPnt-Flux(:,iRs,:,:,:)).^2./FluxErr.^2,1));
-%                     
-%                     a = -sigma2.^2-1./sigma_bg.^2.*sigma2;
-%                     b = 3.*sigma2.*OminE + 2./sigma_bg.^2.*OminE + mu_bg/sigma_bg.^2.*sigma2;
-%                     c = (k-2).*sigma2 - 2.*OminE.^2 - OminE2.*(sigma2 - 1./sigma_bg.^2) - 2.*mu_bg/sigma_bg.^2.*OminE;                  
-%                     d = (2-k).*OminE + OminE2.*(OminE + mu_bg./sigma_bg.^2);
-%                     
-%                     sigma2 = []; OminE = []; OminE2 = [];
-%                     
-%                     BGi = cubicZeros(a,b,c,d);
-%                     a = []; b = []; c = []; d = [];
+%                     BGi = single(sum(~outliers.*valid.*(FluxPnt-Flux(:,iRs,:,:,:))./FluxErr.^2,1)./sum(~outliers.*valid.*FluxErr.^-2,1));
+                    k=6; % number of model parameters to estimate
+                    sigma2 = sum(~outliers.*valid./FluxErr.^2,1);                                  %$$\Sum_i 1/\sigma_i^2$$
+                    OminE  = sum(~outliers.*valid.*(FluxPnt-Flux(:,iRs,:,:,:))./FluxErr.^2,1);      %$$\Sum_i \frac{O_i - E_i}{sigma_i^2}$$  
+                    OminE2 = sum(~outliers.*valid.*(FluxPnt-Flux(:,iRs,:,:,:)).^2./FluxErr.^2,1);   %$$\Sum_i \frac{(O_i-E_i)^2}{sigma_i^2}$$
+                    
+                    a = -sigma2.^2-sigma2./bg{iband}.sigma.^2;
+                    b = 3.*sigma2.*OminE + 2./bg{iband}.sigma.^2.*OminE + bg{iband}.value/bg{iband}.sigma.^2.*sigma2;
+                    c = (k-2).*sigma2 - 2.*OminE.^2 - OminE2.*(sigma2 - 1./bg{iband}.sigma.^2) - 2.*bg{iband}.value/bg{iband}.sigma.^2.*OminE;                  
+                    d = (2-k).*OminE + OminE2.*(OminE + bg{iband}.value./bg{iband}.sigma.^2);
+                    
+                    sigma2 = []; OminE = []; OminE2 = [];
+                    
+                    BGi = cubicZeros(a,b,c,d);
+                    a = []; b = []; c = []; d = [];
                 else
                     BGi = BG;
                 end
@@ -252,6 +255,8 @@ for iband=1:length(bands)
                 loopfile.NTransient = NTransient;
             end
             loopfile.BG = BGt;
+            save(loopfileName,'-struct','loopfile','-v7.3');
+            clear loopfile
         end
 
         fprintf('\nMerging Ebv files.\n');
