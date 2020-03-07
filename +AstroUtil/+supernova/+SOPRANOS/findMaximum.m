@@ -48,7 +48,7 @@ else
         model = 'sw';
 
         c = parallel.pool.Constant(data);
-        PDFfun = @(x) (PDF(data,redshift,Vect0,x(1),x(2),VecMs,VecFrho,VecEbv,model,6,ProgType,priors,bg,transient,mintpoints,c));
+        PDFfun = @(x) (AstroUtil.supernova.SOPRANOS.PDF(data,redshift,Vect0,x(1),x(2),VecMs,VecFrho,VecEbv,model,6,ProgType,priors,bg,transient,mintpoints,c));
         fun = @(x) (1-PDFfun(x));
         x0 = [Rs_in(ipeak), Vs_in(ipeak)];
         PDF0 = PDFfun(x0);
@@ -105,7 +105,7 @@ else
         chi2values.margFrho = margFrho;
         chi2values.PDFmat   = PDFmat;
 
-        fun = @(x) 1-(PDF(data,redshift,x(1),Rs,Vs,x(2),x(3),x(4),model,6,ProgType,priors,bg,transient,mintpoints,c));
+        fun = @(x) 1-(AstroUtil.supernova.SOPRANOS.PDF(data,redshift,x(1),Rs,Vs,x(2),x(3),x(4),model,6,ProgType,priors,bg,transient,mintpoints,c));
         x0 = [t0 Ms frho Ebv];
         f0 = fun(x0);
         [x,fval,exitflag,output] = fminsearch(fun, x0);
@@ -119,7 +119,7 @@ else
             Ms = x(2);
             frho = x(3);
             Ebv = x(4);
-            [PDFvalue, chi_2, dof, chi2bands, pntsbands] = PDF(data,redshift,x(1),Rs,Vs,x(2),x(3),x(4),model,6,ProgType,priors,bg,transient,mintpoints,c);
+            [PDFvalue, chi_2, dof, chi2bands, pntsbands] = AstroUtil.supernova.SOPRANOS.PDF(data,redshift,x(1),Rs,Vs,x(2),x(3),x(4),model,6,ProgType,priors,bg,transient,mintpoints,c);
 
             chi2values.t0MsEbv.PDF  = PDFvalue;
             chi2values.t0MsEbv.chi2 = chi_2;
@@ -133,7 +133,7 @@ else
             chi2values.t0MsEbv.frho     = frho;
         end
 
-        fun = @(x) 1-(PDF(data,redshift,x(1),x(2),x(3),x(4),x(5),x(6),model,6,ProgType,priors,bg,transient,mintpoints,c));
+        fun = @(x) 1-(AstroUtil.supernova.SOPRANOS.PDF(data,redshift,x(1),x(2),x(3),x(4),x(5),x(6),model,6,ProgType,priors,bg,transient,mintpoints,c));
         x0 = [t0 Rs Vs Ms frho Ebv];
         f0 = fun(x0);
         [x,fval,exitflag,output] = fminsearch(fun, x0);
@@ -151,7 +151,7 @@ else
             Ms  = x(4);
             frho= x(5);        
             Ebv = x(6);
-            [PDFval, chi_2, dof, chi2bands, pntsbands] = PDF(data,redshift,x(1),x(2),x(3),x(4),x(5),x(6),model,6,ProgType,priors,bg,transient,mintpoints,c);
+            [PDFval, chi_2, dof, chi2bands, pntsbands] = AstroUtil.supernova.SOPRANOS.PDF(data,redshift,x(1),x(2),x(3),x(4),x(5),x(6),model,6,ProgType,priors,bg,transient,mintpoints,c);
 
             chi2values.all.PDF  = PDFval;
             chi2values.all.chi2 = chi_2;
