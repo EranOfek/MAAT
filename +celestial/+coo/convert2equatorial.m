@@ -131,7 +131,7 @@ end
 
 
 % convert input coordinates to RA, Dec in default equinox
-[TrueRA,TrueDec] = celestial.coo.convert_coo(Long,Lat,InPar.InCooType,OutCooType);
+[TrueRA,TrueDec] = celestial.coo.convert_coo(Long,Lat,InPar.InCooType,OutCooType,InPar.JD,InPar.ObsCoo);
 
 % applay atmospheric refraction
 [TrueAz,TrueAlt] = celestial.coo.convert_coo(TrueRA,TrueDec,OutCooType,'azalt',InPar.JD,InPar.ObsCoo);

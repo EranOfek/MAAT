@@ -40,15 +40,24 @@ if (Rem0col)
 end
 
 
-OutC.Cat = zeros(Nrow,Ncol);
+if istable(AstC(1).Cat)
+    EmptyCell = cell(1,Ncol);
+    OutC.Cat = table(EmptyCell{:});
+    OutC.Cat.Properties =  AstC(1).Cat.Properties;
+else
+    OutC.Cat = zeros(Nrow,Ncol);
+end
 Line     = 0;
 Ncat = numel(AstC);
 
 for Icat=1:1:Ncat
    
-    if (~isempty(AstC(Icat).Cat))
-        
-        OutC.Cat((1:SizeRow(Icat))+Line,:) = AstC(Icat).Cat;
+    if ~isempty(AstC(Icat).Cat)
+        if istable(AstC(Icat).Cat)
+            OutC.Cat = [OutC.Cat; AstC(Icat).Cat];
+        else
+            OutC.Cat((1:SizeRow(Icat))+Line,:) = AstC(Icat).Cat;
+        end
         Line = SizeRow(Icat)+Line;
     end
 end
