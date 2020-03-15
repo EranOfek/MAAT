@@ -49,10 +49,10 @@ for Icat=1:1:Ncat
     if ~isempty(AstC(Icat).Cat)
         % initialization
         if ~FirstFound
-            if istable(AstC(Icat).Cat)
-                EmptyCell = cell(1,Ncol);
-                OutC.Cat = table(EmptyCell{:});
-                OutC.Cat.Properties =  AstC(Icat).Cat.Properties;
+            if istable(AstC(1).Cat)
+            EmptyCell = cell(1,Ncol);
+            OutC.Cat = table(EmptyCell{:});
+            OutC.Cat.Properties =  AstC(1).Cat.Properties;
             else
                 OutC.Cat = zeros(Nrow,Ncol);
             end
