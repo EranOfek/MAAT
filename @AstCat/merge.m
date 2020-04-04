@@ -40,15 +40,32 @@ if (Rem0col)
 end
 
 
-OutC.Cat = zeros(Nrow,Ncol);
+
 Line     = 0;
 Ncat = numel(AstC);
-
+FirstFound = false;
 for Icat=1:1:Ncat
    
-    if (~isempty(AstC(Icat).Cat))
+    if ~isempty(AstC(Icat).Cat)
+        % initialization
+        if ~FirstFound
+            if istable(AstC(Icat).Cat)
+                EmptyCell = cell(1,Ncol);
+                OutC.Cat = table(EmptyCell{:});
+                OutC.Cat.Properties =  AstC(Icat).Cat.Properties;
+            else
+                OutC.Cat = zeros(Nrow,Ncol);
+            end
+            FirstFound = true;
+        end
         
-        OutC.Cat((1:SizeRow(Icat))+Line,:) = AstC(Icat).Cat;
+        
+        
+        if istable(AstC(Icat).Cat)
+            OutC.Cat = [OutC.Cat; AstC(Icat).Cat];
+        else
+            OutC.Cat((1:SizeRow(Icat))+Line,:) = AstC(Icat).Cat;
+        end
         Line = SizeRow(Icat)+Line;
     end
 end

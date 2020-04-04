@@ -158,9 +158,5 @@ else
     ChandraObs = sortrows(ChandraObs,'Dec');
     save(MasterName,'ChandraObs','-v7.3');
      
-    Cat = ChandraObs;
     cd(PWD);
-    
-    VO.search.prep_data_dir;
-    
 end

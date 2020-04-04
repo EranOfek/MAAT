@@ -36,7 +36,6 @@ DefV.Download      = 'all';   % {'all'|'primary'|'evt'}
 DefV.Output        = 'dir_full';   % {'dir_full'|'dir_obsid'|'flat'}
 DefV.Ungzip        = true;
 DefV.CopyTo        = [];
-DefV.UnGzip        = true;
 DefV.ReGet         = false;
 DefV.Extra         = '';
 DefV.MaxGet        = 10;
@@ -107,13 +106,8 @@ else
             
             switch lower(InPar.Output)
                 case 'dir_obsid'
-                    if exist(ObsIDstr,'dir')==0
-                        mkdir(ObsIDstr);
-                        cd(ObsIDstr);
-                        DirExist = false;
-                    else
-                        DirExist = true;
-                    end
+                    mkdir(ObsIDstr);
+                    cd(ObsIDstr);
                     
                 case 'dir_full'
                     ListTmp = regexprep(List,InPar.BaseURL,'');
@@ -125,52 +119,38 @@ else
                     cd(DirAO);
                     mkdir(DirCat);
                     cd(DirCat);
-                    if exist(ObsIDstr,'dir')==0
-                        mkdir(ObsIDstr);
-                        cd(ObsIDstr);
-                        DirExist = false;
-                    else
-                        DirExist = true;
-                    end    
+                    mkdir(ObsIDstr);
+                    cd(ObsIDstr);
                     
                 otherwise
                     error('Impossible error');
             end
             
             
-            if ~DirExist
-                % only if ObsIDstr dir doesn't exist
-                MatchP = sprintf('%sao\\d\\d/cat\\d/\\d.{1,5}/primary/*',InPar.BaseURL);
-                MatchS = sprintf('%sao\\d\\d/cat\\d/\\d.{1,5}/secondary/*',InPar.BaseURL);
-                Fp     = ~Util.cell.isempty_cell(regexp(List,MatchP,'match'));
-                Fs     = ~Util.cell.isempty_cell(regexp(List,MatchS,'match'));
-                Ff     = ~Fp & ~Fs;
-                if (sum(Ff)>0)
-                    www.pwget(List(Ff),InPar.Extra,InPar.MaxGet);
-                    if InPar.UnGzip
-                        system('gzip -d *.gz');
-                    end
-                end
-                if (sum(Fp)>0)
-                    mkdir('primary');
-                    cd('primary');
-                    www.pwget(List(Fp),InPar.Extra,InPar.MaxGet);
-                    if InPar.UnGzip
-                        system('gzip -d *.gz');
-                    end
-                    cd ..
-                end
-                if (sum(Fs)>0)
-                    mkdir('secondary');
-                    cd('secondary');
-                    www.pwget(List(Fs),InPar.Extra,InPar.MaxGet);
-                    if InPar.UnGzip
-                        system('gzip -d *.gz');
-                    end
-                    cd ..
-                end
-
+            
+            MatchP = sprintf('%sao\\d\\d/\\d.{1-5}/primary/',InPar.BaseURL);
+            MatchS = sprintf('%sao\\d\\d/cat\d/\\d.{1-5}/secondary/',InPar.BaseURL);
+            Fp     = ~Util.cell.isempty_cell(regexp(List,MatchP,'match'));
+            Fs     = ~Util.cell.isempty_cell(regexp(List,MatchS,'match'));
+            Ff     = ~Fp & ~Fs;
+            if (sum(Ff)>0)
+                www.pwget({List(Ff)},InPar.Extra,InPar.MaxGet);
+                system('gzip -d *.gz');
             end
+            if (sum(Fp)>0)
+                mkdir('primary');
+                cd('primary');
+                www.pwget({List(Fp)},InPar.Extra,InPar.MaxGet);
+                system('gzip -d *.gz');
+            end
+            if (sum(Fs)>0)
+                mkdir('secondary');
+                cd('secondary');
+                www.pwget({List(Fs)},InPar.Extra,InPar.MaxGet);
+                system('gzip -d *.gz');
+            end
+            
+            
             
        otherwise
             error('Unknown Output option');

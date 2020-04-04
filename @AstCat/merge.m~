@@ -33,24 +33,39 @@ end
 
 
 if (Rem0col)
-    Flag    = SizeCol~=0;
+    Flag    = SizeCol~=0 & SizeRow~=0;
     AstC    = AstC(Flag);
     SizeCol = SizeCol(Flag);
+    SizeRow = SizeRow(Flag);
 end
 
 
-OutC.Cat = zeros(Nrow,Ncol);
+
 Line     = 0;
 Ncat = numel(AstC);
-
+FirstFound = false;
 for Icat=1:1:Ncat
-    Icat
-    if (Icat==275)
-        'hi'
-    end
-    if (~isempty(AstC(Icat).Cat))
-        if (
-        OutC.Cat((1:SizeRow(Icat))+Line,:) = AstC(Icat).Cat;
+   
+    if ~isempty(AstC(Icat).Cat)
+        % initialization
+        if ~FirstFound
+            if istable(AstC(1).Cat)
+            EmptyCell = cell(1,Ncol);
+            OutC.Cat = table(EmptyCell{:});
+            OutC.Cat.Properties =  AstC(1).Cat.Properties;
+            else
+                OutC.Cat = zeros(Nrow,Ncol);
+            end
+            FirstFound = true;
+        end
+        
+        
+        
+        if istable(AstC(Icat).Cat)
+            OutC.Cat = [OutC.Cat; AstC(Icat).Cat];
+        else
+            OutC.Cat((1:SizeRow(Icat))+Line,:) = AstC(Icat).Cat;
+        end
         Line = SizeRow(Icat)+Line;
     end
 end
