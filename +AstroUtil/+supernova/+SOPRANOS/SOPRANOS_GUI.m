@@ -695,7 +695,8 @@ if (strcmp(handles.TransientStart.Enable,'on'))
 end
 
 if ~isempty(handles.Plot.UserData)
-    PlotParams = handles.Plot.UserData.PlotParams;
+%     PlotParams = handles.Plot.UserData.PlotParams;
+    PlotParams = handles.Plot.UserData.params;
     switch PlotParams.model
         case 'SW', handles.Model.Value = 1;
         case 'RW', hadnles.Model.Value = 2;
