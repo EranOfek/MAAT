@@ -724,7 +724,8 @@ classdef AstFilter
                 if isunix
                     FileName = sprintf('~%smatlab%sdata%s+cats%s+spec%s+filter%sAstFilterCat.mat',filesep,filesep,filesep,filesep,filesep,filesep);
                 elseif ispc
-                    FileName = sprintf('G:%smatlab%sdata%s+cats%s+spec%s+filter%sAstFilterCat.mat',filesep,filesep,filesep,filesep,filesep,filesep);
+                    data_dir = get_data_folder;
+                    FileName = sprintf('%s%s+cats%s+spec%s+filter%sAstFilterCat.mat',data_dir,filesep,filesep,filesep,filesep,filesep);
                 end
             end
             
