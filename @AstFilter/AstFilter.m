@@ -678,6 +678,7 @@ classdef AstFilter
                 CumTrapz = cumtrapz(Fnn(:,1),Fnn(:,2));
                 if abs(CumTrapz(end)-1)>(1e-5)
                     warning('Filter #%d, %s %s is not normalized',If, AstF(If).family, AstF(If).band)
+                    CumTrapz = CumTrapz./CumTrapz(end);
                 end
 %                 for i=2:length(CumSum)
 %                     if CumSum(i)<=CumSum(i-1)
@@ -691,7 +692,7 @@ classdef AstFilter
                 end
 %                 AstF(If).half_width = interp1(CumSum+eps,Fnn(1:end-1,1),0.75) - ...
 %                                       interp1(CumSum+eps,Fnn(1:end-1,1),0.25)
-                CumTrapz = CumTrapz + 10000.*eps.*(1:1:numel(CumTrapz)).';
+%                 CumTrapz = CumTrapz + 10000.*eps.*(1:1:numel(CumTrapz)).';
                 AstF(If).half_width = interp1(CumTrapz./max(CumTrapz),Fnn(:,1),0.75) - ...
                                       interp1(CumTrapz./max(CumTrapz),Fnn(:,1),0.25);
 
@@ -720,7 +721,11 @@ classdef AstFilter
             % Outout : - AstFilter object saved.
             
             if (nargin<2)
-                FileName = sprintf('~%smatlab%sdata%s+cats%s+spec%s+filter%sAstFilterCat.mat',filesep,filesep,filesep,filesep,filesepc,filespec);
+                if isunix
+                    FileName = sprintf('~%smatlab%sdata%s+cats%s+spec%s+filter%sAstFilterCat.mat',filesep,filesep,filesep,filesep,filesep,filesep);
+                elseif ispc
+                    FileName = sprintf('G:%smatlab%sdata%s+cats%s+spec%s+filter%sAstFilterCat.mat',filesep,filesep,filesep,filesep,filesep,filesep);
+                end
             end
             
             if (exist(FileName,'file')>0)
