@@ -39,7 +39,136 @@ classdef FITS
     % FITS header
     methods (Static)
         
-        % get header from FITS file
+        % get header from a sinle FITS file
+        function [HeadCell,Nhdu]=read_header(Image,HDUnum)
+            % Read a single header into a three column cell array
+            % Package: @FITS (Static)
+            % Input  : - A single FITS file name.
+            %          - HDU number. Default is 1.
+            % Output : - A three column cell array with the entire header.
+            %          - Number of HDUs in file.
+            % Example:
+            % [HeadCell,Nhdu]=FITS.read_header('PTF_201211224002_i_p_scie_t093619_u014676207_f02_p100037_c02.fits')
+            
+            if nargin<2
+                HDUnum = 1;
+            end
+            
+            import matlab.io.*
+            
+
+            KeyPos = 9;
+            ComPos = 32;
+
+            Fptr = fits.openFile(Image);
+            Nhdu = fits.getNumHDUs(Fptr);
+            if (Nhdu>=HDUnum)
+                Htype = fits.movAbsHDU(Fptr,HDUnum);
+
+                Nkey = fits.getHdrSpace(Fptr);
+                HeadCell = cell(Nkey,3);
+                for Ikey = 1:1:Nkey
+                   Card     = fits.readRecord(Fptr,Ikey);
+                   LenCard = length(Card);
+                   if (LenCard>=9)
+
+                       if (strcmpi(Card(KeyPos),'='))
+                           HeadCell{Ikey,1}  = Util.string.spacedel(Card(1:KeyPos-1));
+                           % update comment position due to over flow
+                           Islash = strfind(Card(ComPos:end),'/');
+                           if (isempty(Islash))
+                               UpdatedComPos = ComPos;
+                           else
+                               UpdatedComPos = ComPos + Islash(1)-1;
+                           end
+                           Value = Card(KeyPos+1:min(LenCard,UpdatedComPos-1));
+                           PosAp = strfind(Value,'''');
+
+                           if (isempty(PosAp))
+                                % possible number
+                                Value = str2double(Value);
+                           else
+                               if (length(PosAp)>=2)
+                                   % a string
+                                   Value = Value(PosAp(1)+1:PosAp(2)-1);
+                               else
+
+                                   Value = Card(PosAp(1)+10:end);
+                               end
+                           end
+
+                           HeadCell{Ikey,2}  = Value; %Card(KeyPos+1:min(LenCard,ComPos-1));
+                           if (LenCard>UpdatedComPos)
+
+                               HeadCell{Ikey,3}  = Card(UpdatedComPos+1:end);    
+                           else
+                               HeadCell{Ikey,3}  = '';
+                           end
+
+                       else
+
+                           % look for history and comment keywords
+                           if (strcmpi(Card(1:7),'HISTORY'))
+                               HeadCell{Ikey,1} = 'HISTORY';
+                               HeadCell{Ikey,2} = Card(KeyPos:end);
+                               HeadCell{Ikey,3} = '';
+                           end
+                           if (strcmpi(Card(1:7),'COMMENT'))
+                               HeadCell{Ikey,1} = 'COMMENT';
+                               HeadCell{Ikey,2} = Card(KeyPos:end);
+                               HeadCell{Ikey,3} = '';
+                           end
+                       end
+                   end
+                end
+            end
+            
+            fits.closeFile(Fptr);
+        
+        end
+        
+        % get header into an headCl object
+        function [H,Nhdu]=header2headCl(ImageList,HDUnum)
+            % Read a list of FITS headers into an headCl object
+            % Package: @FITS (Static)
+            % Description: Read a specific Header Data Unit (HDU) in a FITS file
+            %              into a an headCl object.
+            % Input  : - FITS file name.
+            %          - Index of HDU. Default is 1.
+            % Output : - An Head object containing the header information:
+            %            {Keyword, Value, comment}.
+            %          - Number of HDU identified in FITS image.
+            % Tested : Matlab R2014a
+            %     By : Eran O. Ofek                    Jul 2014
+            %    URL : http://weizmann.ac.il/home/eofek/matlab/
+            % Example: [H,Nhdu]=FITS.header2headCl('*.fits');
+            % Reliable: 2
+            
+            if nargin<2
+                HDUnum = 1;
+            end
+            
+            [~,List] = Util.files.create_list(ImageList,NaN);
+            Nlist    = numel(List);
+            H        = headCl(Nlist,1);
+            Nhdu     = zeros(Nlist,1);
+
+            
+            for Ilist=1:1:Nlist
+                %Ilist
+                Image = List{Ilist};
+
+                [HeadCell,Nhdu(Ilist)]=FITS.read_header(Image,HDUnum);
+                
+                H(Ilist).Header = HeadCell;
+                
+            end % end for Ilist...
+
+            
+            
+        end
+        
+        % get header from FITS file into an HEAD object
         function [Head,Nhdu]=get_head(ImageList,HDUnum,PopWCS)
             % Read FITS header into a cell array
             % Package: @FITS
@@ -75,7 +204,6 @@ classdef FITS
             if (isnan(HDUnum))
                 HDUnum = 1;
             end
-            import matlab.io.*
 
             [~,List] = Util.files.create_list(ImageList,NaN);
             Nlist    = numel(List);
@@ -86,78 +214,10 @@ classdef FITS
                 %Ilist
                 Image = List{Ilist};
 
-
-                KeyPos = 9;
-                ComPos = 32;
-
-                Fptr = fits.openFile(Image);
-                Nhdu(Ilist) = fits.getNumHDUs(Fptr);
-                if (Nhdu(Ilist)>=HDUnum)
-                    Htype = fits.movAbsHDU(Fptr,HDUnum);
-
-                    Nkey = fits.getHdrSpace(Fptr);
-                    HeadCell = cell(Nkey,3);
-                    for Ikey = 1:1:Nkey
-                       Card     = fits.readRecord(Fptr,Ikey);
-                       LenCard = length(Card);
-                       if (LenCard>=9)
-
-                           if (strcmpi(Card(KeyPos),'='))
-                               HeadCell{Ikey,1}  = Util.string.spacedel(Card(1:KeyPos-1));
-                               % update comment position due to over flow
-                               Islash = strfind(Card(ComPos:end),'/');
-                               if (isempty(Islash))
-                                   UpdatedComPos = ComPos;
-                               else
-                                   UpdatedComPos = ComPos + Islash(1)-1;
-                               end
-                               Value = Card(KeyPos+1:min(LenCard,UpdatedComPos-1));
-                               PosAp = strfind(Value,'''');
-
-                               if (isempty(PosAp))
-                                    % possible number
-                                    Value = str2double(Value);
-                               else
-                                   if (length(PosAp)>=2)
-                                       % a string
-                                       Value = Value(PosAp(1)+1:PosAp(2)-1);
-                                   else
-
-                                       Value = Card(PosAp(1)+10:end);
-                                   end
-                               end
-
-                               HeadCell{Ikey,2}  = Value; %Card(KeyPos+1:min(LenCard,ComPos-1));
-                               if (LenCard>UpdatedComPos)
-
-                                   HeadCell{Ikey,3}  = Card(UpdatedComPos+1:end);    
-                               else
-                                   HeadCell{Ikey,3}  = '';
-                               end
-
-                           else
-
-                               % look for history and comment keywords
-                               if (strcmpi(Card(1:7),'HISTORY'))
-                                   HeadCell{Ikey,1} = 'HISTORY';
-                                   HeadCell{Ikey,2} = Card(KeyPos:end);
-                                   HeadCell{Ikey,3} = '';
-                               end
-                               if (strcmpi(Card(1:7),'COMMENT'))
-                                   HeadCell{Ikey,1} = 'COMMENT';
-                                   HeadCell{Ikey,2} = Card(KeyPos:end);
-                                   HeadCell{Ikey,3} = '';
-                               end
-                           end
-                       end
-                    end
-
-                else
-                    error('HDUnum requested is larger than the number of HDUs in FITS file');
-                end
-
+                [HeadCell,Nhdu(Ilist)]=FITS.read_header(Image,HDUnum);
+                
                 Head(Ilist).(HeaderField) = HeadCell;
-                fits.closeFile(Fptr);
+                
             end % end for Ilist...
 
             

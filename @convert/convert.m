@@ -405,10 +405,13 @@ classdef convert
                     ConvFactor = Erg2A.*1e-8;
                  case 'nm'
                     Relation   = 'inv';
-                    ConvFactor = Erg2A.*1e-4;
+                    ConvFactor = Erg2A.*1e-1;
                  case 'm'
                     Relation   = 'inv';
                     ConvFactor = Erg2A.*1e-10;
+                 case 'micron'
+                    Relation   = 'inv';
+                    ConvFactor = Erg2A.*1e-4;
                  case 'ev'
                     ConvFactor = Erg2eV;
                  case 'kev'
@@ -460,13 +463,16 @@ classdef convert
                     ConvFactor = Erg2A;
                  case 'nm'
                     Relation   = 'inv';
-                    ConvFactor = Erg2A.*1e-4;
+                    ConvFactor = Erg2A.*1e-1;
                  case 'cm'
                     Relation   = 'inv';
                     ConvFactor = Erg2A.*1e-8;
                  case 'm'
                     Relation   = 'inv';
                     ConvFactor = Erg2A.*1e-10;
+                 case 'micron'
+                    Relation   = 'inv';
+                    ConvFactor = Erg2A.*1e-4;
                  case 'ev'
                     ConvFactor = Erg2eV;
                  case 'kev'
