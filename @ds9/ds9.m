@@ -1896,6 +1896,9 @@ classdef ds9
              otherwise
                 error('Unknown CooType option');
             end
+            % remove "degrees" from coordinate string for crosshair command
+            CrosshairString = strsplit(String, ' degrees');
+            CrosshairString = CrosshairString{1};
 
 %             CooX  = zeros(N,1);
 %             CooY  = zeros(N,1);
@@ -1913,12 +1916,12 @@ classdef ds9
                CooY(I)   = str2double(SpCoo{3});
 
                %--- set crosshair position to Coordinates ---
-               ds9.system('xpaset -p ds9 crosshair %d %d %s',floor(CooX(I)),floor(CooY(I)),String);
+               ds9.system('xpaset -p ds9 crosshair %d %d %s',CooX(I),CooY(I),CrosshairString);
                %--- get Coordinates of crosshair ---
                [CooIm] = ds9.system('xpaget ds9 crosshair image');
 
                %--- get Pixel value at crosshair position ---
-               [ValStr] = ds9.system('xpaget ds9 data image %d %d 1 1 yes',floor(CooX(I)),floor(CooY(I)));
+               [ValStr] = ds9.system('xpaget ds9 data image %d %d 1 1 yes',CooX(I),CooY(I));
                ValStr = strtrim(ValStr);
                
                %--- Exit crosshair mode ---
