@@ -1088,7 +1088,7 @@ classdef catsHTM
             FileID = floor(ID./InPar.NcatInFile).*InPar.NcatInFile;
             Nid = numel(ID);
             Cat = zeros(0,Ncol);
-            %C = Util.struct.struct_def({'Cat'},Nid,1);
+            C = Util.struct.struct_def({'Cat'},Nid,1);
             for Iid=1:1:Nid
 
                 %FileID    = floor(ID(Iid)./InPar.NcatInFile).*InPar.NcatInFile;
@@ -1096,27 +1096,35 @@ classdef catsHTM
                 DataName  = sprintf(InPar.htmTemplate,ID(Iid));
 
                 %Cat = [Cat; catsHTM.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol)];
-                if (Iid==1)
-                    if InPar.UseIndex
-                        Cat = catsHTM.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol);
-                    else
-                        Cat = HDF5.load(FileName,DataName);
-                    end
-                    
-                    %Ncol = size(Cat,2);
+                if InPar.UseIndex
+                    C(Iid).Cat = catsHTM.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol).';
                 else
-                    if InPar.UseIndex
-                        Cat = [Cat; catsHTM.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol)];
-                    else
-                        Cat = [Cat; HDF5.load(FileName,DataName)];
-                    end
+                    C(Iid).Cat = HDF5.load(FileName,DataName).';
                 end
+                
+
+                
+%                 if (Iid==1)
+%                     if InPar.UseIndex
+%                         Cat = catsHTM.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol);
+%                     else
+%                         Cat = HDF5.load(FileName,DataName);
+%                     end
+%                     
+%                     %Ncol = size(Cat,2);
+%                 else
+%                     if InPar.UseIndex
+%                         Cat = [Cat; catsHTM.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol)];
+%                     else
+%                         Cat = [Cat; HDF5.load(FileName,DataName)];
+%                     end
+%                 end
 
                 %C(Iid).Cat = catsHTM.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol).';
 
             end
 
-            %Cat = [C.Cat]';
+            Cat = [C.Cat]';
 
             % select only sources in Cone
             if (InPar.OnlyCone)
