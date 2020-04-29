@@ -1011,17 +1011,7 @@ classdef catsHTM
             %                            constraints to apply to output catalog.
             %                            Each cell contains a two element
             %                            cell array in which the first
-            %                            element is a column name on which
-            %                            to apply the constraint. The
-            %                            second element is either a two
-            %                            element vector of [min, max] range
-            %                            to select, or a function handle
-            %                            that get the column and return
-            %                            logical.
-            %                            E.g., {{'Mag_G',[15 16]},{'Plx',@(x) ~isnan(x)}}
-            %                            will select sources with mag
-            %                            between 15 and 16 and not NaN
-            %                            parallax.
+            %                            element is a column n
             %            'RadiusUnits' - Radius units. Default is 'arcsec'.
             %            'IndexFileTemplate' - Index Catalog name template.
             %                            Default is '%s_htm.hdf5'.
