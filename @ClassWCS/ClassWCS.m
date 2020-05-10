@@ -117,7 +117,7 @@ classdef ClassWCS
                 H = HEAD;
                 H.(HeaderField) = Header;
             else
-                H = Header 
+                H = Header;
             end
             Nh = numel(H);
             W  = ClassWCS(Nh,1);

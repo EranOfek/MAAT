@@ -1044,7 +1044,7 @@ classdef catsHTM
             %                            objects outside cone.
             %                            Default is true.
             %            'ColCellFile' - Default is '%s_htmColCell.mat'.
-            %            'OutType'     - Output type {'mat'|'astcat'}.
+            %            'OutType'     - Output type {'mat'|'astcat'|'catcl'}.
             %                            Default is 'mat'.
             % Output : - Catalog of source within cone.
             %          - Cell array of column names.
