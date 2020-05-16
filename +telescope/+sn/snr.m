@@ -117,10 +117,10 @@ AperArea  = pi.*(InPar.Aper.*0.5).^2;
 
 
 % get filter
-if AstFilter.isAstFilter(InPar.Filter)
-    Filter = InPar.Filter;
+if AstFilter.isAstFilter(InPar.FilterFamily)
+    Filter = InPar.FilterFamily;
 else
-    if (ischar(InPar.Filter))
+    if (ischar(InPar.FilterFamily))
         Filter = AstFilter.get(InPar.FilterFamily,InPar.Filter);
         
     else
