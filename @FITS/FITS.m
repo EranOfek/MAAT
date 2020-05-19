@@ -1548,7 +1548,7 @@ classdef FITS
                          case {'bscale', 'bzero', 'datamax', 'datamin', 'epoch', 'equinox'} % Na'ama, 2018-06-06
                             % convert to floating point, required by matlab.io.fits.writeKey
                             if (ischar(Header.(HeaderField){Inl,2}))
-                                Header.(HeaderField){Inl,2} = double(Header.(HeaderField){Inl,2});
+                                Header.(HeaderField){Inl,2} = double(eval(Header.(HeaderField){Inl,2}));
                             end
                             if (isempty(Header.(HeaderField){Inl,3}))
                                 Header.(HeaderField){Inl,3} = ' ';
