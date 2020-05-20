@@ -1,85 +1,67 @@
-function [DAz,DAlt,Best_d,Best_Ep]=polar_alignment(h,Dec,Beta,DeltaT)
-% SHORT DESCRIPTION HERE
+function [dRt_dt,dDt_dt,Ht,Dt]=polar_alignment(H,D,Phi,Psi,Beta)
+% Calculate the RA/Dec drift due to equatorial polar alignemnt error.
 % Package: celestial
 % Description: 
-% Input  : - HA [deg].
-%          - Dec [deg]
-%          - Beta [arcsec]
-%          - DeltaT [seconds]
-% Output : - 
+% Input  : - HA of target [rad].
+%          - Dec of target [rad].
+%          - True altitude of NCP (Geodetic latitude of observer) [rad].
+%          - HA of telescope pole [rad] 
+%          - Distance between NCP and equaltorial pole [rad]
+% Output : - Tracking error in RA ["/s]
+%          - Tracing error in Dec ["/s]
+%          - HA of telescope [rad]
+%          - Dec of telescope [rad]
 % License: GNU general public license version 3
-%     By : Eran O. Ofek                    Mar 2020
+%     By : Eran O. Ofek                    May 2020
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: [DAz,DAlt,d,Ep]=celestial.coo.polar_alignment
-%          [DAz,DAlt,d,Ep]=celestial.coo.polar_alignment
+% Example: [dHt_dt,dDt_dt]=celestial.coo.polar_alignment_drift(1,0,1,0,32./RAD,0./RAD,1./RAD)
 % Reliable: 
 %--------------------------------------------------------------------------
 
 RAD = 180./pi;
 
-if nargin==0
-%     % simulation mode
-%     h = [-90:30:90].';
-%     Dec = zeros(size(h));
-%     d   = 0.3
-%     Ep  = 30;
-%     gamma = acot((cosd(Dec).*cotd(d) - sind(Dec).*cosd(Ep+h))./sind(Ep+h));  % rad
-%     DeltaT = 60;  % sec
-%     Beta = sin(gamma).*DeltaT./240;
-  
 
-    % plot mode
-    d = 1;
-    Ep = 0;
-    
-    h = [-180:0.5:180].';
-    D = [-62:0.5:85].';
-    [Math,MatD]=meshgrid(h,Dec);
-    gamma = acot((cosd(MatD).*cotd(d) - sind(MatD).*cosd(Ep+Math))./sind(Ep+Math));  % rad
-    Alt = celestial.coo.ha2alt(Math./RAD,MatD./RAD,30./RAD);
-    Az  = celestial.coo.ha2az(Math./RAD,MatD./RAD,30./RAD);
-    
-    axesm ('eqaazim', 'Frame', 'on', 'Grid', 'on');
-    Flag = Alt>0;
-    pcolorm(Alt(Flag).*RAD,Az(Flag).*RAD,gamma(Flag))
-    
-end
+% D - true Dec
+% Dt - telescope Dec.
+% R - true RA
+% Rt - telescope RA
+% H - true HA
+% Ht - telescope HA
+% Phi - true altitude of NCP (latitude)
+% Phit - telescope polar altitude
+% Z - zenith distance of star
+% Beta - distance between NCP and telescope pole
+% Psi - HA of telescope pole
+
+VecHA = (-90:10:90);
+VecDec = (-20:10:80);
+[MatH,MatD] = meshgrid(VecHA./RAD,VecDec./RAD);
+Phi = 32./RAD;
+Psi = 110./RAD;
+Beta = 0.5./RAD;
+
+[dHt_dt,dDt_dt,Ht,Dt]=celestial.coo.polar_alignment_drift(MatH,MatD,Phi,Psi,Beta);
+Drift = sqrt(dRt_dt.^2 + dDt_dt.^2);
+surface(VecHA,VecDec,Drift)
 
 
+Phit = asin(sin(Phi)*cos(Beta) + cos(Phi).*sin(Beta).*cos(Psi));
+Alt = celestial.coo.ha2alt(H,D,Phi);
+Z   = pi./2 - Alt;
 
+dH_dt = 360.*3600./86164.091; % ["/s]   sidereal rate
+dH_dt = dH_dt./(3600.*RAD);
 
-    
+Dt = asin(cos(Beta).*sin(D) + sin(Beta).*cos(D).*cos(Psi - H));
 
-% Beta in arcseconds
-% DeltaT in seconds
-gamma = asin(Beta./(15.*DeltaT));  % radians
+dDt_dt = dH_dt .* (cos(D).*sin(Beta).*sin(Psi-H))./cos(Dt);
 
-% solve:
-% cot(gamma) = (cos(delta) cot(d) - sin(delta) cos(epsilon+h))/sin(epslion+h)
+Ht = acos(cos(Z)./(cos(Dt).*cos(Phit)) - tan(Dt).*tan(Phit));
 
+% note that there is an error in the last term of Equation 4 in Markworth
+dHt_dt = dH_dt .* cos(D).*cos(Phi).*sin(H)./(cos(Dt).*cos(Phit).*sin(Ht)) - sec(Dt).^2.*dDt_dt.*cos(Z).*sin(Dt)./(sin(Ht).*cos(Phit)) + ...
+         dDt_dt.*tan(Phit)./(cos(Dt).^2 .* sin(Ht));
 
-Vec_d  = (0.01:0.01:3);
-Vec_Ep = (10:5:360);
-Nd     = numel(Vec_d);
-Nep    = numel(Vec_Ep);
-Resid  = zeros(Nd,Nep);
-for Id=1:1:Nd
-    ResidI = cot(gamma) - (cosd(Dec).*cotd(Vec_d(Id)) - sind(Dec).*cosd(Vec_Ep+h))./sind(Vec_Ep+h);
-    ResidI(ResidI==Inf | ResidI==-Inf) = NaN;
-    Resid(Id,:) = sqrt(nansum(ResidI.^2,1));
-end
-[Min,MinI]=Util.stat.minnd(Resid);
-Best_d  = Vec_d(MinI(1));
-Best_Ep = Vec_Ep(MinI(2));
-
-DAz  = Best_d.*sind(Best_Ep);
-DAlt = Best_d.*cosd(Best_Ep);
-
-contour(Vec_Ep,Vec_d,log10(Resid));
-H= xlabel('$\epsilon$ [deg]');
-H.FontSize = 18;
-H.Interpreter = 'latex';
-H= ylabel('$d$ [deg]');
-H.FontSize = 18;
-H.Interpreter = 'latex';
-
+     
+dDt_dt = dDt_dt.*3600.*RAD;
+dRt_dt = (dHt_dt - dH_dt).*3600.*RAD;
