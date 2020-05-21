@@ -219,7 +219,7 @@ DefV.ColCell            = {'ISFORCE','XWIN_IMAGE','YWIN_IMAGE','XPEAK_IMAGE','YP
 %                            'ALPHAWIN_J2000','DELTAWIN_J2000',...
 %                            'PEAKF_VAL','PEAKF_VALTOT',...
 %                            'SN','SN_UNF','SN_ADD','FLAGS'};                       
-                       
+%                        
 % Force positions
 DefV.ForcePos           = [];
 DefV.ForceCatCol        = {'XWIN_IMAGE','YWIN_IMAGE'};

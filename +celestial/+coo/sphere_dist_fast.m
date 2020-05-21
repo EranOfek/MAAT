@@ -1,4 +1,4 @@
-function [Dist,PA]=sphere_dist_fast(RA_1,Dec_1,RA_2,Dec_2)
+function [Dist,Ang,PA]=sphere_dist_fast(RA_1,Dec_1,RA_2,Dec_2)
 %--------------------------------------------------------------------------
 % sphere_dist_fast function                                          ephem
 % Description: Calculate the angular distance between two points on the
@@ -14,6 +14,8 @@ function [Dist,PA]=sphere_dist_fast(RA_1,Dec_1,RA_2,Dec_2)
 %          - Matrix of position angles between points [radian].
 %            Measured westward. Take 2*pi-PA to get the PA measured
 %            Eastward.
+%          - Matrix of P.A. of the first point relative to the second point
+%            (eastwrad from the north).
 % Tested : Matlab 2011b
 %     By : Eran O. Ofek                    Feb 2013
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
@@ -31,10 +33,15 @@ if (nargout>1)
    SinPA = sin(dRA).*cos(Dec_2)./sin(Dist);
    CosPA = (sin(Dec_2).*cos(Dec_1) - cos(Dec_2).*sin(Dec_1).*cos(dRA))./sin(Dist);
   
-   PA    = atan2(real(SinPA),real(CosPA));
+   Ang    = atan2(real(SinPA),real(CosPA));
    %PA(PA<0) = 2.*pi + PA(PA<0);
    
-   I     = find(PA<0);
-   PA(I) = 2.*pi + PA(I);
+   I     = find(Ang<0);
+   Ang(I) = 2.*pi + Ang(I);
+   
+   if nargout>2
+        PA    = atan2(real(SinPA),-real(CosPA));
+        PA(PA<0) = PA(PA<0) + 2.*pi;
+   end
 
 end

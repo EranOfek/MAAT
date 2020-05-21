@@ -347,6 +347,7 @@ classdef catsHTM
             FileSep = filesep;
             I = 0;
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/2MASS/';
             Data(I).Name = 'TMASS';
             Data(I).Desc = '2MASS catalog';
@@ -354,6 +355,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2003yCat.2246....0C/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/2MASSxsc/';
             Data(I).Name = 'TMASSxsc';
             Data(I).Desc = '2MASS extended source catalog';
@@ -361,6 +363,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2003yCat.2246....0C/abstract';
             
             I = I + 1;
+            Data(I).Status  = false;
             Data(I).Dir  = '/AAVSO_VSX/';
             Data(I).Name = 'AAVSO_VSX';
             Data(I).Desc = 'AAVSO Variable stars index';
@@ -368,6 +371,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2006SASS...25...47W/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/AKARI/';
             Data(I).Name = 'AKARI';
             Data(I).Desc = 'AKARI mid IR all-sky catalog';
@@ -375,6 +379,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2010A%26A...514A...1I/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/APASS/';
             Data(I).Name = 'APASS';
             Data(I).Desc = 'AAVSO Photometric All Sky Survey (APASS) DR9';
@@ -382,13 +387,15 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015AAS...22533616H/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/Cosmos/';
             Data(I).Name = 'Cosmos';
-            Data(I).Desc = 'COSMOS multi badn photometry';
+            Data(I).Desc = 'COSMOS multi band photometry';
             Data(I).Ref  = 'Capak et al. 2007';
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2007ApJS..172...99C/abstract';
             
             I = I + 1;
+            Data(I).Status  = false;
             Data(I).Dir  = '/CRTS_per_var/';
             Data(I).Name = 'CRTS_per_var';
             Data(I).Desc = 'CRTS periodic variable star catalog';
@@ -396,6 +403,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2014ApJS..213....9D/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/DECaLS/DR5/';
             Data(I).Name = 'DECaLS';
             Data(I).Desc = 'The Dark Energy Camera Legacy Survey (DECaLS)';
@@ -403,6 +411,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2019AJ....157..168D/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/FIRST/';
             Data(I).Name = 'FIRST';
             Data(I).Desc = 'The FIRST 21cm radio survey catalog';
@@ -410,6 +419,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015ApJ...801...26H/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/GAIA/DR1/';
             Data(I).Name = 'GAIADR1';
             Data(I).Desc = 'GAIA-DR1 catalog';
@@ -417,6 +427,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2016A%26A...595A...1G/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/GAIA/DR2/';
             Data(I).Name = 'GAIADR2';
             Data(I).Desc = 'GAIA-DR2 catalog';
@@ -424,6 +435,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2018A%26A...616A...1G/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/GALEX/DR6Plus7/';
             Data(I).Name = 'GALEX';
             Data(I).Desc = 'GALEX-DR6Plus7 source catalog';
@@ -431,6 +443,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2005ApJ...619L...1M/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/HST/HSCv2/';
             Data(I).Name = 'HSCv2';
             Data(I).Desc = 'HST source catalog version 2';
@@ -438,6 +451,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2016AJ....151..134W/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/IPHAS/';
             Data(I).Name = 'IPHAS';
             Data(I).Desc = 'INT Photometric Hα Survey of the Northern Galactic Plane (IPHAS DR2)';
@@ -445,6 +459,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2014MNRAS.444.3230B/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/LAMOST/DR4/';
             Data(I).Name = 'LAMOST_DR4';
             Data(I).Desc = 'LAMOST DR4 catalog';
@@ -459,6 +474,7 @@ classdef catsHTM
 %             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/1991ASSL..171...89H/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/NED/20180502/';
             Data(I).Name = 'NEDz';
             Data(I).Desc = 'NED redshift catalog 02-05-2018';
@@ -466,6 +482,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/1991ASSL..171...89H/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/NOAO/';
             Data(I).Name = 'NOAO';
             Data(I).Desc = 'NOAO-DR1 All-Sky source catalog';
@@ -473,6 +490,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2018AJ....156..131N/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/NVSS/';
             Data(I).Name = 'NVSS';
             Data(I).Desc = 'NVSS 21cm radio source catalog';
@@ -480,6 +498,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/1998AJ....115.1693C/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/PGC/';
             Data(I).Name = 'PGC';
             Data(I).Desc = 'The HYPERLEDA catalog of galaxies';
@@ -487,6 +506,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2003A%26A...412...45P/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/PS1/';
             Data(I).Name = 'PS1';
             Data(I).Desc = 'The Pan-STARRS DR1 catalog';
@@ -494,6 +514,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2016arXiv161205560C/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/PTFpc/';
             Data(I).Name = 'PTFpc';
             Data(I).Desc = 'The PTF photometric catalog';
@@ -501,6 +522,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2012PASP..124..854O/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/ROSATfsc/';
             Data(I).Name = 'ROSATfsc';
             Data(I).Desc = 'The ROSAT faint source catalog';
@@ -508,6 +530,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2000IAUC.7432....3V/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/SDSS/DR10/';
             Data(I).Name = 'SDSSDR10';
             Data(I).Desc = 'SDSS-DR10 source catalog';
@@ -515,6 +538,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015ApJS..219...12A/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/SDSS/DR14offset/';
             Data(I).Name = 'SDSSoffset';
             Data(I).Desc = 'SDSS-DR14 source catalog with color offsets';
@@ -522,6 +546,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015ApJS..219...12A/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/Simbad_PM200/';
             Data(I).Name = 'Simbad_PM200';
             Data(I).Desc = 'SIMBAD sources with proper motion larger than 200mas/yr';
@@ -529,6 +554,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2000A%26AS..143....9W/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/SkyMapper/';
             Data(I).Name = 'SkyMapper';
             Data(I).Desc = 'SkyMapper DR1 catalog (to magnitude 19)';
@@ -536,6 +562,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2018PASA...35...10W/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/SpecSDSS/DR14/';
             Data(I).Name = 'SpecSDSS';
             Data(I).Desc = 'SDSS-DR14 spectroscopic catalog';
@@ -543,6 +570,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2018ApJS..235...42A/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/Spitzer/IRACgc/';
             Data(I).Name = 'IRACgc';
             Data(I).Desc = 'Spitzer IRAC galactic center catalog';
@@ -550,6 +578,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2008ApJS..175..147R/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/Spitzer/SAGE/';
             Data(I).Name = 'SAGE';
             Data(I).Desc = 'Spitzer SAGE (LMC+SMC survey) catalog';
@@ -557,6 +586,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2006AJ....132';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/SWIREz/';
             Data(I).Name = 'SWIREz';
             Data(I).Desc = 'SWIRE photometric redshift catalog';
@@ -564,6 +594,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2013MNRAS.428.1958R/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/UCAC4/';
             Data(I).Name = 'UCAC4';
             Data(I).Desc = 'The UCAC-4 astrometric catalog';
@@ -571,6 +602,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2013AJ....145...44Z/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/UCACGAIADR2accel/';
             Data(I).Name = 'UCACGAIADR2accel';
             Data(I).Desc = 'The GAIA-DR2 UCAC-4 accelerations catalog';
@@ -578,6 +610,7 @@ classdef catsHTM
             Data(I).RefLink = '';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/UKIDSS/DR10/';
             Data(I).Name = 'UKIDSS';
             Data(I).Desc = 'UKIDSS-DR9 Large Area Survey';
@@ -585,6 +618,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2007MNRAS.379.1599L/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/unWISE/';
             Data(I).Name = 'unWISE';
             Data(I).Desc = 'The unWISE catalog';
@@ -592,6 +626,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2019ApJS..240...30S/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/URAT1/';
             Data(I).Name = 'URAT1';
             Data(I).Desc = 'The First U.S. Naval Observatory Robotic Astrometric Telescope Catalog';
@@ -599,6 +634,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015AJ....150..101Z/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/VISTA/Viking/DR2/';
             Data(I).Name = 'VISTAviking';
             Data(I).Desc = 'The VISTA Kilo-degree Infrared Galaxy (VIKING) Survey';
@@ -606,6 +642,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2013Msngr.154...32E/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/VST/ATLAS/DR3/';
             Data(I).Name = 'VSTatlas';
             Data(I).Desc = 'The VLT Survey Telescope ATLAS';
@@ -613,6 +650,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.4238S/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/VST/KiDS/DR3/';
             Data(I).Name = 'VSTkids';
             Data(I).Desc = 'The first and second data releases of the Kilo-Degree Survey';
@@ -620,6 +658,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015A%26A...582A..62D/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/WISE/';
             Data(I).Name = 'WISE';
             Data(I).Desc = 'The WISE IR catalog';
@@ -627,6 +666,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2012wise.rept....1C/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/XMM/';
             Data(I).Name = 'XMM';
             Data(I).Desc = 'The XMM-Newton serendipitous survey (3XMM-DR7)';
@@ -634,6 +674,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..77T/abstract';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/ZTF/LCDR1/';
             Data(I).Name = 'ztfLCDR1';
             Data(I).Desc = 'ZTF-DR1 light curve catalog (non catsHTM)';
@@ -641,6 +682,7 @@ classdef catsHTM
             Data(I).RefLink = '';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/ZTF/SrcLCDR1/';
             Data(I).Name = 'ztfSrcLCDR1';
             Data(I).Desc = 'ZTF-DR1 stellar variability catalog';
@@ -648,6 +690,7 @@ classdef catsHTM
             Data(I).RefLink = '';
             
             I = I + 1;
+            Data(I).Status  = true;
             Data(I).Dir  = '/ZTF/ztfDR1var/';
             Data(I).Name = 'ztfDR1var';
             Data(I).Desc = 'ZTF-DR1 variable star candidates';
@@ -680,42 +723,44 @@ classdef catsHTM
             Nd = numel(Data);
             
             for Id=1:1:Nd
-                Dir = sprintf('%s%s',BaseDir,Data(Id).Dir);
-                PWD = pwd;
-                cd(Dir);
-                
-                F1 = dir('*.hdf5');
-                F2 = dir('*.mat');
-                F  = [F1;F2];
-                
-                Nf = numel(F);
-                
-                Nsrc = nansum(catsHTM.nsrc(Data(Id).Name));
-                Data(Id).Nsrc = Nsrc;
-                
-                ListFileNameW = sprintf('list.euler.wget.%s',strrep(Data(Id).Dir,'/','_'));
-                ListFileNameC = sprintf('list.euler.checksum.%s',strrep(Data(Id).Dir,'/','_'));
-                
-                FIDw = fopen(sprintf('%s%s%s',WriteDir,filesep,ListFileNameW),'w');
-                FIDc = fopen(sprintf('%s%s%s',WriteDir,filesep,ListFileNameC),'w');
-                
-                
-                tic;
-                for If=1:1:Nf
-                    Pars1 = sprintf('%s -P .%s',Pars,Data(Id).Dir(1:end-1));
-                    fprintf(FIDw,'wget %s %s%s/%s\n',Pars1,URL,Data(Id).Dir(1:end-1),F(If).name);
-                    [~,Str] = system(sprintf('md5sum %s',F(If).name));
-                    fprintf(FIDc,'%s',Str);
+                if Data(Id).Status
+                    Data(Id)
+                    Dir = sprintf('%s%s',BaseDir,Data(Id).Dir);
+                    PWD = pwd;
+                    cd(Dir);
+
+                    F1 = dir('*.hdf5');
+                    F2 = dir('*.mat');
+                    F  = [F1;F2];
+
+                    Nf = numel(F);
+
+                    Nsrc = nansum(catsHTM.nsrc(Data(Id).Name));
+                    Data(Id).Nsrc = Nsrc(2);
+
+                    ListFileNameW = sprintf('list.euler.wget.%s',strrep(Data(Id).Dir,'/','_'));
+                    ListFileNameC = sprintf('list.euler.checksum.%s',strrep(Data(Id).Dir,'/','_'));
+
+                    FIDw = fopen(sprintf('%s%s%s',WriteDir,filesep,ListFileNameW),'w');
+                    FIDc = fopen(sprintf('%s%s%s',WriteDir,filesep,ListFileNameC),'w');
+
+
+                    tic;
+                    for If=1:1:Nf
+                        Pars1 = sprintf('%s -P .%s',Pars,Data(Id).Dir(1:end-1));
+                        fprintf(FIDw,'wget %s %s%s/%s\n',Pars1,URL,Data(Id).Dir(1:end-1),F(If).name);
+                        [~,Str] = system(sprintf('md5sum %s',F(If).name));
+                        fprintf(FIDc,'%s',Str);
+                    end
+                    fclose(FIDw);
+                    fclose(FIDc);
+
+                    cd(PWD);
+
+                    Data(Id).ListFileNameW = ListFileNameW;
+                    Data(Id).ListFileNameC = ListFileNameC;
+
                 end
-                fclose(FIDw);
-                fclose(FIDc);
-                
-                cd(PWD);
-                
-                Data(Id).ListFileNameW = ListFileNameW;
-                Data(Id).ListFileNameC = ListFileNameC;
-                
-                Data(Id)
             end
             
         end
@@ -1578,6 +1623,10 @@ classdef catsHTM
             % Input  : - catsHTM catalog name (e.g., 'UCAC4').
             %          - An AstCat object with sources.
             %          * Arbitrary number of key,val pairs:
+            %            'ConeSearchPar' - A cell array of additional
+            %                       arguments to pass to cone_search.m.
+            %                       E.g.,  {{'Mag_G',[15 16]},{'Plx',@(x) ~isnan(x)}}
+            %                       Default is {}.
             %            'OutType' - Output catalog type {'mat'|'astcat'}.
             %                       Default is 'AstCat'.
             %            'SearchRadius' - Search radius. Default is 2.
@@ -1596,6 +1645,7 @@ classdef catsHTM
             CatField     = AstCat.CatField;
             ColCellField = AstCat.ColCellField;
             
+            DefV.ConeSearchPar         = {};
             DefV.OutType               = 'AstCat';
             DefV.SearchRadius          = 2;
             DefV.SearchRadiusUnits     = 'arcsec';
@@ -1635,7 +1685,7 @@ classdef catsHTM
             Radius  = max(D).*(1+10.*eps);  % [rad]
             Radius  = convert.angular('rad','arcsec',Radius); % [arcsec]
             
-            [CatH,ColCellH] = catsHTM.cone_search(CatName,MedRA,MedDec,Radius);
+            [CatH,ColCellH] = catsHTM.cone_search(CatName,MedRA,MedDec,Radius,InPar.ConeSearchPar);
             
             CatH = sortrows(CatH,InPar.ColDecHTM);
             
