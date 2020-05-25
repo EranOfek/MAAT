@@ -519,6 +519,13 @@ classdef ds9
                 Nim = numel(Images);
             end
             
+%             if (imCl.isimCl(Images))
+%                 %List   = Images;  %.(ImageField);
+%                 IsFits = false;
+%                 Nim = numel(Images);
+%             end
+            
+            
             % create tmp file names
             IsTmp   = false;
             

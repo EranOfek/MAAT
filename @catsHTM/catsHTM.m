@@ -459,7 +459,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2014MNRAS.444.3230B/abstract';
             
             I = I + 1;
-            Data(I).Status  = true;
+            Data(I).Status  = false;
             Data(I).Dir  = '/LAMOST/DR4/';
             Data(I).Name = 'LAMOST_DR4';
             Data(I).Desc = 'LAMOST DR4 catalog';
@@ -482,7 +482,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/1991ASSL..171...89H/abstract';
             
             I = I + 1;
-            Data(I).Status  = true;
+            Data(I).Status  = false;  % ready
             Data(I).Dir  = '/NOAO/';
             Data(I).Name = 'NOAO';
             Data(I).Desc = 'NOAO-DR1 All-Sky source catalog';
@@ -546,7 +546,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015ApJS..219...12A/abstract';
             
             I = I + 1;
-            Data(I).Status  = true;
+            Data(I).Status  = false;
             Data(I).Dir  = '/Simbad_PM200/';
             Data(I).Name = 'Simbad_PM200';
             Data(I).Desc = 'SIMBAD sources with proper motion larger than 200mas/yr';
@@ -586,7 +586,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2006AJ....132';
             
             I = I + 1;
-            Data(I).Status  = true;
+            Data(I).Status  = false;
             Data(I).Dir  = '/SWIREz/';
             Data(I).Name = 'SWIREz';
             Data(I).Desc = 'SWIRE photometric redshift catalog';
@@ -602,7 +602,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2013AJ....145...44Z/abstract';
             
             I = I + 1;
-            Data(I).Status  = true;
+            Data(I).Status  = false;
             Data(I).Dir  = '/UCACGAIADR2accel/';
             Data(I).Name = 'UCACGAIADR2accel';
             Data(I).Desc = 'The GAIA-DR2 UCAC-4 accelerations catalog';
@@ -674,7 +674,7 @@ classdef catsHTM
             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..77T/abstract';
             
             I = I + 1;
-            Data(I).Status  = true;
+            Data(I).Status  = false;  % non catsHTM
             Data(I).Dir  = '/ZTF/LCDR1/';
             Data(I).Name = 'ztfLCDR1';
             Data(I).Desc = 'ZTF-DR1 light curve catalog (non catsHTM)';
@@ -722,7 +722,8 @@ classdef catsHTM
             Data = catsHTM.catalogs;
             Nd = numel(Data);
             
-            for Id=1:1:Nd
+            for Id=42:1:43
+                %1:1:Nd
                 if Data(Id).Status
                     Data(Id)
                     Dir = sprintf('%s%s',BaseDir,Data(Id).Dir);
@@ -765,6 +766,37 @@ classdef catsHTM
             
         end
         
+        function catalogs_html(FileName)
+            % generate an html table of catalogs
+           
+            if nargin==0
+                FileName = 'catsHTM_catalogs.html';
+            end
+            
+            Data=catsHTM.catalogs;
+            Flag = [Data.Status];
+            Data = Data(Flag);
+            N = numel(Data);
+            
+            Text = '';
+            Text = sprintf('%s <table><tr><th> Name </th> <th> Description</th> <th>wget file</th> <th>checksum</th> <th> Nsrc</th><th>Reference</th> </tr>\n',Text); 
+            for I=1:1:N
+                I
+                Nsrc = catsHTM.nsrc(Data(I).Name);
+                Nsrc = nansum(Nsrc(:,2));
+                
+                WgetFile = sprintf('list.euler.wget.%s',strrep(Data(I).Dir,'/','_'));
+                ChecksumFile = sprintf('list.euler.checksum.%s',strrep(Data(I).Dir,'/','_'));
+                
+                Text = sprintf('%s \n <tr><td> %s </td>  <td> %s </td>   <td><a href="./%s">%s</a></td><td><a href="./%s">%s</a></td>    <td> %d </td> <td> <a href="%s">%s</a> </td></tr>',...
+                            Text,Data(I).Name,Data(I).Desc,WgetFile,WgetFile,ChecksumFile,ChecksumFile,Nsrc,Data(I).RefLink,Data(I).Ref);
+            end
+            Text = sprintf('%s </table>\n',Text);
+            www.html_page(FileName,{Text},'PageTitle','catsHTM list of catalogs');
+            
+            %rsync -avx catsHTM_catalogs.html eran@euler1:/var/www/html/data/catsHTM/
+            
+        end
         
         function create_catalog_lists4wget(Dir,WriteDir)
             % Create list of catalogs foe wget including checsums
@@ -1012,6 +1044,7 @@ classdef catsHTM
             % load all ID from HTM
             Nid = numel(ID);
             for Iid=1:1:Nid
+                %Iid
                 if (Iid==1)
                     [Cat,Ind]   = catsHTM.load_cat(CatName,ID(Iid),[MinDec MaxDec],Ncol);
                     N           = size(Cat,1);
