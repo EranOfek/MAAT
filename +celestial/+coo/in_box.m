@@ -1,5 +1,5 @@
 function Flag=in_box(Lon,Lat,BoxCenter,BoxHalfSize)
-% Check if celestial coordinates are in a box.
+% Check if celestial coordinates are in a box (approximate).
 % Package: celestial
 % Description: Check if celestial coordinates are in a box defined by four
 %              corners and its sides are great circles.
@@ -20,6 +20,8 @@ function Flag=in_box(Lon,Lat,BoxCenter,BoxHalfSize)
 
 BoxCenter   = BoxCenter(:).';
 BoxHalfSize = BoxHalfSize(:).';
+% take into accound cos(Dec) - but in the middle... (approximate)
+BoxHalfSize(1) = BoxHalfSize(1)./cos(BoxCenter(2));
 
 Corners = [BoxCenter(1) - BoxHalfSize(1), BoxCenter(2) - BoxHalfSize(2); ...
            BoxCenter(1) + BoxHalfSize(1), BoxCenter(2) - BoxHalfSize(2); ...

@@ -1121,8 +1121,8 @@ classdef convert
             %            'yyyy-mm-ddTHH:MM:SS' (e.g., '2010-08-11T15:01:56') or:
             %            'yyyy-mm-dd HH:MM:SS'.
             %            If argument is not provided then the program will calculate
-            %            the JD for now using the clock computer (without taking into
-            %            account the time zone).
+            %            the JD for now using the clock UTC computer (time zone
+            %            included).
             %          - Output type. Options are:
             %            'JD'  - Julian days (default).
             %            'MJD' - Modified JD (JD-2400000.5).
@@ -1139,11 +1139,13 @@ classdef convert
             %--------------------------------------------------------------------------
 
             if (nargin==0)
-               Date = clock;
+               %Date = clock;
+               Date = datevec(datetime('now', 'TimeZone', 'UTC'));
                Date = Date(:,[3 2 1 4 5 6]);
             end
             if (isempty(Date))
-               Date = clock;
+               %Date = clock;
+               Date = datevec(datetime('now', 'TimeZone', 'UTC'));
                Date = Date(:,[3 2 1 4 5 6]);
             end
             if (ischar(Date) || iscell(Date))

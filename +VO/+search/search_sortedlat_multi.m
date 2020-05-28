@@ -1,4 +1,4 @@
-function [Ind,FlagUnique]=search_sortedlat_multi(Cat,Long,Lat,Radius,FlagUnique)
+function [Ind,FlagUnique,FlagFound]=search_sortedlat_multi(Cat,Long,Lat,Radius,FlagUnique)
 % Search a single long/lat in a catalog sorted by latitude
 % Package: VO.search
 % Description: A low level function for a single cone search
@@ -21,6 +21,9 @@ function [Ind,FlagUnique]=search_sortedlat_multi(Cat,Long,Lat,Radius,FlagUnique)
 %                   the input search radius is negative.
 %          - A logical vector of length equal to the number of searched
 %            coordinates (Lat) which flag the first unique source.
+%          - If Cat and Long/Lat have the same length and are the same
+%            catalog, then this is a flag indicating if a source was
+%            already found as another source.
 %     By : Eran O. Ofek                    Feb 2017
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: Cat=sortrows(rand(10000,2),2);
@@ -59,18 +62,33 @@ Ilow     = Ilowhigh(:,1);
 Ihigh    = min(Ncat,Ilowhigh(:,2)+1); % add 1 because of the way mfind_bin works
 
 Ind = Util.struct.struct_def({'Ind','Nmatch','Dist'},Nlat,1);
+
+FlagFound    = false(Nlat,1);
+%CopyOfUnique = false(Nlat,1);
+
 for I=1:1:Nlat
     Dist  = celestial.coo.sphere_dist_fast(Long(I),Lat(I), Cat(Ilow(I):Ihigh(I),Col.Lon), Cat(Ilow(I):Ihigh(I),Col.Lat));
     FlagDist = Dist <= Radius;
     Ind(I).Ind    = Ilow(I)-1+find(FlagDist);
     %Ind(I).Ind    = Ilow(I)-1+find(Dist <= Radius);
     Ind(I).Nmatch = numel(Ind(I).Ind);
+    
+    
     if CalcDist
         Ind(I).Dist   = Dist(FlagDist);
     end
     if ~any(FlagUnique(Ind(I).Ind))
         % a new unique source
-        FlagUnique(I) = true;
+        FlagUnique(Ind(I).Ind) = true;
+        %FlagFound(I) = true;
     end
+    
+    if ~FlagFound(I)
+        FlagFound(Ind(I).Ind) = true;
+        FlagFound(I) = false;
+    end
+    
+    
+    
     
 end

@@ -1027,7 +1027,7 @@ classdef catsHTM
 
             Cat1 = catsHTM.load_cat(CatName,Ihtm);
 
-            % Cat1 current HTM
+            % Cat1 current HTM   % deg
             MeanRA  = mean(HTM(Ihtm).coo(:,1));
             MeanDec = mean(HTM(Ihtm).coo(:,2));
             MinDec  = min(HTM(Ihtm).coo(:,2))-SearchRadius;
@@ -1615,7 +1615,7 @@ classdef catsHTM
             Cat = [C.Cat]';
 
             % select only sources in Cone
-            if (InPar.OnlyCone)
+            if (InPar.OnlyCone && ~isempty(Cat))
                 D = celestial.coo.sphere_dist_fast(RA,Dec,Cat(:,InPar.ColRA),Cat(:,InPar.ColDec));
                 Cat = Cat(D<Radius,:);
             end
@@ -1718,7 +1718,8 @@ classdef catsHTM
             Radius  = max(D).*(1+10.*eps);  % [rad]
             Radius  = convert.angular('rad','arcsec',Radius); % [arcsec]
             
-            [CatH,ColCellH] = catsHTM.cone_search(CatName,MedRA,MedDec,Radius,InPar.ConeSearchPar);
+            [CatH,ColCellH] = catsHTM.cone_search(CatName,MedRA,MedDec,Radius,InPar.ConeSearchPar{:});
+            
             
             CatH = sortrows(CatH,InPar.ColDecHTM);
             
