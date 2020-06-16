@@ -699,7 +699,8 @@ if ~isempty(handles.Plot.UserData)
     PlotParams = handles.Plot.UserData.params;
     switch PlotParams.model
         case 'SW', handles.Model.Value = 1;
-        case 'RW', hadnles.Model.Value = 2;
+        case 'RW', handles.Model.Value = 2;
+        case 'MSG', handles.Model.Value = 3;
     end
     switch PlotParams.prog
         case 'RSG', handles.Prog.Value = 1;
@@ -898,6 +899,9 @@ switch model
         time = linspace(t_min,min(t_max,t_opac),250)*(1+z);
     case 'RW'
         time = linspace(t_min,min(t_delta,t_opac),250)*(1+z);
+    case 'MSW'
+        [~,~,~,~,~,t_min,t_max] = AstroUtil.supernova.sn_cooling_msw(1,'Model',model,'Type',prog,'Rs',Rs,'Vs',Vs,'Ms',Ms,'f_rho',frho);
+        time = linspace(t_min,t_max,250)*(1+z);        
 end
 
 for iband = 1:length(handles.PlottedInGraph.UserData)
@@ -907,8 +911,14 @@ for iband = 1:length(handles.PlottedInGraph.UserData)
         bg(iband) = 0;
     end
     ax = handles.Graphs.UserData(handles.PlottedInGraph.UserData(iband));
-    [~,~,~,~,Mag] = AstroUtil.supernova.sn_cooling_sw(time,'Model',model,'Type',prog,'Rs',Rs,'Vs',Vs,'Ms',Ms,'f_rho',frho, ...
-                    'redshift',z,'Ebv',Ebv,'FiltFam',handles.SOPRANOS.UserData.data.bands{iband}.filterObj);
+    switch model
+        case {'SW','RW'}
+            [~,~,~,~,Mag] = AstroUtil.supernova.sn_cooling_sw(time,'Model',model,'Type',prog,'Rs',Rs,'Vs',Vs,'Ms',Ms,'f_rho',frho, ...
+                            'redshift',z,'Ebv',Ebv,'FiltFam',handles.SOPRANOS.UserData.data.bands{iband}.filterObj);
+        case 'MSW'
+            [~,~,~,~,Mag] = AstroUtil.supernova.sn_cooling_msw(time,'Model',model,'Type',prog,'Rs',Rs,'Vs',Vs,'Ms',Ms,'f_rho',frho, ...
+                            'redshift',z,'Ebv',Ebv,'FiltFam',handles.SOPRANOS.UserData.data.bands{iband}.filterObj);
+    end
     f = convert.flux(Mag,'ab','cgs/A',handles.SOPRANOS.UserData.data.bands{iband}.filterObj.pivot_wl_photon,'A');
     if isempty(handles.BandName.UserData{iband})
         name = sprintf('%s %s',handles.SOPRANOS.UserData.data.bands{iband}.instrumentname,handles.SOPRANOS.UserData.data.bands{iband}.filtername);
@@ -1097,6 +1107,7 @@ end
 switch handles.Model.Value
     case 1, grid.model = 'sw';
     case 2, grid.model = 'rw';
+    case 3, grid.model = 'msw';
 end
 grid.sn_name = handles.SOPRANOS.UserData.data.snname;
 grid.BGbands = find(handles.Background.UserData == 4);
@@ -1504,6 +1515,11 @@ switch Plot.model
         t_max = min(t_max,t_opac)*(1+z);
     case 'RW'
         t_max = min(t_delta,t_opac)*(1+z);
+    case 'MSW'
+        [~,~,~,~,~,t_min,t_max] = AstroUtil.supernova.sn_cooling_msw(1,'Model',Plot.model,'Type',Plot.prog,...
+            'Rs',Plot.Rs,'Vs',Plot.Vs,'Ms',Plot.Ms,'f_rho',Plot.frho);
+        t_min = t_min*(1+z);
+        t_max = t_max*(1+z);
 end
 
 for iband = 1:length(handles.PlottedInGraph.UserData)
@@ -1519,9 +1535,16 @@ for iband = 1:length(handles.PlottedInGraph.UserData)
     end
     if ~isempty(data)
         ax = h(handles.PlottedInGraph.UserData(iband));
-        [~,~,~,~,Mag] = AstroUtil.supernova.sn_cooling_sw(data.MJD-Plot.t0,'Model',Plot.model,'Type',Plot.prog,...
-            'Rs',Plot.Rs,'Vs',Plot.Vs,'Ms',Plot.Ms,'f_rho',Plot.frho, ...
-            'redshift',z,'Ebv',Plot.Ebv,'FiltFam',handles.SOPRANOS.UserData.data.bands{iband}.filterObj);
+        switch Plot.model
+            case {'SW','RW'}
+                [~,~,~,~,Mag] = AstroUtil.supernova.sn_cooling_sw(data.MJD-Plot.t0,'Model',Plot.model,'Type',Plot.prog,...
+                    'Rs',Plot.Rs,'Vs',Plot.Vs,'Ms',Plot.Ms,'f_rho',Plot.frho, ...
+                    'redshift',z,'Ebv',Plot.Ebv,'FiltFam',handles.SOPRANOS.UserData.data.bands{iband}.filterObj);
+            case 'MSW'
+                [~,~,~,~,Mag] = AstroUtil.supernova.sn_cooling_msw(data.MJD-Plot.t0,'Model',Plot.model,'Type',Plot.prog,...
+                    'Rs',Plot.Rs,'Vs',Plot.Vs,'Ms',Plot.Ms,'f_rho',Plot.frho, ...
+                    'redshift',z,'Ebv',Plot.Ebv,'FiltFam',handles.SOPRANOS.UserData.data.bands{iband}.filterObj);
+        end
         f = convert.flux(Mag,'ab','cgs/A',handles.SOPRANOS.UserData.data.bands{iband}.filterObj.pivot_wl_photon,'A');
         res = data.flux-f-bg(iband);
         if isempty(handles.BandName.UserData{iband})
@@ -1920,6 +1943,7 @@ end
 switch handles.Model.Value
     case 1, grid.model = 'sw';
     case 2, grid.model = 'rw';
+    case 3, grid.model = 'msw';
 end
 grid.sn_name = handles.SOPRANOS.UserData.data.snname;
 grid.BGbands = find(handles.Background.UserData == 4);
@@ -2484,7 +2508,7 @@ h28 = uicontrol(...
 'Parent',h26,...
 'Units','characters',...
 'FontUnits',get(0,'defaultuicontrolFontUnits'),...
-'String',{  'SW'; 'RW' },...
+'String',{  'SW'; 'RW' ; 'MSW' },...
 'Style','popupmenu',...
 'Value',1,...
 'ValueMode',get(0,'defaultuicontrolValueMode'),...
