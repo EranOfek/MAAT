@@ -50,6 +50,7 @@ function [Sim,Shift,Sec,SecF]=trim_image(Sim,TrimSec,varargin)
 %            'UpdateCat'  - A logical flag indicating if to update the
 %                           X,Y coordinates in the associated catalog.
 %                           Default is true.
+%            'TrimCat'    - Trim catalog. Default is true.
 %            'ColX'       - Cell array of X coordinate column names to which
 %                           to apply the X transformation.
 %                           Default is
@@ -85,6 +86,7 @@ DefV.UseNaN               = false;
 DefV.GetKeyMethod         = 'first';
 DefV.UpdateWCS            = true;
 DefV.UpdateCat            = true;
+DefV.TrimCat              = true;
 DefV.ColX                 = {'XWIN_IMAGE','X','XPEAK_IMAGE','X_IMAGE'};
 DefV.ColY                 = {'YWIN_IMAGE','Y','YPEAK_IMAGE','Y_IMAGE'};
 %DefV.MaskDic              = @MASK.def_bitmask_pipeline;
@@ -215,6 +217,39 @@ else
             Sim(Isim) = add_key(Sim(Isim),InPar.AddKey);
         end
         
+        %--- trim catalog ---
+        if (InPar.TrimCat)
+            
+            if (isfield_populated(Sim(Isim),CatField))
+                
+                NcolX = numel(InPar.ColX);
+                NcolY = numel(InPar.ColY);
+                Ncol  = max(NcolX,NcolY);
+                for Icol=1:1:Ncol
+                    IcolX = min(NcolX,Icol);
+                    IcolY = min(NcolY,Icol);
+
+                    ColX  = colname2ind(Sim(Isim),InPar.ColX{IcolX});
+                    ColY  = colname2ind(Sim(Isim),InPar.ColY{IcolY});
+                    if (~isnan(ColX) && ~isnan(ColY))
+                        
+                        % for X dimension
+                        Flag = Sim(Isim).(CatField)(:,ColX) > Section(1) & ...
+                               Sim(Isim).(CatField)(:,ColX) < Section(2) & ...
+                               Sim(Isim).(CatField)(:,ColY) > Section(3) & ...
+                               Sim(Isim).(CatField)(:,ColY) < Section(4);
+                        Sim(Isim).(CatField) = Sim(Isim).(CatField)(Flag,:);
+                        
+                        
+                        
+                    end
+                end
+                
+            end
+            
+            
+        end
+        
         %--- Update Catalog ---
         if (InPar.UpdateCat)
             
@@ -243,6 +278,8 @@ else
             
             
         end
+        
+        
         
     end
 

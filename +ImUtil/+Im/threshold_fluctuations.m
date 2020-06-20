@@ -38,7 +38,7 @@ Norm  = sqrt(sum(F(:).^2));
 
 
 C1=0;
-for Isim=1:1:InPar.Nsim,
+for Isim=1:1:InPar.Nsim
     R=randn(InPar.ImSize,InPar.ImSize);
     FR=filter2(F,R)./Norm;
     T1=(imregionalmax(abs(FR)).*abs(FR))>Th;

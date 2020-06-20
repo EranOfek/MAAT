@@ -340,6 +340,464 @@ classdef catsHTM
             end
         end
         
+        
+        function Data=catalogs
+            % List of catsHTM catalogs
+           
+            FileSep = filesep;
+            I = 0;
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/2MASS/';
+            Data(I).Name = 'TMASS';
+            Data(I).Desc = '2MASS catalog';
+            Data(I).Ref  = 'Cutri et al. 2003';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2003yCat.2246....0C/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/2MASSxsc/';
+            Data(I).Name = 'TMASSxsc';
+            Data(I).Desc = '2MASS extended source catalog';
+            Data(I).Ref  = 'Cutri et al. 2003';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2003yCat.2246....0C/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = false;
+            Data(I).Dir  = '/AAVSO_VSX/';
+            Data(I).Name = 'AAVSO_VSX';
+            Data(I).Desc = 'AAVSO Variable stars index';
+            Data(I).Ref  = 'Watson et al. 2006';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2006SASS...25...47W/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/AKARI/';
+            Data(I).Name = 'AKARI';
+            Data(I).Desc = 'AKARI mid IR all-sky catalog';
+            Data(I).Ref  = 'Ishihara et al. 2010';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2010A%26A...514A...1I/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/APASS/';
+            Data(I).Name = 'APASS';
+            Data(I).Desc = 'AAVSO Photometric All Sky Survey (APASS) DR9';
+            Data(I).Ref  = 'Henden et al. 2015';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015AAS...22533616H/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/Cosmos/';
+            Data(I).Name = 'Cosmos';
+            Data(I).Desc = 'COSMOS multi band photometry';
+            Data(I).Ref  = 'Capak et al. 2007';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2007ApJS..172...99C/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = false;
+            Data(I).Dir  = '/CRTS_per_var/';
+            Data(I).Name = 'CRTS_per_var';
+            Data(I).Desc = 'CRTS periodic variable star catalog';
+            Data(I).Ref  = 'Drake et al. 2014';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2014ApJS..213....9D/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/DECaLS/DR5/';
+            Data(I).Name = 'DECaLS';
+            Data(I).Desc = 'The Dark Energy Camera Legacy Survey (DECaLS)';
+            Data(I).Ref  = 'Dey et al. 2019';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2019AJ....157..168D/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/FIRST/';
+            Data(I).Name = 'FIRST';
+            Data(I).Desc = 'The FIRST 21cm radio survey catalog';
+            Data(I).Ref  = 'Helfand et al. 2015';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015ApJ...801...26H/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/GAIA/DR1/';
+            Data(I).Name = 'GAIADR1';
+            Data(I).Desc = 'GAIA-DR1 catalog';
+            Data(I).Ref  = 'Gaia collaboration et al. 2016';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2016A%26A...595A...1G/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/GAIA/DR2/';
+            Data(I).Name = 'GAIADR2';
+            Data(I).Desc = 'GAIA-DR2 catalog';
+            Data(I).Ref  = 'Gaia collaboration et al. 2018';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2018A%26A...616A...1G/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/GALEX/DR6Plus7/';
+            Data(I).Name = 'GALEX';
+            Data(I).Desc = 'GALEX-DR6Plus7 source catalog';
+            Data(I).Ref  = 'Martin et al. 2005';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2005ApJ...619L...1M/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/HST/HSCv2/';
+            Data(I).Name = 'HSCv2';
+            Data(I).Desc = 'HST source catalog version 2';
+            Data(I).Ref  = 'Whitmore et al. 2016';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2016AJ....151..134W/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/IPHAS/';
+            Data(I).Name = 'IPHAS';
+            Data(I).Desc = 'INT Photometric Hα Survey of the Northern Galactic Plane (IPHAS DR2)';
+            Data(I).Ref  = 'Barentsen et al. 2014';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2014MNRAS.444.3230B/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = false;
+            Data(I).Dir  = '/LAMOST/DR4/';
+            Data(I).Name = 'LAMOST_DR4';
+            Data(I).Desc = 'LAMOST DR4 catalog';
+            Data(I).Ref  = 'Luo et al. 2018';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2018RAA..in.prep..L/abstract';
+            
+%             I = I + 1;
+%             Data(I).Dir  = '/NED/20170328/';
+%             Data(I).Name = 'NEDz';
+%             Data(I).Desc = 'NED redshift catalog 28-03-2017';
+%             Data(I).Ref  = 'Helou et al. 1991';
+%             Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/1991ASSL..171...89H/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/NED/20180502/';
+            Data(I).Name = 'NEDz';
+            Data(I).Desc = 'NED redshift catalog 02-05-2018';
+            Data(I).Ref  = 'Helou et al. 1991';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/1991ASSL..171...89H/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = false;  % ready
+            Data(I).Dir  = '/NOAO/';
+            Data(I).Name = 'NOAO';
+            Data(I).Desc = 'NOAO-DR1 All-Sky source catalog';
+            Data(I).Ref  = 'Nidever et al. 2018';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2018AJ....156..131N/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/NVSS/';
+            Data(I).Name = 'NVSS';
+            Data(I).Desc = 'NVSS 21cm radio source catalog';
+            Data(I).Ref  = 'Condon et al. 1998';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/1998AJ....115.1693C/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/PGC/';
+            Data(I).Name = 'PGC';
+            Data(I).Desc = 'The HYPERLEDA catalog of galaxies';
+            Data(I).Ref  = 'Paturel et al. 2003';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2003A%26A...412...45P/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/PS1/';
+            Data(I).Name = 'PS1';
+            Data(I).Desc = 'The Pan-STARRS DR1 catalog';
+            Data(I).Ref  = 'Chambers et al. 2016';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2016arXiv161205560C/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/PTFpc/';
+            Data(I).Name = 'PTFpc';
+            Data(I).Desc = 'The PTF photometric catalog';
+            Data(I).Ref  = 'Ofek et al. 2012';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2012PASP..124..854O/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/ROSATfsc/';
+            Data(I).Name = 'ROSATfsc';
+            Data(I).Desc = 'The ROSAT faint source catalog';
+            Data(I).Ref  = 'Voges et al. 2010';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2000IAUC.7432....3V/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/SDSS/DR10/';
+            Data(I).Name = 'SDSSDR10';
+            Data(I).Desc = 'SDSS-DR10 source catalog';
+            Data(I).Ref  = 'Alam et al. 2015';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015ApJS..219...12A/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/SDSS/DR14offset/';
+            Data(I).Name = 'SDSSoffset';
+            Data(I).Desc = 'SDSS-DR14 source catalog with color offsets';
+            Data(I).Ref  = 'Alam et al. 2015';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015ApJS..219...12A/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = false;
+            Data(I).Dir  = '/Simbad_PM200/';
+            Data(I).Name = 'Simbad_PM200';
+            Data(I).Desc = 'SIMBAD sources with proper motion larger than 200mas/yr';
+            Data(I).Ref  = 'Wenger et al. 2000';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2000A%26AS..143....9W/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/SkyMapper/';
+            Data(I).Name = 'SkyMapper';
+            Data(I).Desc = 'SkyMapper DR1 catalog (to magnitude 19)';
+            Data(I).Ref  = 'Wolf et al. 2018';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2018PASA...35...10W/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/SpecSDSS/DR14/';
+            Data(I).Name = 'SpecSDSS';
+            Data(I).Desc = 'SDSS-DR14 spectroscopic catalog';
+            Data(I).Ref  = 'Abolfathi et al. 2018';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2018ApJS..235...42A/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/Spitzer/IRACgc/';
+            Data(I).Name = 'IRACgc';
+            Data(I).Desc = 'Spitzer IRAC galactic center catalog';
+            Data(I).Ref  = 'Ramírez et al 2008';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2008ApJS..175..147R/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/Spitzer/SAGE/';
+            Data(I).Name = 'SAGE';
+            Data(I).Desc = 'Spitzer SAGE (LMC+SMC survey) catalog';
+            Data(I).Ref  = 'Meixner et al. 2006';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2006AJ....132';
+            
+            I = I + 1;
+            Data(I).Status  = false;
+            Data(I).Dir  = '/SWIREz/';
+            Data(I).Name = 'SWIREz';
+            Data(I).Desc = 'SWIRE photometric redshift catalog';
+            Data(I).Ref  = 'Rowan-Robinson et al. 2013';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2013MNRAS.428.1958R/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/UCAC4/';
+            Data(I).Name = 'UCAC4';
+            Data(I).Desc = 'The UCAC-4 astrometric catalog';
+            Data(I).Ref  = 'Zacharias et al. 2013';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2013AJ....145...44Z/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = false;
+            Data(I).Dir  = '/UCACGAIADR2accel/';
+            Data(I).Name = 'UCACGAIADR2accel';
+            Data(I).Desc = 'The GAIA-DR2 UCAC-4 accelerations catalog';
+            Data(I).Ref  = 'Ofek and Hallakoun 2020';
+            Data(I).RefLink = '';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/UKIDSS/DR10/';
+            Data(I).Name = 'UKIDSS';
+            Data(I).Desc = 'UKIDSS-DR9 Large Area Survey';
+            Data(I).Ref  = 'Lawrence et al. 2007';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2007MNRAS.379.1599L/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/unWISE/';
+            Data(I).Name = 'unWISE';
+            Data(I).Desc = 'The unWISE catalog';
+            Data(I).Ref  = 'Schlafly et al. 2019';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2019ApJS..240...30S/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/URAT1/';
+            Data(I).Name = 'URAT1';
+            Data(I).Desc = 'The First U.S. Naval Observatory Robotic Astrometric Telescope Catalog';
+            Data(I).Ref  = 'Zacharias et al. 2015';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015AJ....150..101Z/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/VISTA/Viking/DR2/';
+            Data(I).Name = 'VISTAviking';
+            Data(I).Desc = 'The VISTA Kilo-degree Infrared Galaxy (VIKING) Survey';
+            Data(I).Ref  = 'Edge et al. 2013';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2013Msngr.154...32E/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/VST/ATLAS/DR3/';
+            Data(I).Name = 'VSTatlas';
+            Data(I).Desc = 'The VLT Survey Telescope ATLAS';
+            Data(I).Ref  = 'Shanks et al. 2015';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.4238S/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/VST/KiDS/DR3/';
+            Data(I).Name = 'VSTkids';
+            Data(I).Desc = 'The first and second data releases of the Kilo-Degree Survey';
+            Data(I).Ref  = 'de Jong et al. 2015';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2015A%26A...582A..62D/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/WISE/';
+            Data(I).Name = 'WISE';
+            Data(I).Desc = 'The WISE IR catalog';
+            Data(I).Ref  = 'Cutri et al. 2012';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2012wise.rept....1C/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/XMM/';
+            Data(I).Name = 'XMM';
+            Data(I).Desc = 'The XMM-Newton serendipitous survey (3XMM-DR7)';
+            Data(I).Ref  = 'Traulsen et al. 2019';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..77T/abstract';
+            
+            I = I + 1;
+            Data(I).Status  = false;  % non catsHTM
+            Data(I).Dir  = '/ZTF/LCDR1/';
+            Data(I).Name = 'ztfLCDR1';
+            Data(I).Desc = 'ZTF-DR1 light curve catalog (non catsHTM)';
+            Data(I).Ref  = 'Ofek et al. 2020';
+            Data(I).RefLink = '';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/ZTF/SrcLCDR1/';
+            Data(I).Name = 'ztfSrcLCDR1';
+            Data(I).Desc = 'ZTF-DR1 stellar variability catalog';
+            Data(I).Ref  = 'Ofek et al. 2020';
+            Data(I).RefLink = '';
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).Dir  = '/ZTF/ztfDR1var/';
+            Data(I).Name = 'ztfDR1var';
+            Data(I).Desc = 'ZTF-DR1 variable star candidates';
+            Data(I).Ref  = 'Ofek et al. 2020';
+            Data(I).RefLink = '';
+            
+        end
+        
+        function Data=create_indiv_catalog_lists4wget(BaseDir,WriteDir)
+            % Create list of individual catalogs for wget including checsums
+            % Input  : - Directory in which the catsHTM catalog resides
+            %            (e.g., '/raid/eran/catsHTM').
+            %          - Directory in which to write wget lists.
+            %            Default is '' - i.e., current dir.
+            % Example:
+            % Data=catsHTM.create_indiv_catalog_lists4wget('/data/euler/catsHTM','/home/eran/');
+            
+           
+            if (nargin<2)
+                WriteDir = '';
+                if nargin<1
+                    Dir = '/data/euler/catsHTM';
+                end
+            end
+            
+            URL  = 'https://astro.weizmann.ac.il/catsHTM';
+            Pars = '-U Mozilla/5.0 --no-check-certificate';
+            
+            Data = catsHTM.catalogs;
+            Nd = numel(Data);
+            
+            for Id=42:1:43
+                %1:1:Nd
+                if Data(Id).Status
+                    Data(Id)
+                    Dir = sprintf('%s%s',BaseDir,Data(Id).Dir);
+                    PWD = pwd;
+                    cd(Dir);
+
+                    F1 = dir('*.hdf5');
+                    F2 = dir('*.mat');
+                    F  = [F1;F2];
+
+                    Nf = numel(F);
+
+                    Nsrc = nansum(catsHTM.nsrc(Data(Id).Name));
+                    Data(Id).Nsrc = Nsrc(2);
+
+                    ListFileNameW = sprintf('list.euler.wget.%s',strrep(Data(Id).Dir,'/','_'));
+                    ListFileNameC = sprintf('list.euler.checksum.%s',strrep(Data(Id).Dir,'/','_'));
+
+                    FIDw = fopen(sprintf('%s%s%s',WriteDir,filesep,ListFileNameW),'w');
+                    FIDc = fopen(sprintf('%s%s%s',WriteDir,filesep,ListFileNameC),'w');
+
+
+                    tic;
+                    for If=1:1:Nf
+                        Pars1 = sprintf('%s -P .%s',Pars,Data(Id).Dir(1:end-1));
+                        fprintf(FIDw,'wget %s %s%s/%s\n',Pars1,URL,Data(Id).Dir(1:end-1),F(If).name);
+                        [~,Str] = system(sprintf('md5sum %s',F(If).name));
+                        fprintf(FIDc,'%s',Str);
+                    end
+                    fclose(FIDw);
+                    fclose(FIDc);
+
+                    cd(PWD);
+
+                    Data(Id).ListFileNameW = ListFileNameW;
+                    Data(Id).ListFileNameC = ListFileNameC;
+
+                end
+            end
+            
+        end
+        
+        function catalogs_html(FileName)
+            % generate an html table of catalogs
+           
+            if nargin==0
+                FileName = 'catsHTM_catalogs.html';
+            end
+            
+            Data=catsHTM.catalogs;
+            Flag = [Data.Status];
+            Data = Data(Flag);
+            N = numel(Data);
+            
+            Text = '';
+            Text = sprintf('%s <table><tr><th> Name </th> <th> Description</th> <th>wget file</th> <th>checksum</th> <th> Nsrc</th><th>Reference</th> </tr>\n',Text); 
+            for I=1:1:N
+                I
+                Nsrc = catsHTM.nsrc(Data(I).Name);
+                Nsrc = nansum(Nsrc(:,2));
+                
+                WgetFile = sprintf('list.euler.wget.%s',strrep(Data(I).Dir,'/','_'));
+                ChecksumFile = sprintf('list.euler.checksum.%s',strrep(Data(I).Dir,'/','_'));
+                
+                Text = sprintf('%s \n <tr><td> %s </td>  <td> %s </td>   <td><a href="./%s">%s</a></td><td><a href="./%s">%s</a></td>    <td> %d </td> <td> <a href="%s">%s</a> </td></tr>',...
+                            Text,Data(I).Name,Data(I).Desc,WgetFile,WgetFile,ChecksumFile,ChecksumFile,Nsrc,Data(I).RefLink,Data(I).Ref);
+            end
+            Text = sprintf('%s </table>\n',Text);
+            www.html_page(FileName,{Text},'PageTitle','catsHTM list of catalogs');
+            
+            %rsync -avx catsHTM_catalogs.html eran@euler1:/var/www/html/data/catsHTM/
+            
+        end
+        
         function create_catalog_lists4wget(Dir,WriteDir)
             % Create list of catalogs foe wget including checsums
             % Input  : - Directory in which the catsHTM catalog resides
@@ -478,6 +936,126 @@ classdef catsHTM
                 end
             end
             
+        end
+
+        function [Cat,CatID,Cat1,Ihtm,ColCell]=load_cat_with_edges(CatName,Ih,IsHTMindex,varargin)
+            % load catalogs from all HTMs near a specific HTM triangle.
+            % Package: @catsHTM
+            % Description:
+            % Input  : - Catalog name
+            %          - Either running index, or HTM index.
+            %            Running index is a serial number starting with 1.
+            %            HTM index is the index of the HTM triangle in te HTM
+            %            structure.
+            %            The HTM index (Ihtm) is related to the serial number (Ih) by
+            %            Ihtm   = Level.ptr(Ih).
+            %          - A logical indicating if the second input is HTM index.
+            %            Default is true.
+            %          * Pairs of ...,key,val,...
+            %            The following keys are available:
+            %            'HTM' - A structure of HTM generated by celestial.htm.htm_build
+            %                    If empty, then Level must be provided and the HTM will
+            %                    be generated.
+            %            'LevelH' - A structure of Level generated by celestial.htm.htm_build
+            %                    If empty, then Level must be provided and the HTM will
+            %                    be generated.
+            %            'Level' - Level number. Ignored if 'HTM' and 'LevelH' are
+            %                    provided.
+            %            'SearchRadius' - Default is 2.
+            %            'SearchRadiusUnits' - Default is 'arcsec'.
+            % Output : - The combined catalog of all HTMs adjuscent to the requested
+            %            HTM, including the HTM itself.
+            %          - A vector of the HTM index for each source in the catalog
+            %            (first output argument).
+            %          - The catalog of the requested HTM only.
+            %          - Cell array of catalog column names.
+            % Example:
+            % [Cat,CatID,Cat1,Ihtm,ColCell]=catsHTM.load_cat_with_edges('FIRST',1,false,'Level',7);
+
+            if nargin<3
+                IsHTMindex = true;
+            end
+
+            DefV.HTM                  = [];
+            DefV.LevelH               = [];
+            DefV.Level                = [];
+            DefV.SearchRadius         = 2;  % [arcsec]
+            DefV.SearchRadiusUnits    = 'arcsec';
+          
+            InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
+
+            SearchRadius = convert.angular(InPar.SearchRadiusUnits,'rad',InPar.SearchRadius);  % [rad]
+
+            % load HTM data for Cat2
+            [IndexFileName,IndexVarName] = catsHTM.get_index_filename(CatName);
+            % HTM2 is the HTM index file
+            [HTM,DataHTM] = catsHTM.load_htm_ind(IndexFileName,IndexVarName);
+            % Level, Father, Son1, Son2, Son3, Son4, Poles 1 long,
+            % poles 1 lat, ..., Nsrc
+
+
+            if isempty(InPar.HTM) && isempty(InPar.LevelH)
+                % generate HTM and Level
+                if isempty(InPar.Level)
+                    error('If HTM and LevelH are not provided, Level must be provided');
+                end
+
+                [HTM,LevelH] = celestial.htm.htm_build(InPar.Level);   % < from input   
+            else
+                HTM    = InPar.HTM;
+                LevelH = InPar.LevelH;
+            end
+
+
+            Nhtm = numel(HTM);
+
+            L = celestial.htm.nhtm2level(Nhtm);
+
+            Level = LevelH(L);
+
+            [ColCell] = catsHTM.load_colcell(CatName);
+            Ncol      = numel(ColCell);
+
+
+            if IsHTMindex
+                Ihtm = Ih;
+            else
+                Ihtm   = Level.ptr(Ih);
+            end
+
+
+            Cat1 = catsHTM.load_cat(CatName,Ihtm);
+
+            % Cat1 current HTM   % deg
+            MeanRA  = mean(HTM(Ihtm).coo(:,1));
+            MeanDec = mean(HTM(Ihtm).coo(:,2));
+            MinDec  = min(HTM(Ihtm).coo(:,2))-SearchRadius;
+            MaxDec  = max(HTM(Ihtm).coo(:,2))+SearchRadius;
+
+            %%
+            %if ((MeanDec.*180./pi)>-30)
+
+            D = celestial.coo.sphere_dist_fast(MeanRA,MeanDec,HTM(Ihtm).coo(:,1),HTM(Ihtm).coo(:,2));
+            CircRadius = max(D) + SearchRadius; % [rad]
+
+            ID = celestial.htm.htm_search_cone(HTM,MeanRA,MeanDec,CircRadius);
+
+            % load all ID from HTM
+            Nid = numel(ID);
+            for Iid=1:1:Nid
+                %Iid
+                if (Iid==1)
+                    [Cat,Ind]   = catsHTM.load_cat(CatName,ID(Iid),[MinDec MaxDec],Ncol);
+                    N           = size(Cat,1);
+                    CatID       = [ID(Iid).*ones(N,1), Ind-1+(1:1:N)'];
+                else
+                    [Cattmp, Ind] = catsHTM.load_cat(CatName,ID(Iid),[MinDec MaxDec],Ncol);
+                    Cat   = [Cat; Cattmp];
+                    N     = size(Cat,1);
+                    CatID = [CatID; [ID(Iid).*ones(N,1), Ind-1+(1:1:N)']];
+                end
+            end
         end
 
         function Cat=load_multiple_cats(CatName,ID,NfilesInHDF)
@@ -888,6 +1466,21 @@ classdef catsHTM
             %          - Search radius [arcsec].
             %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
             %            where keyword are one of the followings:
+            %            'Con'         - A cell array of additional
+            %                            constraints to apply to output catalog.
+            %                            Each cell contains a two element
+            %                            cell array in which the first
+            %                            element is a column name on which
+            %                            to apply the constraint. The
+            %                            second element is either a two
+            %                            element vector of [min, max] range
+            %                            to select, or a function handle
+            %                            that get the column and return
+            %                            logical.
+            %                            E.g., {{'Mag_G',[15 16]},{'Plx',@(x) ~isnan(x)}}
+            %                            will select sources with mag
+            %                            between 15 and 16 and not NaN
+            %                            parallax.
             %            'RadiusUnits' - Radius units. Default is 'arcsec'.
             %            'IndexFileTemplate' - Index Catalog name template.
             %                            Default is '%s_htm.hdf5'.
@@ -898,6 +1491,11 @@ classdef catsHTM
             %            'NcatInFile'  - Number of Datasets in file.
             %                            Default is 100.
             %            'IndexVarName' - Default is [].
+            %            'UseIndex'    - A logical indicating if to use
+            %                            the index HDF file.
+            %                            For very big catalogs, will be
+            %                            faster to use true.
+            %                            Default is false.
             %            'ColRA'       - Default is 1.
             %            'ColDec'      - Default is2.
             %            'OnlyCone'    - Return only sources within cone.
@@ -905,7 +1503,7 @@ classdef catsHTM
             %                            objects outside cone.
             %                            Default is true.
             %            'ColCellFile' - Default is '%s_htmColCell.mat'.
-            %            'OutType'     - Output type {'mat'|'astcat'}.
+            %            'OutType'     - Output type {'mat'|'astcat'|'catcl'}.
             %                            Default is 'mat'.
             % Output : - Catalog of source within cone.
             %          - Cell array of column names.
@@ -920,12 +1518,14 @@ classdef catsHTM
 
             RAD = 180./pi;
 
+            DefV.Con                  = {};
             DefV.RadiusUnits          = 'arcsec';  % do not change this default!
             DefV.IndexFileTemplate    = '%s_htm.hdf5';
             DefV.CatFileTemplate      = '%s_htm_%06d.hdf5';
             DefV.htmTemplate          = 'htm_%06d';
             DefV.NcatInFile           = 100;
             DefV.IndexVarName         = [];
+            DefV.UseIndex             = false;
             DefV.ColRA                = 1;
             DefV.ColDec               = 2;
             DefV.OnlyCone             = true;
@@ -949,11 +1549,11 @@ classdef catsHTM
             
             InPar.ColCellFile = sprintf(InPar.ColCellFile,CatName);
 
-            %Ncol = 45;
-            %Ncol = 8;
             load(InPar.ColCellFile);
             Ncol  = numel(ColCell);
 
+            % number of additional constraints
+            Ncon  = numel(InPar.Con);
 
             MinDec = Dec - Radius;
             MaxDec = Dec + Radius;
@@ -963,32 +1563,59 @@ classdef catsHTM
             FileID = floor(ID./InPar.NcatInFile).*InPar.NcatInFile;
             Nid = numel(ID);
             Cat = zeros(0,Ncol);
-            %C = Util.struct.struct_def({'Cat'},Nid,1);
+            C = Util.struct.struct_def({'Cat'},Nid,1);
             for Iid=1:1:Nid
 
                 %FileID    = floor(ID(Iid)./InPar.NcatInFile).*InPar.NcatInFile;
                 FileName  = sprintf(InPar.CatFileTemplate,CatName,FileID(Iid));
                 DataName  = sprintf(InPar.htmTemplate,ID(Iid));
 
-                %Cat = [Cat; HDF5.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol)];
-                if (Iid==1)
-                    Cat = HDF5.load(FileName,DataName);
-                    %Cat = HDF5.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol);
-                    
-                    %Ncol = size(Cat,2);
+                %Cat = [Cat; catsHTM.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol)];
+                if InPar.UseIndex
+                    C(Iid).Cat = catsHTM.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol).';
                 else
-                    Cat = [Cat; HDF5.load(FileName,DataName)];
-                    %Cat = [Cat; HDF5.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol)];
+                    C(Iid).Cat = HDF5.load(FileName,DataName).';
                 end
+                
+                if ~isempty(InPar.Con)
+                    Flag = true(1,size(C(Iid).Cat,2));
+                    for Icon=1:1:Ncon
+                        ColInd = strcmp(InPar.Con{Icon}{1},ColCell);
+                        if isa(InPar.Con{Icon}{2},'function_handle')
+                            Flag = Flag & InPar.Con{Icon}{2}(C(Iid).Cat(ColInd,:));
+                        else
+                            Flag = Flag & C(Iid).Cat(ColInd,:)>=InPar.Con{Icon}{2}(1) & C(Iid).Cat(ColInd,:)<=InPar.Con{Icon}{2}(2);
+                        end
+                    end
+                    C(Iid).Cat = C(Iid).Cat(:,Flag);
+                end
+                
 
-                %C(Iid).Cat = HDF5.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol).';
+                
+%                 if (Iid==1)
+%                     if InPar.UseIndex
+%                         Cat = catsHTM.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol);
+%                     else
+%                         Cat = HDF5.load(FileName,DataName);
+%                     end
+%                     
+%                     %Ncol = size(Cat,2);
+%                 else
+%                     if InPar.UseIndex
+%                         Cat = [Cat; catsHTM.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol)];
+%                     else
+%                         Cat = [Cat; HDF5.load(FileName,DataName)];
+%                     end
+%                 end
+
+                %C(Iid).Cat = catsHTM.load_cat(FileName,DataName,[MinDec, MaxDec],Ncol).';
 
             end
 
-            %Cat = [C.Cat]';
+            Cat = [C.Cat]';
 
             % select only sources in Cone
-            if (InPar.OnlyCone)
+            if (InPar.OnlyCone && ~isempty(Cat))
                 D = celestial.coo.sphere_dist_fast(RA,Dec,Cat(:,InPar.ColRA),Cat(:,InPar.ColDec));
                 Cat = Cat(D<Radius,:);
             end
@@ -998,6 +1625,12 @@ classdef catsHTM
             switch lower(InPar.OutType)
                 case 'mat'
                     % do nothing
+                case 'catcl'
+                    AstC = catCl;
+                    AstC.Cat = Cat;
+                    AstC.ColCell  = ColCell;
+                    AstC.ColUnits = ColUnits;
+                    Cat = AstC;
                 case 'astcat'
                     AstC = AstCat;
                     AstC.Cat = Cat;
@@ -1010,6 +1643,10 @@ classdef catsHTM
             
         end
 
+        
+  
+        
+        
         function CatM=sources_match(CatName,Cat,varargin)
             % Match sources in an input catalog with catsHTM catalog
             % Package: @catsHTM
@@ -1019,6 +1656,10 @@ classdef catsHTM
             % Input  : - catsHTM catalog name (e.g., 'UCAC4').
             %          - An AstCat object with sources.
             %          * Arbitrary number of key,val pairs:
+            %            'ConeSearchPar' - A cell array of additional
+            %                       arguments to pass to cone_search.m.
+            %                       E.g.,  {{'Mag_G',[15 16]},{'Plx',@(x) ~isnan(x)}}
+            %                       Default is {}.
             %            'OutType' - Output catalog type {'mat'|'astcat'}.
             %                       Default is 'AstCat'.
             %            'SearchRadius' - Search radius. Default is 2.
@@ -1037,6 +1678,7 @@ classdef catsHTM
             CatField     = AstCat.CatField;
             ColCellField = AstCat.ColCellField;
             
+            DefV.ConeSearchPar         = {};
             DefV.OutType               = 'AstCat';
             DefV.SearchRadius          = 2;
             DefV.SearchRadiusUnits     = 'arcsec';
@@ -1076,7 +1718,8 @@ classdef catsHTM
             Radius  = max(D).*(1+10.*eps);  % [rad]
             Radius  = convert.angular('rad','arcsec',Radius); % [arcsec]
             
-            [CatH,ColCellH] = catsHTM.cone_search(CatName,MedRA,MedDec,Radius);
+            [CatH,ColCellH] = catsHTM.cone_search(CatName,MedRA,MedDec,Radius,InPar.ConeSearchPar{:});
+            
             
             CatH = sortrows(CatH,InPar.ColDecHTM);
             

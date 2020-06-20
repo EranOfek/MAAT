@@ -102,29 +102,29 @@ DefV.SN           = [];
 
 %--- Telescope ----
 %DefV.Tel          = [];
-DefV.Aper         = 57; %48*2.54; %30; %55; %1.8; %55;        % [cm] Telescope aperture
-DefV.FocalLength  = 108; %48.*2.54.*2.8; %30.*1.44; %108; %1.7; %108;        % [cm] Telescope focal length
+DefV.Aper         = 3.5./1.4; %57; %48*2.54; %30; %55; %1.8; %55;        % [cm] Telescope aperture
+DefV.FocalLength  = 3.5; %108; %48.*2.54.*2.8; %30.*1.44; %108; %1.7; %108;        % [cm] Telescope focal length
 DefV.Family       = 'SDSS'; %'Cousins'; %'Cousins'; %'Cousins'; %'Johnson'; %'SDSS';  %
 DefV.Band         = 'g'; %'R'; %'R'; %'R'; %'r';        %
 DefV.MagType      = 'AB'; %'Vega'; %'AB';       % {'AB','Vega'}
 %--- Optics ---
-DefV.QOE          = 0.45; %0.3 %0.45; %[0.6 0.75 0.85];        % []   quantum-optical effiency [including CCD, optics and filter]
-DefV.FWHM         = 2.5; %2.5; %3.7;          % ["]  Point source image FWHM (FWHM=2.3548\sigma) [including pixel size, optics, diffraction, jitter, charge leakage]
+DefV.QOE          = 0.75; %0.3 %0.45; %[0.6 0.75 0.85];        % []   quantum-optical effiency [including CCD, optics and filter]
+DefV.FWHM         = 80; % 2.5; %2.5; %3.7;          % ["]  Point source image FWHM (FWHM=2.3548\sigma) [including pixel size, optics, diffraction, jitter, charge leakage]
 %--- CCD ---
 DefV.Bin          = 1;           % [pix]     pixel binning
-DefV.PixSize      = 11.5; %6.5; %6.5;         % [micron]  CCD pixel size
+DefV.PixSize      = 4.5; %11.5; %6.5; %6.5;         % [micron]  CCD pixel size
 DefV.SizeCCD      = [6000 6000]; %[2048 2500]; % [pix pix] size of a single CCD
 DefV.Nccd         = 7;           % []        number of CCDs or telescopes.
 %DefV.ReadRate     = 2e5;         % [pix/s]   CCD readout rate
 DefV.ReadTime     = 0;           % [s]       CCD readout time - if given, then used instead of ReadRate
-DefV.RN           = 1.5; %1.5; %1.5; %1.5; %4.*sqrt(DefV.ReadRate./250);;           % [e-]      CCD Read noise
+DefV.RN           = 10; %1.5; %1.5; %1.5; %1.5; %4.*sqrt(DefV.ReadRate./250);;           % [e-]      CCD Read noise
 DefV.DC           = 0.002; %16;       % [e-/s/pix]CCD dark current
 DefV.WD           = 1e5;         % [e-]      CCD wall depth/saturation limit per pixel
 DefV.Gain         = 1.5;         % [e-/DN]   CCD Gain
 DefV.CTE          = 0.99999;     % []        CCD CTE
 DefV.PosCCD       = [1024 1024]; % [pix pix] position of source on CCD
 %--- Exposure ---
-DefV.ExpTime      = 1./30; %30; %1./30;           % expoure time per a single CRsplit
+DefV.ExpTime      = 1./25; %30; %1./30;           % expoure time per a single CRsplit
 %DefV.CycleExpTime = 1;          % [s]       Exposure time including overheads and CRsplit
 DefV.CRsplit      = 1; %1;           % []        Number of images in Exposure time
 %     ReadoutTime = SizeCCD(1)./ReadRate./Namp/(Bin.^2)
@@ -145,7 +145,7 @@ DefV.ScatL        = 0.0;  %0.01;
 DefV.AM           = 1.3;
 DefV.AtmExtFile   = 'KPNO_atmospheric_extinction.dat';  % atmospheric extinction file
 %--- Photometry ---
-DefV.PhotRad      = (0.2:0.2:100);  % ["] radius of photometry aperture
+DefV.PhotRad      = 60; %(0.2:0.2:500);  % ["] radius of photometry aperture
 %DefV.Annulus      = [20 50];      % ["] Inner and outer Background annulus radius
 %DefV.FFerr        = 0.005;        % Flat Field relative error.
 

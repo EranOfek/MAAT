@@ -3,9 +3,9 @@ function T=random_time_sequence(TotalT,Cadence,LenAnnual,RandStd,MonthlyFrac)
 % Package: timeseries
 % Description: Generate random times for an astronomical time series,
 %              including daily and annual gaps.
-% Input  : - Total time span [days]. Default is 365.*6.
-%          - Mean cadence [days]. Default is 5.
-%          - Length of annual obsrving period [days]. Default is 210.
+% Input  : - Total time span [days]. Default is 365.*3.
+%          - Mean cadence [days]. Default is 2.
+%          - Length of annual obsrving period [days]. Default is 240.
 %          - Random std for observing times [days]. Default is 0.05.
 %          - Montly observing fraction. Default is 0.8.
 % Output : - 
@@ -19,9 +19,9 @@ Year = 365.25;
 Month = 29.53;
 
 if (nargin==0)
-    TotalT      = 365.*6;
-    Cadence     = 5;
-    LenAnnual   = 210;
+    TotalT      = 365.*3;
+    Cadence     = 2;
+    LenAnnual   = 240;
     RandStd     = 0.05;
     MonthlyFrac = 0.8;
 end

@@ -8,6 +8,8 @@ function [Flag,FlagRes,Data]=is_coordinate_ok(RA,Dec,JD,varargin)
 %          - JD. If emepty than use current JD.
 %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
+%            'Lon'
+%            '
 % Output : - 
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Apr 2019

@@ -5,7 +5,8 @@ function [Mode,Std]=mode_density(Array,Dim,varargin)
 %              histogram and choosing the bin with smallest range.
 % Input  : - Array.
 %          - Dimesnion over which to calculate the mode.
-%            1,2,'all'
+%            1,2,'all'.
+%            Default is 'all'.
 %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
 %            'NinBin' - Number of points in bin. Default is 30.
@@ -20,6 +21,10 @@ function [Mode,Std]=mode_density(Array,Dim,varargin)
 % Reliable: 
 %--------------------------------------------------------------------------
 
+
+if nargin<2
+    Dim = 'all';
+end
 
 DefV.NinBin               = 30;
 DefV.JoinOut              = false;

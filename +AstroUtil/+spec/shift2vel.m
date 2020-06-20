@@ -11,7 +11,7 @@ function Vel=shift2vel(Z)
 % Example: shift2vel(1.0)
 % Reliable: 1
 %--------------------------------------------------------------------------
-C = get_constant('c','SI')./1000;    % speed of light [km/s]
+C = constant.c('SI')./1000;    % speed of light [km/s]
 
 Beta = ((Z+1).^2 - 1)./(1 + (Z+1).^2);
 

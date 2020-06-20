@@ -79,6 +79,7 @@ end
 for Iwcs=1:1:Nwcs
     
     if (isnan(WCS(Iwcs).WCS.CTYPE1))
+    %if isnan(WCS(Iwcs).WCS.CTYPE{1})
         % no valid WCS in header
         Long = nan(size(X));
         Lat  = nan(size(Y));

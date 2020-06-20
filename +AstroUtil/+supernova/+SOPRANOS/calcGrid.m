@@ -80,10 +80,13 @@ NEbv= length(LCs.VecEbv);
 Nt0 = length(Vect0);
 t_BO   = LCs.t_BO.*(1+data.redshift);
 
-if strcmpi(LCs.model,'SW')
-    t_max  = min(LCs.t_max,LCs.t_opac).*(1+data.redshift);
-else % RW model
-    t_max  = min(LCs.t_delta,LCs.t_opac).*(1+data.redshift);
+switch LCs.model
+    case 'SW'
+        t_max  = min(LCs.t_max,LCs.t_opac).*(1+data.redshift);
+    case 'RW'
+        t_max  = min(LCs.t_delta,LCs.t_opac).*(1+data.redshift);
+    case 'MSW'
+        t_max = LCs.t_max;
 end
 
 bands = data.bands;
@@ -127,6 +130,7 @@ for iband=1:length(bands)
     W.dist = AstroUtil.cosmo.lum_dist(LCs.redshift);
     W.WaveRange = (bands{iband}.filterObj.min_wl: (bands{iband}.filterObj.max_wl - bands{iband}.filterObj.min_wl)./100 :bands{iband}.filterObj.max_wl);
     W.filter = bands{iband}.filterObj;
+    W.model = LCs.model;
 
     chi2  = zeros(Nt0,Nr,Nv,Nm,Nfrho,NEbv,'single');
     points = zeros(Nt0,Nr,Nv,Nm,Nfrho,NEbv,'uint16');
@@ -167,9 +171,16 @@ for iband=1:length(bands)
                 tmpLC  = zeros(Nr, Nv, Nm, Nfrho);
                 Spec=cell(1,2);
                 if any(validObs(:))
-                    [L, Tc]= AstroUtil.supernova.sn_cooling_sw(c.Value.tobs(iObs,it0),'Type',c.Value.Prog,...
-                        'Rs',c.Value.VecRs,'Vs',shiftdim(c.Value.VecVs,-1),'Ms',shiftdim(c.Value.VecMs,-2),...
-                        'f_rho',shiftdim(c.Value.VecFrho,-3), 'redshift', c.Value.redshift, 'Model', c.Value.model);
+                    switch W.model
+                        case {'RW','SW'}
+                            [L, Tc]= AstroUtil.supernova.sn_cooling_sw(c.Value.tobs(iObs,it0),'Type',c.Value.Prog,...
+                                'Rs',c.Value.VecRs,'Vs',shiftdim(c.Value.VecVs,-1),'Ms',shiftdim(c.Value.VecMs,-2),...
+                                'f_rho',shiftdim(c.Value.VecFrho,-3), 'redshift', c.Value.redshift, 'Model', c.Value.model);
+                        case {'MSW'}
+                            [L, Tc]= AstroUtil.supernova.sn_cooling_msw(c.Value.tobs(iObs,it0),'Type',c.Value.Prog,...
+                                'Rs',c.Value.VecRs,'Vs',shiftdim(c.Value.VecVs,-1),'Ms',shiftdim(c.Value.VecMs,-2),...
+                                'f_rho',shiftdim(c.Value.VecFrho,-3), 'redshift', c.Value.redshift, 'Model', c.Value.model);
+                    end
                     L = L(validObs(:))./(4.*pi.*(c.Value.dist.*constant.pc).^2);
                     Tc = Tc(validObs(:));
 

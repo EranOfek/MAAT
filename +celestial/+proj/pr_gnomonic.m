@@ -17,6 +17,7 @@ function [X,Y]=pr_gnomonic(Long,Lat,R,CenterVec)
 % See also: pr_ignomonic.m
 % Reliable: 2
 %--------------------------------------------------------------------------
+
 if (nargin==4)
    % no default
 elseif (nargin==3)

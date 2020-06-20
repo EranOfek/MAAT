@@ -23,7 +23,7 @@ function [Mom,Mom2,Aper]=im_moments(Image,X,Y,Radius,Sigma,MaxIter,RadAnn)
 % Tested : Matlab R2015b
 %     By : Eran O. Ofek                    Feb 2016
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: Image = rand(1024,1024); Mom=ImUtil.Im.im_moments(Image, rand(100,1), rand(100,1),6)
+% Example: Image = rand(1024,1024); [M,M2,Aper]=ImUtil.Im.im_moments(Image, rand(100,1), rand(100,1),6)
 % Reliable: 2
 %--------------------------------------------------------------------------
 PosConv = 1e-4;

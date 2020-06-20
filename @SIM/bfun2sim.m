@@ -101,18 +101,18 @@ for I=1:1:N
         if (~isempty(Sim1(I1).(InPar.ExecField{If})))
             % ExecField in Sim1 is not empty:
             if (SIM.issim(Sim2))
-                Tmp = Sim2(I2).(InPar.ExecField{If});
+                Tmp2 = Sim2(I2).(InPar.ExecField{If});
             elseif (iscell(Sim2))
-                Tmp = Sim2{I2};
+                Tmp2 = Sim2{I2};
             elseif (isnumeric(Sim2))
                 % Input is vector of scalars
                 % in order to provide a matrix use the cell input...
-                Tmp = Sim2(I2);
+                Tmp2 = Sim2(I2);
             elseif (isa(Sim2,'function_handle'))
                 % Sim2 is a function
-                Tmp = Sim2(InPar.Sim2FunPar{:});
+                Tmp2 = Sim2(InPar.Sim2FunPar{:});
             elseif (ClassPSF.isClassPSF(Sim2))
-                Tmp = getpsf(Sim2(I2));
+                Tmp2 = getpsf(Sim2(I2));
             elseif (isempty(Sim2))
                 error('Empty Sim2 not yet available');
                 % Attempt to read the PSF field from the first SIM input
@@ -123,16 +123,23 @@ for I=1:1:N
                 CCDSEC2 = ccdsec(Sim2(I2),InPar.CCDSEC2);
                 Tmp = Tmp(CCDSEC2(3):CCDSEC2(4),CCDSEC2(1):CCDSEC2(2));
             end
-
+            
+            % Match the precision of Sim1 and Sim2 (take the highest)
+            Tmp1 = Sim1(I1).(InPar.ExecField{If});
+            if isinteger(Tmp1) && isfloat(Tmp2)
+                Tmp1 = cast(Tmp1, 'like', Tmp2);
+            elseif isfloat(Tmp1) && isinteger(Tmp2)
+                Tmp2 = cast(Tmp2, 'like', Tmp1);
+            end
 
             % ccdsec
             if (isempty(InPar.CCDSEC1))
                 % operation
-                Sim(I).(InPar.ExecField{If}) = Op(Sim1(I1).(InPar.ExecField{If}),Tmp,InPar.FunAddPar{:});
+                Sim(I).(InPar.ExecField{If}) = Op(Tmp1,Tmp2,InPar.FunAddPar{:});
             else
                 % operation with CCDSEC
                 CCDSEC1 = ccdsec(Sim1(I1),InPar.CCSEC1);
-                Sim(I).(InPar.ExecField{If}) = Op(Sim1(I1).(InPar.ExecField{If})(CCDSEC1(3):CCDSEC1(4),CCDSEC1(1):CCDSEC1(2)),Tmp,InPar.FunAddPar{:});
+                Sim(I).(InPar.ExecField{If}) = Op(Tmp1(CCDSEC1(3):CCDSEC1(4),CCDSEC1(1):CCDSEC1(2)),Tmp2,InPar.FunAddPar{:});
             end
 
         end
