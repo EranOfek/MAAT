@@ -81,11 +81,11 @@ Nt0 = length(Vect0);
 t_BO   = LCs.t_BO.*(1+data.redshift);
 
 switch LCs.model
-    case 'SW'
+    case 'sw'
         t_max  = min(LCs.t_max,LCs.t_opac).*(1+data.redshift);
-    case 'RW'
+    case 'rw'
         t_max  = min(LCs.t_delta,LCs.t_opac).*(1+data.redshift);
-    case 'MSW'
+    case 'msw'
         t_max = LCs.t_max;
 end
 
@@ -171,12 +171,12 @@ for iband=1:length(bands)
                 tmpLC  = zeros(Nr, Nv, Nm, Nfrho);
                 Spec=cell(1,2);
                 if any(validObs(:))
-                    switch W.model
-                        case {'RW','SW'}
+                    switch c.Value.model
+                        case {'rw','sw'}
                             [L, Tc]= AstroUtil.supernova.sn_cooling_sw(c.Value.tobs(iObs,it0),'Type',c.Value.Prog,...
                                 'Rs',c.Value.VecRs,'Vs',shiftdim(c.Value.VecVs,-1),'Ms',shiftdim(c.Value.VecMs,-2),...
                                 'f_rho',shiftdim(c.Value.VecFrho,-3), 'redshift', c.Value.redshift, 'Model', c.Value.model);
-                        case {'MSW'}
+                        case {'msw'}
                             [L, Tc]= AstroUtil.supernova.sn_cooling_msw(c.Value.tobs(iObs,it0),'Type',c.Value.Prog,...
                                 'Rs',c.Value.VecRs,'Vs',shiftdim(c.Value.VecVs,-1),'Ms',shiftdim(c.Value.VecMs,-2),...
                                 'f_rho',shiftdim(c.Value.VecFrho,-3), 'redshift', c.Value.redshift, 'Model', c.Value.model);
@@ -210,6 +210,7 @@ for iband=1:length(bands)
             else
                 BGt = 0;
             end
+            
             parfor iRs = 1:Nr
 %             for iRs = 1:Nr
 %                 valid = (c.Value.tobs(:,it0)>=t_BO(:,iRs,:,:,:)) & (c.Value.tobs(:,it0)<=t_max(:,iRs,:,:,:));

@@ -174,9 +174,9 @@ switch lower(InPar.Type)
         end
         
         if strcmpi(InPar.Model,'MSW')
-            L = L + 2.974e42 * (InPar.Rs.*SolR./1e13).^2.462.*(v_sstar/10^8.5).^0.6023 ./ ...
-                (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)).^0.06434./(InPar.kappa./0.34).^2 * (t_d.*24).^(-4/3);
-            T_ph = min(T_phRW, 6.937.*(InPar.Rs.*SolR./1e13).^0.1155.*(v_sstar/10^8.5).^0.1506 ./ ...
+            L = L + 2.974e42 .* (InPar.Rs.*SolR./1e13).^2.462.*(v_sstar./10^8.5).^0.6023 ./ ...
+                (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)).^0.06434./(InPar.kappa./0.34).^2 .* (t_d.*24).^(-4/3);
+            T_ph = min(T_phRW, 6.937.*(InPar.Rs.*SolR./1e13).^0.1155.*(v_sstar./10^8.5).^0.1506 ./ ...
                                       ( (InPar.f_rho .* InPar.Ms).^0.01609 .* InPar.kappa./0.34.^0.2661 ) .* (t_d.*24).^(-1/3));
         end
         
@@ -202,9 +202,9 @@ switch lower(InPar.Type)
             t_min = (1+InPar.redshift).*model_time.t_min;
         end
         if strcmpi(InPar.Model,'RW')
-            t_max = (1+InPar.redshift).*model_times.t_delta;
+            t_max = (1+InPar.redshift).*min(model_times.t_opac, model_times.t_delta);
         else
-            t_max = (1+InPar.redshift).*t_tr./a;
+            t_max = (1+InPar.redshift).*min(model_times.t_opac,t_tr./a);
         end
         
     case 'bsg'
@@ -272,7 +272,7 @@ otherwise
 end
 
 R    = sqrt(L./(4.*pi.*SigmaB.*Tc.^4));      %[cm]
-R_BO = InPar.Rs.*SolR./(Tcorr.^2) + min(R,v_BO.*t_d.*86400./Tcorr.^2); %[cm]
+%R_BO = InPar.Rs.*SolR./(Tcorr.^2) + min(R,v_BO.*t_d.*86400./Tcorr.^2); %[cm]
 
 if (nargout>3) && (~isempty(InPar.FiltFam) || ~isempty(InPar.Wave))
     Pc = constant.pc;
