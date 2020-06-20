@@ -397,6 +397,7 @@ numbers={'OneGraph','TwoGraphs','ThreeGraphs'};
 
 handles.SOPRANOS.UserData.data = settings.data;
 handles.SOPRANOS.UserData.file = settings.datafile;
+handles.SOPRANOS.UserData.file.pathname = pathname;
 
 handles.GraphsNumber.SelectedObject = eval(strcat('handles.',numbers{settings.ngraphs}));
 GraphsNumber_SelectionChangedFcn(handles.GraphsNumber.SelectedObject, eventdata, handles);
@@ -695,8 +696,8 @@ if (strcmp(handles.TransientStart.Enable,'on'))
 end
 
 if ~isempty(handles.Plot.UserData)
-%     PlotParams = handles.Plot.UserData.PlotParams;
-    PlotParams = handles.Plot.UserData.params;
+     PlotParams = handles.Plot.UserData.PlotParams;
+%    PlotParams = handles.Plot.UserData.params;
     switch PlotParams.model
         case 'SW', handles.Model.Value = 1;
         case 'RW', hadnles.Model.Value = 2;
@@ -1815,31 +1816,56 @@ end
 clear bandData Tab
 
 epochFilter = handles.SOPRANOS.UserData.data.bands{handles.BandNumber.Value}.filterObj;
-[Rbb,Tbb,epochs,sigmaRbb,sigmaTbb,chi2]=photoFit(data,'epochFam',epochFilter.family,'epochBand',epochFilter.band,'redshift',SNdata.redshift,'RA',SNdata.RAh,'dec',SNdata.decd);
+[Rbb,Tbb,epochs,sigmaRbbp,sigmaRbbm,sigmaTbbp,sigmaTbbm,chi2,dof,reject]=photoFit(data,'epochFam',epochFilter.family,'epochBand',epochFilter.band,'redshift',SNdata.redshift,'RA',SNdata.RAh,'dec',SNdata.decd);
 figure;
-errorbar(epochs,Rbb,sigmaRbb);
+err=errorbar(epochs(~reject),Rbb(~reject),sigmaRbbm(~reject),sigmaRbbp(~reject),'o-');
+err.MarkerFaceColor=err.MarkerEdgeColor;
+if any(reject)
+    hold on
+    rej=errorbar(epochs(reject),Rbb(reject),sigmaRbbm(reject),sigmaRbbp(reject),'o');
+    rej.Color=err.Color;
+end
 ylabel('Effective R_{BB} [cm]');
 xlabel('MJD [days]');
+xl=xlim;xl(1)=xl(1)-1;xlim(xl);
 ax=gca;
 ax.XAxis.Exponent=0;
 
 figure;
-errorbar(epochs,Tbb,sigmaTbb);
+err=errorbar(epochs(~reject),Tbb(~reject),sigmaTbbm(~reject),sigmaTbbp(~reject),'o-');
+err.MarkerFaceColor=err.MarkerEdgeColor;
+if any(reject)
+    hold on
+    rej=errorbar(epochs(reject),Tbb(reject),sigmaTbbm(reject),sigmaTbbp(reject),'o');
+    rej.Color=err.Color;
+end
 ylabel('T_{Col,BB} [eV]');
 xlabel('MJD [days]');
+xl=xlim;xl(1)=xl(1)-1;xlim(xl);
 ax=gca;
 ax.XAxis.Exponent=0;
 ax.YScale = 'log';
+
+fprintf('MJD                & $\\chi^2/dof$ & Significance & $R_{BB} $ & $ \\sigma_R_{BB} & $T_{BB}$ & $\\sigma_T_{BB}$ \\\\ \n');
+for iepoch = 1:length(epochs)
+   fprintf('%8.2f & %5.2f/%1d & %4.2f & %4.0f & %3.0f & %3.1f & %4.2f \\\\ \n',...
+       epochs(iepoch), chi2(iepoch), dof, 1-chi2cdf(chi2(iepoch), dof), ...
+       Rbb(iepoch)/constant.SunR, sigmaRbbp(iepoch)/constant.SunR, ...
+       Tbb(iepoch), sigmaTbbp(iepoch));
+end
 
 
 Tab = table;
 Tab.time = epochs;
 Tab.Rbb  = Rbb;
 Tab.Tbb  = Tbb;
-Tab.sigmaRbb = sigmaRbb;
-Tab.sigmaTbb = sigmaTbb;
+Tab.sigmaRbbp = sigmaRbbp;
+Tab.sigmaRbbm = sigmaRbbm;
+Tab.sigmaTbbp = sigmaTbbp;
+Tab.sigmaTbbm = sigmaTbbm;
 Tab.chi2     = chi2;
-
+Tab.dof      = dof*ones(height(Tab),1);
+Tab.reject   = reject;
 hObject.UserData = Tab;
 
 
@@ -1863,7 +1889,8 @@ z     =  handles.SOPRANOS.UserData.data.redshift;
 SNdata=handles.SOPRANOS.UserData.data;
 data = table;
 for iband = 1:length(SNdata.bands)
-    Tab = SNdata.bands{iband}.LC(SNdata.bands{iband}.LC.MJD>str2num(handles.TransientStart.String)&SNdata.bands{iband}.LC.MJD<(str2num(handles.TransientEnd.String)+20),:);
+%     Tab = SNdata.bands{iband}.LC(SNdata.bands{iband}.LC.MJD>str2num(handles.TransientStart.String)&SNdata.bands{iband}.LC.MJD<(str2num(handles.TransientEnd.String)+20),:);
+    Tab = SNdata.bands{iband}.LC(SNdata.bands{iband}.LC.MJD<(str2num(handles.TransientEnd.String)+20),:);
     bandData = table;
     bandData.time = Tab.MJD;
     bandData.flux = Tab.flux;
@@ -1877,19 +1904,37 @@ end
 clear bandData Tab
 
 epochFilter = handles.SOPRANOS.UserData.data.bands{handles.BandNumber.Value}.filterObj;
-[Rbb,Tbb,epochs,sigmaRbb,sigmaTbb,chi2]=photoFit(data,'epochFam',epochFilter.family,'epochBand',epochFilter.band,'redshift',SNdata.redshift,'Ebv',Ebv);
+%[Rbb,Tbb,epochs,sigmaRbb,sigmaTbb,chi2]=photoFit(data,'epochFam',epochFilter.family,'epochBand',epochFilter.band,'redshift',SNdata.redshift,'Ebv',Ebv);
+[Rbb,Tbb,epochs,sigmaRbbp,sigmaRbbm,sigmaTbbp,sigmaTbbm,chi2,dof,reject, ext, extSigma, extChi2, extDof, extValid, bands]=...
+    photoFit(data,'epochFam',epochFilter.family,'epochBand',epochFilter.band,'redshift',SNdata.redshift,'Ebv',Ebv,'BBplot',true);
 
 % Time = (max(0.1,fitResult.time(1)-0.25):0.1:fitResult.time(end))-t0;
-Time = (max(0.1,epochs(1)-0.25):0.1:epochs(end))-t0;
-[~,Tc,~,~,~,t_min,~,~,~,~,R_BO]=AstroUtil.supernova.sn_cooling_sw(Time,'Model',model,'Type',prog,'Rs',Rs,'Vs',Vs,'Ms',Ms,'f_rho',frho,'redshift',z);
-t_min = t0+t_min*(1+z);
+[~,~,~,~,~,t_min,t_max,t_opac]=AstroUtil.supernova.sn_cooling_sw(1,'Model',model,'Type',prog,'Rs',Rs,'Vs',Vs,'Ms',Ms,'f_rho',frho,'redshift',z);
+Time = linspace(t_min,min(t_max,t_opac),50)*(1+z);
+[~,Tc,R,~,~,~,~,~,~,~,R_BO]=AstroUtil.supernova.sn_cooling_sw(Time,'Model',model,'Type',prog,'Rs',Rs,'Vs',Vs,'Ms',Ms,'f_rho',frho,'redshift',z);
+if epochs(1)<(t0+t_min)
+    TimeBO = linspace(epochs(1)-t0-0.25,t_min*(1+z),50);
+    [~,TcBO,~,~,~,~,~,~,~,~,R_BO]=AstroUtil.supernova.sn_cooling_sw(TimeBO,'Model',model,'Type',prog,'Rs',Rs,'Vs',Vs,'Ms',Ms,'f_rho',frho,'redshift',z);
+    BO = true;
+else
+    BO = false;
+end
 
 figure;
 % errorbar(fitResult.time,fitResult.Rbb,fitResult.sigmaRbb,'o');
-errorbar(epochs,Rbb,sigmaRbb,'o');
+%errorbar(epochs,Rbb,sigmaRbb,'o');
+err=errorbar(epochs(~reject),Rbb(~reject),sigmaRbbm(~reject),sigmaRbbp(~reject),'ko');
+err.MarkerFaceColor=err.MarkerEdgeColor;
 hold on
-plot(t0+Time,R_BO);
-plot([t_min t_min], ylim, 'k--');
+if any(reject)
+    rej=errorbar(epochs(reject),Rbb(reject),sigmaRbbm(reject),sigmaRbbp(reject),'ko');
+    rej.Color=err.Color;
+end
+xl=xlim;xl(1)=xl(1)-1;xlim(xl);
+plot(t0+Time,R,'k-');
+if BO
+    plot(t0+TimeBO,R_BO,'k--');
+end
 ylabel('Effective R_{BB} [cm]');
 xlabel('MJD [days]');
 ax=gca;
@@ -1897,15 +1942,45 @@ ax.XAxis.Exponent=0;
 
 figure;
 % errorbar(fitResult.time,fitResult.Tbb,fitResult.sigmaTbb,'o');
-errorbar(epochs,Tbb,sigmaTbb,'o');
+%errorbar(epochs,Tbb,sigmaTbb,'o');
+err=errorbar(epochs(~reject),Tbb(~reject),sigmaTbbm(~reject),sigmaTbbp(~reject),'ko');
+err.MarkerFaceColor=err.MarkerEdgeColor;
 hold on
-plot(t0+Time,convert.energy('T','eV',Tc));
+if any(reject)
+    rej=errorbar(epochs(reject),Tbb(reject),sigmaTbbm(reject),sigmaTbbp(reject),'ko');
+    rej.Color=err.Color;
+end
+xl=xlim;xl(1)=xl(1)-1;xlim(xl);
+plot(t0+Time,convert.energy('T','eV',Tc),'k-');
+if BO
+    plot(t0+TimeBO,convert.energy('T','eV',TcBO),'k--');
+end
 xlabel('MJD [days]');
 ax=gca;
 ax.XAxis.Exponent=0;
 ax.YScale = 'log';
-plot([t_min t_min], ylim, 'k--');ylabel('T_{Col,BB} [eV]');
+ylabel('T_{Col,BB} [eV]');
 
+fprintf('MJD   & $\\chi^2/dof$ & $\\alpha$ & $R_{BB} $ & $T_{BB}$ \\\\ \n');
+fprintf('$[\\rm days]$&        &          & $[10^{14}\rm cm]$ &[eV] \\\\ \n');
+for iepoch = 1:length(epochs)
+   fprintf('%8.2f & %5.2f/%1d & %4.2f & %4.2f\\pm %4.2f & %3.1f\\pm %4.2f \\\\ \n',...
+       epochs(iepoch), chi2(iepoch), dof, 1-chi2cdf(chi2(iepoch), dof), ...
+       Rbb(iepoch)/1e14, sigmaRbbp(iepoch)/1e14, ...
+       Tbb(iepoch), sigmaTbbp(iepoch));
+end
+
+extMag  = -2.5*log10(ext);
+extMagS = abs(2.5/log(10)*extSigma./ext);
+
+fprintf('\n');
+fprintf('band & A               &  $\\chi^2/dof \\\\ \n');
+for iband=1:height(bands)
+%     fprintf('%4s & $%4.2f\\pm %4.2f$ & %4.2f/%1d \\\\ \n',...
+%         bands.band(iband), ext(iband), extSigma(iband), extChi2(iband), extDof(iband));
+    fprintf('%4s & $%4.2f\\pm %4.2f$ & %4.2f/%1d \\\\ \n',...
+        bands.band(iband), extMag(iband), extMagS(iband), extChi2(iband), extDof(iband));
+end
 
 % --- Executes on button press in GridRbbFilter.
 function GridRbbFilter_Callback(hObject, eventdata, handles)
