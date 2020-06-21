@@ -85,14 +85,18 @@ classdef FITS
                            PosAp = strfind(Value,'''');
 
                            if (isempty(PosAp))
-                                % possible number
-                                Value = str2double(Value);
+                               if contains('TF',upper(strtrim(Value)))
+                                   % a boolean
+                                   Value=upper(strtrim(Value))=='T';
+                               else
+                                   % possible number
+                                   Value = str2double(Value);
+                               end
                            else
                                if (length(PosAp)>=2)
                                    % a string
                                    Value = Value(PosAp(1)+1:PosAp(2)-1);
                                else
-
                                    Value = Card(PosAp(1)+10:end);
                                end
                            end
