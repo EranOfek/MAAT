@@ -23,9 +23,9 @@ DEG_ARCSEC = 3600;
 
 SR_2_Deg2  = RAD.^2;  % conversion factor: sterradian to deg^2
 
-if (nargin==2),
+if (nargin==2)
    Units = 'sr';
-elseif (nargin==3),
+elseif (nargin==3)
    % do nothing
 else
    error('Illegal number of input arguments');

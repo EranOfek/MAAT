@@ -145,7 +145,7 @@ DefV.ScatL        = 0.0;  %0.01;
 DefV.AM           = 1.3;
 DefV.AtmExtFile   = 'KPNO_atmospheric_extinction.dat';  % atmospheric extinction file
 %--- Photometry ---
-DefV.PhotRad      = 60; %(0.2:0.2:500);  % ["] radius of photometry aperture
+DefV.PhotRad      = 2; %(0.2:0.2:100);  % ["] radius of photometry aperture
 %DefV.Annulus      = [20 50];      % ["] Inner and outer Background annulus radius
 %DefV.FFerr        = 0.005;        % Flat Field relative error.
 
