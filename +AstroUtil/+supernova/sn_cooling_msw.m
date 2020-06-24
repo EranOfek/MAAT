@@ -55,7 +55,11 @@ function [L,Tc,R,t_d,Mag,t_min,t_max,model_times]=sn_cooling_msw(Time,varargin)
 %                            observer frame.  
 %          - t_max [days]  - the latest time the dynamical model is valid
 %                            given in observer frame. 
-%          - model_times   - the model internal times
+%          - model_times   - a structure contanis the model internal times
+%                            (given in the SN frame):
+%               - t_min [days] - the time the progenitor envelope has
+%                            expanded enough and RW and SW models becomes
+%                            valid.
 %               - t_opac [days] - the time T_ph = 0.7eV and the constant
 %                            opacity approximation breaks. The time is
 %                            given in rest frame.
@@ -67,6 +71,9 @@ function [L,Tc,R,t_d,Mag,t_min,t_max,model_times]=sn_cooling_msw(Time,varargin)
 %                            emmision becomes dependent in the envelope
 %                            density profile. 
 %                            The time is given in rest frame.
+%               - t_min_sw [days] - The time the breakout is well described
+%                            by its assymptotic behaviour and MSW becomws
+%                            valid.
 %
 % Comment: The funtion support calculation for multiple cases in one call. 
 %          Input parameters on the same dimension are considered as a set
@@ -197,7 +204,7 @@ switch lower(InPar.Type)
         model_times.t_min_MSW = 17./1440.*(InPar.Rs.*SolR./1e13); % [days]
 
         if strcmpi(InPar.Model,'MSW')
-            t_min = model_times.t_min_MSW;
+            t_min = (1+InPar.redshift).*model_times.t_min_MSW;
         else %RW or SW
             t_min = (1+InPar.redshift).*model_time.t_min;
         end
