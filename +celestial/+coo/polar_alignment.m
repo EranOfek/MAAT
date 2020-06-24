@@ -64,7 +64,7 @@ if nargin==0
 end
 
     
-D_Beta  = [0.1:0.01:2]'./RAD;
+D_Beta  = [0.0:0.01:2]'./RAD;
 D_Psi   = [-180:2:180]'./RAD;
 Nbeta   = numel(D_Beta);
 Npsi    = numel(D_Psi);
@@ -77,7 +77,7 @@ for Ibeta=1:1:Nbeta
     end
 end
 
-%Plot = true
+Plot = true
 if Plot
     surface(D_Psi.*RAD,D_Beta.*RAD,RMS);
     colorbar

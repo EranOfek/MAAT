@@ -85,41 +85,44 @@ classdef FITS
                            PosAp = strfind(Value,'''');
 
                            if (isempty(PosAp))
-                                % possible number
-                                Value = str2double(Value);
+                               if contains('TF',upper(strtrim(Value)))
+                                   % a boolean
+                                   Value=upper(strtrim(Value))=='T';
+                               else
+                                   % possible number
+                                   Value = str2double(Value);
+                               end
                            else
                                if (length(PosAp)>=2)
                                    % a string
-                                   Value = Value(PosAp(1)+1:PosAp(2)-1);
+                                   Value = strtrim(Value(PosAp(1)+1:PosAp(2)-1));
                                else
-
                                    Value = Card(PosAp(1)+10:end);
                                end
                            end
 
                            HeadCell{Ikey,2}  = Value; %Card(KeyPos+1:min(LenCard,ComPos-1));
                            if (LenCard>UpdatedComPos)
-
                                HeadCell{Ikey,3}  = Card(UpdatedComPos+1:end);    
                            else
                                HeadCell{Ikey,3}  = '';
                            end
 
-                       else
-
-                           % look for history and comment keywords
-                           if (strcmpi(Card(1:7),'HISTORY'))
-                               HeadCell{Ikey,1} = 'HISTORY';
-                               HeadCell{Ikey,2} = Card(KeyPos:end);
-                               HeadCell{Ikey,3} = '';
-                           end
-                           if (strcmpi(Card(1:7),'COMMENT'))
-                               HeadCell{Ikey,1} = 'COMMENT';
-                               HeadCell{Ikey,2} = Card(KeyPos:end);
-                               HeadCell{Ikey,3} = '';
-                           end
                        end
                    end
+                   
+                   % look for history and comment keywords
+                   if (strcmpi(Card(1:7),'HISTORY'))
+                       HeadCell{Ikey,1} = 'HISTORY';
+                       HeadCell{Ikey,2} = Card(KeyPos:end);
+                       HeadCell{Ikey,3} = '';
+                   end
+                   if (strcmpi(Card(1:7),'COMMENT'))
+                       HeadCell{Ikey,1} = 'COMMENT';
+                       HeadCell{Ikey,2} = Card(KeyPos:end);
+                       HeadCell{Ikey,3} = '';
+                   end
+                   
                 end
             end
             

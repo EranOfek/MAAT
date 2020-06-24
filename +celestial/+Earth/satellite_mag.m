@@ -35,4 +35,43 @@ Res.Mag = InPar.SunAbsMag - 2.5.*log10(InPar.Area ./ (4.*pi.*(InPar.Dist.* 1e5)^
 K = celestial.Kepler.kepler3law(constant.EarthM,'a',constant.EarthR+InPar.Dist.*1e5);
 Res.AngV = K.v./(InPar.Dist.*1e5).*RAD.*3600;  % ''/s
 
-Res.MagResEl = Res.Mag + 2.5.*log10(Res.AngV);
+Res.MagResEl = Res.Mag + 2.5.*log10(Res.AngV./InPar.FWHM);
+
+
+%%
+if 1==0
+    FWHM = 3;
+    Ntelescope = 30;
+    % plots
+    DistV=logspace(log10(300),log10(40000),10)';
+    Nd   = numel(DistV);
+    for Id=1:1:Nd
+        Res=celestial.Earth.satellite_mag('Area',1,'Dist',DistV(Id));
+        %Res.Mag
+        
+        [SN,Op]=telescope.sn.sn_calc('SN',7,'Aper',27,'FocalLength',62,'FWHM',FWHM,'ExpTime',15,'PixSize',3.67,'RN',8);
+        AreaStreak(Id) = 10.^(0.4.*(Res.MagResEl - SN.Mag));
+        
+        ExpTimeStationary = FWHM./Res.AngV;
+        [SN,Op]=telescope.sn.sn_calc('SN',5,'Aper',27,'FocalLength',62,'FWHM',FWHM,'ExpTime',ExpTimeStationary,'PixSize',3.67,'RN',8);
+        AreaPoint(Id) = 10.^(0.4.*(Res.Mag - SN.Mag));
+    end
+    
+    loglog(DistV,sqrt(AreaStreak),'k-','LineWidth',2)    
+    hold on
+    loglog(DistV,sqrt(AreaStreak./Ntelescope),'k--','LineWidth',2)    
+    
+    loglog(DistV,sqrt(AreaPoint),'-','Color',[0.8 0.8 0.8],'LineWidth',2) 
+    loglog(DistV,sqrt(AreaPoint./Ntelescope),'--','Color',[0.8 0.8 0.8],'LineWidth',2) 
+    legend('Streak detection','Sreak x 30 tel','Point detection','Point x 30 tel','Location','SouthEast');
+    axis([300 40000 1 3e2]);
+    H=xlabel('Distance [km]');
+    H.FontSize=18;
+    H.Interpreter = 'latex';
+    H=ylabel('Size [cm]');
+    H.FontSize=18;
+    H.Interpreter = 'latex';
+    
+end
+    
+
