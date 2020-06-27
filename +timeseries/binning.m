@@ -130,8 +130,10 @@ for Ibin=1:1:Nbin
         else
             % Col is a function handle
             switch lower(func2str(OutCol{Icol}))
-                case {'wmean','wmedian'}
+                case {'util.stat.wmean','util.stat.wmedian'}
                     Res(Ibin,Icol) = OutCol{Icol}(Data(Flag,Col.Y), Data(Flag,Col.E));
+                case {'werr', 'wmeanerr'} 
+                    [~,Res(Ibin,Icol)] = Util.stat.wmean(Data(Flag,Col.Y), Data(Flag,Col.E));
                 otherwise
                     Res(Ibin,Icol) = OutCol{Icol}(Data(Flag,Col.Y));
             end
