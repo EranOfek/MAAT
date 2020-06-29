@@ -81,22 +81,37 @@ function [PDF, chi2, dof, chi2bands, pntsbands, transbands] = ...
                 trans = (t>=transient(1)&t<=transient(2));
                 t = t-t0;
 
-                [~, ~, ~, ~, ~, t_min, t_max, t_opac,~,t_delta] = ...
-                    AstroUtil.supernova.sn_cooling_sw(1, 'Type', ProgType, 'Vs', Vs, 'Rs', Rs, ...
-                    'Ms', VecMs(iMs), 'f_rho',VecFrho(iFrho), 'redshift', redshift, 'model',model);
-                valid = [];
-                if strcmpi(model,'sw')
-                    valid = (t >= t_min.*(1+redshift)) & (t <= min(t_max,t_opac).*(1+redshift));
-                elseif strcmpi(model,'rw')
-                    valid = (t >= t_min.*(1+redshift)) & (t <= min(t_delta,t_opac).*(1+redshift));
-                else
-                    error('unknown model %s',model);
+                switch model
+                    case {'sw','rw'}
+                        [~, ~, ~, ~, ~, t_min, t_max, t_opac,~,t_delta] = ...
+                            AstroUtil.supernova.sn_cooling_sw(1, 'Type', ProgType, 'Vs', Vs, 'Rs', Rs, ...
+                            'Ms', VecMs(iMs), 'f_rho',VecFrho(iFrho), 'redshift', redshift, 'model',model);
+                        valid = [];
+                        if strcmpi(model,'sw')
+                            valid = (t >= t_min.*(1+redshift)) & (t <= min(t_max,t_opac).*(1+redshift));
+                        elseif strcmpi(model,'rw')
+                            valid = (t >= t_min.*(1+redshift)) & (t <= min(t_delta,t_opac).*(1+redshift));
+                        else
+                            error('unknown model %s',model);
+                        end
+                    case 'msw'
+                        [~, ~, ~, ~, ~, t_min, t_max] = ...
+                            AstroUtil.supernova.sn_cooling_msw(1, 'Type', ProgType, 'Vs', Vs, 'Rs', Rs, ...
+                            'Ms', VecMs(iMs), 'f_rho',VecFrho(iFrho), 'redshift', redshift, 'model',model);
+                        valid = (t>=t_min) & (t<=t_max);
                 end
                 
                if any(valid(:))
-                   [~,~,~,~, Mag] = AstroUtil.supernova.sn_cooling_sw(t(valid), 'Type', ProgType, 'Vs', Vs, 'Rs', Rs, ...
-                                   'Ms', VecMs(iMs),  'f_rho', VecFrho(iFrho), 'Ebv', shiftdim(VecEbv,-2),'redshift', redshift, ...
-                                   'FiltFam', c.Value{iband}.filterObj,'model',model);
+                   switch model
+                       case {'sw','rw'}
+                           [~,~,~,~, Mag] = AstroUtil.supernova.sn_cooling_sw(t(valid), 'Type', ProgType, 'Vs', Vs, 'Rs', Rs, ...
+                                           'Ms', VecMs(iMs),  'f_rho', VecFrho(iFrho), 'Ebv', shiftdim(VecEbv,-2),'redshift', redshift, ...
+                                           'FiltFam', c.Value{iband}.filterObj,'model',model);
+                       case 'msw'
+                           [~,~,~,~, Mag] = AstroUtil.supernova.sn_cooling_msw(t(valid), 'Type', ProgType, 'Vs', Vs, 'Rs', Rs, ...
+                                           'Ms', VecMs(iMs),  'f_rho', VecFrho(iFrho), 'Ebv', shiftdim(VecEbv,-2),'redshift', redshift, ...
+                                           'FiltFam', c.Value{iband}.filterObj,'model',model);
+                   end
                    F = zeros([size(t), length(VecEbv)]);
                    F(valid&shiftdim(VecEbv==VecEbv,-2))=convert.flux(Mag,'AB','cgs/A', c.Value{iband}.filterObj.pivot_wl_photon, 'A');
                    chi2(:,i,:) = squeeze(sum(valid.*((LC.flux - bg(iband) - F)./LC.fluxerr).^2,1));
