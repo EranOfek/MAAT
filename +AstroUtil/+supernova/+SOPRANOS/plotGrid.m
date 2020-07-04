@@ -262,9 +262,9 @@ end
 if ~exist(results_fname,'file')
     save fmax_input filename Vs_peaks Rs_peaks bg results_fname mintpoints
     if isunix
-        !screen -dmS findMaximum nice -n 19 matlab -nodisplay -nosplash -nodesktop -r "load('fmax_input.mat');[Vs, Rs, Ms, Ebv, Rv,  Vect0, PDFt0, t0, chi2values] = AstroUtil.supernova.SOPRANOS.findMaximum(filename,Vs_peaks,Rs_peaks,bg,mintpoints);save(results_fname, 'Vs', 'Rs', 'Ms', 'Ebv', 'Rv', 'Vect0', 'PDFt0', 't0', 'chi2values');exit" &
+        !screen -dmS findMaximum nice -n 19 matlab -nodisplay -nosplash -nodesktop -r "load('fmax_input.mat');[Vs, Rs, Ms, Ebv, Rv,  Vect0, PDFt0, t0, chi2values] = AstroUtil.supernova.SOPRANOS.findMaximum(filename,Vs_peaks,Rs_peaks,bg,mintpoints);save(results_fname, 'Vs', 'Rs', 'Ms', 'Ebv', 'Rv', 'Vect0', 'PDFt0', 't0', 'chi2values');exit" -logfile findMaximum.log &
     elseif ispc
-        !start /BELOWNORMAL matlab -nosplash -nodesktop -minimize -r "load('fmax_input.mat');[Vs, Rs, Ms, Ebv, Rv,  Vect0, PDFt0, t0, chi2values] = AstroUtil.supernova.SOPRANOS.findMaximum(filename,Vs_peaks,Rs_peaks,bg,mintpoints);save(results_fname, 'Vs', 'Rs', 'Ms', 'Ebv', 'Rv', 'Vect0', 'PDFt0', 't0', 'chi2values');exit" -logfile "calcGrid.log"
+        !start /BELOWNORMAL matlab -nosplash -nodesktop -minimize -r "load('fmax_input.mat');[Vs, Rs, Ms, Ebv, Rv,  Vect0, PDFt0, t0, chi2values] = AstroUtil.supernova.SOPRANOS.findMaximum(filename,Vs_peaks,Rs_peaks,bg,mintpoints);save(results_fname, 'Vs', 'Rs', 'Ms', 'Ebv', 'Rv', 'Vect0', 'PDFt0', 't0', 'chi2values');exit" -logfile "findMaximum.log"
     end
     return
 else
