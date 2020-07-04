@@ -1125,7 +1125,7 @@ save grid grid
 
 Save_Callback(handles.Save, eventdata, handles);
 if isunix
-    !screen -dmS grid nice -n 19 matlab -nodisplay -nosplash -nodesktop -r "load('grid.mat');AstroUtil.supernova.SOPRANOS.prepare_LCs(grid.sn_name,grid.model,grid.Vs.vec*10^8.5,grid.Rs.vec,grid.Ms.vec,grid.frho.vec,grid.Ebv.vec,grid.prog);AstroUtil.supernova.SOPRANOS.calcGrid(grid.sn_name, grid.t0.vec, grid.model, 0, grid.BGbands, grid.BG);exit" &
+    !screen -dmS grid nice -n 19 matlab -nodisplay -nosplash -nodesktop -r "load('grid.mat');AstroUtil.supernova.SOPRANOS.prepare_LCs(grid.sn_name,grid.model,grid.Vs.vec*10^8.5,grid.Rs.vec,grid.Ms.vec,grid.frho.vec,grid.Ebv.vec,grid.prog);AstroUtil.supernova.SOPRANOS.calcGrid(grid.sn_name, grid.t0.vec, grid.model, 0, grid.BGbands, grid.BG);exit" -logfile calcGrid.log &
 elseif ispc
     !start /BELOWNORMAL matlab -nosplash -nodesktop -minimize -r "load('grid.mat');AstroUtil.supernova.SOPRANOS.prepare_LCs(grid.sn_name,grid.model,grid.Vs.vec*10^8.5,grid.Rs.vec,grid.Ms.vec,grid.frho.vec,grid.Ebv.vec,grid.prog);AstroUtil.supernova.SOPRANOS.calcGrid(grid.sn_name, grid.t0.vec, grid.model, 0, grid.BGbands, grid.BG);exit" -logfile "calcGrid.log"
 end
