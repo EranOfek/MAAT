@@ -29,9 +29,9 @@ elseif isempty(peakNumber)
 end
 gridfile = matfile(filename);
 nparams = length(gridfile.BGbands)+6;
-try
-    PDFmap = chi2pdf(double(gridfile.chi2),double(gridfile.points)-nparams.*ones(size(gridfile.chi2)));
-catch
+% try
+%     PDFmap = chi2pdf(double(gridfile.chi2),double(gridfile.points)-nparams.*ones(size(gridfile.chi2)));
+% catch
     PDFmap = zeros(size(gridfile.chi2));
     for i1=1:size(PDFmap,1)
         chi2 = double(gridfile.chi2(i1,:,:,:,:,:));
@@ -39,7 +39,7 @@ catch
         PDFmap(i1,:,:,:,:,:)= chi2pdf(chi2,dof);
     end
     clear chi2 dof
-end
+% end
 if nargin==1
     mintpoints = zeros(size(gridfile.NTransient));
 end
