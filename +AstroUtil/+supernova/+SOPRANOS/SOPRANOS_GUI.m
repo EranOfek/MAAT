@@ -958,7 +958,8 @@ function Clear_Callback(hObject, eventdata, handles)
 if ~isempty(handles.Plot.UserData)
     for iband = 1:length(handles.Plot.UserData.plots)
         delete(handles.Plot.UserData.plots(iband));
-        if exist('handles.Plot.UserData.bg','var')&&~isempty(handles.Plot.UserData.bg(iband))
+%        if exist('handles.Plot.UserData.bg','var')&&~isempty(handles.Plot.UserData.bg(iband))
+        if sum(strcmp(fieldnames(handles.Plot.UserData), 'bg'))==1 && ~isempty(handles.Plot.UserData.bg(iband))
             delete(handles.Plot.UserData.bg(iband));
         end
     end
