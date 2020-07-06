@@ -42,7 +42,6 @@ LST = LST.*2.*pi;  % [rad]
 
 % calc HA
 HA = LST - RA;  % [rad]
-HA = 
 % calc Az/Alt
 % do we need to convert RA/Dec to equinox of date?
 AzAlt = celestial.coo.horiz_coo([RA, Dec],JD,[InPar.Lon, InPar.Lat],'h');
