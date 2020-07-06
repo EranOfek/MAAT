@@ -112,15 +112,17 @@ classdef FITS
                    end
                    
                    % look for history and comment keywords
-                   if (strcmpi(Card(1:7),'HISTORY'))
-                       HeadCell{Ikey,1} = 'HISTORY';
-                       HeadCell{Ikey,2} = Card(KeyPos:end);
-                       HeadCell{Ikey,3} = '';
-                   end
-                   if (strcmpi(Card(1:7),'COMMENT'))
-                       HeadCell{Ikey,1} = 'COMMENT';
-                       HeadCell{Ikey,2} = Card(KeyPos:end);
-                       HeadCell{Ikey,3} = '';
+                   if numel(Card)>6
+                       if (strcmpi(Card(1:7),'HISTORY'))
+                           HeadCell{Ikey,1} = 'HISTORY';
+                           HeadCell{Ikey,2} = Card(KeyPos:end);
+                           HeadCell{Ikey,3} = '';
+                       end
+                       if (strcmpi(Card(1:7),'COMMENT'))
+                           HeadCell{Ikey,1} = 'COMMENT';
+                           HeadCell{Ikey,2} = Card(KeyPos:end);
+                           HeadCell{Ikey,3} = '';
+                       end
                    end
                    
                 end
