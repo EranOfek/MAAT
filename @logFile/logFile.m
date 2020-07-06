@@ -1,3 +1,4 @@
+
 % A logFile class to handle log files
 % Package: @logFile
 % Description: 
@@ -123,7 +124,7 @@ classdef logFile < handle
     
     % getters/setters
     methods
-        function H=set.logOwner(H,logOwenerString)
+        function H=set.logOwner(H,logOwnerString)
             % setter for logOwner - update FileName
             % Package: @logFile
             % Input  : - logOwnerString
