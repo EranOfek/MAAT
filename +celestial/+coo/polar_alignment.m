@@ -81,7 +81,16 @@ Plot = true
 if Plot
     surface(D_Psi.*RAD,D_Beta.*RAD,RMS);
     colorbar
+    shading interp;
+    box on;
+    H=xlabel('$\psi$ [deg]');
+    H.FontSize = 18;
+    H.Interpreter = 'latex';
+    H=ylabel('$\beta$ [deg]');
+    H.FontSize = 18;
+    H.Interpreter = 'latex';
 end
+
 [Min,MinI]=Util.stat.minnd(RMS);
 Res.BestBeta = D_Beta(MinI(1));
 Res.BestPsi  = D_Psi(MinI(2));
