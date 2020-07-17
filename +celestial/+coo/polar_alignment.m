@@ -1,11 +1,16 @@
-function [Res]=polar_alignment(Meas_H,Meas_D,Measured_Dt_dt,Phi,Plot)
+function [Res]=polar_alignment(Meas_H,Meas_D,Measured_Dt_dt,Measured_Rt_dt,Phi,Plot,UseOnlyDec)
 % Calculate the RA/Dec drift due to equatorial polar alignemnt error.
 % Package: celestial
-% Description: 
+% Description: Given a set of Declination-drift observations over several
+%              hour angle and declinations, calculate the deviation of the
+%              polar mount from the true North celestial pole.
 % Input  : - Vector of HA of targets [rad].
 %          - Vector Dec of targets [rad].
 %          - Vector of measured Declination drifts ["/s].
+%          - Vector of measured Right Asecnsion drifts ["/s].
 %          - True altitude of NCP (Geodetic latitude of observer) [rad].
+%          - Plot rms vs. beta and psi. Default is false.
+%          - UseOnlyDec. Default is false.
 % Output : - Structure of results.
 %            .BestAlt - Alt shift in [deg] needed to fix polar alignment.
 %                   Positive upward.
@@ -22,8 +27,13 @@ function [Res]=polar_alignment(Meas_H,Meas_D,Measured_Dt_dt,Phi,Plot)
 % Reliable: 
 %--------------------------------------------------------------------------
 
-if nargout<5
-    Plot = false;
+
+
+if nargout<7
+    UseOnlyDec = false;
+    if nargout<6
+        Plot = false;
+    end
 end
 
 RAD = 180./pi;
@@ -48,9 +58,9 @@ if nargin==0
     [MatH,MatD] = meshgrid(VecHA./RAD,VecDec./RAD);
     Phi = 32./RAD;
     Psi = -100./RAD;
-    Beta = 0.55./RAD;
+    Beta = 1.2./RAD;
 
-    [dHt_dt,dDt_dt,Ht,Dt]=celestial.coo.polar_alignment_drift(MatH,MatD,Phi,Psi,Beta);
+    [dHt_dt,dDt_dt,dRt_dt,Ht,Dt]=celestial.coo.polar_alignment_drift(MatH,MatD,Phi,Psi,Beta);
     %Drift = sqrt(dRt_dt.^2 + dDt_dt.^2);
     %surface(VecHA,VecDec,dDt_dt)
 
@@ -60,6 +70,9 @@ if nargin==0
     Meas_D = 0.*ones(size(Meas_H));
     Measured_Dt_dt = interp2(VecHA,VecDec,dDt_dt,Meas_H,Meas_D);
     Measured_Dt_dt = Measured_Dt_dt +randn(size(Measured_Dt_dt)).*Measured_Dt_dt.*RelNoise;
+    
+    Measured_Rt_dt = interp2(VecHA,VecDec,dRt_dt,Meas_H,Meas_D);
+    Measured_Rt_dt = Measured_Rt_dt +randn(size(Measured_Rt_dt)).*Measured_Rt_dt.*RelNoise;
 
 end
 
@@ -71,10 +84,16 @@ Npsi    = numel(D_Psi);
 RMS     = zeros(Nbeta,Npsi);
 for Ibeta=1:1:Nbeta
     for Ipsi=1:1:Npsi
-        [~,Pred_dDt_dt]=celestial.coo.polar_alignment_drift(Meas_H./RAD,Meas_D./RAD,Phi,D_Psi(Ipsi),D_Beta(Ibeta));
+        [~,Pred_dDt_dt,Pred_dRt_dt]=celestial.coo.polar_alignment_drift(Meas_H./RAD,Meas_D./RAD,Phi,D_Psi(Ipsi),D_Beta(Ibeta));
         
-        RMS(Ibeta,Ipsi) = std(Measured_Dt_dt - Pred_dDt_dt);
+        RMSd(Ibeta,Ipsi) = std(Measured_Dt_dt - Pred_dDt_dt);
+        RMSr(Ibeta,Ipsi) = nanstd(Measured_Rt_dt - Pred_dRt_dt);
     end
+end
+if UseOnlyDec
+    RMS = RMSd;
+else
+    RMS = sqrt(RMSd.^2 + RMSr.^2);
 end
 
 Plot = true

@@ -1,4 +1,4 @@
-function [dHt_dt,dDt_dt,Ht,Dt]=polar_alignment_drift(H,D,Phi,Psi,Beta)
+function [dHt_dt,dDt_dt,dRt_dt,Ht,Dt]=polar_alignment_drift(H,D,Phi,Psi,Beta)
 % Calculate the RA/Dec drift due to equatorial polar alignemnt error.
 % Package: celestial
 % Description: 
@@ -7,14 +7,15 @@ function [dHt_dt,dDt_dt,Ht,Dt]=polar_alignment_drift(H,D,Phi,Psi,Beta)
 %          - True altitude of NCP (Geodetic latitude of observer) [rad].
 %          - HA of telescope pole [rad] 
 %          - Distance between NCP and equaltorial pole [rad]
-% Output : - Tracking error in RA ["/s]
+% Output : - Tracking error in HA ["/s]
 %          - Tracing error in Dec ["/s]
+%          - Tracking error in RA ["/s]
 %          - HA of telescope [rad]
 %          - Dec of telescope [rad]
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    May 2020
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: [dHt_dt,dDt_dt]=celestial.coo.polar_alignment_drift(1,0,1,0,32./RAD,0./RAD,1./RAD)
+% Example: [dHt_dt,dDt_dt]=celestial.coo.polar_alignment_drift(1,0,32./RAD,45./RAD,1./RAD)
 % Reliable: 
 %--------------------------------------------------------------------------
 
@@ -67,10 +68,19 @@ gamma = acos( (cos(Beta) - sin(Phi).*sin(Phit))./(cos(Phi).*cos(Phit)) );
 
 
 % note that there is an error in the last term of Equation 4 in Markworth
-dHt_dt = dH_dt .* cos(D).*cos(Phi).*sin(H)./(cos(Dt).*cos(Phit).*sin(Ht)) - sec(Dt).^2.*dDt_dt.*cos(Z).*sin(Dt)./(sin(Ht).*cos(Phit)) + ...
-         dDt_dt.*tan(Phit)./(cos(Dt).^2 .* sin(Ht));
+%dHt_dt = dH_dt .* cos(D).*cos(Phi).*sin(H)./(cos(Dt).*cos(Phit).*sin(Ht)) - dDt_dt.*cos(Z).*tan(Dt)./(sin(Ht).*cos(Phit).*cos(Dt)) + ...
+%         dDt_dt.*tan(Phit)./(cos(Dt).^2 .* sin(Ht));
+
+% This is incorrect for H=0 and will return NaN
+
+Denom = sin(H).*cos(Dt).*cos(Phi).^2;
+dHt_dt = (cos(Phi).*cos(Phit).*cos(D).*cos(Dt).*sin(H).*dH_dt + ...
+         sin(Phit).*cos(Phit).*dDt_dt - ...
+         cos(Z).*cos(Phit).*sin(Dt).*dDt_dt)./Denom;
+     
+
 
      
 dDt_dt = dDt_dt.*3600.*RAD;
 dHt_dt = dHt_dt.*3600.*RAD;
-dRt_dt = (dHt_dt - dH_dt).*3600.*RAD;
+dRt_dt = dHt_dt - dH_dt.*3600.*RAD;
