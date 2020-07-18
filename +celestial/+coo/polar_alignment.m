@@ -36,6 +36,7 @@ if nargout<7
     end
 end
 
+
 RAD = 180./pi;
 
 
@@ -53,38 +54,30 @@ RAD = 180./pi;
 
 if nargin==0
     % simulation mode
-    VecHA = (-90:10:90);
-    VecDec = (-20:10:80);
-    [MatH,MatD] = meshgrid(VecHA./RAD,VecDec./RAD);
     Phi = 32./RAD;
-    Psi = -100./RAD;
-    Beta = 1.2./RAD;
-
-    [dHt_dt,dDt_dt,dRt_dt,Ht,Dt]=celestial.coo.polar_alignment_drift(MatH,MatD,Phi,Psi,Beta);
-    %Drift = sqrt(dRt_dt.^2 + dDt_dt.^2);
-    %surface(VecHA,VecDec,dDt_dt)
+    Psi = -150./RAD;
+    Beta = 0.7./RAD;
 
     % simulate measurments with noise
-    RelNoise = 0.01;
-    Meas_H = [-60:30:60]'; %[-75:25:75].'; %[-75:25:75]';
-    Meas_D = 0.*ones(size(Meas_H));
-    Measured_Dt_dt = interp2(VecHA,VecDec,dDt_dt,Meas_H,Meas_D);
-    Measured_Dt_dt = Measured_Dt_dt +randn(size(Measured_Dt_dt)).*Measured_Dt_dt.*RelNoise;
+    AbsNoise = 0.001;   % "/s
+    Meas_H = [-60:30:60]'./RAD; %[-75:25:75].'; %[-75:25:75]';
+    Meas_D = zeros(size(Meas_H))./RAD;
     
-    Measured_Rt_dt = interp2(VecHA,VecDec,dRt_dt,Meas_H,Meas_D);
-    Measured_Rt_dt = Measured_Rt_dt +randn(size(Measured_Rt_dt)).*Measured_Rt_dt.*RelNoise;
-
+    [~,Measured_Dt_dt,Measured_Rt_dt]=celestial.coo.polar_alignment_drift(Meas_H,Meas_D,Phi,Psi,Beta);
+    Measured_Dt_dt = Measured_Dt_dt + AbsNoise.*randn(size(Measured_Dt_dt));
+    MeasuredRDt_dt = Measured_Rt_dt + AbsNoise.*randn(size(Measured_Rt_dt));
+    
 end
 
     
-D_Beta  = [0.0:0.01:2]'./RAD;
+D_Beta  = [0.0:0.01:3]'./RAD;
 D_Psi   = [-180:2:180]'./RAD;
 Nbeta   = numel(D_Beta);
 Npsi    = numel(D_Psi);
 RMS     = zeros(Nbeta,Npsi);
 for Ibeta=1:1:Nbeta
     for Ipsi=1:1:Npsi
-        [~,Pred_dDt_dt,Pred_dRt_dt]=celestial.coo.polar_alignment_drift(Meas_H./RAD,Meas_D./RAD,Phi,D_Psi(Ipsi),D_Beta(Ibeta));
+        [~,Pred_dDt_dt,Pred_dRt_dt]=celestial.coo.polar_alignment_drift(Meas_H,Meas_D,Phi,D_Psi(Ipsi),D_Beta(Ibeta));
         
         RMSd(Ibeta,Ipsi) = std(Measured_Dt_dt - Pred_dDt_dt);
         RMSr(Ibeta,Ipsi) = nanstd(Measured_Rt_dt - Pred_dRt_dt);
