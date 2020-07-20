@@ -68,13 +68,31 @@ SignFlip = 1-2.*SignFlip;
 
 Ht     = abs(Ht).*sign(H).*SignFlip;   % not accurate near the meridian may flip sign
 
+
+Hp = acos((cos(Z) - sin(Phi).*sin(D))./(cos(Phi).*cos(D)));
+
+%Ht = -Ht;
+
 D_dot  = -Ht_dot.* sin(Beta).*cos(Dt).*sin(Psit+Ht)./cos(D);
 
-H_dot  = (Ht_dot.*cos(Dt).*cos(Phit).*sin(Ht) - D_dot.*sin(D).*cos(Phi).*cos(H))./(cos(Phi).*cos(D).*sin(H));
+H_dot  = (Ht_dot.*cos(Dt).*cos(Phit).*sin(Ht) + D_dot.*sin(Phit).*cos(D) - D_dot.*sin(D).*cos(Phi).*cos(H))./(cos(Phi).*cos(D).*sin(H));
+
+%H_dot(H>0) = -H_dot(H>0);
+
+%H_dot  = (Ht_dot.*cos(Dt).*cos(Phit).*sin(Ht) + D_dot.*sin(Phit).*cos(D) - D_dot.*sin(D).*cos(Phi).*cos(-H))./(cos(Phi).*cos(D).*sin(-H));
+
+%H_dot  = (Ht_dot.*cos(Dt).*cos(Phit).*sin(Ht) - D_dot.*sin(D).*cos(Phi).*cos(H))./(cos(Phi).*cos(D).*sin(H));
+
+% plot(H,(Ht_dot.*cos(Dt).*cos(Phit).*sin(Ht) )./(cos(Phi).*cos(D).*sin(H)))
+% hold on;
+% plot(H,(D_dot.*sin(Phit).*cos(D) )./(cos(Phi).*cos(D).*sin(H)))
+% plot(H,( -D_dot.*sin(D).*cos(Phi).*cos(H))./(cos(Phi).*cos(D).*sin(H)))
 
 
 R_dot = -(H_dot - Ht_dot);   % R.A. is measured in opposite direction to H.A.
 
+%D_Dot = -Ht_dot.*sec(D).*cos(pi./2-Beta).*cos(Dt).*sin(Psit);
+R_dot = Ht_dot - D_dot.*(tan(D).*sec(pi./2-Beta).*sin(Dt) - sec(D).*tan(pi./2-Beta)).*sec(D).*csc(Psi-H);
 
 
 if 1==0
