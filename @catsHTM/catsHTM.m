@@ -343,6 +343,7 @@ classdef catsHTM
         
         function Data=catalogs
             % List of catsHTM catalogs
+            % Example: Data = catsHT.catalogs
            
             FileSep = filesep;
             I = 0;
@@ -722,7 +723,7 @@ classdef catsHTM
             Data = catsHTM.catalogs;
             Nd = numel(Data);
             
-            for Id=42:1:43
+            for Id=41:1:41
                 %1:1:Nd
                 if Data(Id).Status
                     Data(Id)
