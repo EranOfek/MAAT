@@ -1,4 +1,4 @@
-function plotGrid(filename,mintpoints,peakNumber,filter)
+function plotGrid(filename,mintpoints,peakNumber,filter,suffix)
 % Plot the likelihood grid calculated by calcGrid
 % Package: AstroUtil.supernove.SOPRANOS
 % Description: Plot the likelihood grid calculated by calcGrid.
@@ -7,67 +7,90 @@ function plotGrid(filename,mintpoints,peakNumber,filter)
 %                 constraint).
 %          - peakNumber for plotting the marginal distribution in case of
 %                 multiple peak solution (default is 1)
-%          - External filter for valid models - a logical table with the
-%                 same size of the grid in the grid file.
+%          - External filter to plot subgrid or to mainpulate the valid
+%            region. The filter is a string contains matlab code which is
+%            executed using eval to change the Vectors which span the grid
+%            or the valid variable which defines the valid grid points.
+%          - suffix for the fMax results file which describes the filter
 % Output : - Figures and text plotted to the command line.
 %               
-% See also: AstroUtil.supernova.SOPRANOS.readZTFtxt
 % Tested : Matlab 9.5
 %     By : Noam Ganot                      Oct 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: AstroUtil.supernova.SOPRANOS.ztfBands.Txt(Tab)
+% Example: AstroUtil.supernova.SOPRANOS.plotGrid('PTF12ffs_msw_grid.mat', [0 1], 1, 'VecEbv=VecEbv(VecEbv<=0.09)');
 % Reliable: 2
 %--------------------------------------------------------------------------
 
-if nargin==2
+if (nargin==2) || (nargin==4 && isempty(peakNumber))
     peakNumber = 1;
 end
-if nargin<4
-    filter=true;
-elseif isempty(peakNumber)
-    peakNumber = 1;
-end
+
 gridfile = matfile(filename);
 nparams = length(gridfile.BGbands)+6;
-% try
-%     PDFmap = chi2pdf(double(gridfile.chi2),double(gridfile.points)-nparams.*ones(size(gridfile.chi2)));
-% catch
-    PDFmap = zeros(size(gridfile.chi2));
-    for i1=1:size(PDFmap,1)
-        chi2 = double(gridfile.chi2(i1,:,:,:,:,:));
-        dof  = double(gridfile.points(i1,:,:,:,:))-nparams.*ones(size(chi2));
-        PDFmap(i1,:,:,:,:,:)= chi2pdf(chi2,dof);
-    end
-    clear chi2 dof
-% end
-if nargin==1
-    mintpoints = zeros(size(gridfile.NTransient));
-end
-valid = cell2mat(gridfile.NTransient(1,1))>=mintpoints(1);
-for iband = 2:length(gridfile.NTransient),valid=valid&cell2mat(gridfile.NTransient(1,iband))>=mintpoints(iband);end
-valid = valid&filter;
-
-valid = valid&(gridfile.points>6);
-PDFmap(~valid)=0;
-
 VecRs   = gridfile.VecRs;
 VecVs   = gridfile.VecVs;
 Vect0   = gridfile.Vect0;
 VecMs   = gridfile.VecMs;
 VecFrho = gridfile.VecFrho;
 VecEbv  = gridfile.VecEbv;
+valid = true;
+
+if (nargin>=4)
+    eval(filter)
+    is_Rs = find(gridfile.VecRs==VecRs(1));
+    ie_Rs = find(gridfile.VecRs==VecRs(end));
+    is_Vs = find(gridfile.VecVs==VecVs(1));
+    ie_Vs = find(gridfile.VecVs==VecVs(end));
+    is_t0 = find(gridfile.Vect0==Vect0(1));
+    ie_t0 = find(gridfile.Vect0==Vect0(end));
+    is_Ms = find(gridfile.VecMs==VecMs(1));
+    ie_Ms = find(gridfile.VecMs==VecMs(end));
+    is_Fr = find(gridfile.VecFrho==VecFrho(1));
+    ie_Fr = find(gridfile.VecFrho==VecFrho(end));
+    is_Eb = find(gridfile.VecEbv==VecEbv(1));
+    ie_Eb = find(gridfile.VecEbv==VecEbv(end));
+   
+else
+    is_Rs = 1; ie_Rs = length(VecRs);
+    is_Vs = 1; ie_Vs = length(VecVs);
+    is_t0 = 1; ie_t0 = length(Vect0);
+    is_Ms = 1; ie_Ms = length(VecMs);
+    is_Fr = 1; ie_Fr = length(VecFrho);
+    is_Eb = 1; ie_Eb = length(VecEbv);
+end
+
+PDFmap = zeros(length(Vect0),length(VecRs),length(VecVs),length(VecMs),length(VecFrho),length(VecEbv));
+valid = valid&true(size(PDFmap));
+for it=is_t0:ie_t0
+    chi2 = double(gridfile.chi2(it,is_Rs:ie_Rs,is_Vs:ie_Vs,is_Ms:ie_Ms,is_Fr:ie_Fr,is_Eb:ie_Eb));
+    dof  = double(gridfile.points(it,is_Rs:ie_Rs,is_Vs:ie_Vs,is_Ms:ie_Ms,is_Fr:ie_Fr,is_Eb:ie_Eb))-nparams.*ones(size(chi2));
+    PDFmap(it-is_t0+1,:,:,:,:,:)= chi2pdf(chi2,dof);
+    valid(it-is_t0+1,:,:,:,:,:)=valid(it-is_t0+1,:,:,:,:,:)&(dof>0);
+end
+clear chi2 dof
+
+if nargin==1
+    mintpoints = zeros(size(gridfile.NTransient));
+end
+NTrans = cell2mat(gridfile.NTransient(1,1));
+valid_minpoints = NTrans(is_t0:ie_t0,is_Rs:ie_Rs,is_Vs:ie_Vs,is_Ms:ie_Ms,is_Fr:ie_Fr)>=mintpoints(1);
+for iband = 2:length(gridfile.NTransient)
+    NTrans = cell2mat(gridfile.NTransient(1,iband));
+    valid_minpoints=valid_minpoints&NTrans(is_t0:ie_t0,is_Rs:ie_Rs,is_Vs:ie_Vs,is_Ms:ie_Ms,is_Fr:ie_Fr)>=mintpoints(iband);
+end
+valid = valid & valid_minpoints;
+clear NTrans valid_minpoints;
+
+PDFmap(~valid)=0;
 
 if length(gridfile.VecFrho)>1
-%    PDF_Rv = squeeze(trapz(gridfile.Vect0,trapz(gridfile.VecMs,trapz(log10(gridfile.VecFrho),trapz(gridfile.VecEbv,PDFmap,6),5),4),1));
     PDF_Rv = squeeze(trapz(Vect0,trapz(VecMs,trapz(log10(VecFrho),trapz(VecEbv,PDFmap,6),5),4),1));
 else
-%    PDF_Rv = squeeze(trapz(gridfile.Vect0,trapz(gridfile.VecMs,trapz(gridfile.VecEbv,PDFmap,6),4),1));
     PDF_Rv = squeeze(trapz(Vect0,trapz(VecMs,trapz(VecEbv,PDFmap,6),4),1));
 end
 
 valid_Rv = squeeze(any(any(any(any(valid,6),5),4),1));
-% [hPDF,Vs,Rs,iVs,iRs]=plotPDF(PDF_Rv, valid_Rv, gridfile.VecVs, gridfile.VecRs);
-% [hCDF,~,~,SigmaVs,SigmaRs,VsPDF,RsPDF] = plotCDF(PDF_Rv, valid_Rv, gridfile.VecVs, gridfile.VecRs);
+
 [hPDF,Vs,Rs,iVs,iRs]=plotPDF(PDF_Rv, valid_Rv, VecVs, VecRs);
 [hCDF,~,~,SigmaVs,SigmaRs,VsPDF,RsPDF] = plotCDF(PDF_Rv, valid_Rv, VecVs, VecRs);
 marginalizedPDF=squeeze(PDFmap(:,iRs,iVs,:,:,:));
@@ -78,14 +101,24 @@ else
     [it0,iMs,iEbv] = ind2sub(size(marginalizedPDF),imax);
     ifrho = 1;
 end
-% t0 = gridfile.Vect0(it0,1);
-% Ms = gridfile.VecMs(iMs,1);
-% frho = gridfile.VecFrho(ifrho,1);
-% Ebv = gridfile.VecEbv(iEbv,1);
+
 t0 = Vect0(it0);
 Ms = VecMs(iMs);
 frho = VecFrho(ifrho);
 Ebv = VecEbv(iEbv);
+
+% when filter is applied the grid plotted may be a subset of the one in
+% the grid file. Find the orignial values in order to get the chi2 and
+% dof values of the peak out of the grid file.
+it0g   = find(gridfile.Vect0   == t0);
+iRsg   = find(gridfile.VecRs   == Rs);
+iVsg   = find(gridfile.VecVs   == Vs);
+iMsg   = find(gridfile.VecMs   == Ms);
+ifrhog = find(gridfile.VecFrho == frho);
+iEbvg  = find(gridfile.VecEbv  == Ebv);
+chi2_val = gridfile.chi2(it0g,iRsg,iVsg,iMsg,ifrhog,iEbvg);
+dof_val = gridfile.points(it0g,iRsg,iVsg,iMsg,ifrhog,iEbvg)-nparams;
+
 
 % find all secondary peaks higher the 1% then the absoulte peak.
 PDF_Rv(PDF_Rv<0.01*max(PDF_Rv(:)))=0;
@@ -102,68 +135,63 @@ for ipeak = 1:length(Rs_peaks)
         [it0,iMs,iEbv] = ind2sub(size(marginalizedPDF),imax);
         ifrho = 1;
     end
-%     t0_peaks(ipeak) = gridfile.Vect0(it0,1);
-%     Ms_peaks(ipeak) = gridfile.VecMs(iMs,1);
-%     frho_peaks(ipeak) = gridfile.VecFrho(ifrho,1);
-%     Ebv_peaks(ipeak) = gridfile.VecEbv(iEbv,1);
+    
     t0_peaks(ipeak) = Vect0(it0);
     Ms_peaks(ipeak) = VecMs(iMs);
     frho_peaks(ipeak) = VecFrho(ifrho);
     Ebv_peaks(ipeak) = VecEbv(iEbv);
 
-    chi2_peaks(ipeak) = gridfile.chi2(it0,iRs,iVs,iMs,ifrho,iEbv);
-    dof_peaks(ipeak) = gridfile.points(it0,iRs,iVs,iMs,ifrho,iEbv)-nparams;
+    % when filter is applied the grid plotted may be a subset of the one in
+    % the grid file. Find the orignial values in order to get the chi2 and
+    % dof values of the peak out of the grid file.
+    it0g   = find(gridfile.Vect0   == Vect0(it0));
+    iRsg   = find(gridfile.VecRs   == Rs_peaks(ipeak));
+    iVsg   = find(gridfile.VecVs   == Vs_peaks(ipeak));
+    iMsg   = find(gridfile.VecMs   == VecMs(iMs));
+    ifrhog = find(gridfile.VecFrho == VecFrho(ifrho));
+    iEbvg  = find(gridfile.VecEbv  == VecEbv(iEbv));
+    chi2_peaks(ipeak) = gridfile.chi2(it0g,iRsg,iVsg,iMsg,ifrhog,iEbvg);
+    dof_peaks(ipeak) = gridfile.points(it0g,iRsg,iVsg,iMsg,ifrhog,iEbvg)-nparams;
 end
 
-% marginalizedPDF = squeeze(trapz(gridfile.VecVs/10^8.5,trapz(gridfile.VecRs,PDFmap,2),3));
-% [ht0, t0PDF, Sigmat0] = plotMargProbt0(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, [], t0);
-% [hMs, MsPDF, SigmaMs] = plotMargProbMs(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, [],Ms);
-% [hEbv, EbvPDF, SigmaEbv] = plotMargProbEbv(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, [], Ebv);
 marginalizedPDF = squeeze(trapz(VecVs/10^8.5,trapz(VecRs,PDFmap,2),3));
 [ht0, t0PDF, Sigmat0] = plotMargProbt0(marginalizedPDF, VecMs, VecEbv, log10(VecFrho), Vect0, [], t0);
 [hMs, MsPDF, SigmaMs] = plotMargProbMs(marginalizedPDF, VecMs, VecEbv, log10(VecFrho), Vect0, [],Ms);
 [hEbv, EbvPDF, SigmaEbv] = plotMargProbEbv(marginalizedPDF, VecMs, VecEbv, log10(VecFrho), Vect0, [], Ebv);
 if length(gridfile.VecFrho)>1
-%     [hfrho, frhoPDF, SigmaFrho] = plotMargProbFrho(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, gridfile.VecFrho, gridfile.Vect0, [], frho);
     [hfrho, frhoPDF, SigmaFrho] = plotMargProbFrho(marginalizedPDF, VecMs, VecEbv, VecFrho, Vect0, [], frho);
 else
     SigmaFrho = [0 0];
 end
 
 for ipeak = 1:length(iRs_peaks)
-%     [RssigmaM(ipeak),~,RssigmaP(ipeak)]=oneSigmaMove(gridfile.VecRs,RsPDF,Rs_peaks(ipeak));
     [RssigmaM(ipeak),~,RssigmaP(ipeak)]=oneSigmaMove(VecRs,RsPDF,Rs_peaks(ipeak));
     RssigmaM(ipeak) = Rs_peaks(ipeak) - RssigmaM(ipeak);
     RssigmaP(ipeak) = RssigmaP(ipeak) - Rs_peaks(ipeak);
 
-%    [VssigmaM(ipeak),~,VssigmaP(ipeak)]=oneSigmaMove(gridfile.VecVs/10^8.5,VsPDF,Vs_peaks(ipeak)/10^8.5);
     [VssigmaM(ipeak),~,VssigmaP(ipeak)]=oneSigmaMove(VecVs/10^8.5,VsPDF,Vs_peaks(ipeak)/10^8.5);
     VssigmaM(ipeak) = Vs_peaks(ipeak)/10^8.5 - VssigmaM(ipeak);
     VssigmaP(ipeak) = VssigmaP(ipeak) - Vs_peaks(ipeak)/10^8.5;
     
-%    [t0sigmaM(ipeak),~,t0sigmaP(ipeak)]=oneSigmaMove(gridfile.Vect0,t0PDF,t0_peaks(ipeak));
     [t0sigmaM(ipeak),~,t0sigmaP(ipeak)]=oneSigmaMove(Vect0,t0PDF,t0_peaks(ipeak));
     t0sigmaM(ipeak) = t0_peaks(ipeak) - t0sigmaM(ipeak);
     t0sigmaP(ipeak) = t0sigmaP(ipeak) - t0_peaks(ipeak);
 
-%    [MssigmaM(ipeak),~,MssigmaP(ipeak)]=oneSigmaMove(gridfile.VecMs,MsPDF,Ms_peaks(ipeak));
     [MssigmaM(ipeak),~,MssigmaP(ipeak)]=oneSigmaMove(VecMs,MsPDF,Ms_peaks(ipeak));
     MssigmaM(ipeak) = Ms_peaks(ipeak) - MssigmaM(ipeak);
     MssigmaP(ipeak) = MssigmaP(ipeak) - Ms_peaks(ipeak);
 
-%    [EbvsigmaM(ipeak),~,EbvsigmaP(ipeak)]=oneSigmaMove(gridfile.VecEbv,EbvPDF,Ebv_peaks(ipeak));
     [EbvsigmaM(ipeak),~,EbvsigmaP(ipeak)]=oneSigmaMove(VecEbv,EbvPDF,Ebv_peaks(ipeak));
     EbvsigmaM(ipeak) = Ebv_peaks(ipeak) - EbvsigmaM(ipeak);
     EbvsigmaP(ipeak) = EbvsigmaP(ipeak) - Ebv_peaks(ipeak);
 
-%    [frhosigmaM(ipeak),~,frhosigmaP(ipeak)]=oneSigmaMove(log10(gridfile.VecFrho),frhoPDF,log10(frho_peaks(ipeak)));    
     [frhosigmaM(ipeak),~,frhosigmaP(ipeak)]=oneSigmaMove(log10(VecFrho),frhoPDF,log10(frho_peaks(ipeak)));    
     frhosigmaM(ipeak) = frho_peaks(ipeak)- 10^frhosigmaM(ipeak);
     frhosigmaP(ipeak) = 10^frhosigmaP(ipeak) - frho_peaks(ipeak);
     
     P(ipeak) = chi2pdf(double(chi2_peaks(ipeak)), double(dof_peaks(ipeak)));
-
 end
+
 [P,peakInd] = sort(P,'descend');
 
 hPDFpeaks =plot(hPDF.Children(3),Vs_peaks/10^8.5,Rs_peaks,'+');
@@ -172,7 +200,7 @@ figure(hCDF); subplot(4,4,[1:3 5:7 9:11]); hold on; hCDFpeaks = plot(Vs_peaks/10
 
 
 fprintf('Maximal proablility %4.3f, %4.2f/%d (chi2/dof)\nRs=%6.2f_{-%5.2f}^{+%5.2f}\nv_{s*,8.5}=%6.4f_{-%5.4f}^{+%5.4f}\nt_0=%6.2f_{-%4.2f}^{+%4.2f}\nMs=%3.1f_{-%3.1f}^{+%3.1f}\nf_rho=%6.5f_{-%6.5f}^{%6.5f}\nEbv=%7.5f_{-%7.5f}^{%7.5f}\n',...
-    val, gridfile.chi2(it0,iRs,iVs,iMs,ifrho,iEbv), gridfile.points(it0,iRs,iVs,iMs,ifrho,iEbv)-nparams, ...
+    val, chi2_val, dof_val, ...
     Rs, Rs-SigmaRs(1), SigmaRs(2)-Rs, ...
     Vs/10^8.5, (Vs)/10^8.5-SigmaVs(1), SigmaVs(2)-(Vs)/10^8.5, ...
     t0, t0-Sigmat0(1), Sigmat0(2)- t0, ...
@@ -209,7 +237,7 @@ end
 line = [line '\\\\\n'];
 fprintf(line);
 
-line ='$t_0$ [MJD]        ';
+line ='$t_{ref}$ [MJD]   ';
 for iPeak=1:nPeaks
     line = [line sprintf('& $%6.2f_{-%4.2f}^{+%4.2f}$  ', t0_peaks(peakInd(iPeak)), t0sigmaM(peakInd(iPeak)), t0sigmaP(peakInd(iPeak)))];
 end
@@ -253,18 +281,38 @@ for iBand = 1:length(bands)
 end
 clear BG
 
-if all(mintpoints==0)
-    results_fname=sprintf('fMax_results_%s.mat',filename);
+if nargin<4
+    filter_suffix = '';
+elseif nargin==4
+    filter_suffix = '_filter';
 else
-    results_fname=sprintf('fMax_results_%s_%s.mat',filename,sprintf('%d',mintpoints));
+    filter_suffix = sprintf('_%s',suffix);
+end
+
+if strcmp(filename(end-3:end),'.mat')
+    filename = filename(1:end-4);
+end
+
+if all(mintpoints==0)
+    results_fname=sprintf('fMax_results_%s%s.mat',filename,filter_suffix);
+    figs_name = sprintf('%s%s',filename,filter_suffix);
+else
+    results_fname=sprintf('fMax_results_%s_%s%s.mat',filename,sprintf('%d',mintpoints),filter_suffix);
+    figs_name = sprintf('%s_%s%s',filename,sprintf('%d',mintpoints),filter_suffix);
 end
 
 if ~exist(results_fname,'file')
-    save fmax_input filename Vs_peaks Rs_peaks bg results_fname mintpoints
+    redshift = gridfile.redshift;
+    ProgType = gridfile.ProgType;
+    bands   = gridfile.bands; 
+    model = gridfile.model;
+    transientStart = gridfile.transientStart;
+    transientEnd   = gridfile.transientEnd;
+    save fmax_input filename Vs_peaks Rs_peaks bg results_fname mintpoints VecRs VecVs Vect0 VecMs VecFrho VecEbv redshift ProgType bands model transientStart transientEnd
     if isunix
-        !screen -dmS findMaximum nice -n 19 matlab -nodisplay -nosplash -nodesktop -r "load('fmax_input.mat');[Vs, Rs, Ms, Ebv, Rv,  Vect0, PDFt0, t0, chi2values] = AstroUtil.supernova.SOPRANOS.findMaximum(filename,Vs_peaks,Rs_peaks,bg,mintpoints);save(results_fname, 'Vs', 'Rs', 'Ms', 'Ebv', 'Rv', 'Vect0', 'PDFt0', 't0', 'chi2values');exit" -logfile findMaximum.log &
+        !screen -dmS findMaximum nice -n 19 matlab -nodisplay -nosplash -nodesktop -r "load('fmax_input.mat','Rs_peaks','Vs_peaks','bg','results_fname', 'mintpoints');[Vs, Rs, Ms, Ebv, Rv,  Vect0, PDFt0, t0, chi2values] = AstroUtil.supernova.SOPRANOS.findMaximum('fmax_input.mat',Vs_peaks,Rs_peaks,bg,mintpoints);save(results_fname, 'Vs', 'Rs', 'Ms', 'Ebv', 'Rv', 'Vect0', 'PDFt0', 't0', 'chi2values');exit" -logfile findMaximum.log &
     elseif ispc
-        !start /BELOWNORMAL matlab -nosplash -nodesktop -minimize -r "load('fmax_input.mat');[Vs, Rs, Ms, Ebv, Rv,  Vect0, PDFt0, t0, chi2values] = AstroUtil.supernova.SOPRANOS.findMaximum(filename,Vs_peaks,Rs_peaks,bg,mintpoints);save(results_fname, 'Vs', 'Rs', 'Ms', 'Ebv', 'Rv', 'Vect0', 'PDFt0', 't0', 'chi2values');exit" -logfile "findMaximum.log"
+        !start /BELOWNORMAL matlab -nosplash -nodesktop -minimize -r "load('fmax_input.mat','Rs_peaks','Vs_peaks','bg','results_fname', 'mintpoints');[Vs, Rs, Ms, Ebv, Rv,  Vect0, PDFt0, t0, chi2values] = AstroUtil.supernova.SOPRANOS.findMaximum('fmax_input.mat',Vs_peaks,Rs_peaks,bg,mintpoints);save(results_fname, 'Vs', 'Rs', 'Ms', 'Ebv', 'Rv', 'Vect0', 'PDFt0', 't0', 'chi2values');exit" -logfile "findMaximum.log"
     end
     return
 else
@@ -310,13 +358,19 @@ for iPeak = 1:nPeaks
     Rs_peaks(iPeak) = chi2values(iPeak).all.Rs;
     Vs_peaks(iPeak) = chi2values(iPeak).all.Vs;
 end
-hPDFpeaks =plot(hPDF.Children(3),Vs_peaks/10^8.5,Rs_peaks,'+');
+figure(hPDF);hPDFpeaks =plot(hPDF.Children(3),Vs_peaks/10^8.5,Rs_peaks,'+');
+savefig(hPDF,sprintf('%s_PDF.fig',figs_name));
 figure(hCDF); subplot(4,4,[1:3 5:7 9:11]); hold on; hCDFpeaks = plot(Vs_peaks/10^8.5,Rs_peaks,'k+');
+savefig(hCDF,sprintf('%s_CDF.fig',figs_name));
 
 ht0 = plotMargProbt0(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, ht0, chi2values(peakInd(peakNumber)).all.t0);
+savefig(ht0,sprintf('%s_t_ref.fig',figs_name));
 hMs = plotMargProbMs(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, hMs, chi2values(peakInd(peakNumber)).all.Ms);
+savefig(hMs,sprintf('%s_Ms.fig',figs_name));
 hEbv = plotMargProbEbv(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, hEbv, chi2values(peakInd(peakNumber)).all.Ebv);
+savefig(hEbv,sprintf('%s_Ebv.fig',figs_name));
 hfrho = plotMargProbFrho(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, gridfile.VecFrho, gridfile.Vect0, hfrho, chi2values(peakInd(peakNumber)).all.frho);    
+savefig(hfrho,sprintf('%s_frho.fig',figs_name));
 
 
 fprintf('\n');
@@ -347,7 +401,7 @@ end
 line = [line '\\\\\n'];
 fprintf(line);
 
-line ='$t_0$ [MJD]        ';
+line ='$t_{ref}$ [MJD]   ';
 for iPeak=1:nPeaks
     line = [line sprintf('& $%6.2f_{-%4.2f}^{+%4.2f}$  ', chi2values(peakInd(iPeak)).all.t0, chi2values(peakInd(iPeak)).all.t0sigmaM, chi2values(peakInd(iPeak)).all.t0sigmaP)];
 end
@@ -620,6 +674,9 @@ t0PDF  = t0PDF./trapz(Vect0,t0PDF);
 plot(Vect0,t0PDF,'LineStyle',LineStyle,'Color','k');
 hold on
 
+ax = gca;
+ax.XAxis.Exponent = 0;
+
 if (nargin==7)
     t0 = maxt0;
     [downt0,downt0val,upt0,upt0val]=oneSigmaMove(Vect0,t0PDF,maxt0);
@@ -633,7 +690,7 @@ line((upt0).*[1 1], [0 upt0val], 'Color','k','LineStyle',LineStyle);
 
 Sigmat0=[downt0 upt0];
 
-xlabel('$t_{0}\, [MJD]$','Interpreter','Latex');
+xlabel('$t_{ref}\, [MJD]$','Interpreter','Latex');
 ylabel('$\rm PDF\, [dy^{-1}]$','Interpreter','Latex');
 drawnow
 end
