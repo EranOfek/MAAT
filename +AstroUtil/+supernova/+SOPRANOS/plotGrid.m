@@ -237,7 +237,7 @@ end
 line = [line '\\\\\n'];
 fprintf(line);
 
-line ='$t_{ref}$ [MJD]   ';
+line ='$t_{ref}$ [MJD]    ';
 for iPeak=1:nPeaks
     line = [line sprintf('& $%6.2f_{-%4.2f}^{+%4.2f}$  ', t0_peaks(peakInd(iPeak)), t0sigmaM(peakInd(iPeak)), t0sigmaP(peakInd(iPeak)))];
 end
@@ -323,27 +323,27 @@ end
 nPeaks = length(chi2values);
 P = zeros(nPeaks,1);
 for iPeak = 1:nPeaks
-    [chi2values(iPeak).all.RssigmaM,~,chi2values(iPeak).all.RssigmaP]=oneSigmaMove(gridfile.VecRs,RsPDF,chi2values(iPeak).all.Rs);
+    [chi2values(iPeak).all.RssigmaM,~,chi2values(iPeak).all.RssigmaP]=oneSigmaMove(VecRs,RsPDF,chi2values(iPeak).all.Rs);
     chi2values(iPeak).all.RssigmaM = chi2values(iPeak).all.Rs - chi2values(iPeak).all.RssigmaM;
     chi2values(iPeak).all.RssigmaP = chi2values(iPeak).all.RssigmaP - chi2values(iPeak).all.Rs;
 
-    [chi2values(iPeak).all.VssigmaM,~,chi2values(iPeak).all.VssigmaP]=oneSigmaMove(gridfile.VecVs/10^8.5,VsPDF,chi2values(iPeak).all.Vs/10^8.5);
+    [chi2values(iPeak).all.VssigmaM,~,chi2values(iPeak).all.VssigmaP]=oneSigmaMove(VecVs/10^8.5,VsPDF,chi2values(iPeak).all.Vs/10^8.5);
     chi2values(iPeak).all.VssigmaM = chi2values(iPeak).all.Vs/10^8.5 - chi2values(iPeak).all.VssigmaM;
     chi2values(iPeak).all.VssigmaP = chi2values(iPeak).all.VssigmaP - chi2values(iPeak).all.Vs/10^8.5;
     
-    [chi2values(iPeak).all.t0sigmaM,~,chi2values(iPeak).all.t0sigmaP]=oneSigmaMove(gridfile.Vect0,t0PDF,chi2values(iPeak).all.t0);
+    [chi2values(iPeak).all.t0sigmaM,~,chi2values(iPeak).all.t0sigmaP]=oneSigmaMove(Vect0,t0PDF,chi2values(iPeak).all.t0);
     chi2values(iPeak).all.t0sigmaM = chi2values(iPeak).all.t0 - chi2values(iPeak).all.t0sigmaM;
     chi2values(iPeak).all.t0sigmaP = chi2values(iPeak).all.t0sigmaP - chi2values(iPeak).all.t0;
 
-    [chi2values(iPeak).all.MssigmaM,~,chi2values(iPeak).all.MssigmaP]=oneSigmaMove(gridfile.VecMs,MsPDF,chi2values(iPeak).all.Ms);
+    [chi2values(iPeak).all.MssigmaM,~,chi2values(iPeak).all.MssigmaP]=oneSigmaMove(VecMs,MsPDF,chi2values(iPeak).all.Ms);
     chi2values(iPeak).all.MssigmaM = chi2values(iPeak).all.Ms - chi2values(iPeak).all.MssigmaM;
     chi2values(iPeak).all.MssigmaP = chi2values(iPeak).all.MssigmaP - chi2values(iPeak).all.Ms;
 
-    [chi2values(iPeak).all.EbvsigmaM,~,chi2values(iPeak).all.EbvsigmaP]=oneSigmaMove(gridfile.VecEbv,EbvPDF,chi2values(iPeak).all.Ebv);
+    [chi2values(iPeak).all.EbvsigmaM,~,chi2values(iPeak).all.EbvsigmaP]=oneSigmaMove(VecEbv,EbvPDF,chi2values(iPeak).all.Ebv);
     chi2values(iPeak).all.EbvsigmaM = chi2values(iPeak).all.Ebv - chi2values(iPeak).all.EbvsigmaM;
     chi2values(iPeak).all.EbvsigmaP = chi2values(iPeak).all.EbvsigmaP - chi2values(iPeak).all.Ebv;
 
-    [chi2values(iPeak).all.frhosigmaM,~,chi2values(iPeak).all.frhosigmaP]=oneSigmaMove(log10(gridfile.VecFrho),frhoPDF,log10(chi2values(iPeak).all.frho));    
+    [chi2values(iPeak).all.frhosigmaM,~,chi2values(iPeak).all.frhosigmaP]=oneSigmaMove(log10(VecFrho),frhoPDF,log10(chi2values(iPeak).all.frho));    
     chi2values(iPeak).all.frhosigmaM = chi2values(iPeak).all.frho - 10^chi2values(iPeak).all.frhosigmaM;
     chi2values(iPeak).all.frhosigmaP = 10^chi2values(iPeak).all.frhosigmaP - chi2values(iPeak).all.frho;
     
@@ -363,13 +363,13 @@ savefig(hPDF,sprintf('%s_PDF.fig',figs_name));
 figure(hCDF); subplot(4,4,[1:3 5:7 9:11]); hold on; hCDFpeaks = plot(Vs_peaks/10^8.5,Rs_peaks,'k+');
 savefig(hCDF,sprintf('%s_CDF.fig',figs_name));
 
-ht0 = plotMargProbt0(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, ht0, chi2values(peakInd(peakNumber)).all.t0);
+ht0 = plotMargProbt0(marginalizedPDF, VecMs, VecEbv, log10(VecFrho), Vect0, ht0, chi2values(peakInd(peakNumber)).all.t0);
 savefig(ht0,sprintf('%s_t_ref.fig',figs_name));
-hMs = plotMargProbMs(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, hMs, chi2values(peakInd(peakNumber)).all.Ms);
+hMs = plotMargProbMs(marginalizedPDF, VecMs, VecEbv, log10(VecFrho), Vect0, hMs, chi2values(peakInd(peakNumber)).all.Ms);
 savefig(hMs,sprintf('%s_Ms.fig',figs_name));
-hEbv = plotMargProbEbv(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, log10(gridfile.VecFrho), gridfile.Vect0, hEbv, chi2values(peakInd(peakNumber)).all.Ebv);
+hEbv = plotMargProbEbv(marginalizedPDF, VecMs, VecEbv, log10(VecFrho), Vect0, hEbv, chi2values(peakInd(peakNumber)).all.Ebv);
 savefig(hEbv,sprintf('%s_Ebv.fig',figs_name));
-hfrho = plotMargProbFrho(marginalizedPDF, gridfile.VecMs, gridfile.VecEbv, gridfile.VecFrho, gridfile.Vect0, hfrho, chi2values(peakInd(peakNumber)).all.frho);    
+hfrho = plotMargProbFrho(marginalizedPDF, VecMs, VecEbv, VecFrho, Vect0, hfrho, chi2values(peakInd(peakNumber)).all.frho);    
 savefig(hfrho,sprintf('%s_frho.fig',figs_name));
 
 
@@ -401,7 +401,7 @@ end
 line = [line '\\\\\n'];
 fprintf(line);
 
-line ='$t_{ref}$ [MJD]   ';
+line ='$t_{ref}$ [MJD]    ';
 for iPeak=1:nPeaks
     line = [line sprintf('& $%6.2f_{-%4.2f}^{+%4.2f}$  ', chi2values(peakInd(iPeak)).all.t0, chi2values(peakInd(iPeak)).all.t0sigmaM, chi2values(peakInd(iPeak)).all.t0sigmaP)];
 end
