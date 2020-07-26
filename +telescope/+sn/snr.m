@@ -42,6 +42,11 @@ DefPar.ULTRASAT           = {'FWHM',12,...
 
 DefV.SN                   = 5;
 DefV.Mag                  = 22.0;
+DefV.CalibFilterFamily    = 'SDSS';     % filter family of input magnitude by which to scale the mag
+DefV.CalibFilter          = 'r';
+DefV.CalibMagSys          = 'AB';
+
+
 DefV.Name                 = {};     % override all pthe parameters provided in the list
 DefV.FWHM                 = 12;     % FWHM [arcsec]
 DefV.PSFeff               = 0.8;    % PSF efficiency
@@ -160,7 +165,7 @@ if AstSpec.isastspec(InPar.TargetSpec)
     % [Ang, erg/cm^2/s/A]
     % interpolate over grid
     InPar.TargetSpec = interp(InPar.TargetSpec,InPar.Wave);
-    TargetSpec = [InPar.TargetSpec.Wave, InPar.TagetSpec.Int];
+    TargetSpec = [InPar.TargetSpec.Wave, InPar.TargetSpec.Int];
 else
     if numel(InPar.TargetSpec)==1
         % assume BB temperature
@@ -176,11 +181,18 @@ else
 end
 
 % Normalize TargetSpec to apparent magnitude
-[Mag,Flag] = AstroUtil.spec.synphot(TargetSpec,InPar.FilterFamily,InPar.Filter,InPar.MagSys);
+if isempty(InPar.CalibFilterFamily) || isempty(InPar.CalibFilter) || isempty(InPar.CalibMagSys)
+    InPar.CalibFilterFamily = InPar.FilterFamily;
+    InPar.CalibFilter       = InPar.Filter;
+    InPar.CalibMagSys       = InPar.MagSys;
+end
+
+[Mag,Flag] = AstroUtil.spec.synphot(TargetSpec,InPar.CalibFilterFamily,InPar.CalibFilter,InPar.CalibMagSys);
 Factor    = 10.^(-0.4.*(Mag-InPar.Mag));
 TargetSpec(:,2) = TargetSpec(:,2)./Factor;
 
-
+% magnitude in requested band
+[MagInBand,Flag] = AstroUtil.spec.synphot(TargetSpec,InPar.FilterFamily,InPar.Filter,InPar.MagSys);
 
 
 
@@ -230,7 +242,7 @@ BackSpecPh   = [BackSpec(:,1),   convert.flux(BackSpec(:,2),  'cgs/A','ph/A',Bac
 
 SN.Wave   = InPar.Wave;
 SN.Signal = InPar.PSFeff.* InPar.Nim.*TargetSpecPh(:,2).*Trans(:,2).*AperArea.*InPar.ExpTime;  % [ph/ExpTime/Aper]
-SN.Back   = InPar.Nim.* 4.*pi.*(InPar.FWHM./2.35).^2.*Trans(:,2).*BackSpecPh(:,2).*AperArea.*InPar.ExpTime;   % [ph/ExpTime/Aper]
+SN.Back   = InPar.Nim.* SN.PsfEffAreaAS .* Trans(:,2).*BackSpecPh(:,2).*AperArea.*InPar.ExpTime;   % [ph/ExpTime/Aper]
 
 SN.IntRN2    = InPar.Nim.* InPar.RN.^2.* SN.PsfEffAreaPix;
 SN.IntDC     = InPar.Nim.* InPar.DC.*InPar.ExpTime .* SN.PsfEffAreaPix;
@@ -251,7 +263,7 @@ SN.IntSignalAS = SN.IntSignal./SN.PsfEffAreaAS;             % mean surface count
 
 SN.TotalVar  = SN.IntBack + SN.IntRN2 + SN.IntDC + SN.IntGain + SN.IntStrayLight; 
 
-SN.Mag          = InPar.Mag;
+SN.Mag          = MagInBand;
 SN.SNR          = SN.IntSignal./sqrt(SN.TotalVar);
 SN.SNRm         = SN.IntSignal./sqrt(SN.TotalVar+SN.IntSignal);  % S/N for measurment
 SN.FracVar.Back = SN.IntBack./SN.TotalVar;
@@ -261,7 +273,7 @@ SN.FracVar.Gain = SN.IntGain./SN.TotalVar;
 SN.FracVar.StraLight = SN.IntStrayLight./SN.TotalVar;
 
 LimSignal       = InPar.SN.*sqrt(SN.TotalVar)./SN.IntSignal;
-SN.LimMag       = InPar.Mag - 2.5.*log10(LimSignal);
+SN.LimMag       = MagInBand - 2.5.*log10(LimSignal);
 SN.ZP           = SN.Mag + 2.5.*log10(SN.IntSignal);
 
 % saturation limit
