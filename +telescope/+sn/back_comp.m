@@ -20,10 +20,10 @@ function [BackSpec]=back_comp(varargin)
 % Example: [BackSpec]=telescope.sn.back_comp
 % Reliable: 
 %--------------------------------------------------------------------------
-
+RAD = 180./pi;
 
 DefV.PsfEffAreaAS         = Inf;
-DefV.ZodiMagV             = 23.3;   % V mag per arcsec^2 (low zodi)
+DefV.ZodiMagV             =  [];%23.3;   % V mag per arcsec^2 (low zodi). if empty, uses Zodi for RA,Dec,Date
 DefV.CernekovMaterial     = 'si02_suprasil_2a';  % or false
 DefV.CerenkovFlux         = 'DailyMax_75flux';
 DefV.CerenkovSupp         = 6;
@@ -36,6 +36,10 @@ DefV.SkyMag               = 35;
 DefV.SkyFilterFamily      = 'SDSS';
 DefV.SkyFilter            = 'g';
 DefV.SkyMagSys            = 'AB';
+DefV.RA                   = 220./RAD; %for zodiac_bck calc
+DefV.Dec                  = 66./RAD; %for zodiac_bck calc
+DefV.Date                 = [21 12 2024]; %for zodiac_bck calc
+
 
 DefV.Wave                 = (1000:10:25000).';  % [ang]
 
@@ -46,10 +50,11 @@ InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 BackSpec = AstSpec(4);
 
 % Zodiac background
-RAD=180./pi;
-[Spec]=ultrasat.zodiac_bck(220./RAD,66./RAD,[21 12 2024],'Wave',InPar.Wave);
-Mag   = AstroUtil.spec.synphot([Spec.Wave, Spec.Spec],'Johnson','V','Vega');
-Spec.Spec = Spec.Spec.*10.^(0.4.*(Mag - InPar.ZodiMagV));
+[Spec]=ultrasat.zodiac_bck(InPar.RA,InPar.Dec,InPar.Date,'Wave',InPar.Wave);
+if ~isempty(InPar.ZodiMagV) %calibrate to ZodiMagV, if given
+    Mag   = AstroUtil.spec.synphot([Spec.Wave, Spec.Spec],'Johnson','V','Vega');
+    Spec.Spec = Spec.Spec.*10.^(0.4.*(Mag - InPar.ZodiMagV));
+end
 %InPar.BackSpec = [Spec.Wave,Spec.Spec];
 BackSpec(1).Wave = Spec.Wave;
 BackSpec(1).Int  = Spec.Spec;

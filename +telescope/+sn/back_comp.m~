@@ -23,7 +23,7 @@ function [BackSpec]=back_comp(varargin)
 
 
 DefV.PsfEffAreaAS         = Inf;
-DefV.ZodiMagV             = 23.3;   % V mag per arcsec^2 (low zodi)
+DefV.ZodiMagV             = [];% 23.3;   % V mag per arcsec^2 (low zodi). if empty, uses Zodi for RA,Dec,Date
 DefV.CernekovMaterial     = 'si02_suprasil_2a';  % or false
 DefV.CerenkovFlux         = 'DailyMax_75flux';
 DefV.CerenkovSupp         = 6;
@@ -32,10 +32,14 @@ DefV.HostMag              = 25;
 DefV.HostFilterFamily     = 'SDSS';
 DefV.HostFilter           = 'r';
 DefV.HostMagSys           = 'AB';
-DefV.SkyMag               = 29;
+DefV.SkyMag               = 35;
 DefV.SkyFilterFamily      = 'SDSS';
 DefV.SkyFilter            = 'g';
 DefV.SkyMagSys            = 'AB';
+DefV.RA                   = 220./RAD; %for zodiac_bck calc
+DefV.Dec                  = 66./RAD; %for zodiac_bck calc
+DefV.Date                 = [21 12 2024]; %for zodiac_bck calc
+
 
 DefV.Wave                 = (1000:10:25000).';  % [ang]
 
@@ -47,9 +51,11 @@ BackSpec = AstSpec(4);
 
 % Zodiac background
 RAD=180./pi;
-[Spec]=ultrasat.zodiac_bck(220./RAD,66./RAD,[21 12 2024],'Wave',InPar.Wave);
-Mag   = AstroUtil.spec.synphot([Spec.Wave, Spec.Spec],'Johnson','V','Vega');
-
+[Spec]=ultrasat.zodiac_bck(InPar.RA,InPar.Dec,InPar.Date,'Wave',InPar.Wave);
+if ~isempty(InPar.ZodiMagV) %calibrate to Zodi
+    Mag   = AstroUtil.spec.synphot([Spec.Wave, Spec.Spec],'Johnson','V','Vega');
+    Spec.Spec = Spec.Spec.*10.^(0.4.*(Mag - InPar.ZodiMagV));
+end
 %InPar.BackSpec = [Spec.Wave,Spec.Spec];
 BackSpec(1).Wave = Spec.Wave;
 BackSpec(1).Int  = Spec.Spec;
@@ -72,7 +78,7 @@ SG.Wave(end+1) = 25000;
 SG.Int(end+1)  = SG.Int(end);
 FactorHost = 10.^(-0.4.*(InPar.HostMag - synphot(SG,'SDSS','r','AB')));
 SG.Int = SG.Int.*FactorHost;
-synphot(SG,'SDSS','r','AB')
+%synphot(SG,'SDSS','r','AB');
 SG.Int = SG.Int./InPar.PsfEffAreaAS;  % surface brightness
 BackSpec(3) = SG;
 
