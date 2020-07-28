@@ -98,7 +98,7 @@ if isempty(Lat)
             InPar.InputUnits = 'deg';
         case 'jpl'
             % % semicolumn telss horizon its a small body - e.g., '499;'
-            [JCat]=celestial.SolarSys.jpl_horizons('ObjectInd',Long,'StartJD',InPar.JD-1,'StopJD',InPar.JD+1,'StepSizeUnits','h');
+            [JCat]=celestial.SolarSys.jpl_horizons('ObjectInd',Long,'StartJD',InPar.JD-2,'StopJD',InPar.JD+2,'StepSizeUnits','h');
             [Long,Lat] = Util.interp.interp_diff_longlat(JCat.Cat(:,JCat.Col.JD),...
                                                 [JCat.Cat(:,JCat.Col.RA),JCat.Cat(:,JCat.Col.Dec)],...
                                                 InPar.JD);     
