@@ -17,7 +17,7 @@ function plotGrid(filename,mintpoints,peakNumber,filter,suffix)
 % Tested : Matlab 9.5
 %     By : Noam Ganot                      Oct 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: AstroUtil.supernova.SOPRANOS.plotGrid('PTF12ffs_msw_grid.mat', [0 1], 1, 'VecEbv=VecEbv(VecEbv<=0.09)');
+% Example: AstroUtil.supernova.SOPRANOS.plotGrid('PTF12ffs_msw_grid.mat', [0 1], 1, 'VecEbv=VecEbv(VecEbv<=0.09);','Ebv.lte.0.09');
 % Reliable: 2
 %--------------------------------------------------------------------------
 
@@ -237,7 +237,7 @@ end
 line = [line '\\\\\n'];
 fprintf(line);
 
-line ='$t_{ref}$ [MJD]    ';
+line ='$t_{\\rm ref}$ [MJD]    ';
 for iPeak=1:nPeaks
     line = [line sprintf('& $%6.2f_{-%4.2f}^{+%4.2f}$  ', t0_peaks(peakInd(iPeak)), t0sigmaM(peakInd(iPeak)), t0sigmaP(peakInd(iPeak)))];
 end
@@ -401,7 +401,7 @@ end
 line = [line '\\\\\n'];
 fprintf(line);
 
-line ='$t_{ref}$ [MJD]    ';
+line ='$t_{\\rm ref}$ [MJD]    ';
 for iPeak=1:nPeaks
     line = [line sprintf('& $%6.2f_{-%4.2f}^{+%4.2f}$  ', chi2values(peakInd(iPeak)).all.t0, chi2values(peakInd(iPeak)).all.t0sigmaM, chi2values(peakInd(iPeak)).all.t0sigmaP)];
 end
@@ -690,7 +690,7 @@ line((upt0).*[1 1], [0 upt0val], 'Color','k','LineStyle',LineStyle);
 
 Sigmat0=[downt0 upt0];
 
-xlabel('$t_{ref}\, [MJD]$','Interpreter','Latex');
+xlabel('$t_{\rm ref}\, [MJD]$','Interpreter','Latex');
 ylabel('$\rm PDF\, [dy^{-1}]$','Interpreter','Latex');
 drawnow
 end

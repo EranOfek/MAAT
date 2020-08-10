@@ -185,6 +185,8 @@ switch lower(InPar.Type)
                 (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)).^0.06434./(InPar.kappa./0.34).^2 .* (t_d.*24).^(-4/3);
             T_ph = min(T_phRW, 6.937.*(InPar.Rs.*SolR./1e13).^0.1155.*(v_sstar./10^8.5).^0.1506 ./ ...
                                       ( (InPar.f_rho .* InPar.Ms).^0.01609 .* InPar.kappa./0.34.^0.2661 ) .* (t_d.*24).^(-1/3));
+        else
+            T_ph = T_phRW;
         end
         
         Tc    = convert.energy('eV','T',T_ph.*Tcorr);

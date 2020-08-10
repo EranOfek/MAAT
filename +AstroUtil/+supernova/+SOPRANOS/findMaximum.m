@@ -45,6 +45,7 @@ priors.Vs = VecVs;
 %     load(sprintf('fminsearch_%s.mat',postfix));
 % else
 for ipeak = 1:length(Vs_in)
+    fprintf('Finding the maximum in the vicinity of peak #%1d, Rs=%4.0f, Vs=%4.2f\n', ipeak, Rs_in(ipeak), Vs_in(ipeak)/10^8.5);
     Rv = 3.08;
 
     c = parallel.pool.Constant(data);
@@ -105,6 +106,8 @@ for ipeak = 1:length(Vs_in)
     chi2values.margFrho = margFrho;
     chi2values.PDFmat   = PDFmat;
 
+    fprintf('End of step 1, Rs=%4.0f, Vs=%4.2f, Ms=%4.1f, f_rho=%5.3f, t_ref=%8.2f, Ebv=%6.4f chi2/dof=%6.2f/%d\n', Rs, Vs/10^8.5, Ms, frho, t0, Ebv, chi_2(idxt0, idxMs, idxFrho, idxEbv), dof(idxt0, idxMs, idxFrho, idxEbv));
+
     fun = @(x) 1-(AstroUtil.supernova.SOPRANOS.PDF(data,redshift,x(1),Rs,Vs,x(2),x(3),x(4),model,6,ProgType,priors,bg,transient,mintpoints,c));
     x0 = [t0 Ms frho Ebv];
     f0 = fun(x0);
@@ -132,6 +135,8 @@ for ipeak = 1:length(Vs_in)
         chi2values.t0MsEbv.Ebv      = Ebv;
         chi2values.t0MsEbv.frho     = frho;
     end
+
+    fprintf('End of step 2, Rs=%4.0f, Vs=%4.2f, Ms=%4.1f, f_rho=%5.3f, t_ref=%8.2f, Ebv=%6.4f chi2/dof=%6.2f/%d\n', Rs, Vs/10^8.5, Ms, frho, t0, Ebv, chi_2, dof);
 
     fun = @(x) 1-(AstroUtil.supernova.SOPRANOS.PDF(data,redshift,x(1),x(2),x(3),x(4),x(5),x(6),model,6,ProgType,priors,bg,transient,mintpoints,c));
     x0 = [t0 Rs Vs Ms frho Ebv];
@@ -169,6 +174,7 @@ for ipeak = 1:length(Vs_in)
         chi2values.all.exitflag = exitflag;
     end
     chi2valuesArray(ipeak) = chi2values;
+    fprintf('End of step 3, Rs=%4.0f, Vs=%4.2f, Ms=%4.1f, f_rho=%5.3f, t_ref=%8.2f, Ebv=%6.4f chi2/dof=%6.2f/%d\n\n', Rs, Vs/10^8.5, Ms, frho, t0, Ebv, chi_2, dof);
 end
 % end
 

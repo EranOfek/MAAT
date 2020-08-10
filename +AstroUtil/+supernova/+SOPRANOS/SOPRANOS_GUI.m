@@ -1451,8 +1451,11 @@ for iaxes = 1:Naxes
     h=copyobj([handles.Graphs.UserData(iaxes) handles.Graphs.UserData(iaxes).Legend],f);
     haxes(iaxes) = h(1);
     hlegend(iaxes) = h(2);
+    haxes(iaxes).Position(2) = haxes(iaxes).Position(2)-0.02;
+    haxes(iaxes).FontSize=14;
 end
 linkaxes(haxes, 'x');
+
 
 for iaxes = 1:Naxes
     children = haxes(iaxes).Children;
@@ -1559,7 +1562,7 @@ for iband = 1:length(handles.PlottedInGraph.UserData)
                 Color(iband,:) = handles.Graphs.UserData(handles.PlottedInGraph.UserData(iband)).Children(iChild).Color;
             end
         end
-        errorbar(ax,data.MJD,res,data.fluxerr,'o','Color',Color(iband,:),'MarkerFaceColor',Color(iband,:),'DisplayName',[name ' residuals']);
+        errorbar(ax,data.MJD,res,data.fluxerr,'o','Color',Color(iband,:),'MarkerFaceColor','auto','DisplayName',[name ' residuals']);
         hold(ax,'on')
     end
 end
