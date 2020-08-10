@@ -1,4 +1,4 @@
-function [P,Res,IndUse,IndNotUse,H]=polyfit_sc(X,Y,N,SigClip,MaxIter,PlotOption);
+function [P,Res,IndUse,IndNotUse,H]=polyfit_sc(X,Y,N,SigClip,MaxIter,PlotOption)
 %------------------------------------------------------------------------------
 % polyfit_sc function                                                   FitFun
 % Description: Fitting a polynomial, of the form

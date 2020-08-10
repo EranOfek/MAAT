@@ -78,14 +78,14 @@ end
 % for each Header
 for Iwcs=1:1:Nwcs
     
-    if (isnan(WCS(Iwcs).WCS.CTYPE1))
-    %if isnan(WCS(Iwcs).WCS.CTYPE{1})
+    %if (isnan(WCS(Iwcs).WCS.CTYPE1))
+    if isnan(WCS(Iwcs).WCS.CTYPE{1})
         % no valid WCS in header
         Long = nan(size(X));
         Lat  = nan(size(Y));
     else    
-        ProjType1 = WCS(Iwcs).WCS.CTYPE1(6:8);  % see also read_ctype.m
-        ProjType2 = WCS(Iwcs).WCS.CTYPE2(6:8);
+        ProjType1 = WCS(Iwcs).WCS.CTYPE{1}(6:8);  % see also read_ctype.m
+        ProjType2 = WCS(Iwcs).WCS.CTYPE{2}(6:8);
         if (~strcmp(ProjType1,ProjType2))
             error('Axes have different orojection types');
         end
@@ -93,11 +93,11 @@ for Iwcs=1:1:Nwcs
         RAD = 180./pi;
         % transformation
         % relevant for both projection types:
-        if (~strcmp(WCS(Iwcs).WCS.CUNIT1,WCS(Iwcs).WCS.CUNIT2))
+        if (~strcmp(WCS(Iwcs).WCS.CUNIT{1},WCS(Iwcs).WCS.CUNIT{2}))
             error('CUNIT1 must be identical to CUNIT2');
         end
 
-        switch lower(WCS(Iwcs).WCS.CUNIT1)
+        switch lower(WCS(Iwcs).WCS.CUNIT{1})
             case {'deg','degree'}
                 Factor = RAD;
             case {'rad','radian'}
@@ -106,8 +106,8 @@ for Iwcs=1:1:Nwcs
                 error('Unknown CUNIT option');
         end
 
-        U = X - WCS(Iwcs).WCS.CRPIX1;
-        V = Y - WCS(Iwcs).WCS.CRPIX2;
+        U = X - WCS(Iwcs).WCS.CRPIX(1);
+        V = Y - WCS(Iwcs).WCS.CRPIX(2);
 
         % Deal with SIP distortions
         if (isfield_notempty(WCS(Iwcs).WCS,'sip'))
@@ -148,17 +148,17 @@ for Iwcs=1:1:Nwcs
                 D = D./Factor;
                 DX = D(1,:);
                 DY = D(2,:);
-                [Long,Lat] = celestial.proj.pr_ignomonic(DX.',DY.',[WCS(Iwcs).WCS.CRVAL1, WCS(Iwcs).WCS.CRVAL2]./Factor);
+                [Long,Lat] = celestial.proj.pr_ignomonic(DX.',DY.',[WCS(Iwcs).WCS.CRVAL(1), WCS(Iwcs).WCS.CRVAL(2)]./Factor);
 
             case 'ait'
                 %[Long,Lat] = xy2sky_ait(WCS,X,Y,HDUnum);
-                if (WCS(Iwcs).WCS.CRVAL1~=0 || WCS(Iwcs).WCS.CRVAL2~=0)
+                if (WCS(Iwcs).WCS.CRVAL(1)~=0 || WCS(Iwcs).WCS.CRVAL(2)~=0)
                     error('This version does not support CRVAL ne 1');
                 end
                 %X     = (X - WCS.CRPIX1).*WCS.CDELT1;
                 %Y     = (Y - WCS.CRPIX2).*WCS.CDELT2;
-                X = U.*WCS(Iwcs).WCS.CDELT1;
-                Y = V.*WCS(Iwcs).WCS.CDELT2;
+                X = U.*WCS(Iwcs).WCS.CDELT(1);
+                Y = V.*WCS(Iwcs).WCS.CDELT(2);
                 [Long,Lat] = celestial.proj.pr_ihammer_aitoff(X,Y,Factor);
 
             otherwise

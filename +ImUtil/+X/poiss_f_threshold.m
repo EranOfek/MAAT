@@ -53,7 +53,7 @@ DefV.RadSigmaPSF         = 5;
 DefV.Radius              = 5;
 DefV.Sigma               = 1.5;
 DefV.MomMaxIter          = 5;
-DefV.SubBack             = true;
+DefV.SubBack             = false;
 DefV.Verbose             = false;
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 

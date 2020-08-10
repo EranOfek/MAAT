@@ -1,4 +1,4 @@
-function [Ind,FlagUnique]=search_sortedY_multi(Cat,Long,Lat,Radius,FlagUnique)
+function [Ind,FlagUnique,MatchedInd]=search_sortedY_multi(Cat,Long,Lat,Radius,FlagUnique)
 % Search a single X/Y in a catalog sorted by Y (planar geometry)
 % Package: VO.search
 % Description: A low level function for a single cone search
@@ -21,11 +21,15 @@ function [Ind,FlagUnique]=search_sortedY_multi(Cat,Long,Lat,Radius,FlagUnique)
 %                   the input search radius is negative.
 %          - A logical vector of length equal to the number of searched
 %            coordinates (Y) which flag the first unique source.
+%          - A matrix of matched indices for the nearest match only:
+%            [Index in Cat, Dist between nearest match, DeltaX, DeltaY].
+%            where DeltaX/Y is Search coordinates - Cat coordinates.
+%            Number of lines is as the number of searched coordinates.
 %     By : Eran O. Ofek                    Feb 2017
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: Cat=sortrows(rand(10000,2),2);
+% Example: Cat=sortrows(rand(10000,2).*1024,2);
 %          Ind=VO.search.search_sortedY_multi(Cat,0.5,0.5,0.01)
-%          Ind=VO.search.search_sortedY_multi(Cat,Cat(:,1),Cat(:,2),0.0001)
+%          [Ind,~,MI]=VO.search.search_sortedY_multi(Cat,Cat(:,1),Cat(:,2),1)
 % Reliable: 2
 
 
@@ -38,6 +42,12 @@ end
 
 if (nargin<5)
     FlagUnique = false(size(Cat,1),1);
+end
+
+if nargout>2
+    % if MatchedInd matrix is required then override calc distance
+    Radius   = Radius;
+    CalcDist = true;
 end
 
 Radius2 = Radius.^2;
@@ -62,16 +72,28 @@ Ilowhigh = double(Inear(Ilat));
 Ilow     = Ilowhigh(:,1);
 Ihigh    = min(Ncat,Ilowhigh(:,2)+1); % add 1 because of the way mfind_bin works
 
-Ind = Util.struct.struct_def({'Ind','Nmatch'},Nlat,1);
+if CalcDist
+    Ind = Util.struct.struct_def({'Ind','Nmatch','Dist','DeltaX','DeltaY'},Nlat,1);
+else
+    Ind = Util.struct.struct_def({'Ind','Nmatch'},Nlat,1);
+end
+
 for I=1:1:Nlat
     %Dist = celestial.coo.sphere_dist_fast(Long(I),Lat(I), Cat(Ilow(I):Ihigh(I),Col.Lon), Cat(Ilow(I):Ihigh(I),Col.Lat));
-    Dist2 = (Long(I) - Cat(Ilow(I):Ihigh(I),Col.Lon)).^2 + (Lat(I) - Cat(Ilow(I):Ihigh(I),Col.Lat)).^2;
+    DeltaX = Long(I) - Cat(Ilow(I):Ihigh(I),Col.Lon);
+    DeltaY = Lat(I)  - Cat(Ilow(I):Ihigh(I),Col.Lat);
+    
+    %Dist2 = (Long(I) - Cat(Ilow(I):Ihigh(I),Col.Lon)).^2 + (Lat(I) - Cat(Ilow(I):Ihigh(I),Col.Lat)).^2;
+    Dist2 = DeltaX.^2 + DeltaY.^2;
+    
     FlagDist = Dist2 <= Radius2;
     Ind(I).Ind    = Ilow(I)-1+find(FlagDist);
     %Ind(I).Ind    = Ilow(I)-1+find(Dist <= Radius);
     Ind(I).Nmatch = numel(Ind(I).Ind);
     if CalcDist
         Ind(I).Dist   = sqrt(Dist2(FlagDist));
+        Ind(I).DeltaX = DeltaX(FlagDist);
+        Ind(I).DeltaY = DeltaY(FlagDist);
     end
     
     if ~any(FlagUnique(Ind(I).Ind))
@@ -80,3 +102,20 @@ for I=1:1:Nlat
     end
     
 end
+
+% return indices of matched sources
+if nargout>2
+    MatchedInd = nan(Nlat,4);
+    for I=1:1:Nlat
+        if Ind(I).Nmatch==1
+            MatchedInd(I,:) = [Ind(I).Ind, Ind(I).Dist, Ind(I).DeltaX, Ind(I).DeltaY];
+        elseif Ind(I).Nmatch>1
+            [MinDist,MinInd] = min(Ind(I).Dist);
+            MatchedInd(I,:) = [Ind(I).Ind(MinInd), MinDist, Ind(I).DeltaX(MinInd), Ind(I).DeltaY(MinInd)];
+        else
+            % do nothing
+        end
+    end
+end
+
+            

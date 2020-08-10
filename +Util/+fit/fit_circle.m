@@ -1,5 +1,4 @@
-function [BestCen,BestRad,BestRMS,BestDif,BestRDi,Info]=fit_circle(Data,Geom,MinPar,Nstep);
-%------------------------------------------------------------------------------
+function [BestCen,BestRad,BestRMS,BestDif,BestRDi,Info]=fit_circle(Data,Geom,MinPar,Nstep)
 % fit_circle function                                                   FitFun
 % Description: Fit points, on a plane or a sphere, to a circle.
 %              Calculate the best fit radius and the center of the circle.
@@ -30,15 +29,14 @@ function [BestCen,BestRad,BestRMS,BestDif,BestRDi,Info]=fit_circle(Data,Geom,Min
 %             Index of respective line in original data matrix]
 % Tested : Matlab 5.3
 %     By : Eran O. Ofek                   January 2004
-%    URL : http://wise-obs.tau.ac.il/~eran/matlab.html
 % Reliable: 1
 %------------------------------------------------------------------------------
 
 RAD = 180./pi;
 
-if (nargin==3),
+if (nargin==3)
    Nstep = 200;
-elseif (nargin==4),
+elseif (nargin==4)
    % do nothing
 else
    error('Illigal number of inpur arguments');
@@ -46,18 +44,18 @@ end
 
 LD = length(Data(1,:));
 
-if (LD==2 | LD==3),
+if (LD==2 || LD==3)
    RA  = Data(:,1);
    Dec = Data(:,2);
-   if (LD==3),
+   if (LD==3)
       Prop = Data(:,3);
    else
       Prop = NaN.*RA;
    end
-elseif (LD==7 | LD==8),
+elseif (LD==7 || LD==8)
    RA  = convertdms(Data(:,1:3),'H','r');
    Dec = convertdms(Data(:,4:7),'D','R');
-   if (LD==8),
+   if (LD==8)
       Prop = Data(:,8);
    else
       Prop = NaN.*RA;

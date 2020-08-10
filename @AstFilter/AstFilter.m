@@ -578,7 +578,7 @@ classdef AstFilter
             % Example: AstFilterCat=add_filter(NewF);
                             
             if (nargin==1)
-                OldF = load_check('AstFilterCat.mat');
+                OldF = Util.IO.load_check('AstFilterCat.mat');
             end
             
             Del1 = false;

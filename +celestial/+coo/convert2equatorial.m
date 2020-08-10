@@ -32,6 +32,9 @@ function [DistRA,DistDec,Aux]=convert2equatorial(Long,Lat,varargin)
 %                           Default is now (i.e., celestial.time.julday)
 %            'ObsCoo'     - Observer Geodetic position.
 %                           [East Long (deg), Lat (deg), Height (meters)]
+%            'HorizonsObsCode' - In case solar system ephemerides is
+%                           requested, then this is the Horizons observatory
+%                           code. Default is '500' (geocentric observer).
 %            'DistFun'    - Distortion function handle.
 %                           The function is of the form:
 %                           [DistHA,DistDec]=@Fun(HA,Dec), where all the
@@ -69,6 +72,8 @@ addOptional(InPar,'InCooType','J2000.0');   % 'eq' | 'gal' | 'ecl' | 'horizon'
 addOptional(InPar,'NameServer','simbad');  % 'simbad' | 'ned' | 'jpl'
 addOptional(InPar,'JD',celestial.time.julday);  % time for solar system ephemerids
 addOptional(InPar,'ObsCoo',[35 30.6 800]);  % time for solar system ephemerids
+addOptional(InPar,'HorizonsObsCode','500');  % 500 geocentric
+
 addOptional(InPar,'InputUnits','deg');  
 addOptional(InPar,'OutputUnits','deg');  
 addOptional(InPar,'DistFun',[]);  
@@ -98,7 +103,7 @@ if isempty(Lat)
             InPar.InputUnits = 'deg';
         case 'jpl'
             % % semicolumn telss horizon its a small body - e.g., '499;'
-            [JCat]=celestial.SolarSys.jpl_horizons('ObjectInd',Long,'StartJD',InPar.JD-1,'StopJD',InPar.JD+1,'StepSizeUnits','h');
+            [JCat]=celestial.SolarSys.jpl_horizons('ObjectInd',Long,'StartJD',InPar.JD-2,'StopJD',InPar.JD+2,'StepSizeUnits','h','CENTER',InPar.HorizonsObsCode);
             [Long,Lat] = Util.interp.interp_diff_longlat(JCat.Cat(:,JCat.Col.JD),...
                                                 [JCat.Cat(:,JCat.Col.RA),JCat.Cat(:,JCat.Col.Dec)],...
                                                 InPar.JD);     
