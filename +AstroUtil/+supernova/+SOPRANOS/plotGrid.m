@@ -880,33 +880,92 @@ end
 
 function [downvar,downval,upvar,upval]=oneSigmaMove(var,PDF,max_var)
 CDF  = cumtrapz(var,PDF);
-minlen = inf;
-index  = 1;
-dir    = 'down';
+%minlen = inf;
+%index  = 1;
+%dir    = 'down';
+
+% find the shortest interval with CDF of normcdf(1,0,1)-normcdf(-1,0,1) on
+% the discerte grid of var:
+downlen = inf*ones(length(var),1);
+uplen   = inf*ones(length(var),1);
 for i=1:length(CDF)
     if (CDF(i)<2*normcdf(-1,0,1))
-        ind = find(CDF>=CDF(i)+normcdf(1,0,1)-normcdf(-1,0,1),1,'first')-1; 
-        down = var(i);
+        ind = find(CDF>=CDF(i)+normcdf(1,0,1)-normcdf(-1,0,1),1,'first')-1;
         up = var(ind) + (CDF(i)+(normcdf(1,0,1)-normcdf(-1,0,1))-CDF(ind)) * (var(ind+1)-var(ind))/(CDF(ind+1)-CDF(ind));
-        len = up-var(i);
-    else
-        ind = find(CDF>=2*normcdf(-1,0,1),1,'first')-1;
-        len = var(end)-var(ind);
-        down = var(ind) + (var(ind+1)-var(ind))/(CDF(ind+1)-CDF(ind)).*(2.*normcdf(-1,0,1)-CDF(ind));
-        up   = var(end);
-        if (len<minlen)&&(nargin==2||((max_var>=down)&&(max_var<=up)))
-            dir = 'up';
+        if (nargin==2)||((max_var>=var(i))&&(max_var<=up))
+            downlen(i)=up-var(i);             
+%         elseif (nargin>2)&&((max_var>up)&&(max_var<=var(ind+1)))
+%             up = max_var;
+%             CDF_max = CDF(ind) + (CDF(ind+1)-CDF(ind))/(var(ind+1)-var(ind))*(max_var-var(ind));
+%             down = var(i) + (CDF_max-(normcdf(1,0,1)-normcdf(-1,0,1))-CDF(i)) * (var(i+1)-var(i))/(CDF(i+1)-CDF(i));
+%             downlen(i) = up-down;
         end
+    else
+        % we reached the upper bound of the probability CDF(i)+1\sigma>1;
+        break;
     end
-    if (len<minlen)&&(nargin==2||((max_var>=down)&&(max_var<=up)))
-        minlen = len;
-        index  = i;
-        findind = ind;
-        upvar = up;
+end
+for i=length(CDF):-1:1
+    if ((1-CDF(i))<2*normcdf(-1,0,1))
+        ind = find(CDF>=CDF(i)-(normcdf(1,0,1)-normcdf(-1,0,1)),1,'first')-1;
+        down = var(ind) + (CDF(i)-(normcdf(1,0,1)-normcdf(-1,0,1))-CDF(ind)) * (var(ind+1)-var(ind))/(CDF(ind+1)-CDF(ind));
+        if (nargin==2)||((max_var>=down)&&(max_var<=var(i)))
+            uplen(i)=var(i)-down;             
+%         elseif (nargin>2)&&((max_var>=var(ind))&&(max_var<down))
+%             down = max_var;
+%             CDF_max = CDF(ind) + (CDF(ind+1)-CDF(ind))/(var(ind+1)-var(ind))*(max_var-var(ind));
+%             up = var(i-1) + (CDF_max+(normcdf(1,0,1)-normcdf(-1,0,1))-CDF(i-1)) * (var(i)-var(i-1))/(CDF(i)-CDF(i-1));
+%             uplen(i) = up-down;
+        end
+    else
+        % we reached the lower bound of the probability 1-CDF(i)<1\sigma;
+        break;
     end
 end
 
+[min_down_len,idown]=min(downlen);
+[min_up_len,iup]=min(uplen);
+
+if (min_down_len<min_up_len)
+    dir = 'down';
+    index = idown;
+    findind = find(CDF>=CDF(idown)+normcdf(1,0,1)-normcdf(-1,0,1),1,'first')-1;
+    up = var(findind) + (CDF(idown)+(normcdf(1,0,1)-normcdf(-1,0,1))-CDF(findind)) * (var(findind+1)-var(findind))/(CDF(findind+1)-CDF(findind));
+    if (nargin==2)||((max_var>=var(idown))&&(max_var<=up))
+        minlen=up-var(idown);
+        upvar=up;
+    else
+        pause;
+%     elseif (nargin>2)&&((max_var>up)&&(max_var<=var(findind+1)))
+%         dir = 'up';
+%         index = findind+1;
+%         findind = idown;
+%         down = var(findind) + (CDF(index)-(normcdf(1,0,1)-normcdf(-1,0,1))-CDF(findind)) * (var(findind+1)-var(findind))/(CDF(findind+1)-CDF(findind));
+%         minlen=var(index)-down;             
+    end    
+else
+    dir = 'up';
+    index = iup;
+    findind = find(CDF<CDF(iup)-(normcdf(1,0,1)-normcdf(-1,0,1)),1,'last');
+    down = var(findind) + (CDF(iup)-(normcdf(1,0,1)-normcdf(-1,0,1))-CDF(findind)) * (var(findind+1)-var(findind))/(CDF(findind+1)-CDF(findind));
+    if (nargin==2)||((max_var>=down)&&(max_var<=var(iup)))
+        minlen=var(iup)-down;
+        downvar=down;
+    else
+        pause;
+%     elseif (nargin>2)&&((max_var<down)&&(max_var>=var(findind)))
+%         dir = 'down';
+%         index = findind;
+%         findind = iup-1;
+%         up = var(findind) + (CDF(index)+(normcdf(1,0,1)-normcdf(-1,0,1))-CDF(findind)) * (var(findind+1)-var(findind))/(CDF(findind+1)-CDF(findind));
+%         upvar = up;
+%         minlen = up-var(index);            
+    end
+end
+
+% fine tune the result between grid points
 if strcmp(dir,'down')
+    % the lower end of the interval is a grid point
     PDF_L = PDF(index);
     PDF_H = PDF(findind) + (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind))*(upvar-var(findind));
     if (PDF_L<PDF_H) % dxL,dxH>0
@@ -915,149 +974,285 @@ if strcmp(dir,'down')
         dxL   = PDF_L./dPDF_L.*(-1+sqrt(1-dPDF_L./(dPDF_L-dPDF_H).*(1-PDF_H.^2./PDF_L.^2)));
         dxH    = (-PDF_H+sqrt(PDF_H^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
         if (dxL>0)
-            if (dxH > (var(findind+1)-upvar))
-                dxH    = (var(findind+1)-upvar); 
+            ind     = findind;
+            downvar = var(index);            
+            while (dxH > (var(ind+1)-upvar))
+                % as long as the required movement of the upper end is
+                % beyond var(ind+1) progress to var(ind+1) and calculate
+                % the residual required movement:
+                dxH    = (var(ind+1)-upvar); 
                 dxL    = (-PDF_L+sqrt(PDF_L^2+2.*dPDF_L.*(PDF_H.*dxH+0.5.*dPDF_H.*dxH.^2)))./dPDF_L;
-                if (nargin==3)&&(var(index)+dxL>=max_var)
-                    dxL = max_var-var(index);
+                if (nargin==3)&&(downvar+dxL>=max_var)
+                    % if the movement will skip the constraint variable
+                    % value limit the movement so the lower end of the
+                    % movement will be the constraint value.
+                    dxL = max_var-downvar;
                     dxH = (-PDF_H+sqrt(PDF_H^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
-                    upvar   = upvar + dxH;
-                    upval   = PDF_H + dPDF_H * dxH;
-                    downvar = var(index)+dxL;
-                    downval = PDF_L + dPDF_L * dxL;
-                elseif (length(var)>findind+1)                
-                    PDF_H = PDF(findind+1);
-                    dPDF_H = (PDF(findind+2)-PDF(findind+1))/(var(findind+2)-var(findind+1));
-                    PDF_L2 = PDF_L + dPDF_L * dxL;
-                    dxL2  = PDF_L2./dPDF_L.*(-1+sqrt(1-dPDF_L./(dPDF_L-dPDF_H).*(1-PDF_H.^2./PDF_L2.^2)));
-                    dxH2   = (-PDF_H+sqrt(PDF_H^2+2.*dPDF_H.*(PDF_L2.*dxL2+0.5.*dPDF_L.*dxL2.^2)))./dPDF_H;         
-                    if dxL2>0
-                        if (nargin==3)&&(var(index)+dxL+dxL2>=max_var)
-                            dxL2 = max_var - (var(index)+dxL);
-                            dxH2 = (-PDF_H+sqrt(PDF_H^2+2.*dPDF_H.*(PDF_L2.*dxL2+0.5.*dPDF_L.*dxL2.^2)))./dPDF_H;
-                        end
-                        upvar   = var(findind+1)+dxH2;
-                        upval   = PDF_H + dPDF_H * dxH2;
-                        downvar = var(index)+dxL+dxL2;
-                        downval = PDF_L2+ dPDF_L * dxL2;
-                    else
-                        upvar   = var(findind+1);
-                        upval   = PDF(findind+1);
-                        downvar = var(index)+dxL;
-                        downval = PDF_L2;
-                    end
                 else
-                    upvar   = var(findind+1);
-                    upval   = PDF(findind+1);
-                    downvar = var(index) + dxL;
-                    downval = PDF_L + dPDF_L * dxL;
+                    % move to edge of current cell
+                    upvar   = var(ind+1);
+                    PDF_H   = PDF(ind+1);
+                    downvar = downvar+dxL;
+                    PDF_L = PDF_L + dPDF_L * dxL;
+                    ind = ind + 1;
+                    if (length(var)>ind)
+                        % if we did not reach the end of the array
+                        % calculate the residual required movement.
+                        dPDF_H = (PDF(ind+1)-PDF(ind))/(var(ind+1)-var(findind));
+                        dxL    = PDF_L./dPDF_L.*(-1+sqrt(1-dPDF_L./(dPDF_L-dPDF_H).*(1-PDF_H.^2./PDF_L.^2)));
+                        dxH    = (-PDF_H+sqrt(PDF_H^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+                        if (dxL<0)
+                            % the function is not monotonic, the point
+                            % between the two cell is a local minimum.
+                            dxL=0;
+                            dxH=0;
+                        end                                                       
+                    else
+                        % we reached the end of the array, no further
+                        % movement is possible.
+                        dxL=0;
+                        dxH=0;
+                    end
                 end
-            else
-                upvar   = upvar + dxH;
-                upval   = PDF_H + dPDF_H * dxH;
-                downvar = var(index) + dxL;
-                downval = PDF_L + dPDF_L * dxL;
             end
-        else
+            % move the required dxL and dxH, which is either the original
+            % required value or the residual one from the last cell edge.
+            if (nargin==3)&&(downvar+dxL>=max_var)
+                % if the movement will skip the constraint variable
+                % value limit the movement so the lower end of the
+                % movement will be the constraint value.
+                dxL = max_var-downvar;
+                dxH = (-PDF_H+sqrt(PDF_H^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+            end
+            upvar   = upvar+dxH;
+            upval   = PDF_H + dPDF_H * dxH;
+            downvar = downvar+dxL;
+            downval = PDF_L + dPDF_L * dxL;
+        else % dxL<0 , PDF_L<PDF_H
+            % while PDF_L<PDF_H and the movement should be rightward, the
+            % calculated dxL resulted negative, means leftward movement. We
+            % should not arrive to this point, if we arrive do not move.
             downvar = var(index);
             downval = PDF(index);
-            upvar = upvar;
-            upval = PDF_H;
+            upval   = PDF(findind) + (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind))*(upvar-var(findind));                            
         end
-        dW = dxH - dxL;
     else            % dxL, dxH<0
         if (index>1)
+            % recalculate the slope of the lower end and the result
+            % required movement, since it should move to the previous
+            % cell.
+            % the dx signs are not opposite, movement leftward is
+            % defined positive.
             dPDF_L = (PDF(index)-PDF(index-1))/(var(index)-var(index-1));
             dPDF_H = (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind));
             dxL = PDF_L./dPDF_L .* (1 - sqrt(1-dPDF_L.*((1-PDF_H.^2./PDF_L.^2)./(dPDF_L-dPDF_H))));
             dxH = (PDF_H-sqrt(PDF_H.^2-2.*dPDF_H.*(PDF_L.*dxL-0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
             if (dxL>0)
-                if ((upvar-dxH) < var(findind))
-                    dxH = upvar-var(findind);
+                ind = findind;
+                downvar = var(index);            
+                while ((upvar-dxH) < var(ind))
+                    % as long as the required movement is larger than
+                    % one cell, move to the cell edge and calculate
+                    % the residual required movement
+                    dxH = upvar-var(ind);
                     dxL = (PDF_L-sqrt(PDF_L.^2-2.*dPDF_L.*(PDF_H.*dxH-0.5.*dPDF_H.*dxH.^2)))./dPDF_L;
                     if (nargin==3)&&((upvar-dxH)<=max_var)
+                        % if the residual required movement takes the
+                        % constraint value outside the interval, limit
+                        % the movement such that the upper end of the
+                        % interval will be the constaint value.
                         dxH = upvar-max_var;
                         dxL = (PDF_L-sqrt(PDF_L.^2-2.*dPDF_L.*(PDF_H.*dxH-0.5.*dPDF_H.*dxH.^2)))./dPDF_L;
-                        upvar = upvar - dxH;
-                        upval = PDF_H - dPDF_H * dxH;
-                        downvar = var(index)-dxL;
-                        downval = PDF_L - dPDF_L * dxL;
                     else
-                        PDF_H2 = PDF(findind);
-                        dPDF_H2 = (PDF(findind)-PDF(findind-1))/(var(findind)-var(findind-1));
-                        PDF_L2 = PDF_L - dPDF_L*dxL;
-                        dxL2 = PDF_L2./dPDF_L .* (1 - sqrt(1-dPDF_L.*((1-PDF_H2.^2./PDF_L2.^2)./(dPDF_L-dPDF_H2))));
-                        dxH2 = (PDF_H2-sqrt(PDF_H2.^2-2.*dPDF_H2.*(PDF_L2.*dxL2-0.5.*dPDF_L.*dxL2.^2)))./dPDF_H2;
-                        if (nargin==3)&&((upvar-dxH-dxH2)<=max_var)
-                            dxH2 = upvar - dxH - max_var;
-                            dxL2 = (PDF_L2-sqrt(PDF_L2.^2-2.*dPDF_L.*(PDF_H2.*dxH2-0.5.*dPDF_H2.*dxH2.^2)))./dPDF_L;
-                        end
-                        if dxL2>0
-                            upvar   = var(findind)- dxH2;
-                            upval   = PDF_H2 - dPDF_H2 * dxH2;
-                            downvar = var(index) - dxL - dxL2;
-                            downval = PDF_L2 - dPDF_L * dxL2;
-                            dxL = dxL + dxL2;
-                            dxH = dxH + dxH2;
-                        else
-                            upvar   = var(findind);
-                            upval   = PDF(findind);
-                            downvar = var(index) - dxL;
-                            downval = PDF_L2;
+                        % move to edge of current cell
+                        upvar   = var(ind);
+                        PDF_H   = PDF(ind);
+                        downvar = downvar-dxL;
+                        PDF_L = PDF_L - dPDF_L * dxL;
+                        ind = ind - 1;
+
+                        dPDF_H = (PDF(ind)-PDF(ind-1))/(var(ind)-var(ind-1));
+                        dxL = PDF_L./dPDF_L .* (1 - sqrt(1-dPDF_L.*((1-PDF_H.^2./PDF_L.^2)./(dPDF_L-dPDF_H))));
+                        dxH = (PDF_H-sqrt(PDF_H.^2-2.*dPDF_H.*(PDF_L.*dxL2-0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+                        if dxL<0
+                            % the function is not monotonic at the
+                            % upper end. This point is the local
+                            % minimum.
+                            dxL=0;
+                            dxH=0;
                         end
                     end
-                else
-                    if (nargin==3)&&((upvar-dxH)<=max_var)
-                        dxH = upvar - max_var;
-                        dxL = (PDF_L-sqrt(PDF_L.^2-2.*dPDF_L.*(PDF_H.*dxH-0.5.*dPDF_H.*dxH.^2)))./dPDF_L;
-                    end
-                    upvar = upvar - dxH;
-                    upval = PDF_H - dPDF_H * dxH;
-                    downvar = var(index) - dxL;
-                    downval = PDF_L - dPDF_L * dxL;
                 end
-                dW = -dxH + dxL;
+                % move the required dxL and dxH, which is either the original
+                % required value or the residual one from the last cell edge.
+                if (nargin==3)&&(upvar-dxH<=max_var)
+                    % if the movement will skip the constraint variable
+                    % value limit the movement so the upper end of the
+                    % movement will be the constraint value.
+                        dxH = upvar-max_var;
+                        dxL = (PDF_L-sqrt(PDF_L.^2-2.*dPDF_L.*(PDF_H.*dxH-0.5.*dPDF_H.*dxH.^2)))./dPDF_L;
+                end
+                upvar   = upvar - dxH;
+                upval   = PDF_H - dPDF_H * dxH;
+                downvar = downvar - dxL;
+                downval = PDF_L - dPDF_L * dxL;
+
             else
+                % the function is not monotonic in its lower end. This
+                % the local minimum of the function, no movement is
+                % required.
                 downvar = var(index);
                 downval = PDF(index);
                 upval   = PDF(findind) + (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind))*(upvar-var(findind));                
             end            
-        else
+        else %(index==1)
+            % we are at the edge of the array, no movement is possible.
             downvar = var(index);
             downval = PDF(index);
             upval   = PDF(findind) + (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind))*(upvar-var(findind));
         end
     end
+    
 else %strcmp(dir,'up')
-    PDF_L = PDF(findind) + (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind))*(down-var(findind));
-    PDF_H = PDF(end);
-    if (PDF_L>PDF_H)
+    % the upper end of the interval is a grid point
+    PDF_L = PDF(findind) + (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind))*(downvar-var(findind));
+    PDF_H = PDF(index);
+    if (PDF_L>PDF_H) 
+        % leftward movement
         dPDF_L = (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind));
-        dPDF_H = (PDF(end)-PDF(end-1))/(var(end)-var(end-1));
+        dPDF_H = (PDF(index)-PDF(index-1))/(var(index)-var(index-1));
         dxL = PDF_L./dPDF_L .* (1 - sqrt(1-dPDF_L.*((1-PDF_H.^2./PDF_L.^2)./(dPDF_L-dPDF_H))));
         dxH = (PDF_H-sqrt(PDF_H.^2-2.*dPDF_H.*(PDF_L.*dxL-0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
         if (dxL>0)
+            ind   = findind;
+            upvar = var(index);
+            while (dxL > (downvar-var(ind)))
+                % as long as the required movement of the lower end is
+                % beyond var(ind) progress to var(ind) and calculate the
+                % residual required movement:
+                dxL=downvar-var(ind);
+                dxH = (PDF_H-sqrt(PDF_H.^2-2.*dPDF_H.*(PDF_L.*dxL-0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+                if (nargin==3)&&((upvar-dxH)<=max_var)
+                    % if the movement will skip the constraint variable
+                    % value limit the movement so the upper end of the
+                    % movement will be the constraint value.
+                    dxH = upvar-max_var;
+                    dxL = (PDF_L-sqrt(PDF_L.^2-2.*dPDF_L.*(PDF_H.*dxH-0.5.*dPDF_H.*dxH.^2)))./dPDF_L;
+                else
+                    % move to edge of current cell
+                    upvar = upvar - dxH;
+                    PDF_H = PDF_H - dPDF_H * dxH;
+                    downvar = downvar - dxL;
+                    PDF_L = PDF_L - dPDF_L * dxL;
+                    ind = ind - 1;                    
+                    if (ind>1)
+                        % if we did not reach the end of the array
+                        % calculate the residual required movement.
+                        dPDF_L = (PDF(ind+1)-PDF(ind))/(var(ind+1)-var(ind));
+                        dxL = PDF_L./dPDF_L .* (1 - sqrt(1-dPDF_L.*((1-PDF_H.^2./PDF_L.^2)./(dPDF_L-dPDF_H))));
+                        dxH = (PDF_H-sqrt(PDF_H.^2-2.*dPDF_H.*(PDF_L.*dxL-0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+                        if (dxL<0)
+                            % the function is not monotonic, the point
+                            % between the two cell is a local minimum.
+                            dxL=0;
+                            dxH=0;
+                        end                                                       
+                    else
+                        % we reached the end of the array, no further
+                        % movement is possible.
+                        dxL=0;
+                        dxH=0;
+                    end
+                end
+            end
+            % move the required dxL and dxH, which is either the original
+            % required value or the residual one from the last cell edge.
             if (nargin==3)&&((upvar-dxH)<=max_var)
-                dxH = max_var-upvar;
+                % if the movement will skip the constraint variable
+                % value limit the movement so the lower end of the
+                % movement will be the constraint value.
+                dxH = upvar-max_var;
                 dxL = (PDF_L-sqrt(PDF_L.^2-2.*dPDF_L.*(PDF_H.*dxH-0.5.*dPDF_H.*dxH.^2)))./dPDF_L;
             end
-            upvar = upvar - dxH;
-            upval = PDF_H - dPDF_H * dxH;
-            downvar = down - dxL;
+            upvar   = upvar - dxH;
+            upval   = PDF_H - dPDF_H * dxH;
+            downvar = downvar - dxL;
             downval = PDF_L - dPDF_L * dxL;
-        else
-            downvar = down;
+        else % dxL<0 , PDF_L>PDF_H
+            % while PDF_L>PDF_H and the movement should be leftward, the
+            % calculated dxL resulted negative, means rightward movement. We
+            % should not arrive to this point, if we arrive do not move.
             downval = PDF_L;
-            upvar = var(end);
-            upval = PDF(end);
+            upvar   = var(index);
+            upval   = PDF_H;                            
         end
-    else
-        downvar = down;
-        downval = PDF_L;
-        upvar = var(end);
-        upval = PDF(end);
-    end
-end
         
-    
+    else %(PDF_L<=PDF_H) 
+        % rightward movement
+        dPDF_L = (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind));
+        dPDF_H = (PDF(index+1)-PDF(index))/(var(index+1)-var(index));
+        dxL = PDF_L./dPDF_L .* (-1 + sqrt(1-dPDF_L.*((1-PDF_H.^2./PDF_L.^2)./(dPDF_L-dPDF_H))));
+        dxH = (-PDF_H+sqrt(PDF_H.^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+        if (dxL>0)
+            ind   = findind;
+            upvar = var(index);
+            while (dxL > (max_var-downvar))
+                % as long as the required movement of the lower end is
+                % beyond var(ind) progress to var(ind) and calculate the
+                % residual required movement:
+                dxL=var(ind+1)-downvar;
+                dxH = (-PDF_H+sqrt(PDF_H.^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+                if (nargin==3)&&((downvar+dxL)>=max_var)
+                    % if the movement will skip the constraint variable
+                    % value limit the movement so the lower end of the
+                    % movement will be the constraint value.
+                    dxL = max_var-downvar;
+                    dxH = (-PDF_H+sqrt(PDF_H.^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+                else
+                    % move to edge of current cell and calculate residual
+                    % dx
+                    upvar = upvar + dxH;
+                    PDF_H = PDF_H + dPDF_H * dxH;
+                    downvar = downvar + dxL;
+                    PDF_L = PDF_L + dPDF_L * dxL;
+                    ind = ind + 1; 
+                    
+                    dPDF_L = (PDF(ind+1)-PDF(ind))/(var(ind+1)-var(ind));
+                    dxL = PDF_L./dPDF_L .* (-1 + sqrt(1-dPDF_L.*((1-PDF_H.^2./PDF_L.^2)./(dPDF_L-dPDF_H))));
+                    dxH = (-PDF_H+sqrt(PDF_H.^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+                end
+                if (dxL<0)
+                    % the function is not monotonic, the point
+                    % between the two cell is a local minimum.
+                    dxL=0;
+                    dxH=0;
+                end                                                       
+            end
+            % move the required dxL and dxH, which is either the original
+            % required value or the residual one from the last cell edge.
+            if (nargin==3)&&((downvar+dxL)>=max_var)
+                % if the movement will skip the constraint variable
+                % value limit the movement so the lower end of the
+                % movement will be the constraint value.
+                dxL = max_var-downvar;
+                dxH = (-PDF_H+sqrt(PDF_H.^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+            end
+            upvar   = upvar + dxH;
+            upval   = PDF_H + dPDF_H * dxH;
+            downvar = downvar + dxL;
+            downval = PDF_L + dPDF_L * dxL;
+        else % dxL<0 , PDF_L>PDF_H
+            % while PDF_L>PDF_H and the movement should be leftward, the
+            % calculated dxL resulted negative, means rightward movement. We
+            % should not arrive to this point, if we arrive do not move.
+            downval = PDF_L;
+            upvar   = var(index);
+            upval   = PDF_H;                            
+        end
+
+    end
+            
 end
+
+end
+
