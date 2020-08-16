@@ -237,7 +237,7 @@ end
 line = [line '\\\\\n'];
 fprintf(line);
 
-line ='$t_{\\rm ref}$ [MJD]    ';
+line ='$t_{\\rm ref}$ [MJD]';
 for iPeak=1:nPeaks
     line = [line sprintf('& $%6.2f_{-%4.2f}^{+%4.2f}$  ', t0_peaks(peakInd(iPeak)), t0sigmaM(peakInd(iPeak)), t0sigmaP(peakInd(iPeak)))];
 end
@@ -401,7 +401,7 @@ end
 line = [line '\\\\\n'];
 fprintf(line);
 
-line ='$t_{\\rm ref}$ [MJD]    ';
+line ='$t_{\\rm ref}$ [MJD]';
 for iPeak=1:nPeaks
     line = [line sprintf('& $%6.2f_{-%4.2f}^{+%4.2f}$  ', chi2values(peakInd(iPeak)).all.t0, chi2values(peakInd(iPeak)).all.t0sigmaM, chi2values(peakInd(iPeak)).all.t0sigmaP)];
 end
