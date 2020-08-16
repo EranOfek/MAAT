@@ -843,6 +843,10 @@ classdef ClassWCS
     
     % coordinate conversions
     methods
+        
+        
+        
+        
         function [RA,Dec]=xy2coo(W,XY,varargin)
             % Given ClassWCS object, convert X/Y pixel coordinates to RA/Dec
             % Package: @ClassWCS

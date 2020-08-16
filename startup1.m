@@ -135,7 +135,7 @@ for I=1:1:numel(ListDir)
     Add2path{I} = sprintf('%s%s',ComputerPath,Add2path{I});
 end
 
-CatsPath     = sprintf('/euler/catsHTM/');
+CatsPath     = sprintf('/media/last/data1/catsHTM/');
 
 Add2pathCats = ListDirCats;
 for I=1:1:numel(ListDirCats)
