@@ -486,7 +486,7 @@ switch hObject.Tag
         h1.Toolbar.Visible = 'on';
         handles.PlottedInGraph.String = {'1'};
         xlabel(h1,'MJD [days]','FontSize',14);
-        ylabel(h1,'flux [$erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
+        ylabel(h1,'flux [$\rm erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
         h.UserData = h1;
     case 'TwoGraphs'
         h1=axes(h,'Position',[0.1 0.535 0.87 0.435]);
@@ -498,7 +498,7 @@ switch hObject.Tag
         h.UserData = [h1 h2];
         handles.PlottedInGraph.String = {'1','2'};        
         xlabel(h2,'MJD [days]','FontSize',14);
-        htxt=ylabel(h2,'flux [$erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
+        htxt=ylabel(h2,'flux [$\rm erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
         pos = htxt.Position;
         htxt.Position(2) = 1;
         htxt.Units = 'normal';
@@ -515,7 +515,7 @@ switch hObject.Tag
         h.UserData = [h1 h2 h3];
         handles.PlottedInGraph.String = {'1','2','3'};
         xlabel(h3,'MJD [days]','FontSize',14);
-        ylabel(h2,'flux [$erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
+        ylabel(h2,'flux [$\rm erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
 end
 
 % --- Executes update table data upon load or change of band number.
@@ -1598,7 +1598,7 @@ for iaxes=1:Naxes
 end
 
 xlabel(h(Naxes),'MJD [days]');
-hlab=ylabel(h(ceil(Naxes/2)), 'Residual flux [$erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
+hlab=ylabel(h(ceil(Naxes/2)), 'Residual flux [$\rm erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
 hlab.Units = 'normal';
 if rem(Naxes,2)==0
    pos=h(Naxes/2).YLabel.Position;
