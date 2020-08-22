@@ -218,7 +218,7 @@ fprintf('\\hline\n');
 
 line='$R_{*}$ [$R_\\sun$] ';
 for iPeak=1:nPeaks 
-    line = [line sprintf('& $%4.0f_{-%3.0f}^{+%3.0f}$        ', Rs_peaks(peakInd(iPeak)), RssigmaM(peakInd(iPeak)), RssigmaP(peakInd(iPeak)))];
+    line = [line sprintf('& $%4.0f_{-%4.0f}^{+%4.0f}$      ', Rs_peaks(peakInd(iPeak)), RssigmaM(peakInd(iPeak)), RssigmaP(peakInd(iPeak)))];
 end
 line = [line '\\\\\n'];
 fprintf(line);
@@ -382,7 +382,7 @@ fprintf('\\hline\n');
 
 line='$R_{*}$ [$R_\\sun$] ';
 for iPeak=1:nPeaks 
-    line = [line sprintf('& $%4.0f_{-%3.0f}^{+%3.0f}$        ', chi2values(peakInd(iPeak)).all.Rs, chi2values(peakInd(iPeak)).all.RssigmaM, chi2values(peakInd(iPeak)).all.RssigmaP)];
+    line = [line sprintf('& $%4.0f_{-%4.0f}^{+%4.0f}$      ', chi2values(peakInd(iPeak)).all.Rs, chi2values(peakInd(iPeak)).all.RssigmaM, chi2values(peakInd(iPeak)).all.RssigmaP)];
 end
 line = [line '\\\\\n'];
 fprintf(line);
@@ -1196,9 +1196,9 @@ else %strcmp(dir,'up')
         if (dxL>0)
             ind   = findind;
             upvar = var(index);
-            while (dxL > (max_var-downvar))
+            while (dxL > (var(ind+1)-downvar))
                 % as long as the required movement of the lower end is
-                % beyond var(ind) progress to var(ind) and calculate the
+                % beyond var(ind+1) progress to var(ind+1) and calculate the
                 % residual required movement:
                 dxL=var(ind+1)-downvar;
                 dxH = (-PDF_H+sqrt(PDF_H.^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
