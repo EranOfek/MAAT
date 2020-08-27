@@ -1913,7 +1913,7 @@ classdef catsHTM
                    
                     if (~isempty(Fun))
                         if (InPar.Concat)
-                            CR = Fun(Cat,InPar.FunPar{:});
+                            CR = Fun(Cat,Ihtm,InPar.FunPar{:});
                             if (InPar.Verbose)
                                 fprintf('HTM index: %d    Number of objects: %d\n',Ih,size(CR,1));
                             end

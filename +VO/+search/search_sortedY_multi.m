@@ -5,8 +5,8 @@ function [Ind,FlagUnique,MatchedInd]=search_sortedY_multi(Cat,Long,Lat,Radius,Fl
 %              in a [X, Y] array.
 % Input  : - An array of [X, Y] in radians, sorted by Y.
 %            The program doesnot verify that the array is sorted.
-%          - X to search.
-%          - Y to search.
+%          - X to search. Vector or scalar.
+%          - Y to search. Vector or scalar.
 %          - Search radius.
 %            If radius is negative then will add .Dist to the output index
 %            structure.
@@ -28,8 +28,8 @@ function [Ind,FlagUnique,MatchedInd]=search_sortedY_multi(Cat,Long,Lat,Radius,Fl
 %     By : Eran O. Ofek                    Feb 2017
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: Cat=sortrows(rand(10000,2).*1024,2);
-%          Ind=VO.search.search_sortedY_multi(Cat,0.5,0.5,0.01)
-%          [Ind,~,MI]=VO.search.search_sortedY_multi(Cat,Cat(:,1),Cat(:,2),1)
+%          Ind=VO.search.search_sortedY_multi(Cat,0.5,0.5,10)
+%          [Ind,~,MI]=VO.search.search_sortedY_multi(Cat+randn(10000,2).*0.1,Cat(:,1),Cat(:,2),1)
 % Reliable: 2
 
 
