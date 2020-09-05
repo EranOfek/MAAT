@@ -20,7 +20,8 @@ classdef mpDB < handle
     
         %mpDB_dir = ''; 
         DB       = [];  % Table [ID, Name, AstType, Y1, Y2, Obj1, Obj2]
-        PolyDB   = [];
+        PolyDB   = []; 
+        Observatory = '675';  % Palomar
         
         
     end
@@ -667,13 +668,18 @@ classdef mpDB < handle
 
             if isempty(InPar.EphemCatalog)
                 % Generate EphemCatalog
-                EphemCatalog = celestial.mpDB.createEphemCatalog('Save',[]);
+                
+                %EphemCatalog = celestial.mpDB.createEphemCatalog('Save',[]);
+                % load EphemCatalog
+                load EphemCatalog.mat;
+                
             else
                 EphemCatalog = InPar.EphemCatalog;
             end
             
             Nf = numel(EphemCatalog);
             for If=1:1:Nf
+                If
                 [~,~,Data]=celestial.mpDB.loadEphemFile(EphemCatalog(If).ID.','poly',Year);
                 if (If==1)
                     AllData = Data;
