@@ -20,14 +20,14 @@ function Res=cosined(Vec)
 %          celestial.coo.cosined([0 0;1 1]);    % cosine-dir from long/lat
 % Reliable: 1
 %------------------------------------------------------------------------------
-if (length(Vec(1,:))==2),
+if (length(Vec(1,:))==2)
    Alpha = Vec(:,1);
    Delta = Vec(:,2);
    Res          = zeros(length(Vec(:,1)),3);
    Res(:,1)     = cos(Alpha).*cos(Delta);
    Res(:,2)     = sin(Alpha).*cos(Delta);
    Res(:,3)     = sin(Delta);
-elseif (length(Vec(1,:))==3),
+elseif (length(Vec(1,:))==3)
    L1           = Vec(:,1);
    L2           = Vec(:,2);
    L3           = Vec(:,3);

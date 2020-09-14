@@ -18,15 +18,15 @@ function ImSize=naxis(Head)
 
 Nh       = numel(Head);
 Naxis    = Head.getkey('NAXIS');
-if (any(isnan(cell2mat(Naxis)))),
+if (any(isnan(cell2mat(Naxis))))
     % Naxis is not available for all images - return empty
     ImSize = [];
 else
     MaxNaxis = max([Naxis{:}]);
     ImSize   = nan(Nh,MaxNaxis);
 
-    for Ih=1:1:Nh,
-        for Inaxis=1:1:Naxis{Ih},
+    for Ih=1:1:Nh
+        for Inaxis=1:1:Naxis{Ih}
             Tmp = Head(Ih).getkey(sprintf('NAXIS%d',Inaxis));
             ImSize(Ih,Inaxis) = Tmp{1};
         end

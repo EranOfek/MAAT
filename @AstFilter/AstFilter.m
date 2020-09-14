@@ -239,6 +239,39 @@ classdef AstFilter
         
     end
     
+    
+    % construct filters
+    methods (Static)
+        
+        function AF=top_hat(L1,L2)
+            % construct a top hat filter between L1 and L2
+            % Input  : - Lower wavelngth (L1; scalar or a vector). If
+            %            vector than output is an array of AstFilter
+            %            objects.
+            %          - L2
+            % Output : - An AstFilter object
+            
+            
+            Nf = numel(L1);
+            AF = AstFilter(Nf,1);
+            for If=1:1:Nf
+                W = [L1(If)-0.01, linspace(L1(If),L2(If),10), L2(If)+0.01]';
+                T = zeros(size(W));
+                T(2:end-1) = 1;
+                AF(If).family = 'top_hat';
+                AF(If).band   = sprintf('f%05d',If);
+                AF(If).T      = [W,T];
+                AF(If).nT     = AF(If).T;
+                
+            end
+            AF        = AF.norm;
+            AF        = AF.pop_wl;
+        end
+        
+        
+    end
+    
+    
     %----------------------
     %--- plot functions ---
     %----------------------
@@ -451,7 +484,7 @@ classdef AstFilter
             %            the .T and .nT fields.
             
             Nf = numel(AstF);
-            for If=1:1:Nf,
+            for If=1:1:Nf
                 AstF(If).nT = [W, interp1(AstF(If).nT(:,1),AstF(If).nT(:,2),W,varargin{:})];
                 AstF(If). T = [W, interp1(AstF(If).T(:,1), AstF(If).T(:,2), W,varargin{:})];
             end
@@ -514,7 +547,7 @@ classdef AstFilter
                 
                 % interpolate to new grid
                 AstF1(I) = interp(AstF1(If1),Wave);
-                if (nargout>1),
+                if (nargout>1)
                     AstF2(I) = interp(AstF2(If2),Wave);
                 end
             end
@@ -545,7 +578,7 @@ classdef AstFilter
             % Example: AstFilterCat=add_filter(NewF);
                             
             if (nargin==1)
-                OldF = load_check('AstFilterCat.mat');
+                OldF = Util.IO.load_check('AstFilterCat.mat');
             end
             
             Del1 = false;
@@ -645,6 +678,7 @@ classdef AstFilter
                 CumTrapz = cumtrapz(Fnn(:,1),Fnn(:,2));
                 if abs(CumTrapz(end)-1)>(1e-5)
                     warning('Filter #%d, %s %s is not normalized',If, AstF(If).family, AstF(If).band)
+                    CumTrapz = CumTrapz./CumTrapz(end);
                 end
 %                 for i=2:length(CumSum)
 %                     if CumSum(i)<=CumSum(i-1)
@@ -653,13 +687,14 @@ classdef AstFilter
 %                 end
                 for i=2:length(CumTrapz)
                     if CumTrapz(i)<=CumTrapz(i-1)
-                        CumTrapz(i)=CumTrapz(i-1)+eps;
+                        CumTrapz(i)=CumTrapz(i-1)+10.*eps;
                     end
                 end
 %                 AstF(If).half_width = interp1(CumSum+eps,Fnn(1:end-1,1),0.75) - ...
 %                                       interp1(CumSum+eps,Fnn(1:end-1,1),0.25)
-                AstF(If).half_width = interp1(CumTrapz,Fnn(:,1),0.75) - ...
-                                      interp1(CumTrapz,Fnn(:,1),0.25);
+%                 CumTrapz = CumTrapz + 10000.*eps.*(1:1:numel(CumTrapz)).';
+                AstF(If).half_width = interp1(CumTrapz./max(CumTrapz),Fnn(:,1),0.75) - ...
+                                      interp1(CumTrapz./max(CumTrapz),Fnn(:,1),0.25);
 
 
                                   
@@ -685,11 +720,16 @@ classdef AstFilter
             %            Default is '~/matlab/data/+cats/+spec/+filter/AstFilterCat.mat'
             % Outout : - AstFilter object saved.
             
-            if (nargin<2),
-                FileName = sprintf('~%smatlab%sdata%s+cats%s+spec%s+filter%sAstFilterCat.mat',filesep,filesep,filesep,filesep,filesepc,filespec);
+            if (nargin<2)
+                if isunix
+                    FileName = sprintf('~%smatlab%sdata%s+cats%s+spec%s+filter%sAstFilterCat.mat',filesep,filesep,filesep,filesep,filesep,filesep);
+                elseif ispc
+                    data_dir = get_data_folder;
+                    FileName = sprintf('%s%s+cats%s+spec%s+filter%sAstFilterCat.mat',data_dir,filesep,filesep,filesep,filesep,filesep);
+                end
             end
             
-            if (exist(FileName,'file')>0),
+            if (exist(FileName,'file')>0)
                 FileNameOld = sprintf('%s.%s',FileName,date);
                 fprintf('old file name %s exist\n',FileName);
                 fprintf('old file name will be copied into %s\n',FileNameOld);

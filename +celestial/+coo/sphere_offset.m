@@ -50,11 +50,18 @@ end
 if (isempty(Units)==1)
    Units = 'rad';
 end
-
-RA1  = celestial.coo.convertdms(RA1,'gH','r');
-Dec1 = celestial.coo.convertdms(Dec1,'gD','R');
-RA2  = celestial.coo.convertdms(RA2,'gH','r');
-Dec2 = celestial.coo.convertdms(Dec2,'gD','R');
+if size(RA1,2)>1
+    RA1  = celestial.coo.convertdms(RA1,'gH','r');
+end
+if size(Dec1,2)>1
+    Dec1 = celestial.coo.convertdms(Dec1,'gD','R');
+end
+if size(RA2,2)>1
+    RA2  = celestial.coo.convertdms(RA2,'gH','r');
+end
+if size(Dec2,2)>1
+    Dec2 = celestial.coo.convertdms(Dec2,'gD','R');
+end
 
 switch lower(Units)
  case 'rad'

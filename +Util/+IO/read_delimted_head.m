@@ -31,12 +31,13 @@ function [Table,Col]=read_delimted_head(File,varargin)
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 %--------------------------------------------------------------------------
 
-Def.HeadLine   = 2;
-Def.StartLine  = 4;
-Def.Delim      = '|';
-Def.StringHead = {'fits_'}; 
-Def.CommentStyle = '(';
-InPar = set_varargin_keyval(Def,'y','use',varargin{:});
+DefV.HeadLine   = 2;
+DefV.StartLine  = 4;
+DefV.Delim      = '|';
+DefV.StringHead = {'fits_'}; 
+DefV.CommentStyle = '(';
+
+InPar  = InArg.populate_keyval(DefV,varargin,mfilename);
 
 FID = fopen(File,'r');
 for I=1:1:InPar.HeadLine-1

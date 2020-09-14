@@ -26,12 +26,12 @@ CRPIX1 = KeywordVal{3};
 CTYPE1 = KeywordVal{4};
 CD1_1  = KeywordVal{5};
 
-if (isnan(CDELT1)==1),
+if (isnan(CDELT1)==1)
    CDELT1 = CD1_1;
 end
 
 
-switch lower(deblank(CTYPE1)),
+switch lower(deblank(CTYPE1))
  case 'linear'
     Wave = CRVAL1 + (VecPix - CRPIX1).*CDELT1;
 

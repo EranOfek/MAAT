@@ -27,9 +27,10 @@ function [Data,ColCell]=read_ztf_ascii_matched_lc(File,varargin)
 %     By : Eran O. Ofek                    Jun 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: [Data,ColCell]=VO.ZTF.read_ztf_ascii_matched_lc(868);
-%          % example: convert all txt files tp HDF5 including statistical properties
+%          % example: convert all txt files to HDF5 including statistical properties
 %          F=dir('field*.txt');
-%          for I=235:1:numel(F),
+%          for I=1:1:10
+%               %numel(F),
 %               I
 %              FI=str2double(F(I).name(6:11));
 %              FN=sprintf('ztfLCDR1_%06d.hdf5',FI)
@@ -46,6 +47,7 @@ DefV.H5_FileName          = '';
 DefV.H5_DataSetInd        = '/IndAllLC';  
 DefV.H5_DataSetLC         = '/AllLC'; 
 DefV.Nwrite               = 100000;
+DefV.PrepHTM              = false;
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 
@@ -65,6 +67,7 @@ else
 end
 
 
+% Number of sources in ASCII file
 [~,No] = system(sprintf('grep "#" %s | wc -l',FileName));
 No = str2double(No);
 
@@ -211,6 +214,85 @@ if ~isempty(InPar.H5_FileName)
      
 end
 
+
+if (InPar.PrepHTM)
+    % prep HTM index file
+    Nlevel = 9;
+    [HTM,LevList]=celestial.htm.htm_build(Nlevel);
+    Side = LevList(end).side;
+    SearchRadius = (7.*sqrt(2)./2)./RAD + 0.5./RAD + Side;
+    ZTF_Fields=cats.ZTF.ZTF_Fields;
+    CCC = ZTF_Fields.Cat(:,[2 3 1]);
+    CCC(:,1:2) = CCC(:,1:2)./RAD;
+    CCC = sortrows(CCC,2);
+
+    Files = dir('ztfLCDR1_*.hdf5');
+    Tmp=regexp({Files.name},'_|\.','split');
+    ListFields = nan(numel(Tmp),1);
+    for It=1:1:numel(Tmp)
+        ListFields(It) = str2double(Tmp{It}{2});
+    end
+
+    %%
+    Iptr = LevList(end).ptr;
+    Nptr = numel(Iptr);
+    tic;
+    %for I=201:1:Nptr
+    for I=1:1:Nptr
+
+        Ind = Iptr(I);
+
+        [FileName,DataName]=catsHTM.get_file_var_from_htmid('ztfSrcLCDR1',Ind);
+        Found = false;
+        if exist(FileName,'file')>0
+            h5I =h5info(FileName);
+            Found = any(strcmp(DataName,{h5I.Datasets.Name}));
+        end
+        if (~Found)
+            [I, Nptr]
+
+            Ind = Iptr(I);
+
+            [MeanCoo] = celestial.coo.cosined(mean(HTM(Ind).cosd,1));
+            Iztf = VO.search.search_sortedlat(CCC,MeanCoo(1),MeanCoo(2),SearchRadius);
+            FoundFields = CCC(Iztf,3);
+
+            ReadFields = intersect(ListFields,FoundFields);
+            Nrf = numel(ReadFields);
+            Data = zeros(0,NcolInd);
+            for Irf=1:1:Nrf
+                FileNameLC = sprintf('ztfLCDR1_%06d.hdf5',ReadFields(Irf));
+                Data = [Data; h5read(FileNameLC,'/IndAllLC')];
+
+            end
+
+            if ~isempty(Data)
+
+
+                Flag = celestial.htm.in_polysphere(Data(:,1:2),HTM(Ind).cosd);
+                Data = Data(Flag,:);
+
+                Data = sortrows(Data,2);
+
+                if ~isempty(Data)
+                    catsHTM.save_cat(FileName,DataName,Data,2,1000);
+                end
+
+
+            end
+        end
+
+    end
+    toc
+
+    Nsrc = catsHTM.get_nsrc('ztfSrcLCDR1');
+    catsHTM.save_htm_ind(Nlevel,'ztfSrcLCDR1_htm.hdf5',[],ColCellInd,Nsrc(:,1:2));
+    ColUnits={'RAD','RAD','','','','','','','','mag','mag','mag','mag','mag','','','1/day'};
+    catsHTM.save_cat_colcell('ztfSrcLCDR1',ColCellInd,ColUnits)
+
+    %%
+end
+
 end % main function
 
 %%
@@ -248,8 +330,8 @@ function IndAllLC=calc_prop(Data,Nlast,Col)
 
             RStdMag(IobjP) = Util.stat.rstd(Data(IobjP).LC(Col.Mag,:).');
 
-            MaxMag(IobjP) = max(Data(IobjP).LC(Col.Mag,:)) - MeanMag(IobjP);
-            MinMag(IobjP) = MeanMag(IobjP) - min(Data(IobjP).LC(Col.Mag,:));
+            MaxMag(IobjP) = max(Data(IobjP).LC(Col.Mag,:)); % - MeanMag(IobjP);
+            MinMag(IobjP) = min(Data(IobjP).LC(Col.Mag,:));
             Chi2(IobjP)    = sum((Data(IobjP).LC(Col.Mag,:) - MeanMag(IobjP)).^2./Data(IobjP).LC(Col.MagErr,:).^2);
 
             P = timeseries.period_normnl(Data(IobjP).LC( [Col.HMJD, Col.Mag],:).',FreqVec);

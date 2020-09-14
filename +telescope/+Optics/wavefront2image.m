@@ -44,40 +44,40 @@ Def.OverSamp = 2;  % in lambda/d units...
 Def.Norm     = 'sum';
 Def.Pars     = 0.15;
 
-if (nargin==0),
+if (nargin==0)
     SumY    = Def.SumY;
     Support = Def.Support;
     OverSamp= Def.OverSamp;
     Norm    = Def.Norm;
     Pars    = Def.Pars;
-elseif (nargin==1),
+elseif (nargin==1)
     Support = Def.Support;
     OverSamp= Def.OverSamp;   
     Norm    = Def.Norm;
     Pars    = Def.Pars;
-elseif (nargin==2),
+elseif (nargin==2)
     OverSamp= Def.OverSamp;
     Norm    = Def.Norm;
     Pars    = Def.Pars;
-elseif (nargin==3),
+elseif (nargin==3)
     Norm    = Def.Norm;
     Pars    = Def.Pars;
-elseif (nargin==4),
+elseif (nargin==4)
     Pars    = Def.Pars;
-elseif (nargin==5),    
+elseif (nargin==5)    
     % do nothing
 else
     error('Illegal number of input arguments');
 end
 
-if (isempty(SumY)),
+if (isempty(SumY))
     SumY = Def.SumY;
 end
   
 
 Size = size(SumY);
 
-if (ischar(Support)),
+if (ischar(Support))
     [Support,VecX,VecY]=telescope_support(Size,Support,Pars);
 end
 

@@ -19,7 +19,7 @@ function [Stat,Res]=wget_irsa_forcedphot_diff(RA,Dec,varargin)
 % License: GNU general public license version 3
 %     By : Eran O. Ofek                    Mar 2019
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: 
+% Example: [Stat,Res]=VO.ZTF.wget_irsa_forcedphot_diff(234.053641,+39.733489);
 % Reliable: 
 %--------------------------------------------------------------------------
 

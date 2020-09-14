@@ -14,7 +14,7 @@ function Moon=get_moon(JD,GeodCoo)
 % Tested : Matlab 7.3
 %     By : Eran O. Ofek                    Jun 2008
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: Moon=get_moon(2451545,[1 1])
+% Example: Moon=celestial.SolarSys.get_moon(2451545,[1 1])
 % Reliable: 1
 %--------------------------------------------------------------------------
 

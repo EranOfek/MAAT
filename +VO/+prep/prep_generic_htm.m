@@ -16,14 +16,14 @@ function prep_generic_htm(varargin)
 
 RAD = 180./pi;
 
-DefV.CatName             = 'URAT1'; %'PS1ps';  %'NEDz'; %'GAIADR2'; %'HSCv2'; %'SAGE'; %'SWIREz'; %'SDSSoffset'; %'VSTkids';
-DefV.FileBaseName        = 'URAT1'; % 'ned'; %'GaiaDR2'; %'HSC'; %'SpitzerSAGE'; % 'swire'; %'MyTable'; %'kids';
-DefV.FileExtName         = '.fit'; %'h5'; %'txt';%'hdf5'; %'.mat'; %'.fit'; %'.mat'; %'.fit';
+DefV.CatName             = 'URAT1'; % 'GALEX2mEpochs'; %'URAT1'; %'PS1ps';  %'NEDz'; %'GAIADR2'; %'HSCv2'; %'SAGE'; %'SWIREz'; %'SDSSoffset'; %'VSTkids';
+DefV.FileBaseName        = 'urat1'; % 'GALEX2mEpochs'; %'URAT1'; % 'ned'; %'GaiaDR2'; %'HSC'; %'SpitzerSAGE'; % 'swire'; %'MyTable'; %'kids';
+DefV.FileExtName         = '.fit'; %'.fit'; %'h5'; %'txt';%'hdf5'; %'.mat'; %'.fit'; %'.mat'; %'.fit';
 DefV.FileSplit           = '_';
-DefV.FileType            = 'fits'; %'hdf5'; %'ned'; %'hdf5'; %'astcat'; %'astcat'; 'fits'; %'mat'; %'fits';
+DefV.FileType            = 'fits'; %'fits'; %'hdf5'; %'ned'; %'hdf5'; %'astcat'; %'astcat'; 'fits'; %'mat'; %'fits';
 DefV.UseMforMinus        = true; %true;
-DefV.DecSize             = 3;  % deg
-DefV.HTM_Level           = 8;
+DefV.DecSize             = 1;  % deg
+DefV.HTM_Level           = 9;
 DefV.HTMsize             = [];
 
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
@@ -174,7 +174,7 @@ for If=1:1:Nf
     % NED
     
     % URAT1
-    Cat.Cat = Cat.Cat(:,13:25);
+    Cat.Cat = Cat.Cat(:,3:15);
     Cat.ColCell = {'RA','Dec','PosErrScatter','PosErrModel','Nset','Nmeanpos','Epoch','Mag','MagErr','Nmag','PM_RA','PM_Dec','PMErr'};
     Cat.ColUnits = {'rad','rad','mas','mas','','','JYear','mag','mag','','mas/yr','mas/yr','mas/yr'};
     Cat = colcell2col(Cat);
@@ -183,6 +183,8 @@ for If=1:1:Nf
     FFF = abs(Cat.Cat(:,11))<1e-32 &  abs(Cat.Cat(:,12))<1e-32 & abs(Cat.Cat(:,13))<1e-32;
     Cat.Cat(FFF,11:13) = NaN;
   
+    % GALEX2mCoadd
+    
     
     DecRange    = [Dec1(If), Dec2(If)]./RAD;
     VO.prep.build_htm_catalog(Cat.Cat,'HTM_Level',InPar.HTM_Level,'CatName',InPar.CatName,'SaveInd',false,'DecRange',DecRange,...

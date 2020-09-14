@@ -19,7 +19,7 @@ ColCellField  = AstCat.ColCellField;
 ColUnitsField = AstCat.ColUnitsField;
 
 
-DefV.ObjectInd           = '499';
+DefV.ObjectInd           = '499;';   % semicolumn telss horizon its a small body - e.g., '499;'
 DefV.StartJD             = 2451545.5;
 DefV.StopJD              = 2451555.5;
 DefV.DateFormat          = 'JD';
@@ -27,7 +27,7 @@ DefV.StepSize            = 1;
 DefV.StepSizeUnits       = 'd';
 DefV.OutputColumns       = '1,9,10,13,19,20,23,24';  % https://ssd.jpl.nasa.gov/horizons.cgi?s_tset=1#top
 DefV.OutCoo              = 'rad';
-DefV.CENTER              = '@sun'; %code for observer location. Earth -  '500', GAIA - '500@-139479'
+DefV.CENTER              = '500'; %'@sun'; %code for observer location. Earth -  '500', GAIA - '500@-139479', '675' - Palomar
 DefV.WebOptions          = weboptions;
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
@@ -143,12 +143,12 @@ for Icol=1:1:Ncol
             ColCell{Icol}  = 'JD';
             ColUnits{Icol} = 'JD';
             
-        case 'R.A._(ICRF/J2000.0)'
+        case {'R.A._(ICRF/J2000.0)','R.A._(ICRF)'}
             C{Icol} = celestial.coo.convertdms(C{Icol},'SHb',OutCooUnits);
             ColCell{Icol}  = 'RA';
             ColUnits{Icol} = 'OutCooUNits';
         
-        case 'DEC_(ICRF/J2000.0)'
+        case {'DEC_(ICRF/J2000.0)','DEC__(ICRF)'}
             C{Icol} = celestial.coo.convertdms(C{Icol},'SDb',OutCooUnits);
             ColCell{Icol}  = 'Dec';
             ColUnits{Icol} = 'OutCooUNits';
@@ -233,6 +233,7 @@ for Icol=1:1:Ncol
             ColCell{Icol}  = 'N_mag';
             ColUnits{Icol} = 'mag';      
         otherwise
+            ColCell{Icol}
             error('Unknwon column name option');
     end
 end

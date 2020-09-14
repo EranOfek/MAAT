@@ -65,6 +65,8 @@ DefV.RC_ColDec          = 'Dec';
 DefV.RC_ColMag          = 'Mag_G'; %'MagModel'; %'ModelMag';
 DefV.RC_ColColor        = 'Mag_BP-Mag_RP';
 DefV.ApplyPM            = true; %true; %true;
+%Logical for applying parallax correction (barycentric)
+DefV.ApplyParallax      = false;
 DefV.RC_ColPM_RA        = 'PMRA';
 DefV.RC_ColPM_Dec       = 'PMDec';
 DefV.RC_ColPlx          = 'Plx';
@@ -128,8 +130,6 @@ DefV.Plot               = false;
 DefV.MaxExcessNoise     = 10;
 %threshold for proper motion errors(GAIA)
 DefV.MaxPMerr           = [];
-%Logical for applying parallax correction (barycentric)
-DefV.ApplyParallax      = false;
 
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
@@ -498,14 +498,20 @@ for Isim=1:1:Nsim
                 case 'xcrot'
                     % cross match the rotation using histogram of
                     % distances/angles
-                    ResRot = ImUtil.pattern.match_pattern_rot(SubCat(Isub).(CatField),RC.(CatField),...
+                    
+                    %Add a condition that the SubCat isn't empty, In the
+                    %case of empty SubCat - skip
+                    if any(any(SubCat(Isub).(CatField)))
+                        ResRot = ImUtil.pattern.match_pattern_rot(SubCat(Isub).(CatField),RC.(CatField),...
                                                               'CatColX',ColXc,...
                                                               'CatColY',ColYc,...
                                                               'HistDistEdges',InPar.HistDistEdges,...
                                                               'CutRefCat',InPar.CutRefCat,...
                                                               'SearchRangeX',InPar.SearchRangeX,...
                                                               'SearchRangeY',InPar.SearchRangeY);
-
+                    else
+                        continue;
+                    end
                     % go over all rotational possibilities
                     Nrot = size(ResRot.MatchedRot,1);
                     K = 0;
@@ -677,8 +683,8 @@ for Isim=1:1:Nsim
                % thus xy2coo for SIM call function in WorldCooSys, need to
                % fix? now we have to W = ClassWCS.populate(OrigSim); and call
                % xy2coo(W,[X,Y]);
-               ResAst(Isim).WCS  = W;
-               OrigSim(Isim).WCS = W;
+               ResAst(Isim).WCS  = W.WCS;
+               OrigSim(Isim).WCS = W.WCS;
              
            end
            

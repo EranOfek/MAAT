@@ -1,9 +1,12 @@
-function Sim=crdetect_lacos(Sim,varargin)
+function [ImageCR,ImageInterp]=crdetect_lacos(Image,ImageStd,varargin)
 % Detect cosmic rays using the Laplasian Edge Detector (van Dokkum 2001)
-% Package: SIM
+% Package: imUtil.filter
 % Description: Find and remove cosmic rays in an astronomical image
 %              using the L.A.cosmic algorithm (van Dokkum 2001).
-% Input  : - SIM object.
+% Input  : - Image with gain=1.
+%          - Std image (or scalar) corresponding to the input image.
+%            If empty, assume =sqrt(median(Image(:))).
+%            Default is [].
 %          * Arbitrary number of pairs of input arguments ...,key,val,...
 %            The following keywords are available:
 %            'InterpOverCR' - Interpolate the image over CRs.
@@ -12,7 +15,6 @@ function Sim=crdetect_lacos(Sim,varargin)
 %                           Default is 'Bit_CR_LACOS'.
 %            'BackPar'      - Cell array of additional arguments to pass to
 %                           SIM/background.
-%            'GainCorrect'  - Correct image to gain=1. Default is true.
 %            'GainCorrectPar' - Cell array of additional arguments to pass
 %                           to SIM/gain_correct.
 %            'ImageField'   - SIM object image field on which to operate.
@@ -42,18 +44,10 @@ function Sim=crdetect_lacos(Sim,varargin)
 %          S=crdetect_lacos(S);
 % Reliable: 2
 
-import Util.array.*
-import Util.stat.*
+if nargin<2
+    ImageStd = [];
+end
 
-ErrField      = SIM.ErrField;
-ImageField    = SIM.ImageField;
-
-DefV.InterpOverCR       = true;
-DefV.CR_BitName         = 'Bit_CR_LACOS';
-DefV.BackPar            = {};
-DefV.GainCorrect        = true;
-DefV.GainCorrectPar     = {};
-DefV.ImageField         = SIM.ImageField;
 DefV.RepInf             = 1e6;
 DefV.Nsigma             = 10;
 DefV.Fth                = 2;
@@ -65,72 +59,65 @@ DefV.IntMethod          = 2;
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 
-% check if noise image exist
-IsErrExist = isfield_populated(Sim,ErrField);
-Sim(~IsErrExist) = background(Sim(~IsErrExist),InPar.BackPar{:});
 
+if numel(ImageStd)==1
+   % extend noise image into a full image
+   ImageStd = ImageStd + zeros(size(Image));
+end
+
+% check if noise image exist
+if isempty(ImageStd)
+    ImageStd = sqrt(median(Image(:)));
+end
 
 Ftable = [0.9 10;1 6;1.5 3.5; 2 2; 2.5 1.5; 3 1; 5 0.9; 10 0.8];
 if (~isempty(InPar.FWHM))
     InPar.Fth = interp1(Ftable(:,1),Ftable(:,2),InPar.FWHM,'linear');
 end
 
-% correct Gain
-Sim = gain_correct(Sim,InPar.GainCorrectPar{:});
 
 
+% for each image
+Image = Sim(Isim).(InPar.ImageField);
 
-Nsim = numel(Sim);
+% replace inf
+if (~isempty(InPar.RepInf))
+    Image(isinf(Image)) = InPar.RepInf;
+end  
 
-for Isim=1:1:Nsim
-    % for each image
-    Image = Sim(Isim).(InPar.ImageField);
-    
-    % replace inf
-    if (~isempty(InPar.RepInf))
-        Image(isinf(Image)) = InPar.RepInf;
-    end  
+% subsample
+Image2 = imresize(Image,2,'nearest');
+%Image2 = imresize(Image,2,'bicubic');
 
-    % subsample
-    Image2 = imresize(Image,2,'nearest');
-    %Image2 = imresize(Image,2,'bicubic');
+% imlaplacian
+Lap2 = imUtil.filter.imlaplacian(Image2);
 
-    % imlaplacian
-    Lap2 = ImUtil.Im.imlaplacian(Image2);
+% replace L2<0 with 0
+Lap2(Lap2<0) = 0;
 
-    % replace L2<0 with 0
-    Lap2(Lap2<0) = 0;
+% convolve with [1 1;1 1]
 
-    % convolve with [1 1;1 1]
+% return to original sampling
+%LAC = imresize(Lap2,0.5,'nearest');
+LAC = imresize(Lap2,0.5,'bicubic');
+%LAC = Lap2(2:2:end,2:2:end);
 
-    % return to original sampling
-    %LAC = imresize(Lap2,0.5,'nearest');
-    LAC = imresize(Lap2,0.5,'bicubic');
-    %LAC = Lap2(2:2:end,2:2:end);
+S = LAC./(ImageStd.*sqrt(5./4)); % .*Nsigma;
+St = S - medfilt2(S,[5 5]);
 
-    S = LAC./(Sim(Isim).(ErrField).*sqrt(5./4)); % .*Nsigma;
-    St = S - medfilt2(S,[5 5]);
+% fine structure image
+F3 = medfilt2(Image,[3 3]);
+F  = F3 - medfilt2(F3,[7 7]);
+ImageCR = LAC./F>InPar.Fth & St>InPar.Nsigma;
 
-    % fine structure image
-    F3 = medfilt2(Image,[3 3]);
-    F  = F3 - medfilt2(F3,[7 7]);
-    ImageCR = LAC./F>InPar.Fth & St>InPar.Nsigma;
+if (~isempty(InPar.BWmorph))
+    ImageCR = bwmorph(ImageCR,InPar.BWmorph,InPar.BWmorphN);
+    %ImageCR = imdilate(ImageCR,ones(InPar.Increase));
+    %ImageCR(medfilt2(ImageCR,[InPar.Increase])>0) = true;
+end    
 
-    if (~isempty(InPar.BWmorph))
-        ImageCR = bwmorph(ImageCR,InPar.BWmorph,InPar.BWmorphN);
-        %ImageCR = imdilate(ImageCR,ones(InPar.Increase));
-        %ImageCR(medfilt2(ImageCR,[InPar.Increase])>0) = true;
-    end    
-
-    % update mask image
-    Sim(Isim) = bitmask_set(Sim(Isim),ImageCR,InPar.CR_BitName); %,BitType,CombFun)
-    
-    % interpolate over CRs
-    if (InPar.InterpOverCR)
-        Sim(Isim).(ImageField) = ImUtil.Im.iminterp(Image,ImageCR,'IntMethod',InPar.IntMethod);
-    end
-    
+if nargout>1
+    ImageInterp = ImUtil.Im.iminterp(Image,ImageCR,'IntMethod',InPar.IntMethod);
 end
-
 
 

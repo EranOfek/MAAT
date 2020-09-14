@@ -193,6 +193,9 @@ classdef ds9
             % Package: @ds9
             % Input  : null
             % Output : null
+            % Problems: The command ds9 is not recognized by the bash interpreter, try adding an alias
+            %           to the bash profile using ‘vim .bash_profile’ adding the following line to the
+            %           profile ‘alias ds9="open -a /Applications/SAOImageDS9.app/Contents/MacOS/ds9"
             % Example: ds9.open
             % Reliable: 2
             Wait = 3;  % s
@@ -516,6 +519,13 @@ classdef ds9
                 Nim = numel(Images);
             end
             
+%             if (imCl.isimCl(Images))
+%                 %List   = Images;  %.(ImageField);
+%                 IsFits = false;
+%                 Nim = numel(Images);
+%             end
+            
+            
             % create tmp file names
             IsTmp   = false;
             
@@ -534,6 +544,10 @@ classdef ds9
                             'XTENSION','TTYPE1','TFORM1','TTYPE2','TFORM2','TTYPE3','TFORM3'}); % Na'ama, 20180831, to display fits.fz (fpacked) images
                         
                         
+                        Nkey = size(Images(Iim).Header,1);
+                        Bl   = cell(Nkey,1);
+                        [Bl{1:Nkey}] = deal(' ');
+                        Images(Iim).Header = [Images(Iim).Header(:,1:2),  Bl];
                         FITS.write(Images(Iim).(ImageField),TmpName,'Header',Images(Iim).Header);
                     else
                         FITS.write(List{Iim},TmpName);
@@ -1889,6 +1903,9 @@ classdef ds9
              otherwise
                 error('Unknown CooType option');
             end
+            % remove "degrees" from coordinate string for crosshair command
+            CrosshairString = strsplit(String, ' degrees');
+            CrosshairString = CrosshairString{1};
 
 %             CooX  = zeros(N,1);
 %             CooY  = zeros(N,1);
@@ -1906,12 +1923,12 @@ classdef ds9
                CooY(I)   = str2double(SpCoo{3});
 
                %--- set crosshair position to Coordinates ---
-               ds9.system('xpaset -p ds9 crosshair %d %d %s',floor(CooX(I)),floor(CooY(I)),String);
+               ds9.system('xpaset -p ds9 crosshair %d %d %s',CooX(I),CooY(I),CrosshairString);
                %--- get Coordinates of crosshair ---
                [CooIm] = ds9.system('xpaget ds9 crosshair image');
 
                %--- get Pixel value at crosshair position ---
-               [ValStr] = ds9.system('xpaget ds9 data image %d %d 1 1 yes',floor(CooX(I)),floor(CooY(I)));
+               [ValStr] = ds9.system('xpaget ds9 data image %d %d 1 1 yes',CooX(I),CooY(I));
                ValStr = strtrim(ValStr);
                
                %--- Exit crosshair mode ---

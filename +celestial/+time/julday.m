@@ -13,8 +13,8 @@ function JD=julday(Date,Output)
 %            'yyyy-mm-ddTHH:MM:SS' (e.g., '2010-08-11T15:01:56') or:
 %            'yyyy-mm-dd HH:MM:SS'.
 %            If argument is not provided then the program will calculate
-%            the JD for now using the clock computer (without taking into
-%            account the time zone).
+%            the JD for now using the clock UTC computer (time zone
+%            included).
 %          - Output type. Options are:
 %            'JD'  - Julian days (default).
 %            'MJD' - Modified JD (JD-2400000.5).
@@ -35,13 +35,22 @@ if (nargin==0)
    Date = Date(:,[3 2 1 4 5 6]);
 end
 if (isempty(Date))
-   Date = clock;
+   %Date = clock;
+   % read UTC time
+   Date = datevec(datetime('now', 'TimeZone', 'UTC'));
    Date = Date(:,[3 2 1 4 5 6]);
 end
 if (ischar(Date) || iscell(Date))
     %Date=date_str2vec(Date);
     Date = convert.str2date (Date);
-    Date = Date(:,[3 2 1 4 5 6]);
+    SizeD = size(Date,2);
+    if (SizeD==3)
+        Date = Date(:,[3 2 1]);
+    elseif (SizeD==6)
+        Date = Date(:,[3 2 1 4 5 6]);
+    else
+        error('unknown number of columns in date format - support 3 or 6');
+    end
 end
 %    Date = {Date};
 % end

@@ -34,7 +34,7 @@ if (length(JD)==1)
    JD = JD.*ones(N,1);
 end
 
-if (length(TopoPos(:,1))==1)
+if (numel(TopoPos(:,1))==1)
    TopoPos = ones(N,1)*TopoPos;
 end
 
@@ -73,6 +73,7 @@ if (Direction=='h')
 
    OutCoo = [Az, Alt];
 elseif (Direction=='e')
+   % horizontal to equatorial
    Az     = InCoo(:,1);
    Alt    = InCoo(:,2);
    Lat    = TopoPos(:,2);

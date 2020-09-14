@@ -35,7 +35,7 @@ function [PS,Peaks]=period(Data,Freq,varargin)
 %                       'complex'  - The Fourier transform of an unevenly
 %                                    spaced data.
 %                       'Scargle'  - Scargle periodogram (Default).
-%                       'NormNL'   - Normal (Lomb) periodogram with
+%                       'NormNL'   - Normal periodogram with
 %                                    no loops. The no-loops version is
 %                                    faster but requires a lot of memory.
 %                       'ScargleNL'- Scargle periodogram with no loops.

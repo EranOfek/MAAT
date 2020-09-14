@@ -116,6 +116,7 @@ classdef Kernel2
             %              Functional form: e^(-k*r^(1/n))
             % Input  : - Sersic k parameter. Default is 1.
             %          - sersic n parameter. Default is 4 (de Vaucouleurs)
+            %          - Half light radius (Re). Default is 2.
             %          - Stamp size in X direction. Default is 21.
             %          - Stamp Size in Y direction. Default is 21.
             % Output : - A sersic kernel located at the stamp center.
@@ -131,13 +132,14 @@ classdef Kernel2
             %--------------------------------------------------------------------------
 
             %         Radius SizeX SizeY
-            DefPar = [1, 4, 21, 21];
+            DefPar = [1, 4, 2, 21, 21];
             Nvar   = numel(varargin);
             Par    = [varargin{:}, DefPar(Nvar+1:end)];
             SerK   = Par(1);
             SerN   = Par(2);
-            SizeX  = Par(3);
-            SizeY  = Par(4);
+            Re     = Par(3);
+            SizeX  = Par(4);
+            SizeY  = Par(5);
 
             [MatX,MatY] = meshgrid((1:1:SizeX),(1:1:SizeY));
             %X0   = SizeX.*0.5;
@@ -149,7 +151,7 @@ classdef Kernel2
             MatY = MatY - Y0;
             MatR2=MatX.^2 + MatY.^2;
 
-            K = exp(-SerK.*sqrt(MatR2).^(1./SerN));
+            K = exp(-SerK.*sqrt(MatR2./Re).^(1./SerN));
             K = K./sum(K(:));
 
         end % function sersic
@@ -200,6 +202,8 @@ classdef Kernel2
 
         end % function aper
 
+        
+        
         % annulus
         function K=annulus(varargin)
             % Generate an annulus circular kernel.
@@ -247,6 +251,43 @@ classdef Kernel2
             K = K./sum(K(:));
 
         end % function annulus
+        
+        % box
+        function K=box(varargin)
+            % Box kernel
+            % Package: @Kernel2
+            % Input  : - Box X size.
+            %          - Box Y size.
+            %          - Stamp X size.
+            %          - Stamp Y size.
+            % Output : - A box kernel located at the stamp center.
+            % License: GNU general public license version 3
+            % Tested : Matlab R2015b
+            %     By : Eran O. Ofek                    Nov 2019
+            %    URL : http://weizmann.ac.il/home/eofek/matlab/
+            % Example: K = Kernel2.box;
+            % Reliable: 2
+            
+            %        BoxX, BoxY, SizeX SizeY 
+            DefPar = [11, 11 111, 111];
+            Nvar   = numel(varargin);
+            Par    = [varargin{:}, DefPar(Nvar+1:end)];
+            BoxX   = Par(1);
+            BoxY   = Par(2);
+            SizeX  = Par(3);
+            SizeY  = Par(4);
+            
+            K = zeros(SizeY,SizeX);
+            Y1 = round((SizeY - BoxY).*0.5);
+            Y2 = Y1 + BoxY;
+            X1 = round((SizeX - BoxX).*0.5);
+            X2 = X1 + BoxX;
+            
+            K(Y1:Y2,X1:X2) = 1;
+            
+            
+        end % end box function
+        
         
         % line
         function K=line(varargin)

@@ -10,9 +10,9 @@ function [M,E,S]=wmean(Vec,Err,Dim,IgnoreNaN)
 %            dimension along to calculate the weighted mean.
 %            Default is 1.
 %          - Ignore nans. Default is true.
-% Output : - Wighted mean.
-%          - Weighted error on wighted mean.
-%          - Weighted stdandard deviation.
+% Output : - Weighted mean.
+%          - Weighted error on weighted mean.
+%          - Weighted standard deviation.
 % Tested : Matlab 7.0
 %     By : Eran O. Ofek                    Jun 1998
 %    URL : http://weizmann.ac.il/home/eofek/matlab/

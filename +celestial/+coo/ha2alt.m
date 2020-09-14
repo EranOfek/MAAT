@@ -18,6 +18,6 @@ function [Alt,AM]=ha2alt(HA,Dec,Lat)
 %--------------------------------------------------------------------------
 
 Alt = asin(sin(Dec).*sin(Lat) + cos(Dec).*cos(Lat).*cos(HA));
-if (nargout>1),
+if (nargout>1)
     AM  = celestial.coo.hardie(pi./2-Alt);
 end

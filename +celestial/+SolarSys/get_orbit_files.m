@@ -3,8 +3,8 @@ function Data=get_orbit_files(Read,OutType)
 % Package: celestial.SolarSys
 % Description: Get asteroids and comets orbital elements from JPL
 %              and read into a matlab structure.
-% Input  : - 'get' - get the latest orbital elements file from JPL
-%            'use' - use local orbital elements file (default).
+% Input  : - 'wget','get' - get the latest orbital elements file from JPL
+%            'load','use' - use local orbital elements file (default).
 %          - Output type: 'struct'|'orbitalel'. Default is 'orbitalel'
 % Output : - Data structure containing the following fields:
 %            .Cat    : 1 - num. asteroid; 2 - unnum asteroid; 3 - comet.
@@ -58,7 +58,7 @@ Dir     = sprintf('~/matlab/data/SolarSystem/');
 cd(Dir);
 
 switch lower(Read)
- case 'get'
+ case {'wget','get'}
     % get orbital elements from JPL:
     delete(Files{1});
     delete(Files{2});
@@ -137,7 +137,7 @@ Data2.T      = Data2.Epoch - Data2.M./n;
 %--- read orbital elements of comets ---
 FID=fopen('ELEMENTS.COMET_1','r');
 %C=textscan(FID,'%38c %f %f %f %f %f %f %f %12c','Headerlines',2);
-C=textscan(FID,'%45c %f %f %f %f %f %f %f','Headerlines',2);
+C=textscan(FID,'%40c %f %f %f %f %f %f %f','Headerlines',2);
 fclose(FID);
 C{1}=cellstr(C{1});                                                       
 %C{9}=cellstr(C{9});

@@ -1,0 +1,195 @@
+function [DistRA,DistDec,Aux]=convert2equatorial(Long,Lat,varargin)
+% Convert coordinates/name to apparent equatorial coordinates. 
+% Package: celestial
+% Description: Given a coordinates in some coordinate system or equinox,
+%              or an object name, convert it to euatorial coordinates that
+%              includes the atmospheric refraction correction and optional
+%              telescope distortion model (T-point model).
+% Input  : - Longitude in some coordinate system, or object name.
+%            Longitude can be either sexagesimal coordinates or numeric
+%            calue in degress (or radians if InputUnits='rad').
+%            Object name is converted to coordinates using either SIMBAD,
+%            NED or JPL horizons.
+%          - Like the first input argument, but for the latitude.
+%            If empty, or not provided, than the first argument is assumed
+%            to be an object name.
+%          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+%            where keyword are one of the followings:
+%            'InCooType'  - Input coordinates frame:
+%                           'a' - Az. Alt.
+%                           'g' - Galactic.
+%                           'e' - Ecliptic
+%                           - A string start with J (e.g., 'J2000.0').
+%                           Equatorial coordinates with mean equinox of
+%                           date, where the year is in Julian years.
+%                           -  A string start with t (e.g., 't2020.5').
+%                           Equatorial coordinates with true equinox of
+%                           date.
+%                           Default is 'J2000.0'
+%            'NameServer' - ['simbad'] | 'ned' | 'jpl'.
+%            'JD'         - Julian day. This is used for horizontal
+%                           coordinates and H.A.
+%                           Default is now (i.e., celestial.time.julday)
+%            'ObsCoo'     - Observer Geodetic position.
+%                           [East Long (deg), Lat (deg), Height (meters)]
+%            'HorizonsObsCode' - In case solar system ephemerides is
+%                           requested, then this is the Horizons observatory
+%                           code. Default is '500' (geocentric observer).
+%            'DistFun'    - Distortion function handle.
+%                           The function is of the form:
+%                           [DistHA,DistDec]=@Fun(HA,Dec), where all the
+%                           input and output are in degrees.
+%                           Default is empty. If not given return [0,0].
+%            'InputUnits' - Default is 'deg'.
+%            'OutputUnits'- Default is 'deg'
+%            'Temp'       - Default is 15 C.
+%            'Wave'       - Default is 5500 Ang.
+%            'PressureHg' - Default is 760 mm Hg.
+% Output : - Apparent R.A.
+%          - Apparent Dec.
+%          - A structure containing the intermidiate values.
+% License: GNU general public license version 3
+%     By : Eran O. Ofek                    Feb 2020
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: [DistRA,DistDec,Aux]=celestial.coo.convert2equatorial(1,1)
+%          celestial.coo.convert2equatorial('12:00:00','+20:00:00');
+%          celestial.coo.convert2equatorial('M31');
+%          celestial.coo.convert2equatorial('9804;',[],'NameServer','jpl')
+% Reliable: 2
+%--------------------------------------------------------------------------
+
+RAD = 180./pi;
+
+OutCooType = 'J2000.0';  % or 'tdate'
+if nargin<2
+    Lat = [];
+end
+
+InPar = inputParser;
+
+
+addOptional(InPar,'InCooType','J2000.0');   % 'eq' | 'gal' | 'ecl' | 'horizon'
+addOptional(InPar,'NameServer','simbad');  % 'simbad' | 'ned' | 'jpl'
+addOptional(InPar,'JD',celestial.time.julday);  % time for solar system ephemerids
+addOptional(InPar,'ObsCoo',[35 30.6 800]);  % time for solar system ephemerids
+addOptional(InPar,'HorizonsObsCode','500');  % 500 geocentric
+
+addOptional(InPar,'InputUnits','deg');  
+addOptional(InPar,'OutputUnits','deg');  
+addOptional(InPar,'DistFun',[]);  
+
+addOptional(InPar,'Temp',15);  % C
+addOptional(InPar,'Wave',5500);  % Ang
+addOptional(InPar,'PressureHg',760);  % mm Hg
+
+
+parse(InPar,varargin{:});
+
+InPar = InPar.Results;
+
+InPar.ObsCoo(1:2) = convert.angular('deg','rad',InPar.ObsCoo(1:2));
+
+
+
+
+if isempty(Lat)
+    % assume user supplied object name
+    switch lower(InPar.NameServer)
+        case 'simbad'
+            [Long,Lat] = VO.name.server_simbad(Long);  % output in degrees
+            InPar.InputUnits = 'deg';
+        case 'ned'
+            [Long,Lat] = VO.name.server_ned(Long);  % output in degrees
+            InPar.InputUnits = 'deg';
+        case 'jpl'
+            % % semicolumn telss horizon its a small body - e.g., '499;'
+            [JCat]=celestial.SolarSys.jpl_horizons('ObjectInd',Long,'StartJD',InPar.JD-2,'StopJD',InPar.JD+2,'StepSizeUnits','h','CENTER',InPar.HorizonsObsCode);
+            [Long,Lat] = Util.interp.interp_diff_longlat(JCat.Cat(:,JCat.Col.JD),...
+                                                [JCat.Cat(:,JCat.Col.RA),JCat.Cat(:,JCat.Col.Dec)],...
+                                                InPar.JD);     
+            InPar.InputUnits = 'rad';
+        otherwise
+            error('Unknown NameServer option');
+    end
+    
+    % assume input is J2000.0
+    InPar.InCooType     = 'J2000.0';
+    
+    % convert coordinates to radians
+    Long = convert.angular(InPar.InputUnits,'rad',Long);
+    Lat  = convert.angular(InPar.InputUnits,'rad',Lat);
+    
+else
+    if ischar(Long)
+        Long = celestial.coo.convertdms(Long,'SH','r');
+    else
+        Long = convert.angular(InPar.InputUnits,'rad',Long);
+    end
+    if ischar(Lat)
+        Lat = celestial.coo.convertdms(Lat,'SD','r');
+    else
+        Lat  = convert.angular(InPar.InputUnits,'rad',Lat);
+    end
+    
+end
+
+
+
+% convert input coordinates to RA, Dec in default equinox
+[TrueRA,TrueDec] = celestial.coo.convert_coo(Long,Lat,InPar.InCooType,OutCooType,InPar.JD,InPar.ObsCoo);
+
+% applay atmospheric refraction
+[TrueAz,TrueAlt] = celestial.coo.convert_coo(TrueRA,TrueDec,OutCooType,'azalt',InPar.JD,InPar.ObsCoo);
+[Refraction]     = celestial.coo.refraction_wave(TrueAlt,InPar.Wave,InPar.Temp,InPar.PressureHg);
+% add refraction to TrueAlt
+AppAz  = TrueAz;
+AppAlt = TrueAlt + Refraction;
+% reyturn to equatorial coordinates
+[AppRA,AppDec] = celestial.coo.convert_coo(AppAz,AppAlt,'azalt',OutCooType,InPar.JD,InPar.ObsCoo);
+
+% applay distortions
+% calculate LST
+LST = celestial.time.lst(InPar.JD,InPar.ObsCoo(1)./RAD,'a');  % fraction of day
+% calculate HA = LST - RA
+AppHA = 2.*pi.*LST - AppRA;
+% call distortions function
+if isempty(InPar.DistFun)
+    DeltaDistHA  = 0; % deg
+    DeltaDistDec = 0; % deg
+else
+    [DeltaDistHA, DeltaDistDec] = InPar.DistFun(AppHA,AppDec);
+end
+
+DistHA  = AppHA  + DeltaDistHA./RAD;
+DistRA  = AppRA  + DeltaDistHA./RAD;
+DistDec = AppDec + DeltaDistDec./RAD;
+
+Aux.JD        = InPar.JD;
+Aux.LST       = LST;  % fraction of day
+Aux.TrueRA    = TrueRA;  % rad
+Aux.TrueDec   = TrueDec; % rad
+Aux.AppRA     = AppRA;
+Aux.AppDec    = AppDec;
+Aux.AppHA     = AppHA;
+Aux.DistHA    = DistHA;  % rad
+Aux.DistRA    = DistRA;  % rad
+Aux.DistDec   = DistDec; % rad
+Aux.TrueAz    = TrueAz;
+Aux.TrueAlt   = TrueAlt;
+Aux.AppAz     = AppAz;
+Aux.AppAlt    = AppAlt;
+Aux.DeltaDistHA  = DeltaDistHA./RAD;
+Aux.DeltaDistDec = DeltaDistDec./RAD;
+Aux.Refraction   = Refraction;
+
+
+% convert back to output units
+DistRA  = convert.angular('rad',InPar.OutputUnits,DistRA);
+DistDec = convert.angular('rad',InPar.OutputUnits,DistDec);
+
+
+
+
+
+
+

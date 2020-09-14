@@ -24,14 +24,14 @@ function [Sim,BiasSim]=bias_overscan(Sim,varargin)
 %            'OverSecDim'- The dimension over which to collapse the
 %                          overscan region: 'x'|'y'|'auto'.
 %                          The 'auto' option will attempt to find the
-%                          right dimension by usng the longest dimension.
+%                          right dimension by using the longest dimension.
 %                          Default is 'auto'.
 %            'OverSecMethod' - Function handle for the collapse of the
 %                          overscan region method.
 %                          This function should be of the form:
 %                          Fun(Matrix,Dim,OverSePar{:}).
 %                          E.g., @nanmean, @nanmedian, @rmean.
-%                          Default is @rmean.
+%                          Default is @nanmean.
 %            'OverSecPar' - Additional arguments to pass to the
 %                          OverSecMethod function.
 %                          Default is {}.
@@ -124,7 +124,7 @@ for Isim=1:1:Nsim
                     % subtract bias
                     Sim(Isim).(InPar.ExecField{If}) = bsxfun(@minus,Sim(Isim).(InPar.ExecField{If}),BiasLine);
                 else
-                    error('In image %d - Discrepency between image size and bias line length',Isim);
+                    error('In image %d - Discrepancy between image size and bias line length',Isim);
                 end
             end
             

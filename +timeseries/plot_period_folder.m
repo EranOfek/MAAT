@@ -1,4 +1,4 @@
-function VecPeriod=plot_period_folder(PowerSpec,LC,FoldBinSize);
+function VecPeriod=plot_period_folder(PowerSpec,LC,FoldBinSize)
 %------------------------------------------------------------------------------
 % plot_period_folder function                                       timeseries
 % Description: Given the power spectrum and light curve, let the user to

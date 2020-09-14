@@ -36,7 +36,7 @@ elseif (nargin==6)
 elseif (nargin==7)
    % do nothing
 else
-   error('Illigal number of input arguments');
+   error('Illegal number of input arguments');
 end
 
 if (isempty(Title)==1)

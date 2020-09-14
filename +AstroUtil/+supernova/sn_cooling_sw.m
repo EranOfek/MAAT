@@ -1,4 +1,4 @@
-function [L,Tc,R,t_d,Mag,t_min,t_max,t_opac,t_tr,t_delta]=sn_cooling_sw(Time,varargin)
+function [L,Tc,R,t_d,Mag,t_min,t_max,t_opac,t_tr,t_delta,R_BO]=sn_cooling_sw(Time,varargin)
 %--------------------------------------------------------------------------
 % sn_cooling_sw function                                           General
 % Description: Calculate the shock cooling light curve (following the
@@ -67,6 +67,8 @@ function [L,Tc,R,t_d,Mag,t_min,t_max,t_opac,t_tr,t_delta]=sn_cooling_sw(Time,var
 %                            breaks (delta ~ 0.1) and the emmision becomes
 %                            dependent in the envelope density profile.
 %                            The time is given in rest frame.
+%          - R_BO [cm]     - An upper limit for the photosphere radius
+%                            when the model is not valid before t_min. 
 %
 % Comment: The funtion support calculation for multiple cases in one call. 
 %          Input parameters on the same dimension are considered as a set
@@ -135,10 +137,11 @@ end
 % convert input Time to rest frame Time
 t_d = Time./(1+InPar.redshift); 
 
+
 switch lower(InPar.Type)
     case 'rsg'
         % Hydrogen/convective envelope
-        % n=3/2:  
+        n=3/2;  
         %Eqs. 3, 4     
         beta = 0.191;
         if isempty(InPar.E51)
@@ -150,8 +153,6 @@ switch lower(InPar.Type)
         eps1 = 0.027; eps2 = 0.086; 
         T_phRW = 1.61 .* ( (v_sstar/10^8.5).^2 .* t_d.^2 ./ (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)) ).^ eps1 .* ...
             (InPar.Rs.*SolR./1e13).^0.25 ./ (InPar.kappa./0.34).^0.25 .* t_d.^-0.5;  % [eV]
-%         T_phRW = 1.61 .* ( (v_sstar(:).'/10^8.5).^2 .* t_d.^2 ./ (InPar.f_rho(:).' .* InPar.Ms(:).' .* (InPar.kappa(:).'./0.34)) ).^ eps1 .* ...
-%             (InPar.Rs(:).'.*SolR./1e13).^0.25 ./ (InPar.kappa(:).'./0.34).^0.25 .* t_d.^-0.5;  % [eV]
          
         if isempty(InPar.Tcorr)
             Tcorr = 1.1;
@@ -162,8 +163,6 @@ switch lower(InPar.Type)
         
         L_RW   = 2e42 .* ( (v_sstar/10^8.5) .* t_d.^2 ./ (InPar.f_rho .* InPar.Ms .* (InPar.kappa./0.34)) ).^ -eps2 .* ...
             (v_sstar/10^8.5).^2 .* (InPar.Rs.*SolR./1e13) ./ (InPar.kappa./0.34);  % [erg/s]
-%         L_RW   = 2e42 .* ( (v_sstar(:).'/10^8.5) .* t_d.^2 ./ (InPar.f_rho(:).' .* InPar.Ms(:).' .* (InPar.kappa./0.34)) ).^ -eps2 .* ...
-%             (v_sstar(:).'/10^8.5).^2 .* (InPar.Rs(:).'.*SolR./1e13) ./ (InPar.kappa(:).'./0.34);  % [erg/s]
 
         % f_rho = (Menv/Mc)^0.5 for R = 3/2; Mej=M=Menv+Mc:
         Menv = (InPar.f_rho).^2./(1+(InPar.f_rho).^2).*InPar.Ms;
@@ -190,8 +189,14 @@ switch lower(InPar.Type)
                   ((InPar.Rs.*SolR./1e13)./(InPar.kappa./0.34)).^0.25                                     ).^(2./(1-4.*eps1));
         t_max   = t_tr/a;  % [days] - text below eq. 18
 
+        % upper limit for the photosphere radius at early times:
+        % v_BO - the final velocity at the layer where the shock breaks out
+        % \tau_{sh}=c/v_{sh} ~ \tau_0=M\delta_m/(4\pi R_*^2) where
+        % \delta_m=3f_\rho/(n+1)\delta^(n+1) and v_{sh}=v_{s*}\delta^{-\beta n}
+        v_BO = 2.*v_sstar.*(InPar.f_rho./(n+1).*InPar.kappa.*(InPar.Ms.*SolM)./(4*pi/3.*(InPar.Rs.*SolR).^2).*v_sstar./constant.c).^(beta.*n./(1+n-beta.*n));
     case 'bsg'
         % Hydrogen/radiative envelope
+        n = 3;
         % RW Eqs. 13b+15
         beta = 0.186;
         if isempty(InPar.E51)
@@ -242,27 +247,34 @@ switch lower(InPar.Type)
         t_opac = (1.69/0.7*((v_sstar/10^8.5).^2./(InPar.f_rho.*(InPar.kappa./0.34).*InPar.Ms)).^eps1.*...
                   ((InPar.Rs.*SolR./1e13)./(InPar.kappa./0.34)).^0.25                                     ).^(2./(1-4.*eps1));
         t_max   = t_tr/a;  % [d] - text below eq. 18
+
+        % upper limit for the photosphere radius at early times:
+        % v_BO - the final velocity at the layer where the shock breaks out
+        % \tau_{sh}=c/v_{sh} ~ \tau_0=M\delta_m/(4\pi R_*^2) where
+        % \delta_m=3f_\rho/(n+1)\delta^(n+1) and v_{sh}=v_{s*}\delta^{-\beta n}
+        v_BO = 2.*v_sstar.*(InPar.f_rho./(n+1).*InPar.kappa.*(InPar.Ms.*SolM)./(4*pi/3.*(InPar.Rs.*SolR).^2).*v_sstar./constant.c).^(beta.*n./(1+n-beta.*n));
                
 otherwise
     error('Unknown Progenitor option');
 end
 
-R      = sqrt(L./(4.*pi.*SigmaB.*Tc.^4));
+R    = sqrt(L./(4.*pi.*SigmaB.*Tc.^4));      %[cm]
+R_BO = InPar.Rs.*SolR./(Tcorr.^2) + min(R,v_BO.*t_d.*86400./Tcorr.^2); %[cm]
 
 if (nargout>3) && (~isempty(InPar.FiltFam) || ~isempty(InPar.Wave))
     Pc = constant.pc;
     if (isempty(InPar.Wave))
         if (ischar(InPar.FiltFam))
             Filter = AstFilter.get(InPar.FiltFam,InPar.FiltName);
-            WaveRange = (Filter.min_wl: (Filter.max_wl - Filter.min_wl)./100 :Filter.max_wl).';
+            WaveRange = (Filter.min_wl: (Filter.max_wl - Filter.min_wl)/100 :Filter.max_wl).';
         elseif (AstFilter.isAstFilter(InPar.FiltFam))
             Filter = InPar.FiltFam;
-            WaveRange = (Filter.min_wl: (Filter.max_wl - Filter.min_wl)./100 :Filter.max_wl).';        
+            WaveRange = (Filter.min_wl: (Filter.max_wl - Filter.min_wl)/100 :Filter.max_wl).';        
         else
             Filter = InPar.FiltFam;
             Norm = trapz(Filter(:,1),Filter(:,2));
             Filter(:,2) = Filter(:,2)./Norm;
-            WaveRange = (min(Filter(:,1)):range(Filter(:,1))./100:max(Filter(:,1))).';
+            WaveRange = (min(Filter(:,1)):range(Filter(:,1))/100:max(Filter(:,1))).';
         end
         
         redshiftedTc = Tc./(1+InPar.redshift);

@@ -266,6 +266,12 @@ classdef ClassWCS
                         if (any(isnan(CD(:))) && ~all(isnan(CD(:))))
                             CD(isnan(CD)) = 0;
                         end
+                        
+                        % treat cases in which only CDELT is provided
+                        if all(isnan(CD(:)))
+                            CD = diag(W(Ih).WCS.CDELT);
+                            
+                        end
 
 
 
@@ -664,7 +670,7 @@ classdef ClassWCS
                 % number of coef/orders
                 N{Iaxis} = numel(CellCoef{Iaxis});
             
-                for I=1:N{1}
+                for I=1:N{Iaxis}
                     Orders  = CellOrder{Iaxis}(:,I);
                     % requirement also that r-comp is 0.
                     IndexPV = find(all(Tab{Iaxis}(1:2,:)==Orders) & Tab{Iaxis}(3,:)==0) - 1;
@@ -847,6 +853,10 @@ classdef ClassWCS
     
     % coordinate conversions
     methods
+        
+        
+        
+        
         function [RA,Dec]=xy2coo(W,XY,varargin)
             % Given ClassWCS object, convert X/Y pixel coordinates to RA/Dec
             % Package: @ClassWCS

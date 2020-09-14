@@ -46,6 +46,9 @@ else
                 File(Ind).isdir = true;
                 File(Ind).URL   = sprintf('%s/',File(Ind).URL);
 
+                % clean '//' from URLs
+                File(Ind).URL = regexprep(File(Ind).URL,'//','/');
+                
                 if (Recursive)
                     File(Ind).URL = sprintf('%s%s',File(Ind).URL,'/');
                     FileSubDir = ftp_dir_list(File(Ind).URL);
@@ -61,3 +64,4 @@ else
         end
     end
 end
+

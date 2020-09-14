@@ -35,7 +35,8 @@ DefV.LinkColor   = '#0000ff';
 DefV.VLinkColor  = '#ff0000';
 DefV.BodyStatment= '';
 
-InPar = set_varargin_keyval(DefV,'y','use',varargin{:});
+%InPar = set_varargin_keyval(DefV,'y','use',varargin{:});
+InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 
 
@@ -70,12 +71,12 @@ fprintf(FID,'<BODY bgcolor=%s text=%s link%s vlink=%s %s> \n',...
 %--------------------------
 %--- Write html content ---
 %--------------------------
-if (ischar(Content)==1),
+if (ischar(Content)==1)
    % file name
    StrContent = Util.files.file2str(Content,'str');
    fprintf(FID,'%s \n<br>\n',StrContent);
-elseif (iscell(Content)==1),
-   StrContent = fprintf_cell(FID,'%s \n<br>\n',Content);
+elseif (iscell(Content)==1)
+   StrContent = Util.IO.fprintf_cell(FID,'%s \n<br>\n',Content);
 else
    error('Content is of unknown type');
 end

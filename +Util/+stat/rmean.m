@@ -4,7 +4,8 @@ function Mean=rmean(Mat,Dim,Range)
 % Description: Calculate the rubust mean over one of the dimensions.
 % Input  : - A matrix.
 %          - Dimension along to calculate the ribust mean.
-%            Deafult is 1.
+%            If empty calc over all dimensions.
+%            Deafult is 'all'.
 %          - [Low, High] fraction of the values to remove prior to the
 %            mean calculation. Default is [0.05 0.05].
 %            I.e., remove the loewer and upper 5 percentile and
@@ -18,21 +19,29 @@ function Mean=rmean(Mat,Dim,Range)
 % Reliable: 2
 %--------------------------------------------------------------------------
 
-Def.Dim   = 1;
+Def.Dim   = [];
 Def.Range = [0.05 0.05];
-if (nargin==1),
+if (nargin==1)
     Dim   = Def.Dim;
     Range = Def.Range;
-elseif (nargin==2),
+elseif (nargin==2)
     Range = Def.Range;
-elseif (nargin==3),
+elseif (nargin==3)
     % do nothing
 else
     error('Illegal number of input arguments');
 end
 
-SortedMat = sort(Mat,Dim);
-N         = size(Mat,Dim);
+if ischar(Dim)
+    % assume all
+    Mat = Mat(:);
+    SortedMat = sort(Mat);
+    N         = numel(Mat);
+
+else
+    SortedMat = sort(Mat,Dim);
+    N         = size(Mat,Dim);
+end
 
 Low  = ceil(N.*Range(1));
 High = floor(N.*(1-Range(2)));
@@ -42,14 +51,19 @@ if (Low>=High)
     warning('Robust mean return empty as the sample is too small');
     Mean = [];
 else
-    if (Dim==1),
-        Mean = nanmean(SortedMat(Low:High,:),1);
-    elseif (Dim==2),
-        Mean = nanmean(SortedMat(:,Low:High),2);
-    elseif (Dim==3),
-        Mean = nanmean(SortedMat(:,:,Low:High),3);
+    if ischar(Dim)
+        Mean = nanmean(SortedMat(Low:High,:),'all');
     else
-        error('Dim must be 1,2 or 3');
+        
+        if (Dim==1)
+            Mean = nanmean(SortedMat(Low:High,:),1);
+        elseif (Dim==2)
+            Mean = nanmean(SortedMat(:,Low:High),2);
+        elseif (Dim==3)
+            Mean = nanmean(SortedMat(:,:,Low:High),3);
+        else
+            error('Dim must be 1,2 or 3');
+        end
     end
 end
 

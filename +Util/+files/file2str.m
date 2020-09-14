@@ -73,7 +73,7 @@ end
 
 % for each file
 K = 0;    % cell line index
-for If=1:1:Nf,
+for If=1:1:Nf
    switch lower(ReadType)
     case 'str'
        while (feof(FID(If))==0)

@@ -3,7 +3,7 @@
 .S1 { margin: 20px 10px 5px 4px; padding: 0px; line-height: 20px; min-height: 0px; white-space: pre-wrap; color: rgb(60, 60, 60); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 20px; font-weight: bold; text-align: left;  }
 .S2 { margin: 2px 10px 9px 4px; padding: 0px; line-height: 21px; min-height: 0px; white-space: pre-wrap; color: rgb(0, 0, 0); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: normal; text-align: left;  }
 .S3 { margin: 10px 0px 20px; padding-left: 0px; font-family: Helvetica, Arial, sans-serif; font-size: 14px;  }
-.S4 { margin-left: 56px; line-height: 21px; min-height: 0px; text-align: left; white-space: pre-wrap;  }</style></head><body><div class = rtcContent><h1  class = 'S0'><span>The HDF5/HTM large catalog format - catalogs download</span></h1><h2  class = 'S1'><span>Description</span></h2><div  class = 'S2'><span>The HDF5/HTM format designed to store and provide fast access for large astronomical catalogs with &gt;10^6 rows (</span><a href = "http://adsabs.harvard.edu/abs/2018PASP..130g5002S"><span>Soumagnac &amp; Ofek 2018</span></a><span>). The format is based on the HDF5 file format and HDF5 file access utilities which are available on many platforms. The catalog format is designed to allow fast access for cone searches in the range of 1 arcsec to about 1 deg. For fast access, the sources are sorted into </span><a href = "https://arxiv.org/pdf/cs/0701164.pdf"><span>hierarchical triangular mesh</span></a><span> (HTM).</span></div><div  class = 'S2'><span>Access to the catalogs is possible using routines in Python (</span><a href = "https://github.com/maayane/catsHTM"><span>Python catsHTM download</span></a><span>) and MATLAB (</span><a href = "https://webhome.weizmann.ac.il/home/eofek/matlab/doc/install.html"><span>MATLAB Astronomy and Astrophysics Toolbox download</span></a><span>). See also </span><a href = "https://webhome.weizmann.ac.il/home/eofek/matlab/doc/catsHTM.html"><span>catsHTM documentation and examples</span></a><span>.</span></div><h2  class = 'S1'><span>Download the catalogs</span></h2><div  class = 'S2'><span>To download the catalogs:</span></div><ol  class = 'S3'><li  class = 'S4'><span>Download </span><a href = "http://astro.weizmann.ac.il/catsHTM/list.euler.wget"><span style=' text-decoration: underline;'>http://astro.weizmann.ac.il/catsHTM/list.euler.wget</span></a><span> </span><span>by right clicking on the link and choosing "Download linked file"</span></li><li  class = 'S4'><span>Move the dowloaded file to a directory where you would like to have the HDF5 catalogs (e.g. /home/catsHTM/)</span></li><li  class = 'S4'><span>Edit if necessary, </span><span>according to whether you need all catalogs or just a subset </span></li><li  class = 'S4'><span>execute the file from the command line</span><span> by running the following commands:</span></li><li  class = 'S4'><span>chmod a+x list.euler.wget.txt</span></li><li  class = 'S4'><span>Execute: ./list.euler.wget.txt</span></li><li  class = 'S4'><span>Note that each catalog will be downloaded into its own directory.</span></li><li  class = 'S4'><span>Checksums are available from: </span><a href = "http://astro.weizmann.ac.il/catsHTM/list.euler.checksum"><span style=' text-decoration: underline;'>http://astro.weizmann.ac.il/catsHTM/list.euler.checksum</span></a></li></ol><h2  class = 'S1'><span>Credit</span></h2><div  class = 'S2'><a href = "https://webhome.weizmann.ac.il/home/eofek/matlab/doc/catsHTMcredit.html"><span>See catsHTM credit page</span></a><span>.</span></div><h2  class = 'S1'><span>License</span></h2><div  class = 'S2'><span>Unless specified otherwise this code and products are released under the GNU general public license version 3.</span></div><h2  class = 'S1'><span>List of available catalogs</span></h2><div  class = 'S2'><span>Currently, the following catalogs are available in this format (alphabetical order):</span></div><ol  class = 'S3'><li  class = 'S4'><span>2MASS - 2MASS point source catalog</span></li><li  class = 'S4'><span>2MASSxsc - 2MASS extended source catalog</span></li><li  class = 'S4'><span>AAVSO_VSX - AAVSO Variable stars index catalog</span></li><li  class = 'S4'><span>AKARI - AKARI IR catalog</span></li><li  class = 'S4'><span>APASS - AAVSO All Sky Photometric Sky Survey (~5.5x10^7 sources)</span></li><li  class = 'S4'><span>CRTS_Per_var - CRTS periodic variable catalog</span></li><li  class = 'S4'><span>Cosmos - Sources in the Cosmos field</span></li><li  class = 'S4'><span>CRTS_per_var - Periodic variables from CRTS</span></li><li  class = 'S4'><span>DECaLS - DECaLS/DR5</span></li><li  class = 'S4'><span>FIRST - (~9.5x10^5 sources)</span></li><li  class = 'S4'><span>GAIA/DR1 -  (~1.1x10^9 sources).</span></li><li  class = 'S4'><span>GAIA/DR2 - GAIA-DR2</span></li><li  class = 'S4'><span>GALEX -  GALAEX/GR6Plus7 (~1.7x10^8 sources).</span></li><li  class = 'S4'><span>GLADE (galaxy catalog)</span></li><li  class = 'S4'><span>GLIMPSE</span></li><li  class = 'S4'><span>HSCv2 - HST source catalog version 2</span></li><li  class = 'S4'><span>IPHAS/DR2  - IPHAS (H alpha survey of the Galactic plane)</span></li><li  class = 'S4'><span>LAMOST_DR4 - LAMOST/DR4 spectroscopic catalog</span></li><li  class = 'S4'><span>NEDz - NED redshifts</span></li><li  class = 'S4'><span>NVSS - (~1.8x10^6 sources)</span></li><li  class = 'S4'><span>PGC - The PGC galaxy catalog</span></li><li  class = 'S4'><span>PS1 - Pan-STARRS (~2.6x10^9 sources; A cleaned version of the PS1 stack catalog; some missing tiles below declination of zero [being corrected])</span></li><li  class = 'S4'><span>PTFpc - PTF photometric catalog</span></li><li  class = 'S4'><span>ROSATfsc - ROSAT faint source catalog</span></li><li  class = 'S4'><span>Simbad_PM200 - SIMBAD stars with proper motion &gt; 200 mas/yr</span></li><li  class = 'S4'><span>SDSSDR10 - SDSS/DR10 - Primary sources from SDSS/DR10 (last photometric release)</span></li><li  class = 'S4'><span>SDSS/DR14offset - RA/Dec offsets for SDSS primary sources with z&lt;20 mag.</span></li><li  class = 'S4'><span>Simbad_PM200 - SIMBAD stars with proper motion larger than 200 mas/yr</span></li><li  class = 'S4'><span>SkyMapper/DR1 - SkyMapper</span></li><li  class = 'S4'><span>SpecSDSS/DR14 - SDSS spectroscopic catalog</span></li><li  class = 'S4'><span>Spitzer/IRAGgc</span></li><li  class = 'S4'><span>Spitzer/SAGE</span></li><li  class = 'S4'><span>SWIREz</span></li><li  class = 'S4'><span>unWISE - (~2x10^9 sources)</span></li><li  class = 'S4'><span>UCAC4  (~1.1x10^8 sources)</span></li><li  class = 'S4'><span>UKIDSS/DR10</span></li><li  class = 'S4'><span>URAT1</span></li><li  class = 'S4'><span>USNOB1 (not yet available)</span></li><li  class = 'S4'><span>VISTA/Viking/DR3</span></li><li  class = 'S4'><span>VST/ATLAS/DR3</span></li><li  class = 'S4'><span>VST/KiDS/DR3</span></li><li  class = 'S4'><span>WISE (~5.6x10^8 sources)</span></li><li  class = 'S4'><span>XMM - 7.3x10^5 sources) </span><a href = "https://heasarc.gsfc.nasa.gov/W3Browse/xmm-newton/xmmssc.html"><span>3XMM-DR7</span></a><span> (</span><a href = "http://adsabs.harvard.edu/abs/2016A%26A...590A...1R"><span>Rosen et al. 2016; A&amp;A 26, 590</span></a><span>)</span></li></ol><div  class = 'S2'><span>Note that the catalog base name used in the access program may be different than the catalog name.</span></div><h2  class = 'S1'><span></span></h2><div  class = 'S2'><span></span></div><div  class = 'S2'></div></div><br>
+.S4 { margin-left: 56px; line-height: 21px; min-height: 0px; text-align: left; white-space: pre-wrap;  }</style></head><body><div class = rtcContent><h1  class = 'S0'><span>The HDF5/HTM large catalog format - catalogs download</span></h1><h2  class = 'S1'><span>Description</span></h2><div  class = 'S2'><span>The HDF5/HTM format designed to store and provide fast access for large astronomical catalogs with &gt;10^6 rows (</span><a href = "http://adsabs.harvard.edu/abs/2018PASP..130g5002S"><span>Soumagnac &amp; Ofek 2018</span></a><span>). The format is based on the HDF5 file format and HDF5 file access utilities which are available on many platforms. The catalog format is designed to allow fast access for cone searches in the range of 1 arcsec to about 1 deg. For fast access, the sources are sorted into </span><a href = "https://arxiv.org/pdf/cs/0701164.pdf"><span>hierarchical triangular mesh</span></a><span> (HTM).</span></div><div  class = 'S2'><span>Access to the catalogs is possible using routines in Python (</span><a href = "https://github.com/maayane/catsHTM"><span>Python catsHTM download</span></a><span>) and MATLAB (</span><a href = "https://webhome.weizmann.ac.il/home/eofek/matlab/doc/install.html"><span>MATLAB Astronomy and Astrophysics Toolbox download</span></a><span>). See also </span><a href = "https://webhome.weizmann.ac.il/home/eofek/matlab/doc/catsHTM.html"><span>catsHTM documentation and examples</span></a><span>.</span></div><h2  class = 'S1'><span>Download the catalogs</span></h2><div  class = 'S2'><span>To download the catalogs:</span></div><ol  class = 'S3'><li  class = 'S4'><span>Select the catalog you would like to retrieve from the list below (</span><a href = "http://euler1.weizmann.ac.il/catsHTM/catsHTM_catalogs.html"><span>link</span></a><span>)</span></li><li  class = 'S4'><span>Download the wget file associated with the catalog by right clicking on the link and choosing "Download linked file"</span></li><li  class = 'S4'><span>Move the dowloaded file to a directory where you would like to have the HDF5 catalogs (e.g. /home/catsHTM/)</span></li><li  class = 'S4'><span>Execute the file from the command line</span><span> by running the following commands:</span></li><li  class = 'S4'><span>chmod a+x list.euler.wget._unWISE_</span></li><li  class = 'S4'><span>Execute: ./list.euler.wget._unWISE_</span></li><li  class = 'S4'><span>Note that each catalog will be downloaded into its own directory</span></li><li  class = 'S4'><span>For each file, a checksum file is also available.</span></li></ol><h2  class = 'S1'><span>Credit</span></h2><div  class = 'S2'><a href = "https://webhome.weizmann.ac.il/home/eofek/matlab/doc/catsHTMcredit.html"><span>See catsHTM credit page</span></a><span>.</span></div><h2  class = 'S1'><span>License</span></h2><div  class = 'S2'><span>Unless specified otherwise this code and products are released under the GNU general public license version 3.</span></div><h2  class = 'S1'><span>List of available catalogs</span></h2><div  class = 'S2'><a href = "http://euler1.weizmann.ac.il/catsHTM/catsHTM_catalogs.html"><span>List of available catalogs and their download files</span></a></div><div  class = 'S2'></div></div><br>
 <!-- 
 ##### SOURCE BEGIN #####
 %% The HDF5/HTM large catalog format - catalogs download
@@ -23,18 +23,17 @@
 %% Download the catalogs
 % To download the catalogs:
 % 
-% # Download <http://astro.weizmann.ac.il/catsHTM/list.euler.wget http://astro.weizmann.ac.il/catsHTM/list.euler.wget> 
-% by right clicking on the link and choosing "Download linked file"
+% # Select the catalog you would like to retrieve from the list below (<http://euler1.weizmann.ac.il/catsHTM/catsHTM_catalogs.html 
+% link>)
+% # Download the wget file associated with the catalog by right clicking on 
+% the link and choosing "Download linked file"
 % # Move the dowloaded file to a directory where you would like to have the 
 % HDF5 catalogs (e.g. /home/catsHTM/)
-% # Edit if necessary, according to whether you need all catalogs or just a 
-% subset 
-% # execute the file from the command line by running the following commands:
-% # chmod a+x list.euler.wget.txt
-% # Execute: ./list.euler.wget.txt
-% # Note that each catalog will be downloaded into its own directory.
-% # Checksums are available from: <http://astro.weizmann.ac.il/catsHTM/list.euler.checksum 
-% http://astro.weizmann.ac.il/catsHTM/list.euler.checksum>
+% # Execute the file from the command line by running the following commands:
+% # chmod a+x list.euler.wget._unWISE_
+% # Execute: ./list.euler.wget._unWISE_
+% # Note that each catalog will be downloaded into its own directory
+% # For each file, a checksum file is also available.
 %% Credit
 % <https://webhome.weizmann.ac.il/home/eofek/matlab/doc/catsHTMcredit.html See 
 % catsHTM credit page>.
@@ -42,61 +41,8 @@
 % Unless specified otherwise this code and products are released under the GNU 
 % general public license version 3.
 %% List of available catalogs
-% Currently, the following catalogs are available in this format (alphabetical 
-% order):
-% 
-% # 2MASS - 2MASS point source catalog
-% # 2MASSxsc - 2MASS extended source catalog
-% # AAVSO_VSX - AAVSO Variable stars index catalog
-% # AKARI - AKARI IR catalog
-% # APASS - AAVSO All Sky Photometric Sky Survey (~5.5x10^7 sources)
-% # CRTS_Per_var - CRTS periodic variable catalog
-% # Cosmos - Sources in the Cosmos field
-% # CRTS_per_var - Periodic variables from CRTS
-% # DECaLS - DECaLS/DR5
-% # FIRST - (~9.5x10^5 sources)
-% # GAIA/DR1 -  (~1.1x10^9 sources).
-% # GAIA/DR2 - GAIA-DR2
-% # GALEX -  GALAEX/GR6Plus7 (~1.7x10^8 sources).
-% # GLADE (galaxy catalog)
-% # GLIMPSE
-% # HSCv2 - HST source catalog version 2
-% # IPHAS/DR2  - IPHAS (H alpha survey of the Galactic plane)
-% # LAMOST_DR4 - LAMOST/DR4 spectroscopic catalog
-% # NEDz - NED redshifts
-% # NVSS - (~1.8x10^6 sources)
-% # PGC - The PGC galaxy catalog
-% # PS1 - Pan-STARRS (~2.6x10^9 sources; A cleaned version of the PS1 stack 
-% catalog; some missing tiles below declination of zero [being corrected])
-% # PTFpc - PTF photometric catalog
-% # ROSATfsc - ROSAT faint source catalog
-% # Simbad_PM200 - SIMBAD stars with proper motion > 200 mas/yr
-% # SDSSDR10 - SDSS/DR10 - Primary sources from SDSS/DR10 (last photometric 
-% release)
-% # SDSS/DR14offset - RA/Dec offsets for SDSS primary sources with z<20 mag.
-% # Simbad_PM200 - SIMBAD stars with proper motion larger than 200 mas/yr
-% # SkyMapper/DR1 - SkyMapper
-% # SpecSDSS/DR14 - SDSS spectroscopic catalog
-% # Spitzer/IRAGgc
-% # Spitzer/SAGE
-% # SWIREz
-% # unWISE - (~2x10^9 sources)
-% # UCAC4  (~1.1x10^8 sources)
-% # UKIDSS/DR10
-% # URAT1
-% # USNOB1 (not yet available)
-% # VISTA/Viking/DR3
-% # VST/ATLAS/DR3
-% # VST/KiDS/DR3
-% # WISE (~5.6x10^8 sources)
-% # XMM - 7.3x10^5 sources) <https://heasarc.gsfc.nasa.gov/W3Browse/xmm-newton/xmmssc.html 
-% 3XMM-DR7> (<http://adsabs.harvard.edu/abs/2016A%26A...590A...1R Rosen et al. 
-% 2016; A&A 26, 590>)
-% 
-% Note that the catalog base name used in the access program may be different 
-% than the catalog name.
-%% 
-% 
+% <http://euler1.weizmann.ac.il/catsHTM/catsHTM_catalogs.html List of available 
+% catalogs and their download files>
 % 
 %
 ##### SOURCE END #####

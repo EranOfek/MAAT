@@ -112,9 +112,9 @@ end
 Nf = numel(InPar.ExecField);
 
 if (nargout>1)
-    SimBack = simdef(size(Sim));
+    SimBack = SIM(size(Sim));
     if (nargout>2)
-        SimStD = simdef(size(Sim));
+        SimStD = SIM(size(Sim));
     end
 end
 

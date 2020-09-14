@@ -315,6 +315,7 @@ if (~isempty(Cat))
                         %Ireg = (Is+1:1:Ind2(Is));
 
                         CosDist = SinD1(Ireg).*SinD2(Is) + CosD1(Ireg).*CosD2(Is).*(CosR1(Ireg).*CosR2(Is)+SinR1(Ireg).*SinR2(Is));
+                        CosDist = min(CosDist, 1); % to avoid numerical errors
                         %Ifr               = find(CosDist>CosSearchRad);
                         Ifr               = (CosDist>CosSearchRad);
 

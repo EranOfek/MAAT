@@ -30,16 +30,17 @@ function URL=wget_obsid(ObsID,varargin)
 % Example: VO.Chandra.wget_obsid(366)
 % Reliable: 2
 %--------------------------------------------------------------------------
-import Util.IO.*
 
 %DefV.ChandraCat    = [];
-DefV.Download      = 'all';   % {'all'|'primary'|'secondary'}
-DefV.Output        = 'dir';   % {'dir'|'flat'}
+DefV.Download      = 'all';   % {'all'|'primary'|'evt'}
+DefV.Output        = 'dir_full';   % {'dir_full'|'dir_obsid'|'flat'}
 DefV.Ungzip        = true;
 DefV.CopyTo        = [];
+DefV.UnGzip        = true;
 DefV.ReGet         = false;
 DefV.Extra         = '';
 DefV.MaxGet        = 10;
+DefV.BaseURL       = 'https://cxc.cfa.harvard.edu/cdaftp/science/';
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 
@@ -55,13 +56,11 @@ InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 Cat = cats.X.ChandraObs;
 
-
 % Search ObsID
 %Iobs = find([Cat.ObsID]==ObsID);
 Iobs  = find(Cat.Cat.ObsID==ObsID);
 %URL  = Cat(Iobs).URL;
 URL   = Cat.Cat.URL{Iobs};
-
 
 
 PWD = pwd;
@@ -75,27 +74,25 @@ if (exist('primary','dir')>0 && ~InPar.ReGet)
 else
 
     % get file names
+    [List,IsDir,FileName]=www.r_files_url(URL);
     switch lower(InPar.Download)
-        case 'all'
-            List = www.ftp_dir_list(URL);
-            I1 = find(strcmp({List.subdir},''));
-            Ip = find(strcmp({List.subdir},'primary'));
-            Is = find(strcmp({List.subdir},'secondary'));
+        case 'evt'
+            Flag = ~Util.cell.isempty_cell(regexp(List,'_evt2.fits','match'));
+            List = List(Flag);
         case 'primary'
-            List = www.ftp_dir_list(sprintf('%sprimary/',URL));
-            I1   = [];
-            Ip   = (1:1:length(List))';
-            Is   = [];
-        case 'secondary'
-            List = www.ftp_dir_list(sprintf('%ssecondary/',URL));
-            I1   = [];
-            Ip   = [];
-            Is   = (1:1:length(List))';
+            Flag1 = ~Util.cell.isempty_cell(regexp(List,'/primary/','match'));
+            Flag2 = ~Util.cell.isempty_cell(regexp(List,'/oif.fits','match'));
+            Flag  = Flag1 | Flag2;
+            List = List(Flag);
+        case 'all'
+            % keep List as is
         otherwise
             error('Unknown Download option');
     end
 
-
+    Nl = numel(List);
+    ObsIDstr = sprintf('%d',ObsID);
+    
     % download
     switch lower(InPar.Output)
         case 'none'
@@ -106,26 +103,75 @@ else
             if (InPar.Ungzip)
                 system('gzip -d *.gz');
             end
-        case 'dir'
-            www.pwget({List(I1).URL},InPar.Extra,InPar.MaxGet);
-            if (~isempty(Ip))
-                mkdir('primary');
-                cd('primary');
-                www.pwget({List(Ip).URL},InPar.Extra,InPar.MaxGet);
-                if (InPar.Ungzip)
-                    system('gzip -d *.gz');
-                end
-                cd ..
+        case {'dir_obsid','dir_full'}
+            
+            switch lower(InPar.Output)
+                case 'dir_obsid'
+                    if exist(ObsIDstr,'dir')==0
+                        mkdir(ObsIDstr);
+                        cd(ObsIDstr);
+                        DirExist = false;
+                    else
+                        DirExist = true;
+                    end
+                    
+                case 'dir_full'
+                    ListTmp = regexprep(List,InPar.BaseURL,'');
+                    SplitTmp = regexp(ListTmp,'/','split');
+                    DirAO = SplitTmp{1}{1};
+                    DirCat = SplitTmp{1}{2};
+                    
+                    mkdir(DirAO);
+                    cd(DirAO);
+                    mkdir(DirCat);
+                    cd(DirCat);
+                    if exist(ObsIDstr,'dir')==0
+                        mkdir(ObsIDstr);
+                        cd(ObsIDstr);
+                        DirExist = false;
+                    else
+                        DirExist = true;
+                    end    
+                    
+                otherwise
+                    error('Impossible error');
             end
-            if (~isempty(Is))
-                mkdir('secondary');
-                cd('secondary');
-                www.pwget({List(Is).URL},InPar.Extra,InPar.MaxGet);
-                if (InPar.Ungzip)
-                    system('gzip -d *.gz');
+            
+            
+            if ~DirExist
+                % only if ObsIDstr dir doesn't exist
+                MatchP = sprintf('%sao\\d\\d/cat\\d/\\d.{1,5}/primary/*',InPar.BaseURL);
+                MatchS = sprintf('%sao\\d\\d/cat\\d/\\d.{1,5}/secondary/*',InPar.BaseURL);
+                Fp     = ~Util.cell.isempty_cell(regexp(List,MatchP,'match'));
+                Fs     = ~Util.cell.isempty_cell(regexp(List,MatchS,'match'));
+                Ff     = ~Fp & ~Fs;
+                if (sum(Ff)>0)
+                    www.pwget(List(Ff),InPar.Extra,InPar.MaxGet);
+                    if InPar.UnGzip
+                        system('gzip -d *.gz');
+                    end
                 end
-                cd ..
+                if (sum(Fp)>0)
+                    mkdir('primary');
+                    cd('primary');
+                    www.pwget(List(Fp),InPar.Extra,InPar.MaxGet);
+                    if InPar.UnGzip
+                        system('gzip -d *.gz');
+                    end
+                    cd ..
+                end
+                if (sum(Fs)>0)
+                    mkdir('secondary');
+                    cd('secondary');
+                    www.pwget(List(Fs),InPar.Extra,InPar.MaxGet);
+                    if InPar.UnGzip
+                        system('gzip -d *.gz');
+                    end
+                    cd ..
+                end
+
             end
+            
        otherwise
             error('Unknown Output option');
     end

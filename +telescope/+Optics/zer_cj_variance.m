@@ -21,7 +21,7 @@ function [SigmaC,J,C]=zer_cj_variance(MaxJ,varargin)
 % Tested : Matlab R2011b
 %     By : Eran O. Ofek                    May 2014
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
-% Example: [AmpC,J,C]=zer_cj_variance(100);
+% Example: [AmpC,J,C]=telescope.Optics.zer_cj_variance(100);
 % Reliable: 2
 %--------------------------------------------------------------------------
 

@@ -23,9 +23,9 @@ InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 
 %Orbital elements : [q e T i \Omega \omega], in au, days, radians.
-OrbElem = [2.364480109770418, 0.1155130281765817, 2456873.8451829329, ...
-           [13.51502086244268, 121.6635322632723, 83.08494011660611]./RAD];
-JD_TT = celestial.time.julday([23 2 2019; 24 2 2019]);       
+OrbElem = [2.544709153978707, .07987906346370539, 2453193.6614275328, ...
+           [10.58671483589909, 80.40846590069125,   73.1893463033331]./RAD];
+JD_TT = celestial.time.julday([1 1 2005; 12 8 2019; 16 8 2019]);       
        
 %  EC= .1155130281765817   QR= 2.364480109770418   TP= 2456873.8451829329      
 %  OM= 121.6635322632723   W=  83.08494011660611   IN= 13.51502086244268  
@@ -45,7 +45,7 @@ Ilt = 0;
 while ~ConvergedLightTime
     Ilt = Ilt + 1;
     % coordinates of object
-    [ObjectCoo,ObjectVel]=celestial.Kepler.elements2position(JD_TT-LightTime,OrbElem);
+    [ObjectCoo,ObjectVel,Nu]=celestial.Kepler.elements2position(JD_TT-LightTime,OrbElem);
 
     % Coordinates of objects relative to observer
     Coo   = ObjectCoo - ObserverCoo;

@@ -62,7 +62,7 @@ DefV.PlotPar = {'--','Color',[0.8 0.8 0.8]};
 DefV.Par0    = 'guess';
 DefV.Nsim    = 1;
 DefV.MinBkg  = 0.3;
-InPar = set_varargin_keyval(DefV,'y','use',varargin{:});
+InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 OpenNewPlot = true;
 if (isempty(Spec))

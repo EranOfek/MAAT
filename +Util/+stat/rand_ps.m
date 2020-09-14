@@ -26,6 +26,7 @@ function TimeSeries=rand_ps(Time,PowSpec,Errors)
 % Tested : Matlab 5.3
 %     By : Eran Ofek                      Nov 2002
 %    URL : http://weizmann.ac.il/home/eran/matlab/
+% Example: TimeSeries=Util.stat.rand_ps((0:1:100)',[2 1],randn(101,1).*0.1);
 % Reliable: 2
 %-----------------------------------------------------------------------------
 FreqOverSampling = 2;                % frequency over sampling

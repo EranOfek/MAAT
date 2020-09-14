@@ -1,0 +1,49 @@
+function [Prop]=ztf_filename2prop(FileName,varargin)
+% Extract informat
+% Package: VO
+% Description: 
+% Input  : - 
+%          * Arbitrary number of pairs of arguments: ...,keyword,value,...
+%            where keyword are one of the followings:
+% Output : - 
+% License: GNU general public license version 3
+%     By : Eran O. Ofek                    Oct 2019
+%    URL : http://weizmann.ac.il/home/eofek/matlab/
+% Example: 
+% Reliable: 
+%--------------------------------------------------------------------------
+
+
+DefV. = 
+InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
+if ~iscell(FileName)
+    FileName = {FileName};
+end
+Nfile = numel(FileName);
+
+for Ifile=1:1:Nfile
+    Tmp = regexp(FileName{Ifile},'_','split');
+    switch lower(Tmp{end})
+        case 'psfcat.fits'
+            Prop(Ifile).FileType = 'psfcat';
+            Prop(Ifile).Field    = str2double(Tmp{3});
+            Prop(Ifile).Filter   = Tmp{4};
+            Prop(Ifile).CCDID    = str2double(Tmp{5}(2:3));
+            Prop(Ifile).QuadID   = str2double(Tmp{7}(2));
+            Date    = datevec(Tmp{2},'yyyymmdd');
+            
+            FracStr = Tmp{2}(9:end);
+            Ndigit  = numel(FracStr);
+            Frac    = str2double(FracStr)./(10.^Ndigit);
+            Prop(Ifile).Year    = Date(1);
+            Prop(Ifile).Month   = Date(2);
+            Prop(Ifile).Day     = Date(3);
+            Prop(Ifile).Frac    = Frac;
+            Prop(Ifile).JD      = convert.date2jd([Prop(Ifile).Day, Prop(Ifile).Month, Prop(Ifile).Year, Frac]);
+        otherwise
+            error('Unsupported ztf file type');
+    end
+end
+            
+            
