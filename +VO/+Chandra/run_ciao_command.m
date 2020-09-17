@@ -59,7 +59,7 @@ PWD = pwd;
 
 Nfile = numel(FullPath);
 % run for all dir
-for Ifile=101:1:1000,
+for Ifile=1001:1:5000,
     %Nfile
     Ifile
     tic;
