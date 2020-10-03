@@ -1,6 +1,6 @@
-function [varargout]=fmincon_my(Fun,varargin)
+function [varargout]=patternsearch_my(Fun,varargin)
 %------------------------------------------------------------------------------
-% fmincon_my function                                                FitFun
+% patternsearch_my function                                                FitFun
 % Description: A version of the built in fminunc.m function in which it
 %              is possible to pass additional parameters to the function,
 %              with no need for nested functions.
@@ -18,8 +18,8 @@ function [varargout]=fmincon_my(Fun,varargin)
 %     By : Eran O. Ofek                    Apr 2013
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: Fun = @(X,A)(X-A).^2
-%          [X,Fval]=Util.fit.fmincon_my({Fun,2},0.7);
-%          [X,Fv,E,O]=Util.fit.fmincon_my(@sin,0.7);
+%          [X,Fval]=Util.fit.patternsearch_my({Fun,2},0.7);
+%          [X,Fv,E,O]=Util.fit.patternsearch_my(@sin,0.7);
 % Reliable: 2
 %------------------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ FunPar  = Fun(2:end);
  
 varargout = cell(nargout,1);
 
-[varargout{:}] = fmincon(@call_fun,varargin{:});
+[varargout{:}] = patternsearch(@call_fun,varargin{:});
 
 
    function Y=call_fun(X)
