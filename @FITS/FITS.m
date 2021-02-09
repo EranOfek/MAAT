@@ -1468,10 +1468,10 @@ classdef FITS
             switch InPar.DataType
                  case {'int8',8}
                     DataType = 'uint8';
-                 case {'int16',16}
+                 case {'uint16','int16',16}
                      % apparently uint16 is not supported?! in 2017b
                     DataType = 'int16';
-                 case {'int32',32}
+                 case {'uint32','int32',32}
                      % apparently uint16 is not supported?! in 2017b
                     DataType = 'int32';
                  case {'int64',64}

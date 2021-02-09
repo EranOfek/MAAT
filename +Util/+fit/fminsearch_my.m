@@ -18,7 +18,7 @@ function [varargout]=fminsearch_my(Fun,varargin)
 %     By : Eran O. Ofek                    Apr 2013
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: Fun = @(X,A)(X-A).^2
-%          [X,Fval]=Util.fit.fminsearch_my({Fun,2},0.7);
+%          [X,Fval]=Util.fit.fminsearch_my({Fun,2},0.7); % set A=2
 %          [X,Fv,E,O]=Util.fit.fminsearch_my(@sin,0.7);
 % Reliable: 2
 %------------------------------------------------------------------------------

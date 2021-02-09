@@ -16,11 +16,11 @@ function prep_generic_htm(varargin)
 
 RAD = 180./pi;
 
-DefV.CatName             = 'URAT1'; % 'GALEX2mEpochs'; %'URAT1'; %'PS1ps';  %'NEDz'; %'GAIADR2'; %'HSCv2'; %'SAGE'; %'SWIREz'; %'SDSSoffset'; %'VSTkids';
-DefV.FileBaseName        = 'urat1'; % 'GALEX2mEpochs'; %'URAT1'; % 'ned'; %'GaiaDR2'; %'HSC'; %'SpitzerSAGE'; % 'swire'; %'MyTable'; %'kids';
-DefV.FileExtName         = '.fit'; %'.fit'; %'h5'; %'txt';%'hdf5'; %'.mat'; %'.fit'; %'.mat'; %'.fit';
+DefV.CatName             = 'GAIAEDR3'; %'URAT1'; % 'GALEX2mEpochs'; %'URAT1'; %'PS1ps';  %'NEDz'; %'GAIADR2'; %'HSCv2'; %'SAGE'; %'SWIREz'; %'SDSSoffset'; %'VSTkids';
+DefV.FileBaseName        = 'GaiaDR2'; %'urat1'; % 'GALEX2mEpochs'; %'URAT1'; % 'ned'; %'GaiaDR2'; %'HSC'; %'SpitzerSAGE'; % 'swire'; %'MyTable'; %'kids';
+DefV.FileExtName         = '.hdf5'; %'.fit'; %'h5'; %'txt';%'hdf5'; %'.mat'; %'.fit'; %'.mat'; %'.fit';
 DefV.FileSplit           = '_';
-DefV.FileType            = 'fits'; %'fits'; %'hdf5'; %'ned'; %'hdf5'; %'astcat'; %'astcat'; 'fits'; %'mat'; %'fits';
+DefV.FileType            = 'hdf5'; %'fits'; %'hdf5'; %'ned'; %'hdf5'; %'astcat'; %'astcat'; 'fits'; %'mat'; %'fits';
 DefV.UseMforMinus        = true; %true;
 DefV.DecSize             = 1;  % deg
 DefV.HTM_Level           = 9;
@@ -174,17 +174,22 @@ for If=1:1:Nf
     % NED
     
     % URAT1
-    Cat.Cat = Cat.Cat(:,3:15);
-    Cat.ColCell = {'RA','Dec','PosErrScatter','PosErrModel','Nset','Nmeanpos','Epoch','Mag','MagErr','Nmag','PM_RA','PM_Dec','PMErr'};
-    Cat.ColUnits = {'rad','rad','mas','mas','','','JYear','mag','mag','','mas/yr','mas/yr','mas/yr'};
-    Cat = colcell2col(Cat);
-    Cat.Cat(:,1:2) = Cat.Cat(:,1:2)./RAD;
-    Cat = sortrows(Cat,'Dec');
-    FFF = abs(Cat.Cat(:,11))<1e-32 &  abs(Cat.Cat(:,12))<1e-32 & abs(Cat.Cat(:,13))<1e-32;
-    Cat.Cat(FFF,11:13) = NaN;
+%     Cat.Cat = Cat.Cat(:,3:15);
+%     Cat.ColCell = {'RA','Dec','PosErrScatter','PosErrModel','Nset','Nmeanpos','Epoch','Mag','MagErr','Nmag','PM_RA','PM_Dec','PMErr'};
+%     Cat.ColUnits = {'rad','rad','mas','mas','','','JYear','mag','mag','','mas/yr','mas/yr','mas/yr'};
+%     Cat = colcell2col(Cat);
+%     Cat.Cat(:,1:2) = Cat.Cat(:,1:2)./RAD;
+%     Cat = sortrows(Cat,'Dec');
+%     FFF = abs(Cat.Cat(:,11))<1e-32 &  abs(Cat.Cat(:,12))<1e-32 & abs(Cat.Cat(:,13))<1e-32;
+%     Cat.Cat(FFF,11:13) = NaN;
   
     % GALEX2mCoadd
     
+    %GAIAEDR3
+  
+    Cat.ColCell = {'RA','Dec','Epoch','ErrRA','ErrDec','Plx','ErrPlx','PMRA','ErrPMRA','PMDec','ErrPMDec','RA_Dec_Corr','NobsAst','ExcessNoise','ExcessNoiseSig','Chi2Ast','DofAst','NGphot','Mag_G','ErrMag_G','Mag_BP','ErrMag_BP','Mag_RP','ErrMag_RP','BPRP_Excess','RV','ErrRV','Teff','LogG','FeH'};
+    Cat.ColUnits = {'rad','rad','JYear','mas','mas','mas','mas','mas/yr','mas/yr','mas/yr','mas/yr','','','mas','','','','','AB','AB','AB','AB','AB','AB',   '','km/s','km/s','K','',''};
+
     
     DecRange    = [Dec1(If), Dec2(If)]./RAD;
     VO.prep.build_htm_catalog(Cat.Cat,'HTM_Level',InPar.HTM_Level,'CatName',InPar.CatName,'SaveInd',false,'DecRange',DecRange,...
