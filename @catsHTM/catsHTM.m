@@ -449,6 +449,16 @@ classdef catsHTM
             I = I + 1;
             Data(I).Status  = true;
             Data(I).iscatsHTM  = true;
+            Data(I).Dir  = '/GAIA/DRE3/';
+            Data(I).Name = 'GAIAEDR3';
+            Data(I).Desc = 'GAIA-EDR3 catalog';
+            Data(I).Ref  = 'Gaia collaboration et al. 2020';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2020arXiv201201533G/abstract';
+            
+            
+            I = I + 1;
+            Data(I).Status  = true;
+            Data(I).iscatsHTM  = true;
             Data(I).Dir  = '/GALEX/DR6Plus7/';
             Data(I).Name = 'GALEX';
             Data(I).Desc = 'GALEX-DR6Plus7 source catalog';
@@ -721,7 +731,7 @@ classdef catsHTM
             Data(I).Name = 'ztfLCDR1';
             Data(I).Desc = 'ZTF-DR1 light curve catalog (non catsHTM)';
             Data(I).Ref  = 'Ofek et al. 2020';
-            Data(I).RefLink = '';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2020MNRAS.499.5782O/abstract';
             
             I = I + 1;
             Data(I).Status  = true;
@@ -730,7 +740,7 @@ classdef catsHTM
             Data(I).Name = 'ztfSrcLCDR1';
             Data(I).Desc = 'ZTF-DR1 stellar variability catalog';
             Data(I).Ref  = 'Ofek et al. 2020';
-            Data(I).RefLink = '';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2020MNRAS.499.5782O/abstract';
             
             I = I + 1;
             Data(I).Status  = true;
@@ -739,7 +749,7 @@ classdef catsHTM
             Data(I).Name = 'ztfDR1var';
             Data(I).Desc = 'ZTF-DR1 variable star candidates';
             Data(I).Ref  = 'Ofek et al. 2020';
-            Data(I).RefLink = '';
+            Data(I).RefLink = 'https://ui.adsabs.harvard.edu/abs/2020MNRAS.499.5782O/abstract';
             
         end
         
@@ -766,7 +776,7 @@ classdef catsHTM
             Data = catsHTM.catalogs;
             Nd = numel(Data);
             
-            for Id=41:1:41
+            for Id=12:1:12
                 %1:1:Nd
                 if Data(Id).Status
                     Data(Id)
@@ -817,6 +827,7 @@ classdef catsHTM
         
         function catalogs_html(FileName)
             % generate an html table of catalogs
+            % Example: catsHTM.catalogs_html
            
             if nargin==0
                 FileName = 'catsHTM_catalogs.html';
@@ -831,8 +842,13 @@ classdef catsHTM
             Text = sprintf('%s <table><tr><th> Name </th> <th> Description</th> <th>wget file</th> <th>checksum</th> <th> Nsrc</th><th>Reference</th> </tr>\n',Text); 
             for I=1:1:N
                 I
-                Nsrc = catsHTM.nsrc(Data(I).Name);
-                Nsrc = nansum(Nsrc(:,2));
+               
+                if Data(I).iscatsHTM
+                    Nsrc = catsHTM.nsrc(Data(I).Name);
+                    Nsrc = nansum(Nsrc(:,2));
+                else
+                    Nsrc = NaN;
+                end
                 
                 WgetFile = sprintf('list.euler.wget.%s',strrep(Data(I).Dir,'/','_'));
                 ChecksumFile = sprintf('list.euler.checksum.%s',strrep(Data(I).Dir,'/','_'));
@@ -1913,7 +1929,7 @@ classdef catsHTM
                    
                     if (~isempty(Fun))
                         if (InPar.Concat)
-                            CR = Fun(Cat,InPar.FunPar{:});
+                            CR = Fun(Cat,Ihtm,InPar.FunPar{:});
                             if (InPar.Verbose)
                                 fprintf('HTM index: %d    Number of objects: %d\n',Ih,size(CR,1));
                             end

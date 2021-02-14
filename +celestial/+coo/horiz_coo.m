@@ -1,4 +1,4 @@
-function OutCoo=horiz_coo(InCoo,JD,TopoPos,Direction)
+function [OutCoo,Lat]=horiz_coo(InCoo,JD,TopoPos,Direction)
 % Celestial equatorial coordinates to horizontal coordinates
 % Package: celestial.coo
 % Description: Convert Right Ascension and Declination to horizontal
@@ -15,6 +15,8 @@ function OutCoo=horiz_coo(InCoo,JD,TopoPos,Direction)
 %            'h' - from equatorial to horizontal (default).
 %            'e' - from horizontal to equatorial.
 % Output : - two column matrix of output coordinates.
+%          * If two output arguments are requested than return the two
+%            coordinates seperatly.
 % Tested : matlab 5.3
 %     By : Eran O. Ofek                    Aug 1999
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
@@ -98,6 +100,10 @@ end
 
 
 
+if nargout>1
+    Lat = OutCoo(:,2);
+    OutCoo  = OutCoo(:,1);
+end
 
 
 

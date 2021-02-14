@@ -56,7 +56,7 @@ DefV.UnitsDec           = [];       % [], 'deg','r'
 %--- Reference catalog ---
 DefV.RefCat             = 'GAIADR2';  %@get_ucac4; %@wget_ucac4;   % string, function, struct
 DefV.RCrad              = 0.8./RAD; %0.8/RAD;   % [radian]
-DefV.RefCatMagRange     = [12 19.0]; %19.0];
+DefV.RefCatMagRange     = [14 19.0]; % 12 19.0];
 DefV.UseMagRangeCat     = false;
 DefV.MaxRefStars        = 15000;
 DefV.Shape              = 'box';

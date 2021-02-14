@@ -50,7 +50,7 @@ function [SN]=sn_spec(Spec,varargin)
 %     By : Eran O. Ofek                    May 2017
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: Spec = AstSpec.get_galspec('Gal_E');
-%          Spec = scale2mag(Spec,21);
+%          Spec = scale2mag(Spec,20.5);
 %          Spec.synphot('SDSS','r','AB')
 %          SN=telescope.sn.sn_spec(Spec)
 % Reliable: Under tests
@@ -64,24 +64,24 @@ if (isempty(Spec))
     Spec = scale2mag(Spec,20);
 end
 
-DefV.RN                   = 2.5;   % [e-]
+DefV.RN                   = 3;   % [e-]
 DefV.Gain                 = 1.5;  % [e-/ADU]
 DefV.ExpTime              = 900;  % [s]
 DefV.SubExp               = 1;
-DefV.SlitWidth            = 1.5;    % [arcsec]
+DefV.SlitWidth            = 3;    % [arcsec]
 DefV.ExtraEff             = 0.8;  % Additional inefficiencies efficiency
 DefV.DC                   = 1e-2; % [e-/pix/s]
 DefV.Back                 = 'Gemini_SkyBack_dark';   % [cgs/A per arcsec]
 DefV.PixScale             = 0.6;  % [arcsec/pix]
-DefV.Seeing               = 1.2;    % FWHM [arcsec]
-DefV.SpecRes              = @(X) X./200; % @(X) 10+0.5.*X./200;  % 25;    % FWHM [Ang], or vec or fun
-DefV.SpecSampling         = 12;      % Ang/pix; [] don't resample
+DefV.Seeing               = 2;    % FWHM [arcsec]
+DefV.SpecRes              = @(X) X./3000; % @(X) 10+0.5.*X./200;  % 25;    % FWHM [Ang], or vec or fun
+DefV.SpecSampling         = 0.8;      % Ang/pix; [] don't resample
 DefV.AirMass              = 1.4;   % 0 for space
 DefV.AtmosphericExt       = 'KPNO';
-DefV.Aper                 = 220;    % cm
+DefV.Aper                 = 254;    % cm
 DefV.TelTh                = 0.85;   % or [Wave, Th]
-DefV.SpecTh               = 0.8;   % or [Wave, Th]
-DefV.QE                   = 0.9;   % or [Wave, Th]
+DefV.SpecTh               = 0.6;   % or [Wave, Th]
+DefV.QE                   = [3000 0.2; 3500 0.45; 4000 0.9; 4200 0.92;5100 0.88; 7600 0.93;8500 0.9;9000 0.8;10000 0.3]; %0.9;   % or [Wave, Th]
 DefV.ExtractionSemiWidth  = 5;    % spatial pixels in which to fit PSF
 DefV.SpecRange            = [3500 9000];
 DefV.SpecFluxUnits        = 'cgs/A';
@@ -114,7 +114,7 @@ else
     
     SamplingVec = (StartW:InPar.SpecSampling:EndW)';
     
-    % need to interpolate and sum flux withing each resolution element
+    % need to interpolate and sum flux within each resolution element
     SamplingO           = diff(Spec(:,InPar.ColW));
     SamplingO           = [SamplingO(1); SamplingO; SamplingO(end)];
     SamplingO           = 0.5.*(SamplingO(1:end-1) + SamplingO(2:end));
@@ -158,7 +158,7 @@ Back(:,2)          = convert.flux(Back(:,2),         InPar.BackFluxUnits,'ph/A',
 % get atmospheric extinction [mag/airmass]
 AtmExt = AstSpec.get_atmospheric_extinction(InPar.AtmosphericExt,'mat');
 % resample the atmospheric extinction
-[~,AtmExt] = AstroUtil.spec.eq_sampling(Spec(:,[InPar.ColW, InPar.ColF]),AtmExt,Spec(:,InPar.ColW),InPar.InterpMethod);
+AtmExt = [Spec(:,InPar.ColW), interp1(AtmExt(:,1),AtmExt(:,2),Spec(:,InPar.ColW),InPar.InterpMethod)];
 % apply atmopsheric extinction
 Spec(:,InPar.ColF) = Spec(:,InPar.ColF).*  10.^(-0.4.*AtmExt(:,2).*InPar.AirMass);
 
@@ -197,7 +197,8 @@ if (numel(InPar.QE)==1)
     Back(:,2)          = Back(:,2)         .*InPar.QE;
 else
     % resample throughput
-    [~,InPar.QE] = AstroUtil.spec.eq_sampling(Spec(:,[InPar.ColW, InPar.ColF]),InPar.QE,InPar.InterpMethod);
+    %[~,InPar.QE] = AstroUtil.spec.eq_sampling(Spec(:,[InPar.ColW, InPar.ColF]),InPar.QE,InPar.InterpMethod);
+    InPar.QE = [Spec(:,InPar.ColW), interp1(InPar.QE(:,1),InPar.QE(:,2),Spec(:,InPar.ColW),InPar.InterpMethod)];
     Spec(:,InPar.ColF) = Spec(:,InPar.ColF).*InPar.QE(:,2);
     Back(:,2)          = Back(:,2)         .*InPar.QE(:,2);
 end
@@ -206,9 +207,11 @@ end
 Sampling           = diff(Spec(:,InPar.ColW));
 Sampling           = [Sampling(1); Sampling; Sampling(end)];
 Sampling           = 0.5.*(Sampling(1:end-1) + Sampling(2:end));   % [Ang/pix]
+
 Spec(:,InPar.ColF) = Spec(:,InPar.ColF).*Sampling;   % [ph/pix/s]
-Back(:,2)          = Back(:,2).*InPar.PixScale.*InPar.SlitWidth;      % ph/pix/s (per Ang)
-Back(:,2)          = Back(:,2)         .*Sampling;   % [ph/pix/s]
+Back(:,2)          = Back(:,2).*InPar.SlitWidth;      % ph in disperion direction per slit width per Ang
+Back(:,2)          = Back(:,2)         .*Sampling;   % ph in the disperion dir per slit width and per pix in the disperion dir
+SlitWidthPix       = InPar.SlitWidth./InPar.PixScale;   % slit width in pix
 
 % exposure time
 % this is the spectrum in e- per spatial-direction pix 
@@ -251,7 +254,7 @@ Back(:,2) = Util.filter.conv1_vargauss(Back(:,2),SpecRes./Sampling);
 % calculate SN per pix
 
 % calculate background variance
-BackVar  = Back(:,2) + InPar.SubExp.*InPar.RN.^2 + InPar.DC.*InPar.ExpTime + (InPar.Gain.*0.3).^2;
+BackVar  = Back(:,2) + SlitWidthPix.*InPar.SubExp.*InPar.RN.^2 + SlitWidthPix.*InPar.DC.*InPar.ExpTime + SlitWidthPix.*(InPar.Gain.*0.3).^2;
 
 SNperPix2D = InPar.ExtraEff.*SlitEff*Spec2D./sqrt(bsxfun(@plus,InPar.ExtraEff.*SlitEff.*Spec2D,BackVar));
 % SN for detection:
@@ -261,11 +264,60 @@ SNperPix2D = InPar.ExtraEff.*SlitEff*Spec2D./sqrt(bsxfun(@plus,InPar.ExtraEff.*S
 SN.Wave       = Spec(:,InPar.ColW);
 SN.SNperPix   = sqrt(sum(SNperPix2D.^2,2));
 SN.ResEl      = SpecRes;
+SN.SNperResEl = SN.SNperPix.*sqrt(SN.ResEl./InPar.SpecSampling);
 
 
 
 
+%%
+if 1==0
+    
+    
+    VecSpecTh = (0.5:0.025:0.9).';
+    VecRN     = 3.*sqrt(1:1:18).';
+    Nst = numel(VecSpecTh);
+    Nrn = numel(VecRN);
+    
+    ResMag = nan(Nst,Nrn);
+    for Ist=1:1:Nst
+        SpecTh = VecSpecTh(Ist);
+        for Irn=1:1:Nrn
+            RN = VecRN(Irn);
+    
+            Spec = AstSpec.get_galspec('Gal_E');
+            Spec = scale2mag(Spec,20.5);
+            SN=telescope.sn.sn_spec(Spec,'RN',RN,'SpecTh',SpecTh);
+            F = SN.Wave>5000 & SN.Wave<8000;
+            MSN = mean(SN.SNperResEl(F));
+            MagDiff = 2.5.*log10((10./MSN));
+            NewMag  = 20.5 - MagDiff;
+            Spec = scale2mag(Spec,NewMag );
+            SN=telescope.sn.sn_spec(Spec,'RN',RN,'SpecTh',SpecTh);
+            F = SN.Wave>5000 & SN.Wave<8000;
+            MSN = mean(SN.SNperResEl(F));
+            MagDiff = 2.5.*log10((10./MSN));
+            NewMag = NewMag - MagDiff;
+            Spec = scale2mag(Spec,NewMag );
+            SN=telescope.sn.sn_spec(Spec,'RN',RN,'SpecTh',SpecTh);
+            F = SN.Wave>5000 & SN.Wave<8000;
+            MSN = mean(SN.SNperResEl(F));
+    
+            ResMag(Ist,Irn) = NewMag;
+        end
+    end
+    contour(VecSpecTh,VecRN,ResMag'); shading interp; colorbar 
+    set(gca,'XS','log','YS','log')
 
+    H = xlabel('Spectrograph throughput');
+    H.Interpreter = 'latex';
+    H.FontSize    = 18;
+    H = ylabel('RN [e]');
+    H.Interpreter = 'latex';
+    H.FontSize    = 18;
+
+    %print LimMagSN10_R3000_sampling0.8.jpg -djpeg100
+    
+end
 
 
 

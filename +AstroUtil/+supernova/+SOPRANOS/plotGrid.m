@@ -49,7 +49,9 @@ if (nargin>=4)
     ie_Fr = find(gridfile.VecFrho==VecFrho(end));
     is_Eb = find(gridfile.VecEbv==VecEbv(1));
     ie_Eb = find(gridfile.VecEbv==VecEbv(end));
-   
+    if length(valid)>1
+        valid=valid(is_t0:ie_t0,is_Rs:ie_Rs,is_Vs:ie_Vs,is_Ms:ie_Ms,is_Fr:ie_Fr,is_Eb:ie_Eb);
+    end
 else
     is_Rs = 1; ie_Rs = length(VecRs);
     is_Vs = 1; ie_Vs = length(VecVs);
@@ -218,7 +220,7 @@ fprintf('\\hline\n');
 
 line='$R_{*}$ [$R_\\sun$] ';
 for iPeak=1:nPeaks 
-    line = [line sprintf('& $%4.0f_{-%3.0f}^{+%3.0f}$        ', Rs_peaks(peakInd(iPeak)), RssigmaM(peakInd(iPeak)), RssigmaP(peakInd(iPeak)))];
+    line = [line sprintf('& $%4.0f_{-%4.0f}^{+%4.0f}$      ', Rs_peaks(peakInd(iPeak)), RssigmaM(peakInd(iPeak)), RssigmaP(peakInd(iPeak)))];
 end
 line = [line '\\\\\n'];
 fprintf(line);
@@ -382,7 +384,7 @@ fprintf('\\hline\n');
 
 line='$R_{*}$ [$R_\\sun$] ';
 for iPeak=1:nPeaks 
-    line = [line sprintf('& $%4.0f_{-%3.0f}^{+%3.0f}$        ', chi2values(peakInd(iPeak)).all.Rs, chi2values(peakInd(iPeak)).all.RssigmaM, chi2values(peakInd(iPeak)).all.RssigmaP)];
+    line = [line sprintf('& $%4.0f_{-%4.0f}^{+%4.0f}$      ', chi2values(peakInd(iPeak)).all.Rs, chi2values(peakInd(iPeak)).all.RssigmaM, chi2values(peakInd(iPeak)).all.RssigmaP)];
 end
 line = [line '\\\\\n'];
 fprintf(line);
@@ -577,8 +579,10 @@ while (idx<csize)
         end
     elseif (ypoints(1) == min(VecRs))
         if (xpoints(end) == min(VecVs/10^8.5))
-            xpoints = [xpoints min(VecVs/10^8.5) max(VecVs/10^8.5)   max(VecVs/10^8.5)];
-            ypoints = [ypoints max(VecRs)        max(VecRs)          min(VecRs)        ];
+%             xpoints = [xpoints min(VecVs/10^8.5) max(VecVs/10^8.5)   max(VecVs/10^8.5)];
+%             ypoints = [ypoints max(VecRs)        max(VecRs)          min(VecRs)        ];
+            xpoints = [xpoints min(VecVs/10^8.5)];
+            ypoints = [ypoints min(VecRs)       ];
         end
     end
     patch(xpoints,ypoints,[0.7 0.7 0.7]);
@@ -971,9 +975,16 @@ if strcmp(dir,'down')
     if (PDF_L<PDF_H) % dxL,dxH>0
         dPDF_L = (PDF(index+1)-PDF(index))/(var(index+1)-var(index));
         dPDF_H = (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind));
-        dxL   = PDF_L./dPDF_L.*(-1+sqrt(1-dPDF_L./(dPDF_L-dPDF_H).*(1-PDF_H.^2./PDF_L.^2)));
-        dxH    = (-PDF_H+sqrt(PDF_H^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
-        if (dxL>0)
+        if (dPDF_L==dPDF_H)
+            % if the derivatives are identical the solution is degenerated.
+            % Do not move on this case;
+            dxL    = 0;
+            dxH    = 0;
+        else
+            dxL   = PDF_L./dPDF_L.*(-1+sqrt(1-dPDF_L./(dPDF_L-dPDF_H).*(1-PDF_H.^2./PDF_L.^2)));
+            dxH    = (-PDF_H+sqrt(PDF_H^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+        end
+        if (dxL>=0)
             ind     = findind;
             downvar = var(index);            
             while (dxH > (var(ind+1)-upvar))
@@ -1045,9 +1056,16 @@ if strcmp(dir,'down')
             % defined positive.
             dPDF_L = (PDF(index)-PDF(index-1))/(var(index)-var(index-1));
             dPDF_H = (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind));
-            dxL = PDF_L./dPDF_L .* (1 - sqrt(1-dPDF_L.*((1-PDF_H.^2./PDF_L.^2)./(dPDF_L-dPDF_H))));
-            dxH = (PDF_H-sqrt(PDF_H.^2-2.*dPDF_H.*(PDF_L.*dxL-0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
-            if (dxL>0)
+            if (dPDF_L==dPDF_H)
+                % if the derivatives are identical the solution is degenerated.
+                % Do not move on this case;
+                dxL    = 0;
+                dxH    = 0;
+            else
+                dxL = PDF_L./dPDF_L .* (1 - sqrt(1-dPDF_L.*((1-PDF_H.^2./PDF_L.^2)./(dPDF_L-dPDF_H))));
+                dxH = (PDF_H-sqrt(PDF_H.^2-2.*dPDF_H.*(PDF_L.*dxL-0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+            end
+            if (dxL>=0)
                 ind = findind;
                 downvar = var(index);            
                 while ((upvar-dxH) < var(ind))
@@ -1121,9 +1139,16 @@ else %strcmp(dir,'up')
         % leftward movement
         dPDF_L = (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind));
         dPDF_H = (PDF(index)-PDF(index-1))/(var(index)-var(index-1));
-        dxL = PDF_L./dPDF_L .* (1 - sqrt(1-dPDF_L.*((1-PDF_H.^2./PDF_L.^2)./(dPDF_L-dPDF_H))));
-        dxH = (PDF_H-sqrt(PDF_H.^2-2.*dPDF_H.*(PDF_L.*dxL-0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
-        if (dxL>0)
+        if (dPDF_L==dPDF_H)
+            % if the derivatives are identical the solution is degenerated.
+            % Do not move on this case;
+            dxL    = 0;
+            dxH    = 0;
+        else
+            dxL = PDF_L./dPDF_L .* (1 - sqrt(1-dPDF_L.*((1-PDF_H.^2./PDF_L.^2)./(dPDF_L-dPDF_H))));
+            dxH = (PDF_H-sqrt(PDF_H.^2-2.*dPDF_H.*(PDF_L.*dxL-0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+        end
+        if (dxL>=0)
             ind   = findind;
             upvar = var(index);
             while (dxL > (downvar-var(ind)))
@@ -1191,14 +1216,21 @@ else %strcmp(dir,'up')
         % rightward movement
         dPDF_L = (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind));
         dPDF_H = (PDF(index+1)-PDF(index))/(var(index+1)-var(index));
-        dxL = PDF_L./dPDF_L .* (-1 + sqrt(1-dPDF_L.*((1-PDF_H.^2./PDF_L.^2)./(dPDF_L-dPDF_H))));
-        dxH = (-PDF_H+sqrt(PDF_H.^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+        if (dPDF_L==dPDF_H)
+            % if the derivatives are identical the solution is degenerated.
+            % Do not move on this case;
+            dxL    = 0;
+            dxH    = 0;
+        else
+            dxL = PDF_L./dPDF_L .* (-1 + sqrt(1-dPDF_L.*((1-PDF_H.^2./PDF_L.^2)./(dPDF_L-dPDF_H))));
+            dxH = (-PDF_H+sqrt(PDF_H.^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;
+        end
         if (dxL>0)
             ind   = findind;
             upvar = var(index);
-            while (dxL > (max_var-downvar))
+            while (dxL > (var(ind+1)-downvar))
                 % as long as the required movement of the lower end is
-                % beyond var(ind) progress to var(ind) and calculate the
+                % beyond var(ind+1) progress to var(ind+1) and calculate the
                 % residual required movement:
                 dxL=var(ind+1)-downvar;
                 dxH = (-PDF_H+sqrt(PDF_H.^2+2.*dPDF_H.*(PDF_L.*dxL+0.5.*dPDF_L.*dxL.^2)))./dPDF_H;

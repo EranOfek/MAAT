@@ -123,7 +123,7 @@ DefV.FiltFam   = [];
 DefV.FiltName  = [];
 DefV.FiltSys   = 'AB';
 DefV.Wave      = [];
-DefV.Model     = 'Original';
+DefV.Model     = 'MSW';
 
 %InPar = set_varargin_keyval(DefV,'y','use',varargin{:});
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
@@ -208,7 +208,7 @@ switch lower(InPar.Type)
         if strcmpi(InPar.Model,'MSW')
             t_min = (1+InPar.redshift).*model_times.t_min_MSW;
         else %RW or SW
-            t_min = (1+InPar.redshift).*model_time.t_min;
+            t_min = (1+InPar.redshift).*model_times.t_min;
         end
         if strcmpi(InPar.Model,'RW')
             t_max = (1+InPar.redshift).*min(model_times.t_opac, model_times.t_delta);

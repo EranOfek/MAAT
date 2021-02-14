@@ -26,6 +26,7 @@ function [DistRA,DistDec,Aux]=convert2equatorial(Long,Lat,varargin)
 %                           Equatorial coordinates with true equinox of
 %                           date.
 %                           Default is 'J2000.0'
+%            'OutCooType' - 'tdate' | 'J2000.0'. Default is 'J2000.0'.
 %            'NameServer' - ['simbad'] | 'ned' | 'jpl'.
 %            'JD'         - Julian day. This is used for horizontal
 %                           coordinates and H.A.
@@ -60,7 +61,7 @@ function [DistRA,DistDec,Aux]=convert2equatorial(Long,Lat,varargin)
 
 RAD = 180./pi;
 
-OutCooType = 'J2000.0';  % or 'tdate'
+%OutCooType = 'J2000.0';  % or 'tdate'
 if nargin<2
     Lat = [];
 end
@@ -69,6 +70,7 @@ InPar = inputParser;
 
 
 addOptional(InPar,'InCooType','J2000.0');   % 'eq' | 'gal' | 'ecl' | 'horizon'
+addOptional(InPar,'OutCooType','J2000.0');   % 'eq' | 'gal' | 'ecl' | 'horizon'
 addOptional(InPar,'NameServer','simbad');  % 'simbad' | 'ned' | 'jpl'
 addOptional(InPar,'JD',celestial.time.julday);  % time for solar system ephemerids
 addOptional(InPar,'ObsCoo',[35 30.6 800]);  % time for solar system ephemerids
@@ -136,16 +138,16 @@ end
 
 
 % convert input coordinates to RA, Dec in default equinox
-[TrueRA,TrueDec] = celestial.coo.convert_coo(Long,Lat,InPar.InCooType,OutCooType,InPar.JD,InPar.ObsCoo);
+[TrueRA,TrueDec] = celestial.coo.convert_coo(Long,Lat,InPar.InCooType,InPar.OutCooType,InPar.JD,InPar.ObsCoo);
 
 % applay atmospheric refraction
-[TrueAz,TrueAlt] = celestial.coo.convert_coo(TrueRA,TrueDec,OutCooType,'azalt',InPar.JD,InPar.ObsCoo);
+[TrueAz,TrueAlt] = celestial.coo.convert_coo(TrueRA,TrueDec,InPar.OutCooType,'azalt',InPar.JD,InPar.ObsCoo);
 [Refraction]     = celestial.coo.refraction_wave(TrueAlt,InPar.Wave,InPar.Temp,InPar.PressureHg);
 % add refraction to TrueAlt
 AppAz  = TrueAz;
 AppAlt = TrueAlt + Refraction;
 % reyturn to equatorial coordinates
-[AppRA,AppDec] = celestial.coo.convert_coo(AppAz,AppAlt,'azalt',OutCooType,InPar.JD,InPar.ObsCoo);
+[AppRA,AppDec] = celestial.coo.convert_coo(AppAz,AppAlt,'azalt',InPar.OutCooType,InPar.JD,InPar.ObsCoo);
 
 % applay distortions
 % calculate LST

@@ -486,7 +486,7 @@ switch hObject.Tag
         h1.Toolbar.Visible = 'on';
         handles.PlottedInGraph.String = {'1'};
         xlabel(h1,'MJD [days]','FontSize',14);
-        ylabel(h1,'flux [$erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
+        ylabel(h1,'flux [$\rm erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
         h.UserData = h1;
     case 'TwoGraphs'
         h1=axes(h,'Position',[0.1 0.535 0.87 0.435]);
@@ -498,7 +498,7 @@ switch hObject.Tag
         h.UserData = [h1 h2];
         handles.PlottedInGraph.String = {'1','2'};        
         xlabel(h2,'MJD [days]','FontSize',14);
-        htxt=ylabel(h2,'flux [$erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
+        htxt=ylabel(h2,'flux [$\rm erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
         pos = htxt.Position;
         htxt.Position(2) = 1;
         htxt.Units = 'normal';
@@ -515,7 +515,7 @@ switch hObject.Tag
         h.UserData = [h1 h2 h3];
         handles.PlottedInGraph.String = {'1','2','3'};
         xlabel(h3,'MJD [days]','FontSize',14);
-        ylabel(h2,'flux [$erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
+        ylabel(h2,'flux [$\rm erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
 end
 
 % --- Executes update table data upon load or change of band number.
@@ -902,7 +902,7 @@ switch model
         time = linspace(t_min,min(t_delta,t_opac),250)*(1+z);
     case 'MSW'
         [~,~,~,~,~,t_min,t_max] = AstroUtil.supernova.sn_cooling_msw(1,'Model',model,'Type',prog,'Rs',Rs,'Vs',Vs,'Ms',Ms,'f_rho',frho);
-        time = linspace(t_min,t_max,250)*(1+z);        
+        time = linspace(t_min,t_max,250);        
 end
 
 for iband = 1:length(handles.PlottedInGraph.UserData)
@@ -1523,8 +1523,8 @@ switch Plot.model
     case 'MSW'
         [~,~,~,~,~,t_min,t_max] = AstroUtil.supernova.sn_cooling_msw(1,'Model',Plot.model,'Type',Plot.prog,...
             'Rs',Plot.Rs,'Vs',Plot.Vs,'Ms',Plot.Ms,'f_rho',Plot.frho);
-        t_min = t_min*(1+z);
-        t_max = t_max*(1+z);
+        t_min = t_min;
+        t_max = t_max;
 end
 
 for iband = 1:length(handles.PlottedInGraph.UserData)
@@ -1598,7 +1598,7 @@ for iaxes=1:Naxes
 end
 
 xlabel(h(Naxes),'MJD [days]');
-hlab=ylabel(h(ceil(Naxes/2)), 'Residual flux [$erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
+hlab=ylabel(h(ceil(Naxes/2)), 'Residual flux [$\rm erg\,s^{-1}\,cm^{-2}\,\AA^{-1}$]','Interpreter','LATEX','FontSize',14);
 hlab.Units = 'normal';
 if rem(Naxes,2)==0
    pos=h(Naxes/2).YLabel.Position;

@@ -101,7 +101,7 @@ HeaderField = 'Header';
 %BackImField = 'BackIm';
 %ErrImField  = 'ErrIm';
 
-DefV.GetFromWCS     = true;
+DefV.GetFromWCS     = false;
 DefV.KeyRA          = {'RA','OBJRA','OBJRAD','CRVAL1'};
 DefV.KeyDec         = {'DEC','OBJDEC','OBJDECD','CRVAL2'};
 DefV.KeyJD          = {'JD'}; % Na'ama, 20180524
@@ -132,6 +132,8 @@ end
 if (ischar(InPar.KeyEquinox))
     InPar.KeyEquinox = {InPar.KeyEquinox};
 end
+
+
 
 if (ischar(InPar.KeyJD)) % Na'ama, 20180524
     InPar.KeyJD = {InPar.KeyJD};
@@ -203,7 +205,7 @@ for Isim=1:1:Nsim
                 Dec(Isim) = convert.angular(InPar.InUnits,InPar.OutUnits,Dec(Isim));
             else
                 % sexagesimal to numeric 
-                Dec(Isim) = celestial.coo.convertdms(CellDec{1},'SH','r').*convert.angular('rad',InPar.OutUnits);  % deg
+                Dec(Isim) = celestial.coo.convertdms(CellDec{1},'SD','r').*convert.angular('rad',InPar.OutUnits);  % deg
             end
         end
     end
