@@ -184,18 +184,19 @@ AppAlt = TrueAlt + Refraction;
 
 % applay distortions
 % calculate HA = LST - RA
-AppHA = 2.*pi.*LST - AppRA;
+AppHA = 2.*pi.*LST - AppRA;   % [rad]
 % call distortions function
 if isempty(InPar.DistFun)
     DeltaDistHA  = 0; % deg
     DeltaDistDec = 0; % deg
-else
-    [DeltaDistHA, DeltaDistDec] = InPar.DistFun(AppHA,AppDec);
-end
+    
+    DistHA  = AppHA  + DeltaDistHA./RAD;
+    DistRA  = AppRA  + DeltaDistHA./RAD;
+    DistDec = AppDec + DeltaDistDec./RAD;
 
-DistHA  = AppHA  + DeltaDistHA./RAD;
-DistRA  = AppRA  + DeltaDistHA./RAD;
-DistDec = AppDec + DeltaDistDec./RAD;
+else
+    [DistHA, DistDec] = InPar.DistFun(AppHA,AppDec);
+end
 
 Aux.JD        = InPar.JD;
 Aux.LST       = LST;  % fraction of day
