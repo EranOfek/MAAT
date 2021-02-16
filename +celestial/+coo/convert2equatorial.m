@@ -15,6 +15,8 @@ function [DistRA,DistDec,Aux]=convert2equatorial(Long,Lat,varargin)
 %            to be an object name.
 %          * Arbitrary number of pairs of arguments: ...,keyword,value,...
 %            where keyword are one of the followings:
+%            However, if only one parameter is provided, it is treated as
+%            the value of 'InCooType'.
 %            'InCooType'  - Input coordinates frame:
 %                           'a' - Az. Alt.
 %                           'g' - Galactic.
