@@ -19,6 +19,9 @@ function [DistRA,DistDec,Aux]=convert2equatorial(Long,Lat,varargin)
 %                           'a' - Az. Alt.
 %                           'g' - Galactic.
 %                           'e' - Ecliptic
+%                           'ha' - Hour Angle/Declination at true equinox
+%                           of date.
+%                           'jha' - Hour Angle/Declination at J2000.0.
 %                           - A string start with J (e.g., 'J2000.0').
 %                           Equatorial coordinates with mean equinox of
 %                           date, where the year is in Julian years.
@@ -46,7 +49,7 @@ function [DistRA,DistDec,Aux]=convert2equatorial(Long,Lat,varargin)
 %            'Temp'       - Default is 15 C.
 %            'Wave'       - Default is 5500 Ang.
 %            'PressureHg' - Default is 760 mm Hg.
-% Output : - Apparent R.A.
+% Output : - Apparent R.A. (or HA, if InCooType is 'ha', or 'jha')
 %          - Apparent Dec.
 %          - A structure containing the intermidiate values.
 % License: GNU general public license version 3
@@ -56,10 +59,16 @@ function [DistRA,DistDec,Aux]=convert2equatorial(Long,Lat,varargin)
 %          celestial.coo.convert2equatorial('12:00:00','+20:00:00');
 %          celestial.coo.convert2equatorial('M31');
 %          celestial.coo.convert2equatorial('9804;',[],'NameServer','jpl')
+%          celestial.coo.convert2equatorial('12:00:00','+20:00:00','InCooType','J2000.0');
+%          celestial.coo.convert2equatorial('12:00:00','+20:00:00','J2000.0');
 % Reliable: 2
 %--------------------------------------------------------------------------
 
 RAD = 180./pi;
+
+if nargin==3
+    varargin = {'InCooType',varargin{1}};
+end
 
 %OutCooType = 'J2000.0';  % or 'tdate'
 if nargin<2
@@ -135,6 +144,30 @@ else
     
 end
 
+% calculate LST
+LST = celestial.time.lst(InPar.JD,InPar.ObsCoo(1)./RAD,'a');  % fraction of day
+
+switch lower(InPar.InCooType)
+    case 'ha'
+        % HA/Dec at true equinox of date
+        JulianYear = convert.time(InPar.JD,'J');
+        InPar.InCooType = sprintf('J%7.3f',JulianYear);
+        
+        % HA = LST - RA
+        % in this case Long input is HA, and we convert it to RA
+        Long = 2.*pi.*LST - Long;  % Long is now RA
+        
+    case 'jha'
+        % HA/Dec at J2000.0
+        InPar.InCooType = 'J2000.0';
+        
+        % HA = LST - RA
+        % in this case Long input is HA, and we convert it to RA
+        Long = 2.*pi.*LST - Long;  % Long is now RA
+        
+    otherwise
+        % do nothing
+end
 
 
 % convert input coordinates to RA, Dec in default equinox
@@ -146,12 +179,10 @@ end
 % add refraction to TrueAlt
 AppAz  = TrueAz;
 AppAlt = TrueAlt + Refraction;
-% reyturn to equatorial coordinates
+% return to equatorial coordinates
 [AppRA,AppDec] = celestial.coo.convert_coo(AppAz,AppAlt,'azalt',InPar.OutCooType,InPar.JD,InPar.ObsCoo);
 
 % applay distortions
-% calculate LST
-LST = celestial.time.lst(InPar.JD,InPar.ObsCoo(1)./RAD,'a');  % fraction of day
 % calculate HA = LST - RA
 AppHA = 2.*pi.*LST - AppRA;
 % call distortions function
@@ -189,7 +220,15 @@ Aux.Refraction   = Refraction;
 DistRA  = convert.angular('rad',InPar.OutputUnits,DistRA);
 DistDec = convert.angular('rad',InPar.OutputUnits,DistDec);
 
-
+% convert RA back to HA if needed
+switch lower(InPar.InCooType)
+    case {'ha','jha'}
+        % HA = LST - RA
+        DistRA = 2.*pi.*LST - DistRA;  % DistRA is now HA
+    otherwise
+        % do nothing
+end        
+        
 
 
 
