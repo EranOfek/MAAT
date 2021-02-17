@@ -48,6 +48,7 @@ function [DistRA,DistDec,Aux]=convert2equatorial(Long,Lat,varargin)
 %                           Default is empty. If not given return [0,0].
 %            'InputUnits' - Default is 'deg'.
 %            'OutputUnits'- Default is 'deg'
+%            'ApplyRefraction' - Default is true.
 %            'Temp'       - Default is 15 C.
 %            'Wave'       - Default is 5500 Ang.
 %            'PressureHg' - Default is 760 mm Hg.
@@ -90,7 +91,7 @@ addOptional(InPar,'HorizonsObsCode','500');  % 500 geocentric
 addOptional(InPar,'InputUnits','deg');  
 addOptional(InPar,'OutputUnits','deg');  
 addOptional(InPar,'DistFun',[]);  
-
+addOptional(InPar,'ApplyRefraction',true);
 addOptional(InPar,'Temp',15);  % C
 addOptional(InPar,'Wave',5500);  % Ang
 addOptional(InPar,'PressureHg',760);  % mm Hg
@@ -172,21 +173,32 @@ switch lower(InPar.InCooType)
 end
 
 
-% convert input coordinates to RA, Dec in default equinox
+% convert input coordinates to RA, Dec in output equinox
 [TrueRA,TrueDec] = celestial.coo.convert_coo(Long,Lat,InPar.InCooType,InPar.OutCooType,InPar.JD,InPar.ObsCoo);
+TrueHA = 2.*pi.*LST - TrueRA;
 
 % applay atmospheric refraction
-[TrueAz,TrueAlt] = celestial.coo.convert_coo(TrueRA,TrueDec,InPar.OutCooType,'azalt',InPar.JD,InPar.ObsCoo);
+% in order for this step to be exact: the HA/Dec should be in equinox of
+% date
+[TrueAz,TrueAlt]=celestial.coo.hadec2azalt(TrueHA,TrueDec,Lat);
+
+%[TrueAz,TrueAlt] = celestial.coo.convert_coo(TrueRA,TrueDec,InPar.OutCooType,'azalt',InPar.JD,InPar.ObsCoo);
 [Refraction]     = celestial.coo.refraction_wave(TrueAlt,InPar.Wave,InPar.Temp,InPar.PressureHg);
 % add refraction to TrueAlt
 AppAz  = TrueAz;
-AppAlt = TrueAlt + Refraction;
+if InPar.ApplyRefraction
+    AppAlt = TrueAlt + Refraction;
+else
+    AppAlt = TrueAlt;
+end
 % return to equatorial coordinates
-[AppRA,AppDec] = celestial.coo.convert_coo(AppAz,AppAlt,'azalt',InPar.OutCooType,InPar.JD,InPar.ObsCoo);
+%[AppRA,AppDec] = celestial.coo.convert_coo(AppAz,AppAlt,'azalt',InPar.OutCooType,InPar.JD,InPar.ObsCoo);
+[AppHA,AppDec] = celestial.coo.azalt2hadec(AppAz,AppAlt,Lat);
+AppRA = 2.*pi.*LST - AppHA;  % [rad]
 
 % applay distortions
 % calculate HA = LST - RA
-AppHA = 2.*pi.*LST - AppRA;   % [rad]
+%AppHA = 2.*pi.*LST - AppRA;   % [rad]
 % call distortions function
 if isempty(InPar.DistFun)
     DeltaDistHA  = 0; % deg

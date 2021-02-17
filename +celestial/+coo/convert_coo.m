@@ -10,6 +10,7 @@ function [OutLong,OutLat,TotRot]=convert_coo(Long,Lat,InCooType,OutCooType,JD,Ob
 %            'J####.#' - equatorial, mean equinox of date
 %            (default 'j2000.0'). [Julian years].
 %            't####.#' - equatorial, true equinox of date
+%            'tdate' - Equinox of provided JD.
 %            'g','gal','galactic' - galactic.
 %            'S' - Super galactic.
 %            'c' - CMB dipole (see rotm_coo.m for details)
@@ -44,6 +45,15 @@ if (nargin<6)
     end
 end
 
+switch lower(InCooType)
+    case 'tdate'
+        InCooType = sprintf('t%8.3f',convert.time(JD,'JD','J'));
+end
+switch lower(OutCooType)
+    case 'tdate'
+        OutCooType = sprintf('t%8.3f',convert.time(JD,'JD','J'));
+end
+
 
 LenInType  = length(InCooType);
 LenOutType = length(OutCooType);
@@ -67,6 +77,7 @@ if ischar(OutCooType)
 else
     error('OutCooType must be a string');
 end
+
 
 
 
