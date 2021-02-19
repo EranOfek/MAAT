@@ -69,8 +69,8 @@ function [DistRA,DistDec,Aux]=convert2equatorial(Long,Lat,varargin)
 
 RAD = 180./pi;
 
-if nargin==3
-    varargin = {'InCooType',varargin{1}};
+if nargin.*0.5~=floor(nargin.*0.5)
+    varargin = {'InCooType',varargin{:}};
 end
 
 %OutCooType = 'J2000.0';  % or 'tdate'
@@ -85,7 +85,7 @@ addOptional(InPar,'InCooType','J2000.0');   % 'eq' | 'gal' | 'ecl' | 'horizon'
 addOptional(InPar,'OutCooType','J2000.0');   % 'eq' | 'gal' | 'ecl' | 'horizon'
 addOptional(InPar,'NameServer','simbad');  % 'simbad' | 'ned' | 'jpl'
 addOptional(InPar,'JD',celestial.time.julday);  % time for solar system ephemerids
-addOptional(InPar,'ObsCoo',[35 30.6 800]);  % time for solar system ephemerids
+addOptional(InPar,'ObsCoo',[35 30.6 800]);  % 
 addOptional(InPar,'HorizonsObsCode','500');  % 500 geocentric
 
 addOptional(InPar,'InputUnits','deg');  
@@ -95,7 +95,6 @@ addOptional(InPar,'ApplyRefraction',true);
 addOptional(InPar,'Temp',15);  % C
 addOptional(InPar,'Wave',5500);  % Ang
 addOptional(InPar,'PressureHg',760);  % mm Hg
-
 
 parse(InPar,varargin{:});
 
@@ -148,12 +147,12 @@ else
 end
 
 % calculate LST
-LST = celestial.time.lst(InPar.JD,InPar.ObsCoo(1)./RAD,'a');  % fraction of day
+LST = celestial.time.lst(InPar.JD,InPar.ObsCoo(1),'a');  % fraction of day
 
 switch lower(InPar.InCooType)
     case 'ha'
         % HA/Dec at true equinox of date
-        JulianYear = convert.time(InPar.JD,'J');
+        JulianYear = convert.time(InPar.JD,'JD','J');
         InPar.InCooType = sprintf('J%7.3f',JulianYear);
         
         % HA = LST - RA
@@ -180,7 +179,7 @@ TrueHA = 2.*pi.*LST - TrueRA;
 % applay atmospheric refraction
 % in order for this step to be exact: the HA/Dec should be in equinox of
 % date
-[TrueAz,TrueAlt]=celestial.coo.hadec2azalt(TrueHA,TrueDec,Lat);
+[TrueAz,TrueAlt]=celestial.coo.hadec2azalt(TrueHA,TrueDec,InPar.ObsCoo(2));
 
 %[TrueAz,TrueAlt] = celestial.coo.convert_coo(TrueRA,TrueDec,InPar.OutCooType,'azalt',InPar.JD,InPar.ObsCoo);
 [Refraction]     = celestial.coo.refraction_wave(TrueAlt,InPar.Wave,InPar.Temp,InPar.PressureHg);
@@ -193,7 +192,7 @@ else
 end
 % return to equatorial coordinates
 %[AppRA,AppDec] = celestial.coo.convert_coo(AppAz,AppAlt,'azalt',InPar.OutCooType,InPar.JD,InPar.ObsCoo);
-[AppHA,AppDec] = celestial.coo.azalt2hadec(AppAz,AppAlt,Lat);
+[AppHA,AppDec] = celestial.coo.azalt2hadec(AppAz,AppAlt,InPar.ObsCoo(2));
 AppRA = 2.*pi.*LST - AppHA;  % [rad]
 
 % applay distortions
@@ -230,11 +229,6 @@ Aux.DeltaDistHA  = DeltaDistHA./RAD;
 Aux.DeltaDistDec = DeltaDistDec./RAD;
 Aux.Refraction   = Refraction;
 
-
-% convert back to output units
-DistRA  = convert.angular('rad',InPar.OutputUnits,DistRA);
-DistDec = convert.angular('rad',InPar.OutputUnits,DistDec);
-
 % convert RA back to HA if needed
 switch lower(InPar.InCooType)
     case {'ha','jha'}
@@ -244,6 +238,12 @@ switch lower(InPar.InCooType)
         % do nothing
 end        
         
+
+% convert back to output units
+DistRA  = convert.angular('rad',InPar.OutputUnits,DistRA);
+DistDec = convert.angular('rad',InPar.OutputUnits,DistDec);
+
+
 
 
 
