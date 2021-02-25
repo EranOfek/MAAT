@@ -24,7 +24,7 @@
 
 classdef logFile < handle
     properties (SetAccess = public)
-        FileNameTemplate     = 'logFile_%s_%s.log';   % default is logFile_<logOwner>_<YYYYMMDD>.log | logFile_<logOwner>.log
+        FileNameTemplate     = 'logFile_%s_%s.log';   % default is logFile_<logOwner>_<YYYYMMDD>.log | logFile_<logOwner>.log  % if empty - no write
         FileName     = '';
         Dir          = pwd;                   % default is pwd
         logOwner     = 'unknown';             % e.g., the process/instrument that uses the logFile
@@ -99,13 +99,16 @@ classdef logFile < handle
                     error('Unknown FileName template');
             end
 
-                
+            PWD = pwd;
             if strcmp(FileName,H.FileName)
                 % new file name = old file name
                 % do not do anything
                 
+                
                 if isempty(H.FID)
+                    cd(H.Dir);
                     H.FID = fopen(H.FileName,'a+');
+                    cd(PWD);
                 end
                 
             else
@@ -116,8 +119,10 @@ classdef logFile < handle
                     H.FID = [];
                 end
                 % open new file ID
+                cd(H.Dir);
                 H.FID = fopen(FileName,'a+');
                 H.FileName = FileName;
+                cd(PWD);
             end
         end
     end
@@ -171,22 +176,20 @@ classdef logFile < handle
             % Package: @logFile
             % Input  : - 
             
-            H.update_FileName;  % update file name
+            if ~isempty(H.FileNameTemplate)
             
-%             if isempty(H.FID)
-%                 % fileID doesn't exist - open a new file
-%                 H.FID = fopen(sprintf('%s%s%s',H.Dir,filesep,H.FileName),'a+');
-%             end
-            
-            % write
-            DateStr = datestr(now,'yyyy-mm-dd HH:MM:SS.FFF');
-            [SI,I] = dbstack;
-            fprintf(H.FID,'%s %s %s\n',DateStr,H.logOwner,Message);
-            H.Counter = H.Counter + 1;
-            
-            if (H.Verbose)
-                % print message to screen
-                fprintf('%s %s %s\n',DateStr,H.logOwner,Message);
+                H.update_FileName;  % update file name
+
+                % write
+                DateStr = datestr(now,'yyyy-mm-dd HH:MM:SS.FFF');
+                [SI,I] = dbstack;
+                fprintf(H.FID,'%s %s %s\n',DateStr,H.logOwner,Message);
+                H.Counter = H.Counter + 1;
+
+                if (H.Verbose)
+                    % print message to screen
+                    fprintf('%s %s %s\n',DateStr,H.logOwner,Message);
+                end
             end
             
         end
