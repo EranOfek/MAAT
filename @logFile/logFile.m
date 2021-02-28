@@ -24,7 +24,7 @@
 
 classdef logFile < handle
     properties (SetAccess = public)
-        FileNameTemplate     = 'logFile_%s_%s.log';   % default is logFile_<logOwner>_<YYYYMMDD>.log | logFile_<logOwner>.log  % if empty - no write
+        FileNameTemplate     = 'logFile_%s_%s.log';   % default is logFile_<logOwner>_<YYYYMMDD>.log | logFile_<logOwner>.log
         FileName     = '';
         Dir          = pwd;                   % default is pwd
         logOwner     = 'unknown';             % e.g., the process/instrument that uses the logFile
@@ -99,16 +99,13 @@ classdef logFile < handle
                     error('Unknown FileName template');
             end
 
-            PWD = pwd;
+                
             if strcmp(FileName,H.FileName)
                 % new file name = old file name
                 % do not do anything
                 
-                
                 if isempty(H.FID)
-                    cd(H.Dir);
                     H.FID = fopen(H.FileName,'a+');
-                    cd(PWD);
                 end
                 
             else
@@ -119,10 +116,8 @@ classdef logFile < handle
                     H.FID = [];
                 end
                 % open new file ID
-                cd(H.Dir);
                 H.FID = fopen(FileName,'a+');
                 H.FileName = FileName;
-                cd(PWD);
             end
         end
     end
@@ -171,25 +166,27 @@ classdef logFile < handle
     
     % write logFile message
     methods
-        function Out=writeLog(H,Message)
+        function writeLog(H,Message)
             % writeing a message into the logFile
             % Package: @logFile
             % Input  : - 
             
-            if ~isempty(H.FileNameTemplate)
+            H.update_FileName;  % update file name
             
-                H.update_FileName;  % update file name
-
-                % write
-                DateStr = datestr(now,'yyyy-mm-dd HH:MM:SS.FFF');
-                [SI,I] = dbstack;
-                fprintf(H.FID,'%s %s %s\n',DateStr,H.logOwner,Message);
-                H.Counter = H.Counter + 1;
-
-                if (H.Verbose)
-                    % print message to screen
-                    fprintf('%s %s %s\n',DateStr,H.logOwner,Message);
-                end
+%             if isempty(H.FID)
+%                 % fileID doesn't exist - open a new file
+%                 H.FID = fopen(sprintf('%s%s%s',H.Dir,filesep,H.FileName),'a+');
+%             end
+            
+            % write
+            DateStr = datestr(now,'yyyy-mm-dd HH:MM:SS.FFF');
+            [SI,I] = dbstack;
+            fprintf(H.FID,'%s %s %s\n',DateStr,H.logOwner,Message);
+            H.Counter = H.Counter + 1;
+            
+            if (H.Verbose)
+                % print message to screen
+                fprintf('%s %s %s\n',DateStr,H.logOwner,Message);
             end
             
         end
