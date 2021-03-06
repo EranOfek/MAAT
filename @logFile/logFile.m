@@ -171,24 +171,25 @@ classdef logFile < handle
             % Package: @logFile
             % Input  : - 
             
-            H.update_FileName;  % update file name
-            
-%             if isempty(H.FID)
-%                 % fileID doesn't exist - open a new file
-%                 H.FID = fopen(sprintf('%s%s%s',H.Dir,filesep,H.FileName),'a+');
-%             end
-            
-            % write
-            DateStr = datestr(now,'yyyy-mm-dd HH:MM:SS.FFF');
-            [SI,I] = dbstack;
-            fprintf(H.FID,'%s %s %s\n',DateStr,H.logOwner,Message);
-            H.Counter = H.Counter + 1;
-            
-            if (H.Verbose)
-                % print message to screen
-                fprintf('%s %s %s\n',DateStr,H.logOwner,Message);
+            if H.FID>1
+                H.update_FileName;  % update file name
+
+    %             if isempty(H.FID)
+    %                 % fileID doesn't exist - open a new file
+    %                 H.FID = fopen(sprintf('%s%s%s',H.Dir,filesep,H.FileName),'a+');
+    %             end
+
+                % write
+                DateStr = datestr(now,'yyyy-mm-dd HH:MM:SS.FFF');
+                [SI,I] = dbstack;
+                fprintf(H.FID,'%s %s %s\n',DateStr,H.logOwner,Message);
+                H.Counter = H.Counter + 1;
+
+                if (H.Verbose)
+                    % print message to screen
+                    fprintf('%s %s %s\n',DateStr,H.logOwner,Message);
+                end
             end
-            
         end
     end % end methods
 end
