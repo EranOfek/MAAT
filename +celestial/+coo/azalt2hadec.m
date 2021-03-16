@@ -8,7 +8,7 @@ function [HA,Dec]=azalt2hadec(Az,Alt,Lat,CooUnits)
 % Output : - HA [same as input]
 %          - Dec [same as input]
 %      By : Eran O. Ofek                Aug 2020
-% Example: [HA,Dec]=celestial.coo.azalt2hadec(Az,Alt,Lat)
+% Example: Az=1; Alt=1; Lat=[30;31]; [HA,Dec]=celestial.coo.azalt2hadec(Az,Alt,Lat,'deg')
 
 if nargin==4
     Convert = convert.angular(CooUnits,'rad');

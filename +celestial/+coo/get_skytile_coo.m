@@ -1,4 +1,4 @@
-function ListAllTiles=get_skytile_coo(Coo,HalfSize,N_RA,N_Dec,SubTile);
+function ListAllTiles=get_skytile_coo(Coo,HalfSize,N_RA,N_Dec,SubTile)
 %-----------------------------------------------------------------------
 % get_skytile_coo function                                    Catalogue
 % Description: Assuming some sky tileing (see tile_the_sky.m) and
@@ -40,7 +40,7 @@ I = find(abs(VecDec)<pi./2);
 VecDec = VecDec(I);
 
 ListTiles = zeros(0,4);
-for Id=1:1:length(VecDec),
+for Id=1:1:length(VecDec)
    CurrDec    = VecDec(Id);
 
                            % the upper part of the declination zone
@@ -62,7 +62,7 @@ end
 %---------------------------
 %--- Divide to Sub tiles ---
 %---------------------------
-if (SubTile(1)>1 | SubTile(2)>1),
+if (SubTile(1)>1 || SubTile(2)>1)
    ListAllTiles = zeros(0,2);
    N_ListTiles = size(ListTiles,1);
 
@@ -71,7 +71,7 @@ if (SubTile(1)>1 | SubTile(2)>1),
    RelSubStepDec = 1./SubTile(2);
 
 
-   for I=1:1:N_ListTiles,
+   for I=1:1:N_ListTiles
 
       ListSubTilesRA  = [ListTiles(I,Col_RA) - 0.5.*ListTiles(I,Col_StepRA) + 0.5.*RelSubStepRA.*ListTiles(I,Col_StepRA) : RelSubStepRA.*ListTiles(I,Col_StepRA) : ListTiles(I,Col_RA) + 0.5.*ListTiles(I,Col_StepRA) - 0.5.*RelSubStepRA.*ListTiles(I,Col_StepRA)];
 

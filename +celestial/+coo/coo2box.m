@@ -1,5 +1,5 @@
 function [RA1,RA2,Dec1,Dec2]=coo2box(RA,Dec,HalfSize,OutUnits)
-% Calculate box vertices around coordinates.
+% Calculate box vertices around coordinates (OBSOLETE: use coo2box)
 % Package: celestial
 % Description: Given a list of RA/Dec coordinates, and box half size,
 %              calculate the approximnate positions of the box vertices

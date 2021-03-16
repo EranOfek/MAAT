@@ -4,7 +4,7 @@ function [Az,Alt]=hadec2azalt(HA,Dec,Lat,CooUnits)
 % Input  : - HA [rad]
 %          - Dec [rad]
 %          - Lat [rad]
-%          - CooUnits {'rad' | 'deg'}. Default is 'rad'.
+%          - Input/Output coordinates units {'rad' | 'deg'}. Default is 'rad'.
 % Output : - Az [same as input]
 %          - Alt [same as input]
 %      By : Eran O. Ofek                Aug 2020

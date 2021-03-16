@@ -6,8 +6,8 @@ function HA=alt2ha(Alt,Dec,Phi,Units)
 % Input  : - Altitude [radians].
 %          - Declination [radians].
 %          - Geocentric latitude [radians].
-%          - Input units 'rad' or 'deg'. Default is 'rad'.
-%            Output is always in radians.
+%          - Input/output units 'rad' or 'deg'. Default is 'rad'.
+%            Outpuoutputt is always in radians.
 % Output : - Hour Angle [radians].
 %            Note that there are two solutions at +/-HA, but only
 %            the positive HA is returned.
@@ -19,25 +19,18 @@ function HA=alt2ha(Alt,Dec,Phi,Units)
 %--------------------------------------------------------------------------
 
 
-if (nargin==3),
+if (nargin==3)
     Units = 'rad';
 end
-switch lower(Units)
-    case 'rad'
-        % do nothing
-    case 'deg'
-        % convert deg to rad
-        InvRAD = pi./180;
-        
-        Alt = Alt.*InvRAD;
-        HA  = HA.*InvRAD;
-        Phi = Phi.*InvRAD;
-    otherwise
-        error('Unknown Units option');
-end
+
+Alt = convert.angular(Units,'rad',Alt);
+Dec = convert.angular(Units,'rad',Dec);
+Phi = convert.angular(Units,'rad',Phi);
 
 % solve:
 % sin(Alt)= sin(dec)*sin(phi) + cos(dec)*cos(phi)*cos(HA)
 HA = abs(acos((sin(Alt) - sin(Dec).*sin(Phi))./(cos(Dec).*cos(Phi))));
+
+HA = convert.angular('rad',Units,HA);
 
 

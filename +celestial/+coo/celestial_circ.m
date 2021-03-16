@@ -15,9 +15,9 @@ function [Lon,Lat]=celestial_circ(CenLon,CenLat,Rad,Np)
 % Example: [Lon,Lat]=celestial.coo.celestial_circ(1,1,1,500);
 % Reliable: 2
 %--------------------------------------------------------------------------
-if (nargin==3),
+if (nargin==3)
    Np = 100;
-elseif (nargin==4),
+elseif (nargin==4)
    % do nothing
 else
    error('Illegal number of input arguments');

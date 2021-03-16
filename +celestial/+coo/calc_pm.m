@@ -3,6 +3,7 @@ function [PM_RA,PM_Dec,PM_Tot,PM_PA]=calc_pm(PosList,ErrMat,TimeUnit)
 % calc_pm function     
 % Description: Calculate the proper motion of a star from a set of
 %              measurments.
+%              OBSOLETE: 
 % Input  : - List of positions [Time, RA, Dec] per line
 %            (coordinates in radians).
 %          - Error matrix: [RA_Err, Dec_Err] per line (in radians).
@@ -50,7 +51,7 @@ else
    RA      = RA.*cos(Dec);
    RA_Err  = RA_Err.*cos(Dec);
    % Proper Motion Monte-Carlo
-   rand('state',sum(clock*100));
+   %rand('state',sum(clock*100));
 
    Nsim = 10000;
    DiffX = zeros(Nsim.*(N-1),1);
@@ -63,7 +64,7 @@ else
       NewRA  = RA + RA_Err.*randn(N,1);
       NewDec = Dec + Dec_Err.*randn(N,1);
 
-      for J=1:1:N-1,
+      for J=1:1:N-1
          [Dist,PAs] = sphere_dist(NewRA(J),NewDec(J),NewRA(J+1),NewDec(J+1));
          Rate(I+J-1) = Dist;
          PA(I+J-1)   = PAs;
