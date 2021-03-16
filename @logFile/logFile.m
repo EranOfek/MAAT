@@ -105,7 +105,9 @@ classdef logFile < handle
                 % do not do anything
                 
                 if isempty(H.FID)
-                    H.FID = fopen(H.FileName,'a+');
+                    FullFileName = sprintf('%s%s%s',H.Dir,filesep,H.FileName);
+                    H.FID = fopen(FullFileName,'a+');
+                   
                 end
                 
             else
@@ -116,7 +118,8 @@ classdef logFile < handle
                     H.FID = [];
                 end
                 % open new file ID
-                H.FID = fopen(FileName,'a+');
+                FullFileName = sprintf('%s%s%s',H.Dir,filesep,FileName);
+                H.FID = fopen(FullFileName,'a+');
                 H.FileName = FileName;
             end
         end
