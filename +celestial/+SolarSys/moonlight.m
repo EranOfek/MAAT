@@ -20,25 +20,25 @@ RAD = 180./pi;
 Illum = zeros(size(Alt));
 
 
-for J=1:1:length(Alt(:,1)),
+for J=1:1:length(Alt(:,1))
    X = Alt(J).*RAD./90;
  
    % Handle Altitude
-   if (Alt(J).*RAD>20),
+   if (Alt(J).*RAD>20)
       L0 = -1.95;
       L1 = 4.06;
       L2 = -4.24;
       L3 = 1.56;
       Error = 0.02;
       LI1 = L0 + L1.*X + L2.*X.*X + L3.*X.*X.*X;
-   elseif (Alt(J).*RAD<=20 && Alt(J).*RAD>5),
+   elseif (Alt(J).*RAD<=20 && Alt(J).*RAD>5)
       L0 = -2.58;
       L1 = 12.58;
       L2 = -42.58;
       L3 = 59.06;
       Error = 0.03;
       LI1 = L0 + L1.*X + L2.*X.*X + L3.*X.*X.*X;
-   elseif (Alt(J).*RAD<=5 && Alt(J).*RAD>-0.8),
+   elseif (Alt(J).*RAD<=5 && Alt(J).*RAD>-0.8)
       L0 = -2.79;
       L1 = 24.27;
       L2 = -252.95;

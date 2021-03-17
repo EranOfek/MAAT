@@ -23,9 +23,9 @@ function [NewRA,NewDec]=interp_coo(Time,RA,Dec,NewTime,InterpMethod)
 %--------------------------------------------------------------------------
 
 DefInterpMethod = 'pchip';
-if (nargin==4),
+if (nargin==4)
    InterpMethod = DefInterpMethod;
-elseif (nargin==5),
+elseif (nargin==5)
    % do nothing
 else
    error('Illegal number of input arguments');
