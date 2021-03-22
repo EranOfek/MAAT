@@ -328,7 +328,6 @@ classdef FITS
             % Reliable: 2
             %--------------------------------------------------------------------------
 
-
             if (nargin==2)
                 HDUnum = 1;
                 Str    = false;
@@ -339,7 +338,7 @@ classdef FITS
             end
 
             [~,List] = Util.files.create_list(Images,NaN);
-            Nim = numel(List);
+            Nim         = numel(List);
             KeysVal     = cell(size(List));
             KeysComment = cell(size(List));
             for Iim=1:1:Nim
