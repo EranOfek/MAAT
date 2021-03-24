@@ -22,7 +22,7 @@ BoxCenter   = BoxCenter(:).';
 BoxHalfSize = BoxHalfSize(:).';
 
 [OutRA,OutDec] = celestial.coo.center2corners(BoxCenter(1),BoxCenter(2),BoxHalfSize(1), BoxHalfSize(2));
-Corners = [OutRA, OutDec];
+Corners = [OutRA(:), OutDec(:)];
 
 
 Flag = celestial.htm.in_polysphere([Lon,Lat],Corners);

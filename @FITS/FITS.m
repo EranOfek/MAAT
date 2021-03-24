@@ -55,7 +55,8 @@ classdef FITS
             end
             
             import matlab.io.*
-            
+                
+
 
             KeyPos = 9;
             ComPos = 32;
