@@ -208,7 +208,9 @@ for Inight=1:1:InPar.Nnight
         TimeHistory(TimeCounter).JD = JD;
         TimeHistory(TimeCounter).RA = TargetList(Ind.',1).';
         TimeHistory(TimeCounter).Dec = TargetList(Ind.',2).';
-        TimeHistory(TimeCounter).MainCounter = TargetList(Ind.',4).';
+        TimeHistory(TimeCounter).Az           = CurVis.Az(Ind);
+        TimeHistory(TimeCounter).Alt          = CurVis.Alt(Ind);
+        TimeHistory(TimeCounter).MainCounter  = TargetList(Ind.',4).';
         TimeHistory(TimeCounter).NightCounter = TargetList(Ind.',5).';
         TimeHistory(TimeCounter).AM           = CurVis.AM(Ind);
         

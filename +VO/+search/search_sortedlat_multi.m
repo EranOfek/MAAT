@@ -88,7 +88,4 @@ for I=1:1:Nlat
         FlagFound(I) = false;
     end
     
-    
-    
-    
 end
