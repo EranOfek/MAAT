@@ -75,7 +75,7 @@ RAD = 180./pi;
 InPar = inputParser;
 addOptional(InPar,'DecRange',[-30 90]./RAD);
 %addOptional(InPar,'Ntel',8);
-addOptional(InPar,'Ntel',4);
+addOptional(InPar,'Ntel',12);
 
 addOptional(InPar,'Nnight',10);
 addOptional(InPar,'Lon',35./RAD);
@@ -87,23 +87,23 @@ addOptional(InPar,'MaxAM',2);
 addOptional(InPar,'AzAltLimit',[0 15;90 15; 180 15; 270 15; 360 15]);  % [Az Alt] deg  
 addOptional(InPar,'MinMoonDistIllum',[0 0; 0.1 1; 0.2 1; 0.3 1; 0.4 2; 0.5 3; 0.6 5;0.7 10;0.8 15; 0.9 30; 1.0 30]);  % [illum, MinDist]  
 
-%addOptional(InPar,'MinVisibilityTime',5./24);  % [day] 
-addOptional(InPar,'MinVisibilityTime',2./24);  % [day] 
+addOptional(InPar,'MinVisibilityTime',5./24);  % [day] 
+%addOptional(InPar,'MinVisibilityTime',2./24);  % [day] 
 addOptional(InPar,'FactorVisibilityAM',1.2);  % [day] 
 
 %addOptional(InPar,'MainCadence',0.8);  % [day]
-addOptional(InPar,'MainCadence',2.4);  % [day]
-%addOptional(InPar,'NightCadence',30./1440); % [day]
-addOptional(InPar,'NightCadence',40./1440); % [day]
-%addOptional(InPar,'Nfast',2); % [day]
+addOptional(InPar,'MainCadence',0.8);  % [day]
+addOptional(InPar,'NightCadence',30./1440); % [day]
+%addOptional(InPar,'NightCadence',40./1440); % [day]
 addOptional(InPar,'Nfast',8); % [day]
+%addOptional(InPar,'Nfast',2); % [day]
 
 addOptional(InPar,'MainWFun',@celestial.scheduling.fermiexp); %@(t) 1.0+0.5.*exp(-t./1) ); % weight as a function of time since it is allowed to observe the target
+addOptional(InPar,'MainWFunPar', {0.8, 1, 0.03, 1, 0.5} );  %t0, DecayExp, SoftFermi, BaseW, ExtraW
 %addOptional(InPar,'MainWFunPar', {0.8, 1, 0.03, 1, 0.5} );  %t0, DecayExp, SoftFermi, BaseW, ExtraW
-addOptional(InPar,'MainWFunPar', {2.4, 1, 0.03, 1, 0.5} );  %t0, DecayExp, SoftFermi, BaseW, ExtraW
 addOptional(InPar,'NightWFun',@celestial.scheduling.fermiexp); %@(t) 1.5+0.5.*exp(-t./1) ); % weight as a function of time since it is allowed to observe the target
-%addOptional(InPar,'NightWFunPar',{30./1440, 1, 0.003, 1.5, 0.5});  %t0, DecayExp, SoftFermi, BaseW, ExtraW
-addOptional(InPar,'NightWFunPar',{40./1440, 1, 0.003, 1.5, 0.5});  %t0, DecayExp, SoftFermi, BaseW, ExtraW
+addOptional(InPar,'NightWFunPar',{30./1440, 1, 0.003, 1.5, 0.5});  %t0, DecayExp, SoftFermi, BaseW, ExtraW
+%addOptional(InPar,'NightWFunPar',{40./1440, 1, 0.003, 1.5, 0.5});  %t0, DecayExp, SoftFermi, BaseW, ExtraW
 
 addOptional(InPar,'InterpMethod','linear'); 
 addOptional(InPar,'Plot',true); 
@@ -171,6 +171,10 @@ for Inight=1:1:InPar.Nnight
         TimeNeedeForTarget(~FlagTargetStarted) = TimeLeftForTargetLim(~FlagTargetStarted);
         TimeNeedeForTarget = TimeNeedeForTarget.';
         FlagEnoughTime = TimeNeedeForTarget<TimeLeftForTarget & TimeLeftForTarget>0;
+
+        % This line was added in order to make sure there are enough
+        % targets:
+        FlagEnoughTime(FlagEnoughTime==0) = 0.1;
 
         
         

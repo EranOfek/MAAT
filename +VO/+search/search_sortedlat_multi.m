@@ -20,7 +20,7 @@ function [Ind,FlagUnique,FlagFound]=search_sortedlat_multi(Cat,Long,Lat,Radius,F
 %            'Dist' - Distance between sources. This is provided only if
 %                   the input search radius is negative.
 %          - A logical vector of length equal to the number of searched
-%            coordinates (Lat) which flag the first unique source.
+%            coordinates (Cat) which flag the first unique source.
 %          - If Cat and Long/Lat have the same length and are the same
 %            catalog, then this is a flag indicating if a source was
 %            already found as another source.
