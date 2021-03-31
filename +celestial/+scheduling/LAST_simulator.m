@@ -92,15 +92,15 @@ addOptional(InPar,'MinVisibilityTime',5./24);  % [day]
 addOptional(InPar,'FactorVisibilityAM',1.2);  % [day] 
 
 %addOptional(InPar,'MainCadence',0.8);  % [day]
-addOptional(InPar,'MainCadence',0.8);  % [day]
+addOptional(InPar,'MainCadence',0.6);  % [day]
 addOptional(InPar,'NightCadence',30./1440); % [day]
 %addOptional(InPar,'NightCadence',40./1440); % [day]
 addOptional(InPar,'Nfast',8); % [day]
 %addOptional(InPar,'Nfast',2); % [day]
 
 addOptional(InPar,'MainWFun',@celestial.scheduling.fermiexp); %@(t) 1.0+0.5.*exp(-t./1) ); % weight as a function of time since it is allowed to observe the target
-addOptional(InPar,'MainWFunPar', {0.8, 1, 0.03, 1, 0.5} );  %t0, DecayExp, SoftFermi, BaseW, ExtraW
-%addOptional(InPar,'MainWFunPar', {0.8, 1, 0.03, 1, 0.5} );  %t0, DecayExp, SoftFermi, BaseW, ExtraW
+addOptional(InPar,'MainWFunPar', {0.6, 1, 0.03, 1, 0.5} );  %t0, DecayExp, SoftFermi, BaseW, ExtraW
+%addOptional(InPar,'MainWFunPar', {0.6, 1, 0.03, 1, 0.5} );  %t0, DecayExp, SoftFermi, BaseW, ExtraW
 addOptional(InPar,'NightWFun',@celestial.scheduling.fermiexp); %@(t) 1.5+0.5.*exp(-t./1) ); % weight as a function of time since it is allowed to observe the target
 addOptional(InPar,'NightWFunPar',{30./1440, 1, 0.003, 1.5, 0.5});  %t0, DecayExp, SoftFermi, BaseW, ExtraW
 %addOptional(InPar,'NightWFunPar',{40./1440, 1, 0.003, 1.5, 0.5});  %t0, DecayExp, SoftFermi, BaseW, ExtraW
@@ -164,7 +164,7 @@ for Inight=1:1:InPar.Nnight
         NobsLeft          = InPar.Nfast - TargetList(:,5);
         
         % Time needed to complete the target observations for the night
-        TimeNeedeForTarget = (NobsLeft-1).*InPar.NightCadence + (JD - TargetList(:,3));
+        TimeNeedeForTarget = (NobsLeft-1).*InPar.NightCadence;  % why did I add this term? : + (JD - TargetList(:,3));
         % indicated targets with at least one obs during the night
         FlagTargetStarted = TargetList(:,5)>0;
      
@@ -217,6 +217,7 @@ for Inight=1:1:InPar.Nnight
         TimeHistory(TimeCounter).MainCounter  = TargetList(Ind.',4).';
         TimeHistory(TimeCounter).NightCounter = TargetList(Ind.',5).';
         TimeHistory(TimeCounter).AM           = CurVis.AM(Ind);
+        TimeHistory(TimeCounter).NtargetFound = numel(Itarget);
         
         if TimeCounter>1
             CurRA  = TimeHistory(TimeCounter-1).RA;
