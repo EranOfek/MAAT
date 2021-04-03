@@ -46,6 +46,14 @@ InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 
 RadiusDeg = convert.angular(InPar.RadiusUnits,'deg',InPar.Radius);
 
+if ischar(RA)
+    RA = celestial.coo.convertdms(RA,'gH','d');
+end
+if ischar(Dec)
+    Dec = celestial.coo.convertdms(Dec,'gD','d');
+end
+
+
 RA    = convert.angular(InPar.CooUnits,'deg',RA);
 Dec   = convert.angular(InPar.CooUnits,'deg',Dec);
 

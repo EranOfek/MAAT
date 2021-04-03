@@ -55,7 +55,8 @@ classdef FITS
             end
             
             import matlab.io.*
-            
+                
+
 
             KeyPos = 9;
             ComPos = 32;
@@ -328,7 +329,6 @@ classdef FITS
             % Reliable: 2
             %--------------------------------------------------------------------------
 
-
             if (nargin==2)
                 HDUnum = 1;
                 Str    = false;
@@ -339,7 +339,7 @@ classdef FITS
             end
 
             [~,List] = Util.files.create_list(Images,NaN);
-            Nim = numel(List);
+            Nim         = numel(List);
             KeysVal     = cell(size(List));
             KeysComment = cell(size(List));
             for Iim=1:1:Nim
@@ -1468,10 +1468,10 @@ classdef FITS
             switch InPar.DataType
                  case {'int8',8}
                     DataType = 'uint8';
-                 case {'int16',16}
+                 case {'uint16','int16',16}
                      % apparently uint16 is not supported?! in 2017b
                     DataType = 'int16';
-                 case {'int32',32}
+                 case {'uint32','int32',32}
                      % apparently uint16 is not supported?! in 2017b
                     DataType = 'int32';
                  case {'int64',64}

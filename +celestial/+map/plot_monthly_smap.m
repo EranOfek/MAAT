@@ -310,7 +310,7 @@ end
 
 %--- set default values ---
 GeodPos     = [35 32 0]./RAD;
-Cat         = 'cats.sources.mag6';
+Cat         = 'cats.bright.mag6';
 ColRA       = 1;
 ColDec      = 2;
 ColMag      = 3;
@@ -517,8 +517,12 @@ switch Cat
     % convert BT-VT color to B-V:
     % StarCat(:,ColCol) = 0.850.*StarCat(:,ColCol);
 
+ case 'cats.bright.mag6'
+     StarCat = cats.bright.mag6;
+    
  otherwise
     load(Cat);
+    
     K = findstr(Cat,'.');
     CatS = Cat(1:K-1);
     eval(['StarCat = ',CatS,';']);
@@ -573,12 +577,13 @@ switch ConLines
  case 'yes'
     load('ConstellationLines.mat');
     CL = ConstellationLines;
+    CL = CL.Cat;
     clear ConstellationLines;
     %--- convert coordinates to radians ---
-    CL_RA1  = convertdms(CL(:,1:3),  'H','r');
-    CL_Dec1 = convertdms(CL(:,4:7),  'D','R');
-    CL_RA2  = convertdms(CL(:,8:10), 'H','r');
-    CL_Dec2 = convertdms(CL(:,11:14),'D','R');
+    CL_RA1  = CL(:,1); %celestial.coo.convertdms(CL(:,1:3),  'H','r');
+    CL_Dec1 = CL(:,2); %celestial.coo.convertdms(CL(:,4:7),  'D','R');
+    CL_RA2  = CL(:,3); %celestial.coo.convertdms(CL(:,8:10), 'H','r');
+    CL_Dec2 = CL(:,4); %celestial.coo.convertdms(CL(:,11:14),'D','R');
 
     %--- No proper motion handling!!! ---
 
@@ -663,7 +668,7 @@ end
 %figure(1);
 set(gcf,'Visible',Visible);
 %--- Plot Reference horizon circle ---
-Hcirc=plot_ellipse([0 0],[1 1],0,0,'k',2,1,ColorIn);
+Hcirc=plot.plot_ellipse([0 0],[1 1],0,0,'k',2,1,ColorIn);
 hold on;
 
 %---------------------

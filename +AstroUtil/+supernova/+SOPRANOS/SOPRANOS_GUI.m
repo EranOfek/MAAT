@@ -902,7 +902,7 @@ switch model
         time = linspace(t_min,min(t_delta,t_opac),250)*(1+z);
     case 'MSW'
         [~,~,~,~,~,t_min,t_max] = AstroUtil.supernova.sn_cooling_msw(1,'Model',model,'Type',prog,'Rs',Rs,'Vs',Vs,'Ms',Ms,'f_rho',frho);
-        time = linspace(t_min,t_max,250)*(1+z);        
+        time = linspace(t_min,t_max,250);        
 end
 
 for iband = 1:length(handles.PlottedInGraph.UserData)
@@ -1523,8 +1523,8 @@ switch Plot.model
     case 'MSW'
         [~,~,~,~,~,t_min,t_max] = AstroUtil.supernova.sn_cooling_msw(1,'Model',Plot.model,'Type',Plot.prog,...
             'Rs',Plot.Rs,'Vs',Plot.Vs,'Ms',Plot.Ms,'f_rho',Plot.frho);
-        t_min = t_min*(1+z);
-        t_max = t_max*(1+z);
+        t_min = t_min;
+        t_max = t_max;
 end
 
 for iband = 1:length(handles.PlottedInGraph.UserData)

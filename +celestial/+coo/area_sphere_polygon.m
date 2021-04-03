@@ -9,7 +9,8 @@ function Area=area_sphere_polygon(PolyLon,PolyLat)
 %            Units are [rad] or [H M S] or sexagesimal.
 %          - Column vector of latitude for polygon.
 %            Units are [rad] or [Sign D M S] or sexagesimal.
-% Output : - Area of spherical polygon which its sides are great circles.
+% Output : - Area of spherical polygon which its sides are great circles
+%            [sr].
 % Tested : Matlab 7.0
 %     By : Eran O. Ofek                    Mar 2007
 %    URL : http://weizmann.ac.il/home/eofek/matlab/

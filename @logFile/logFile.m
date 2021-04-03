@@ -105,7 +105,9 @@ classdef logFile < handle
                 % do not do anything
                 
                 if isempty(H.FID)
-                    H.FID = fopen(H.FileName,'a+');
+                    FullFileName = sprintf('%s%s%s',H.Dir,filesep,H.FileName);
+                    H.FID = fopen(FullFileName,'a+');
+                   
                 end
                 
             else
@@ -116,7 +118,8 @@ classdef logFile < handle
                     H.FID = [];
                 end
                 % open new file ID
-                H.FID = fopen(FileName,'a+');
+                FullFileName = sprintf('%s%s%s',H.Dir,filesep,FileName);
+                H.FID = fopen(FullFileName,'a+');
                 H.FileName = FileName;
             end
         end
@@ -166,29 +169,30 @@ classdef logFile < handle
     
     % write logFile message
     methods
-        function Out=writeLog(H,Message)
+        function writeLog(H,Message)
             % writeing a message into the logFile
             % Package: @logFile
             % Input  : - 
             
-            H.update_FileName;  % update file name
-            
-%             if isempty(H.FID)
-%                 % fileID doesn't exist - open a new file
-%                 H.FID = fopen(sprintf('%s%s%s',H.Dir,filesep,H.FileName),'a+');
-%             end
-            
-            % write
-            DateStr = datestr(now,'yyyy-mm-dd HH:MM:SS.FFF');
-            [SI,I] = dbstack;
-            fprintf(H.FID,'%s %s %s\n',DateStr,H.logOwner,Message);
-            H.Counter = H.Counter + 1;
-            
-            if (H.Verbose)
-                % print message to screen
-                fprintf('%s %s %s\n',DateStr,H.logOwner,Message);
+            if H.FID>1
+                H.update_FileName;  % update file name
+
+    %             if isempty(H.FID)
+    %                 % fileID doesn't exist - open a new file
+    %                 H.FID = fopen(sprintf('%s%s%s',H.Dir,filesep,H.FileName),'a+');
+    %             end
+
+                % write
+                DateStr = datestr(now,'yyyy-mm-dd HH:MM:SS.FFF');
+                [SI,I] = dbstack;
+                fprintf(H.FID,'%s %s %s\n',DateStr,H.logOwner,Message);
+                H.Counter = H.Counter + 1;
+
+                if (H.Verbose)
+                    % print message to screen
+                    fprintf('%s %s %s\n',DateStr,H.logOwner,Message);
+                end
             end
-            
         end
     end % end methods
 end

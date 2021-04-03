@@ -50,6 +50,7 @@ InPar = InArg.populate_keyval(DefV,varargin,mfilename);
 % Get gain of all images
 if (isnumeric(InPar.GainKeys))
     Gain = InPar.GainKeys;
+    InPar.GainKeys = {'GAIN'};
 else
     Gain = getkey_gain(Sim,'GainKeys',InPar.GainKeys,'SelectionMethod',InPar.SelectionMethod);
 end

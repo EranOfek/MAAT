@@ -42,7 +42,7 @@ DefPar.ULTRASAT           = {'FWHM',12,...
 
 DefV.SN                   = 5;
 DefV.Mag                  = 22.0;
-DefV.CalibFilterFamily    = 'SDSS';     % filter family of input magnitude by which to scale the mag
+DefV.CalibFilterFamily    = 'SDSS';    % filter family of input magnitude by which to scale the mag
 DefV.CalibFilter          = 'r';
 DefV.CalibMagSys          = 'AB';
 
@@ -96,6 +96,11 @@ PixScale  = InPar.PixSize.*1e-4./InPar.FL .*RAD.*3600;   % [arcsec]
 
 SN.PsfEffAreaAS  = 4.*pi.*(InPar.FWHM./2.35).^2;
 SN.PsfEffAreaPix = SN.PsfEffAreaAS./(PixScale.^2);
+% take into account the pixel size - i.e., area can't be smaller than pixel
+if SN.PsfEffAreaPix<1
+    SN.PsfEffAreaPix = 1;
+    SN.PsfEffAreaAS  = SN.PsfEffAreaPix.*PixScale.^2;
+end
 
 
 if isa(InPar.BackSpec,'function_handle')

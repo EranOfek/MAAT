@@ -50,12 +50,19 @@ Alt   = AzAlt(:,2);
 % calc AM
 AM = celestial.coo.hardie(pi./2-Alt);
 
-if (Az<0 || Az>(2.*pi))
-    error('Illegal Az')
-end
-if (HA>pi || HA<-pi)
-    error('Illgal HA');
-end
+% if (Az<0 || Az>(2.*pi))
+%     error('Illegal Az')
+% end
+
+% set HA range to -pi to pi:
+HA = mod(HA,2.*pi);
+FF = HA > pi;
+HA(FF) = HA(FF) - 2.*pi;
+
+
+% if (HA>pi || HA<-pi)
+%     error('Illgal HA');
+% end
 
 Data.LST = LST;
 Data.HA  = HA;

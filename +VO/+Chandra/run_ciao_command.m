@@ -59,9 +59,8 @@ PWD = pwd;
 
 Nfile = numel(FullPath);
 % run for all dir
-for Ifile=1001:1:5000,
-    %Nfile
-    Ifile
+for Ifile=2933:1:2933
+    [Ifile,Nfile]
     tic;
    cd(FullPath{Ifile});
    

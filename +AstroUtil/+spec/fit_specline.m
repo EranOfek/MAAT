@@ -48,7 +48,7 @@ function [Fit]=fit_specline(Spec,Fun,varargin)
 %          Fun = @(Par,X) fun_gauss(Par(1:3),X)+fun_gauss(Par(4:6),X)
 %          Fit=fit_specline(Spec,Fun,'Par0',[1 6630 10 1 6630 100]);
 %          Fun = @(Par,X) fun_gauss(Par(1:3),X)+fun_lorentzian(Par(4:6),X)
-%          Fit=fit_specline(Spec,Fun,'Par0',[1 6630 10 6630 100 10]);
+%          Fit=AstroUtil.spec.fit_specline(Spec,Fun,'Par0',[1 6630 10 6630 100 10]);
 %          Fit=fit_specline(Spec,[],'Back',bkg,'Nsim',100,'MinBkg',0.5);
 % Reliable: 2
 %------------------------------------------------------------------------------
@@ -63,6 +63,10 @@ DefV.Par0    = 'guess';
 DefV.Nsim    = 1;
 DefV.MinBkg  = 0.3;
 InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+
+if nargin<2
+    Fun = [];
+end
 
 OpenNewPlot = true;
 if (isempty(Spec))

@@ -20,13 +20,9 @@ function Flag=in_box(Lon,Lat,BoxCenter,BoxHalfSize)
 
 BoxCenter   = BoxCenter(:).';
 BoxHalfSize = BoxHalfSize(:).';
-% take into accound cos(Dec) - but in the middle... (approximate)
-BoxHalfSize(1) = BoxHalfSize(1)./cos(BoxCenter(2));
 
-Corners = [BoxCenter(1) - BoxHalfSize(1), BoxCenter(2) - BoxHalfSize(2); ...
-           BoxCenter(1) + BoxHalfSize(1), BoxCenter(2) - BoxHalfSize(2); ...
-           BoxCenter(1) + BoxHalfSize(1), BoxCenter(2) + BoxHalfSize(2); ...
-           BoxCenter(1) - BoxHalfSize(1), BoxCenter(2) + BoxHalfSize(2)];
-           
+[OutRA,OutDec] = celestial.coo.center2corners(BoxCenter(1),BoxCenter(2),BoxHalfSize(1), BoxHalfSize(2));
+Corners = [OutRA(:), OutDec(:)];
+
 
 Flag = celestial.htm.in_polysphere([Lon,Lat],Corners);

@@ -14,6 +14,7 @@ function Res=cosined(Vec)
 %            Each raw in the output corresponds to each raw in
 %            the input.
 % Tested : Matlab 7.0
+% See also: cosined2coo, coo2cosined
 %     By :  Eran O. Ofek                   Jul 1999
 %    URL : http://weizmann.ac.il/home/eofek/matlab/
 % Example: celestial.coo.cosined(rand(5,3));    % Lon/lat from cosine-dir.

@@ -56,6 +56,17 @@ function [TimeHistory,History,ResS]=LAST_simulator(JD,varargin)
 %            .AllAM - Vector of all observed AM.
 %      By: Eran Ofek                      Oct 2020
 % Example: [TimeHistory,History,ResS]=celestial.scheduling.LAST_simulator(celestial.time.julday([1 3 2021]),'Plot',false)
+% histogram(ResS.AllAM,[1:0.05:2]')  % histogram of AM distribution
+% plot number of vists per field
+% axesm ('aitoff', 'Frame', 'on', 'Grid', 'on');
+%scatterm(ResS.TargetList(:,2).*RAD,ResS.TargetList(:,1).*RAD,45,TL,'filled');
+%H=colorbar;
+%H.Label.String='Epochs/yr'; 
+%H.Label.Interpreter='latex';
+%G=celestial.coo.coco([(0:1:360)',zeros(361,1)],'g','j2000.0');
+%hold on;
+%plotm(G(:,2).*RAD,G(:,1).*RAD,'k.')
+%axis off
 
 
 
@@ -63,7 +74,9 @@ RAD = 180./pi;
 
 InPar = inputParser;
 addOptional(InPar,'DecRange',[-30 90]./RAD);
-addOptional(InPar,'Ntel',8);
+%addOptional(InPar,'Ntel',8);
+addOptional(InPar,'Ntel',12);
+
 addOptional(InPar,'Nnight',10);
 addOptional(InPar,'Lon',35./RAD);
 addOptional(InPar,'Lat',30./RAD);
@@ -75,15 +88,22 @@ addOptional(InPar,'AzAltLimit',[0 15;90 15; 180 15; 270 15; 360 15]);  % [Az Alt
 addOptional(InPar,'MinMoonDistIllum',[0 0; 0.1 1; 0.2 1; 0.3 1; 0.4 2; 0.5 3; 0.6 5;0.7 10;0.8 15; 0.9 30; 1.0 30]);  % [illum, MinDist]  
 
 addOptional(InPar,'MinVisibilityTime',5./24);  % [day] 
+%addOptional(InPar,'MinVisibilityTime',2./24);  % [day] 
 addOptional(InPar,'FactorVisibilityAM',1.2);  % [day] 
 
-addOptional(InPar,'MainCadence',0.8);  % [day]
+%addOptional(InPar,'MainCadence',0.8);  % [day]
+addOptional(InPar,'MainCadence',0.6);  % [day]
 addOptional(InPar,'NightCadence',30./1440); % [day]
+%addOptional(InPar,'NightCadence',40./1440); % [day]
 addOptional(InPar,'Nfast',8); % [day]
+%addOptional(InPar,'Nfast',2); % [day]
+
 addOptional(InPar,'MainWFun',@celestial.scheduling.fermiexp); %@(t) 1.0+0.5.*exp(-t./1) ); % weight as a function of time since it is allowed to observe the target
-addOptional(InPar,'MainWFunPar', {0.8, 1, 0.03, 1, 0.5} );  %t0, DecayExp, SoftFermi, BaseW, ExtraW
+addOptional(InPar,'MainWFunPar', {0.6, 1, 0.03, 1, 0.5} );  %t0, DecayExp, SoftFermi, BaseW, ExtraW
+%addOptional(InPar,'MainWFunPar', {0.6, 1, 0.03, 1, 0.5} );  %t0, DecayExp, SoftFermi, BaseW, ExtraW
 addOptional(InPar,'NightWFun',@celestial.scheduling.fermiexp); %@(t) 1.5+0.5.*exp(-t./1) ); % weight as a function of time since it is allowed to observe the target
 addOptional(InPar,'NightWFunPar',{30./1440, 1, 0.003, 1.5, 0.5});  %t0, DecayExp, SoftFermi, BaseW, ExtraW
+%addOptional(InPar,'NightWFunPar',{40./1440, 1, 0.003, 1.5, 0.5});  %t0, DecayExp, SoftFermi, BaseW, ExtraW
 
 addOptional(InPar,'InterpMethod','linear'); 
 addOptional(InPar,'Plot',true); 
@@ -144,13 +164,17 @@ for Inight=1:1:InPar.Nnight
         NobsLeft          = InPar.Nfast - TargetList(:,5);
         
         % Time needed to complete the target observations for the night
-        TimeNeedeForTarget = (NobsLeft-1).*InPar.NightCadence + (JD - TargetList(:,3));
+        TimeNeedeForTarget = (NobsLeft-1).*InPar.NightCadence;  % why did I add this term? : + (JD - TargetList(:,3));
         % indicated targets with at least one obs during the night
         FlagTargetStarted = TargetList(:,5)>0;
      
         TimeNeedeForTarget(~FlagTargetStarted) = TimeLeftForTargetLim(~FlagTargetStarted);
         TimeNeedeForTarget = TimeNeedeForTarget.';
         FlagEnoughTime = TimeNeedeForTarget<TimeLeftForTarget & TimeLeftForTarget>0;
+
+        % This line was added in order to make sure there are enough
+        % targets:
+        FlagEnoughTime(FlagEnoughTime==0) = 0.1;
 
         
         
@@ -188,9 +212,12 @@ for Inight=1:1:InPar.Nnight
         TimeHistory(TimeCounter).JD = JD;
         TimeHistory(TimeCounter).RA = TargetList(Ind.',1).';
         TimeHistory(TimeCounter).Dec = TargetList(Ind.',2).';
-        TimeHistory(TimeCounter).MainCounter = TargetList(Ind.',4).';
+        TimeHistory(TimeCounter).Az           = CurVis.Az(Ind);
+        TimeHistory(TimeCounter).Alt          = CurVis.Alt(Ind);
+        TimeHistory(TimeCounter).MainCounter  = TargetList(Ind.',4).';
         TimeHistory(TimeCounter).NightCounter = TargetList(Ind.',5).';
         TimeHistory(TimeCounter).AM           = CurVis.AM(Ind);
+        TimeHistory(TimeCounter).NtargetFound = numel(Itarget);
         
         if TimeCounter>1
             CurRA  = TimeHistory(TimeCounter-1).RA;
@@ -263,6 +290,7 @@ end
 
 ResS.AllDiff = AllDiff;
 ResS.AllAM   = AllAM;
+ResS.TargetList = TargetList;
 
 
 

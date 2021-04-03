@@ -1,5 +1,5 @@
 function [OutList,TotRot]=coco(InList,InCooType,OutCooType,InUnits,OutUnits)
-% Convert between different coordinates
+% Convert between different coordinates (OBSOLETE: use convert_coo)
 % Package: celestial.coo
 % Description: General coordinate convertor. Convert/precess
 %              coordinate from/to Equatorial/galactic/Ecliptic

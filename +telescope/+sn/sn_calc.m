@@ -102,7 +102,7 @@ DefV.SN           = [];
 
 %--- Telescope ----
 %DefV.Tel          = [];
-DefV.Aper         = 27; %3.5./1.4; %57; %48*2.54; %30; %55; %1.8; %55;        % [cm] Telescope aperture
+DefV.Aper         = 27.9; %3.5./1.4; %57; %48*2.54; %30; %55; %1.8; %55;        % [cm] Telescope aperture
 DefV.FocalLength  = 62; %3.5; %108; %48.*2.54.*2.8; %30.*1.44; %108; %1.7; %108;        % [cm] Telescope focal length
 DefV.Family       = 'SDSS'; %'Cousins'; %'Cousins'; %'Cousins'; %'Johnson'; %'SDSS';  %
 DefV.Band         = 'g'; %'R'; %'R'; %'R'; %'r';        %
@@ -117,7 +117,7 @@ DefV.SizeCCD      = [6000 6000]; %[2048 2500]; % [pix pix] size of a single CCD
 DefV.Nccd         = 7;           % []        number of CCDs or telescopes.
 %DefV.ReadRate     = 2e5;         % [pix/s]   CCD readout rate
 DefV.ReadTime     = 0;           % [s]       CCD readout time - if given, then used instead of ReadRate
-DefV.RN           = 3.5; %1.5; %1.5; %1.5; %1.5; %4.*sqrt(DefV.ReadRate./250);;           % [e-]      CCD Read noise
+DefV.RN           = 1.5; %1.5; %1.5; %1.5; %1.5; %4.*sqrt(DefV.ReadRate./250);;           % [e-]      CCD Read noise
 DefV.DC           = 0.1; %16;       % [e-/s/pix]CCD dark current
 DefV.WD           = 1e5;         % [e-]      CCD wall depth/saturation limit per pixel
 DefV.Gain         = 1.5;         % [e-/DN]   CCD Gain

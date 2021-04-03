@@ -16,9 +16,9 @@ function AM=hardie(X,Algo)
 RAD = 180./pi;
 
 Def.Algo = 'hardie'; 
-if nargin==1,
+if nargin==1
    Algo = Def.Algo;
-elseif nargin==2,
+elseif nargin==2
    % do nothing
 else
    error('Illegal number of input arguments');

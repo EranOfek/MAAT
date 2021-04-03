@@ -259,6 +259,30 @@ classdef convert
 
         end % convert.angular function
         
+        function Out=minusPi2Pi(In,Units)
+            % convert angular units to -pi to pi range
+            % Input  : - Angular values.
+            %        : - Output and input units: 'rad' | 'deg'. Default is
+            %            'deg'
+            % Output : - Angular values in the range of -pi to pi.
+           
+            if nargin<2
+                Units = 'deg';
+            end
+            
+            switch lower(Units)
+                case 'deg'
+                    Out = mod(In,360);
+                    Out(Out>180) = Out(Out>180) - 360;
+                case 'rad'
+                    Out = mod(In,2.*pi);
+                    Out(Out>pi) = Out(Out>pi) - 2.*pi;
+                otherwise
+                    error('Unknown Units option');
+            end
+            
+        end
+        
         % mass conversion
         function OutM=mass(InUnit,OutUnit,InM)
             % Convert between different mass units

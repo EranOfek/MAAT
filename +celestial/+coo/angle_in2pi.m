@@ -12,9 +12,11 @@ function Long=angle_in2pi(Long,Period)
 % Reliable: 2
 %--------------------------------------------------------------------------
 
-if (nargin==1),
+if (nargin==1)
    Period = 2.*pi;
 end
 
-Long = (Long./Period - floor(Long./Period)).*Period;
+Long = mod(Long,Period);
+
+%Long = (Long./Period - floor(Long./Period)).*Period;
 
