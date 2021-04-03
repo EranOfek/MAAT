@@ -123,6 +123,10 @@ Hp = [];  % figure handle
 NightJD = JD - 1;
 for Inight=1:1:InPar.Nnight
     NightJD = NightJD + 1;
+    % The following calculate the visibility of each possible target in
+    % TileList, over the entire night.
+    % LimitAM is the AirMass limit for each target such it will be visible
+    % for MinVisibilityTime
     [Res,LimitAM]     = celestial.scheduling.coo_visibility(NightJD,TileList(:,1),TileList(:,2),'AllNightVisibility',true,...
                                                             'Lon',InPar.Lon,'Lat',InPar.Lat,...
                                                             'TimeStep',InPar.TimeStep,...
@@ -139,6 +143,8 @@ for Inight=1:1:InPar.Nnight
 
     TargetList(:,5) = 0;
     for Itime=1:1:Ntime
+        % Itime paste is the same as in Res 
+        % In practice select nearest time from Res.VecJD
         [Inight, Itime, Ntime]
         TimeCounter = TimeCounter + 1;
         
