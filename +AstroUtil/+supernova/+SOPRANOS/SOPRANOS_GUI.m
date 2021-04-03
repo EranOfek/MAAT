@@ -696,7 +696,7 @@ if (strcmp(handles.TransientStart.Enable,'on'))
 end
 
 if ~isempty(handles.Plot.UserData)
-     PlotParams = handles.Plot.UserData.PlotParams;
+    PlotParams = handles.Plot.UserData.PlotParams;
 %    PlotParams = handles.Plot.UserData.params;
     switch PlotParams.model
         case 'SW', handles.Model.Value = 1;
@@ -1637,7 +1637,14 @@ function RA_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of RA as text
 %        str2double(get(hObject,'String')) returns contents of RA as a double
-
+try
+    RArad = celestial.coo.convertdms(hObject.String,'SH','r');
+catch
+    hObject.String = handles.SOPRANOS.UserData.data.decd;
+end
+handles.SOPRANOS.UserData.data.RAh = hObject.String;
+handles.SOPRANOS.UserData.data.RArad = RArad;
+handles.MWEbv.String = sprintf('MW Ebv %6.4f',AstroUtil.spec.sky_ebv(handles.SOPRANOS.UserData.data.RArad,handles.SOPRANOS.UserData.data.decRad));
 
 % --- Executes during object creation, after setting all properties.
 function RA_CreateFcn(hObject, eventdata, handles)
@@ -1666,7 +1673,8 @@ catch
     hObject.String = handles.SOPRANOS.UserData.data.decd;
 end
 handles.SOPRANOS.UserData.data.decd = hObject.String;
-hadnles.SOPRANOS.UserData.data.decRad
+handles.SOPRANOS.UserData.data.decRad = decRad;
+handles.MWEbv.String = sprintf('MW Ebv %6.4f',AstroUtil.spec.sky_ebv(handles.SOPRANOS.UserData.data.RArad,handles.SOPRANOS.UserData.data.decRad));
 
 % --- Executes during object creation, after setting all properties.
 function dec_CreateFcn(hObject, eventdata, handles)

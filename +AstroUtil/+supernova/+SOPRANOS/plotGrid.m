@@ -1214,8 +1214,14 @@ else %strcmp(dir,'up')
         
     else %(PDF_L<=PDF_H) 
         % rightward movement
-        dPDF_L = (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind));
-        dPDF_H = (PDF(index+1)-PDF(index))/(var(index+1)-var(index));
+        if (index==length(var))
+            % already on the right edge, cannot move to the right
+            dPDF_L = 0;
+            dPDF_H = 0;
+        else
+            dPDF_L = (PDF(findind+1)-PDF(findind))/(var(findind+1)-var(findind));
+            dPDF_H = (PDF(index+1)-PDF(index))/(var(index+1)-var(index));
+        end
         if (dPDF_L==dPDF_H)
             % if the derivatives are identical the solution is degenerated.
             % Do not move on this case;

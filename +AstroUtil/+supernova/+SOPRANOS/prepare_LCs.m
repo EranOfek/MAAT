@@ -2,14 +2,14 @@ function [] = prepare_LCs(sn_name,model,VecVs,VecRs,VecMs,VecFrho,VecEbv, Prog)
 % Prepare Model light curves for interpolation
 % Package: AstroUtil.supernove.SOPRANOS
 % Description: Calculate model light curves grid for interpolation  by
-%              calcGrid using Sapir & Waxman 2017 shock cooling model.
-%              for each band in its input it calculates 1000x1001 grid 
+%              calcGrid using Morag, Sapir & Waxman 20 shock cooling model.
+%              For each band in its input it calculates 1000x1001 grid 
 %              spanned by bolometric luminosity and photosphere
 %              temperature of the observed flux in the band, take into
 %              consdireation the distance, redshift, extinction and filter
 %              transmission curve.
 % Input  : - The name of the supernova (The observations, the SN redshift
-%              and coordinats  are expected to be in a file named <sn_name>_data.mat)
+%            and coordinates are expected to be in a file named <sn_name>_data.mat)
 %          - Shock cooling model to use.
 %          - Vector of Shock velocity parameter values [cm s^-1]
 %          - Vector of Progenitor radius values [R_\sun]
@@ -94,12 +94,14 @@ LCsfile.vecL  = vecL;
 LCsfile.Mag = cell(1,length(bands));
 LCsfile.Flux = cell(1,length(bands));
 
+Mag  = zeros(length(vecTc),length(vecL),length(VecEbv));
+Flux = zeros(length(vecTc),length(vecL),length(VecEbv));
 for iband = 1:length(bands)
     fprintf('Calculating Mag table for %s %s band.\n', bands{iband}.instrumentname, bands{iband}.filtername);
     filter    = bands{iband}.filterObj;
     
     parfor iL = 1:length(vecL)
-        tmpFile = matfile(sprintf('%stmp_spec_%d.mat',tempdir,iL),'Writable',true);
+%        tmpFile = matfile(sprintf('tmp_spec_%d.mat',iL),'Writable',true);
         L         = vecL(iL);           
         WaveRange = linspace(filter.min_wl,filter.max_wl,101);
 
@@ -110,16 +112,18 @@ for iband = 1:length(bands)
         F  = constant.sigma .* (vecTc./(1+redshift)).^4;
         Spec{2}=Spec{2}./F.*L;
 
-        tmpFile.Mag = AstroUtil.spec.synphot(Spec,filter,[],'AB',[],shiftdim(VecEbv,-1),[],'photon');
-        tmpFile.Flux = convert.flux(tmpFile.Mag,'AB','cgs/A',filter.pivot_wl_photon,'A');
+%        tmpFile.Mag = AstroUtil.spec.synphot(Spec,filter,[],'AB',[],shiftdim(VecEbv,-1),[],'photon');
+%        tmpFile.Flux = convert.flux(tmpFile.Mag,'AB','cgs/A',filter.pivot_wl_photon,'A');
+        Mag(:,iL,:) = AstroUtil.spec.synphot(Spec,filter,[],'AB',[],shiftdim(VecEbv,-1),[],'photon');
+        Flux(:,iL,:)= convert.flux(Mag(:,iL,:),'AB','cgs/A',filter.pivot_wl_photon,'A');
     end
     
-    for iL=1:length(vecL)
-        tmpFile = matfile(sprintf('%stmp_spec_%d.mat',tempdir,iL));
-        Mag(:,iL,:) = tmpFile.Mag;
-        Flux(:,iL,:) = tmpFile.Flux;
-        delete(sprintf('%stmp_spec_%d.mat',tempdir,iL));
-    end
+%     for iL=1:length(vecL)
+%         tmpFile = matfile(sprintf('tmp_spec_%d.mat',iL));
+%         Mag(:,iL,:) = tmpFile.Mag;
+%         Flux(:,iL,:) = tmpFile.Flux;
+%         delete(sprintf('tmp_spec_%d.mat',iL));
+%     end
     
     LCsfile.Mag(1,iband) = num2cell(Mag,1:ndims(Mag));
     LCsfile.Flux(1,iband) = num2cell(Flux,1:ndims(Flux));

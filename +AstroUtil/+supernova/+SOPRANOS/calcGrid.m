@@ -109,7 +109,7 @@ t_max = shiftdim(t_max,-1);
 
 
 for iband=1:length(bands)
-    fprintf('iband=%d\n',iband)
+    fprintf('\niband=%d\n',iband)
     LC = sortrows(unique(bands{iband}.LC),'MJD');
     Nobs = length(LC.MJD);
     [MJDobs, t0obs] = ndgrid(LC.MJD, Vect0);
@@ -267,14 +267,8 @@ for iband=1:length(bands)
                 loopfile.NTransient = NTransient;
             end
             loopfile.BG = BGt;
-            save(loopfileName,'-struct','loopfile','-v7.3');
-            clear loopfile
-        end
-
-        fprintf('\nMerging Ebv files.\n');
-
-        for iEbv=1:NEbv
-            loopfile = matfile(sprintf('%s_iEbv%d.mat',sn_name,iEbv));
+%            save(loopfileName,'-struct','loopfile','-v7.3');
+%            clear loopfile
             chi2(it0,:,:,:,:,iEbv) = loopfile.chi2;
             points(it0,:,:,:,:,iEbv) = loopfile.points;
             if ismember(iband,BGbands)
@@ -284,9 +278,25 @@ for iband=1:length(bands)
                 chi2outliers(it0,:,:,:,:,iEbv) = loopfile.chi2outliers;
                 pointsOutliers(it0,:,:,:,:,iEbv) = loopfile.pointsOutliers;
             end
-            clear loopfile
-            delete(sprintf('%s_iEbv%d.mat',sn_name,iEbv));        
+
         end
+
+%         fprintf('\nMerging Ebv files.\n');
+% 
+%         for iEbv=1:NEbv
+%             loopfile = matfile(sprintf('%s_iEbv%d.mat',sn_name,iEbv));
+%             chi2(it0,:,:,:,:,iEbv) = loopfile.chi2;
+%             points(it0,:,:,:,:,iEbv) = loopfile.points;
+%             if ismember(iband,BGbands)
+%                 BG(it0,:,:,:,:,iEbv) = loopfile.BG;            
+%             end
+%             if length(outliers)>1
+%                 chi2outliers(it0,:,:,:,:,iEbv) = loopfile.chi2outliers;
+%                 pointsOutliers(it0,:,:,:,:,iEbv) = loopfile.pointsOutliers;
+%             end
+%             clear loopfile
+%             delete(sprintf('%s_iEbv%d.mat',sn_name,iEbv));        
+%         end
         if transient
             transientPoints(it0,:,:,:,:)=NTransient;
         end
