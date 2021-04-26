@@ -767,6 +767,16 @@ classdef ClassWCS
                     KeyVal  = {};
                     KeyName = {};
                 end
+            elseif (isfield(W(Iw).(WCSField),'tpv'))
+                if (~isempty(W(Iw).(WCSField).tpv))
+                    Ind     = W(Iw).(WCSField).tpv.Ind;
+                    KeyVal  = W(Iw).(WCSField).tpv.KeyVal;
+                    KeyName = W(Iw).(WCSField).tpv.KeyName;
+                else
+                    Ind     = [];
+                    KeyVal  = {};
+                    KeyName = {};
+                end
             else
                 Ind     = [];
                 KeyVal  = {};
@@ -788,7 +798,7 @@ classdef ClassWCS
             % Output : - A structure for the X axis orders and coef.
             %            Orders include three columns [X order, Y order, R
             %            order].
-            %          - A structure for the X axis orders and coef.
+            %          - A structure for the Y axis orders and coef.
             %          - Pixel coordinate X
             %          - Pixel coordinate Y
             % Example: [SX,SY]=get_tpv(W);
@@ -1212,7 +1222,7 @@ classdef ClassWCS
             
         end
         
-        function [X,Y]=inverse_tpv(W,Xt,Yt)
+        function [X,Y]=inverse_tpv(W,Xt,Yt,varargin)
             % Applay the inverse tpv polynomial transformation
             % Package: @ClassWCS
             % Description: Applay the inverse tpv polynomial transformation
@@ -1223,42 +1233,59 @@ classdef ClassWCS
             %          - Y coordinate of the inverse transformation.
             % Example: [~,~,Xt,Yt] = get_tpv(W,1,1);
             %          [X,Y] = inverse_tpv(W,Xt,Yt)
-            ThreshConv = 1e-12;
-            
+            DefV.ThreshConv = 1e-12;
+            DefV.SolverType = 'fsolve';   % 'fsolve' | 'olditer'
+            InPar = InArg.populate_keyval(DefV,varargin,mfilename);
+            ThreshConv=InPar.ThreshConv;
             if (numel(W)>1)
                 error('ClassWCS object should contain a single element');
             end
             
             Iw = 1;
-            
-            Xt_O = Xt;
-            Yt_O = Yt;
-            
-            [~,~,Xtt_1,Ytt_1] = get_tpv(W(Iw),Xt,Yt);
-            
-            
-            DX_1 = Xt - Xtt_1;
-            DY_1 = Yt - Ytt_1;
-            Conv = false;
-            while (~Conv)
-                
-                X_1  = Xt + DX_1;
-                Y_1  = Yt + DY_1;
-
-                [~,~,Xt_1,Yt_1] = get_tpv(W(Iw),X_1,Y_1);
-                DX_1 = Xt_O - Xt_1;
-                DY_1 = Yt_O - Yt_1;
-                %[DX_1, DY_1]
-                Xt = X_1;
-                Yt = Y_1;
-                if (max(abs(Xt_O-Xt_1))<ThreshConv && max(abs(Yt_O-Yt_1))<ThreshConv)
-                    Conv = true;
-                end
-                
+            switch lower(InPar.SolverType)
+                case 'fsolve'
+                    %       use matlab fsolve to get root, now support vector use
+                    X=Xt;Y=Yt;
+                    for k=1:length(Xt)
+                        options=optimoptions(@fsolve,'Display','off','FunctionTolerance',ThreshConv);%
+                        [tmp,~]=fsolve(@(x) tpv_root(W(Iw),[Xt(k),Yt(k)],x),[Xt(k),Yt(k)],options);
+                        X(k)=tmp(1);Y(k)=tmp(2);
+                    end
+                case 'olditer'
+                    Xt_O = Xt;
+                    Yt_O = Yt;
+                    
+                    [~,~,Xtt_1,Ytt_1] = get_tpv(W(Iw),Xt,Yt);
+                    
+                    
+                    DX_1 = Xt - Xtt_1;
+                    DY_1 = Yt - Ytt_1;
+                    Conv = false;
+                    while (~Conv)
+                        
+                        X_1  = Xt + DX_1;
+                        Y_1  = Yt + DY_1;
+                        
+                        [~,~,Xt_1,Yt_1] = get_tpv(W(Iw),X_1,Y_1);
+                        DX_1 = Xt_O - Xt_1;
+                        DY_1 = Yt_O - Yt_1;
+                        %[DX_1, DY_1]
+                        Xt = X_1;
+                        Yt = Y_1;
+                        if (max(abs(Xt_O-Xt_1))<ThreshConv && max(abs(Yt_O-Yt_1))<ThreshConv)
+                            Conv = true;
+                        end
+                        
+                    end
+                    X = X_1;
+                    Y = Y_1;
+                    
             end
-            X = X_1;
-            Y = Y_1;
-            
+             function F = tpv_root(W,x0,x)
+            [~,~,y1,y2]=get_tpv(W,x(1),x(2));
+            F(1)=x0(1)-y1;
+            F(2)=x0(2)-y2;
+             end
         end
         
         function PixCoo=intermediate2pixel(W,XY)

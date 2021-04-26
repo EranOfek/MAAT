@@ -644,7 +644,7 @@ for Isim=1:1:Nsim
                                                                           'Niter',InPar.Niter,...
                                                                           'SigClip',InPar.SigClip,...
                                                                           'MaxResid',InPar.MaxResid,...
-                                                                          'Plot',InPar.Plot);
+                                                                          'Plot',InPar.Plot,'RefSelectFun',[]);
            
            
            ResAst(Isim).ShiftRes   = ShiftRes;
@@ -683,8 +683,8 @@ for Isim=1:1:Nsim
                % thus xy2coo for SIM call function in WorldCooSys, need to
                % fix? now we have to W = ClassWCS.populate(OrigSim); and call
                % xy2coo(W,[X,Y]);
-               ResAst(Isim).WCS  = W.WCS;
-               OrigSim(Isim).WCS = W.WCS;
+               ResAst(Isim).WCS  = W;
+               OrigSim(Isim).WCS = W;
              
            end
            
