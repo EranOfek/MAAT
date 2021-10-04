@@ -193,71 +193,291 @@ classdef convert
             % Reliable: 2
             %--------------------------------------------------------------------------
 
-            Def.Val = 1;
-            Def.SpecialString = [];
-            if (nargin==2)
-                Val = Def.Val;
-                SpecialString = Def.SpecialString;
-            elseif (nargin==3)
-                SpecialString = Def.SpecialString;
-            elseif (nargin==4)
-                % do nothing
-            else
-                error('Illegal number of input arguments');
+            arguments
+                In
+                Out
+                Val             = 1;
+                SpecialString   = [];
             end
-
-
-            if any(strcmpi(In,SpecialString))
-                % user used Special string - set output to 1
+            
+            if strcmp(In,Out)
+                % input=output
                 ConvVal = Val;
             else
+                
+                if any(strcmpi(In,SpecialString))
+                    % user used Special string - set output to 1
+                    ConvVal = Val;
+                else
 
-                % Input: convert to deg
-                switch lower(In)
-                    case {'rad','radian','radians'}
-                        ConvVal = 180./pi;
-                    case {'deg','degree','degrees'}
-                        ConvVal = 1;
-                    case 'arcmin'
-                        ConvVal = 1./60;
-                    case 'arcsec'
-                        ConvVal = 1./3600;
-                    case 'mas'
-                        ConvVal = 1./(3600.*1000);
-                    case 'frac'
-                        % fraction to deg
-                        ConvVal = 360;
-                    case 'hour'
-                        % hours to deg
-                        ConvVal = 15;
-                    otherwise
-                        error('Unknown input angular units');
-                end
-                ConvVal = Val.*ConvVal;
+                    % Input: convert to deg
+                    switch lower(In)
+                        case {'rad','radian','radians'}
+                            ConvVal = 180./pi;
+                        case {'deg','degree','degrees'}
+                            ConvVal = 1;
+                        case 'arcmin'
+                            ConvVal = 1./60;
+                        case 'arcsec'
+                            ConvVal = 1./3600;
+                        case 'mas'
+                            ConvVal = 1./(3600.*1000);
+                        case 'frac'
+                            % fraction to deg
+                            ConvVal = 360;
+                        case 'hour'
+                            % hours to deg
+                            ConvVal = 15;
+                        otherwise
+                            error('Unknown input angular units');
+                    end
+                    ConvVal = Val.*ConvVal;
 
-                % Output: Convert from deg to requested output units
-                switch lower(Out)
-                    case {'rad','radian','radians'}
-                        ConvVal = ConvVal.* pi./180;
-                    case {'deg','degree','degrees'}
-                        % do nothing
-                        %ConvVal = ConvVal;
-                    case 'arcmin'
-                        ConvVal = ConvVal.*60;
-                    case 'arcsec'
-                        ConvVal = ConvVal.*3600;
-                    case 'mas'
-                        ConvVal = ConvVal.*3600.*1000;
-                    case 'frac'
-                        ConvVal = ConvVal./360;
-                    case 'hour'
-                        ConvVal = ConvVal./15;
-                    otherwise
-                        error('Unknown input angular units');
+                    % Output: Convert from deg to requested output units
+                    switch lower(Out)
+                        case {'rad','radian','radians'}
+                            ConvVal = ConvVal.* pi./180;
+                        case {'deg','degree','degrees'}
+                            % do nothing
+                            %ConvVal = ConvVal;
+                        case 'arcmin'
+                            ConvVal = ConvVal.*60;
+                        case 'arcsec'
+                            ConvVal = ConvVal.*3600;
+                        case 'mas'
+                            ConvVal = ConvVal.*3600.*1000;
+                        case 'frac'
+                            ConvVal = ConvVal./360;
+                        case 'hour'
+                            ConvVal = ConvVal./15;
+                        otherwise
+                            error('Unknown input angular units');
+                    end
                 end
             end
 
         end % convert.angular function
+        
+        function Val = timeUnits(In, Out, Val)
+            % convert time units
+            % Input  : - In time units
+            %            's'|'min'|'hr'|'day'|'sday'|'week'|'jyr'|'jcy'
+            %          - Out Units (like input).
+            %          - Value to convert. Default is 1.
+            % Output : - Converted time
+            % Author : Eran Ofek (May 2021)
+            % Example: convert.timeUnits('jcy','min',1)
+           
+            arguments
+                In
+                Out
+                Val    = 1;
+            end
+            
+            % convert to [s]
+            switch lower(In)
+                case 's'
+                    % do nothing
+                case {'min'}
+                    Val = Val.*60;
+                case {'hr','hour'}
+                    Val = Val.*3600;
+                case {'day'}
+                    Val = Val.*86400;
+                case {'sday'}
+                    Val = Val.*86164.091;
+                case {'week'}
+                    Val = Val.*86400.*7;
+                case {'jyear','yr'}
+                    Val = Val.*86400.*365.25;
+                case {'jcy'}
+                    Val = Val.*86400.*365.25.*100;
+                otherwise
+                    error('Unknown time units');
+            end
+            
+            % convert from 's' to output
+            switch lower(Out)
+                case 's'
+                    % do nothing
+                case {'min'}
+                    Val = Val./60;
+                case {'hr','hour'}
+                    Val = Val./3600;
+                case {'day'}
+                    Val = Val./86400;
+                case {'sday'}
+                    Val = Val./86164.091;
+                case {'week'}
+                    Val = Val./(86400.*7);
+                case {'jyear','yr'}
+                    Val = Val./(86400.*365.25);
+                case {'jcy'}
+                    Val = Val./(86400.*365.25.*100);
+                otherwise
+                    error('Unknown time units');
+            end
+                    
+            
+        end
+        
+        function Val = length(In, Out, Val)
+            % Convert length units
+            % Input  : - Input units:
+            %            'cm'|'m'|'mm'|'ang'|...
+            %          - Output units (like input).
+            %          - Input value. Default is 1.
+            % Output : - Converted output value.
+            % AUthor : Eran Ofek (May 2021)
+            % Example: convert.length('yard','m')
+           
+            arguments
+                In
+                Out
+                Val    = 1;
+            end
+            
+            % convert to 'cm'
+            switch lower(In)
+                case 'cm'
+                    % do nothing
+                case 'm'
+                    Val = Val.*100;
+                case 'mm'
+                    Val = Val./10;
+                case 'micrometer'
+                    Val = Val.*1e-4;
+                case {'a','ang'}
+                    Val = Val.*1e-8;
+                case 'km'
+                    Val = Val.*1e5;
+                case 'au'
+                    Val = Val.*constant.au;
+                case 'pc'
+                    Val = Val.*constant.pc;
+                case 'earthr'
+                    Val = Val.*constant.EarthR;
+                case 'sunr'
+                    Val = Val.*constant.SunR;
+                case 'inch'
+                    Val = Val.*2.54;
+                case 'mile'
+                    Val = Val.*1609.344.*100;
+                case 'nmile'
+                    Val = Val.*1852.*100;
+                case 'yard'
+                    Val = Val.*91.44;
+                case 'feet'
+                    Val = Val.*30.48;
+                otherwise
+                    error('Unknown length units');
+            end
+            
+              % convert to 'cm'
+            switch lower(Out)
+                case 'cm'
+                    % do nothing
+                case 'm'
+                    Val = Val./100;
+                case 'mm'
+                    Val = Val.*10;
+                case 'micrometer'
+                    Val = Val.*1e4;
+                case {'a','ang'}
+                    Val = Val.*1e8;
+                case 'km'
+                    Val = Val.*1e-5;
+                case 'au'
+                    Val = Val./constant.au;
+                case 'pc'
+                    Val = Val./constant.pc;
+                case 'earthr'
+                    Val = Val./constant.EarthR;
+                case 'sunr'
+                    Val = Val./constant.SunR;
+                case 'inch'
+                    Val = Val./2.54;
+                case 'mile'
+                    Val = Val./(1609.344.*100);
+                case 'nmile'
+                    Val = Val./(1852.*100);
+                case 'yard'
+                    Val = Val./91.44;
+                case 'feet'
+                    Val = Val./30.48;
+                otherwise
+                    error('Unknown length units');
+            end
+            
+                        
+                    
+            
+            
+        end
+        
+        function Val = velocity(In, Out, Val)
+            % Convert velocity units of the form 'length/time'
+            % Input  : - Input velocity units.
+            %          - Output velocity units.
+            %          - Value to convert. Default is 1.
+            % Output : - Converted value.
+            % Author : Eran Ofek (May 2021)
+            % Example: convert.velocity('km/s','au/day',1)
+           
+            arguments
+                In
+                Out
+                Val    = 1;
+            end
+            
+            % identify length and time units
+            InSplit = regexp(In,'/','split');
+            if numel(InSplit)~=2
+                error('In units does not look like velocity');
+            end
+            OutSplit = regexp(Out,'/','split');
+            if numel(OutSplit)~=2
+                error('Out units does not look like velocity');
+            end
+            LengthFactor = convert.length(InSplit{1}, OutSplit{1}, 1);
+            TimeFactor   = convert.timeUnits(InSplit{2}, OutSplit{2}, 1);
+            
+            Val = Val.*LengthFactor./TimeFactor;
+            
+        end
+        
+        function Val = proper_motion(In, Out, Val)
+            % Convert proper motion units of the form 'angle/time'
+            % Input  : - Input velocity units.
+            %          - Output velocity units.
+            %          - Value to convert. Default is 1.
+            % Output : - Converted value.
+            % Author : Eran Ofek (May 2021)
+            % Example: convert.proper_motion('arcsec/yr','mas/yr',1)
+           
+            arguments
+                In
+                Out
+                Val    = 1;
+            end
+            
+            % identify length and time units
+            InSplit = regexp(In,'/','split');
+            if numel(InSplit)~=2
+                error('In units does not look like proper motion');
+            end
+            OutSplit = regexp(Out,'/','split');
+            if numel(OutSplit)~=2
+                error('Out units does not look like proper motion');
+            end
+            AngleFactor = convert.angular(InSplit{1}, OutSplit{1}, 1);
+            TimeFactor   = convert.timeUnits(InSplit{2}, OutSplit{2}, 1);
+            
+            Val = Val.*AngleFactor./TimeFactor;
+            
+        end
+        
+        
         
         function Out=minusPi2Pi(In,Units)
             % convert angular units to -pi to pi range
@@ -1021,37 +1241,34 @@ classdef convert
                 String = String.';
             end
             Time = regexp(String,'T|:|\s|-','split');
+            
             DateVec = cell2mat(cellfun(@str2double,Time,'UniformOutput',false));
 
         end % convert.str2date function
 
+	    function Frac=hour_str2frac(String)
+            % Convert hour string to fraction of day
+            % Package: @convert
+            % Description: Convert a string or cell array of strings containing
+            %              the hour in format HH:MM:SS.frac' to fraction of day.                                  % Input  : - String or cell array of strings containing the hour in                                   %            format HH:MM:SS.frac'.
+            % Output : - Vector of fraction of day for each hour in the input.
+            % Tested : Matlab R2014a
+            %     By : Eran O. Ofek                    Dec 2014
+            %    URL : http://weizmann.ac.il/home/eofek/matlab/                                                   % Example: [Frac]=convert.hour_str2frac('10:10:10.111')
+            %          [Frac]=convert.hour_str2frac({'10:10:10.111','11:11:11.12'})
+            % Reliable: 2
 
-
-	function Frac=hour_str2frac(String)
-        % Convert hour string to fraction of day
-	    % Package: @convert
-	    % Description: Convert a string or cell array of strings containing
-	    %              the hour in format HH:MM:SS.frac' to fraction of day.                                  % Input  : - String or cell array of strings containing the hour in                                   %            format HH:MM:SS.frac'.
-	    % Output : - Vector of fraction of day for each hour in the input.
-	    % Tested : Matlab R2014a
-	    %     By : Eran O. Ofek                    Dec 2014
-	    %    URL : http://weizmann.ac.il/home/eofek/matlab/                                                   % Example: [Frac]=convert.hour_str2frac('10:10:10.111')
-	    %          [Frac]=convert.hour_str2frac({'10:10:10.111','11:11:11.12'})
-	    % Reliable: 2
-
-   	    if (ischar(String))
-		 String = {String};
+            if (ischar(String))
+                String = {String};
             end
 
-	    Time = regexp(String,':','split');
-	    FunH = @(C) (str2double(C{1}).*3600 + str2double(C{2}).*60 + str2double(C{3}))./86400;
-	    Frac = cellfun(FunH,Time);
+            Time = regexp(String,':','split');
+            FunH = @(C) (str2double(C{1}).*3600 + str2double(C{2}).*60 + str2double(C{3}))./86400;
+            Frac = cellfun(FunH,Time);
         end
 
-
-
         % Convert between time systems
-        function Output=time(Input,InType,OutType)
+        function Output = time(Input, InType, OutType)
             % Convert between different types of time systems and years
             % Package: @convert
             % Description: Convert between different types of time systems and years.
@@ -1132,7 +1349,7 @@ classdef convert
         end % convert.time function
         
         % Date to JD
-        function JD=date2jd(Date,Output)
+        function JD=date2jd(Date,Output,TreatOnlyDate)
             % Convert Julian/Gregorian date to Julian Day
             % Package: @convert
             % Description: Convert Julian/Gregorian date to Julian Day.
@@ -1150,6 +1367,8 @@ classdef convert
             %          - Output type. Options are:
             %            'JD'  - Julian days (default).
             %            'MJD' - Modified JD (JD-2400000.5).
+            %          - Flag indicating if possible to treat strings
+            %            containing only dates (no H:M:S). Default is false.
             % Output : - Row vector of Julian days.
             % Tested : Matlab 3.5
             %     By : Eran O. Ofek                    Jan 1994
@@ -1162,21 +1381,44 @@ classdef convert
             % Reliable: 1
             %--------------------------------------------------------------------------
 
+            if nargin<3
+                TreatOnlyDate = true;
+            end
+            
+            IsStr = false;
             if (nargin==0)
                %Date = clock;
                Date = datevec(datetime('now', 'TimeZone', 'UTC'));
-               Date = Date(:,[3 2 1 4 5 6]);
+               IsStr = true;
+               
             end
             if (isempty(Date))
                %Date = clock;
                Date = datevec(datetime('now', 'TimeZone', 'UTC'));
-               Date = Date(:,[3 2 1 4 5 6]);
+               IsStr = true;
+               
             end
             if (ischar(Date) || iscell(Date))
                 Date=convert.str2date(Date);
-                Date = Date(:,[3 2 1 4 5 6]);
+                IsStr = true;
+                
             end
-
+            if any(isnan(Date))
+                Date = nan(1,6);
+            end
+            
+            if IsStr
+                if size(Date,2)==6
+                    Date = Date(:,[3 2 1 4 5 6]);
+                else
+                    if TreatOnlyDate
+                        Date = [Date(:,[3 2 1]), zeros(size(Date,1),3)];
+                    else
+                        Date = nan(size(Date,1),6);
+                    end
+                end
+            end
+            
             Y = Date(:,3);
             M = Date(:,2);
             D = Date(:,1);
@@ -1331,9 +1573,32 @@ classdef convert
             
         end % convert.hms2frac function
         
+        
     end % Static
     
     
-    
+    methods (Static)
+        function Result = conversion(InUnits, OutUnits, Val)
+            %
+           
+            % length: ang, nm, mm, cm, m, km, inch, mile, feet, yard, ly,
+            % pc, kpc, Mpc, Gpc
+            
+            % mass: me, mp, g, kg, EM, JM, SM
+            
+            % time: s, min, hour, day, JY
+            
+            % Temp: 
+            
+        end
+    end
+
+
+    % Unit test
+    methods(Static)   
+        Result = unitTest()
+
+    end    	
+
 end % end class
             
