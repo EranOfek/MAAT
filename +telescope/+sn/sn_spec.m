@@ -74,8 +74,8 @@ DefV.DC                   = 1e-2; % [e-/pix/s]
 DefV.Back                 = 'Gemini_SkyBack_dark';   % [cgs/A per arcsec]
 DefV.PixScale             = 0.6;  % [arcsec/pix]
 DefV.Seeing               = 2;    % FWHM [arcsec]
-DefV.SpecRes              = @(X) X./3000; % @(X) 10+0.5.*X./200;  % 25;    % FWHM [Ang], or vec or fun
-DefV.SpecSampling         = 0.8;      % Ang/pix; [] don't resample
+DefV.SpecRes              = @(X) X./20000; % @(X) 10+0.5.*X./200;  % 25;    % FWHM [Ang], or vec or fun
+DefV.SpecSampling         = 0.12;      % Ang/pix; [] don't resample
 DefV.AirMass              = 1.4;   % 0 for space
 DefV.AtmosphericExt       = 'KPNO';
 DefV.Aper                 = 254;    % cm
@@ -271,10 +271,11 @@ SN.SNperResEl = SN.SNperPix.*sqrt(SN.ResEl./InPar.SpecSampling);
 
 %%
 if 1==0
+    % 300, 3000, 20000
+    % 8    0.8   0.12
     
-    
-    VecSpecTh = (0.5:0.025:0.9).';
-    VecRN     = 3.*sqrt(1:1:18).';
+    VecSpecTh = (0.3:0.1:0.9).';
+    VecRN     = 3.*sqrt(logspace(log10(0.01),log10(18), 10));
     Nst = numel(VecSpecTh);
     Nrn = numel(VecRN);
     

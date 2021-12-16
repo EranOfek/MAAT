@@ -33,6 +33,10 @@ function [RA, Dec, RAantiSun, DecantiSun] = earthShadowCoo(JD, Dist, Args)
     % rectangular ecliptic coordinates of Earth with equinox of J2000
     [E_H] = celestial.SolarSys.calc_vsop87(JD, 'Earth', 'a', 'd');
 
+    % convert ecliptic to equatorial
+    R = celestial.coo.rotm_coo('E');
+    E_H = R * E_H;  % equatorial
+
     % add anti-sun direction at some distance
     SunEarthUnitVector = E_H./sqrt(sum(E_H.^2,1));
     % The Barycentric position of the Earth Shadow at some dist
@@ -41,7 +45,7 @@ function [RA, Dec, RAantiSun, DecantiSun] = earthShadowCoo(JD, Dist, Args)
      
     Gau = celestial.coo.topocentricVector(JD, Args.GeoPos, 'OutUnits','au',...
                                                              'RefEllipsoid',Args.RefEllipsoid,...
-                                                             'Convert2ecliptic',true,...
+                                                             'Convert2ecliptic',false,...
                                                              'Equinox','J2000');
 
     % Observer Barycentric position:
