@@ -170,7 +170,7 @@ DefV.CatColNames       = {'ALPHAWIN_J2000','DELTAWIN_J2000';...
                           'X_IMAGE','Y_IMAGE';...
                           'X','Y';
                           'xpos','ypos'}; 
-DefV.RefColNames       = NaN;   % NaN means copy from RefColNames.
+DefV.RefColNames       = NaN;   % NaN means copy from CatColNames.
 DefV.CatUnits          = {'deg'; 'deg'; 'pix'; 'pix'; 'pix'; 'pix'};
 DefV.RefUnits          = NaN;
 DefV.CooType           = {'sphere';'sphere';'plane';'plane';'plane';'plane'};
@@ -250,7 +250,7 @@ end
 % Ncn = numel(InPar.CatName);
 
 
-% If RefColNames is NaN - copy content from CatColName
+% If RefColNames is NaN - copy content from CatColNames
 if (~iscell(InPar.RefColNames))
     if (isnan(InPar.RefColNames))
         InPar.RefColNames = InPar.CatColNames;
